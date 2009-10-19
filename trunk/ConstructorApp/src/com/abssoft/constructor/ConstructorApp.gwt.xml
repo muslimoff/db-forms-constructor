@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<module rename-to="constructorapp">
+	<inherits name='com.google.gwt.user.User' />
+	<inherits name="com.google.gwt.core.Core" />
+	<inherits name="com.google.gwt.user.History" />
+	<inherits name="com.smartgwt.SmartGwtNoScript" />
+	<inherits name="com.smartclient.theme.enterprise.EnterpriseResources" />
+	<inherits name="com.smartclient.theme.blackops.BlackOpsResources" />
+	<inherits name="com.smartclient.theme.silverwave.SilverWaveResources" />
+	<inherits name="com.smartclient.theme.treefrog.TreeFrogResources" />
+	<inherits name="com.smartclient.theme.fleet.FleetResources" />
+	
+	<inherits name="com.smartclient.theme.cupertino.CupertinoResources" />
+	<inherits name="com.smartclient.theme.standart.standartResources" />
+	<!-- < i n h e r i t s name="com.smartclient.theme.toolskin.ToolSkinResources" />  -->
+	
+	<inherits name="com.smartgwt.tools.SmartGwtTools"/>
+	
+	<entry-point class="com.abssoft.constructor.client.ConstructorApp" />
+	<servlet class="com.abssoft.constructor.server.QueryServiceImpl"
+		path="/query" />
+</module>
