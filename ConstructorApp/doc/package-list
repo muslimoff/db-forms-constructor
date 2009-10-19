@@ -1,0 +1,8 @@
+com.abssoft.constructor.client
+com.abssoft.constructor.client.common
+com.abssoft.constructor.client.data
+com.abssoft.constructor.client.data.common
+com.abssoft.constructor.client.event
+com.abssoft.constructor.client.form
+com.abssoft.constructor.client.metadata
+com.abssoft.constructor.server
