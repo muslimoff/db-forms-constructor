@@ -33,7 +33,10 @@ public class Form {
 	private OracleConnection connection;
 	private static final String formSQL = "Select * From forms_v a Where a.form_code = :p_form_code";
 	private static final String extendedFormSQL = "Select form_utils.get_extended_sql_text(a.sql_text)  From forms_v a Where a.form_code = :p_form_code";
-	private static final String ColumnsMetaDataSQL = "Select * From Table (form_utils.describe_form_columns_pl (:p_form_code)) Order By form_code, column_display_number, column_code";
+	private static final String ColumnsMetaDataSQL = "Select column_display_number, form_code, column_code, column_data_type, column_user_name, column_display_size\n"
+			+ ",pimary_key_flag, show_on_grid, tree_initialization_value, tree_field_type, editor_tab_code, field_type\n"
+			+ ",column_description, is_frozen_flag, show_hover_flag, exists_in_metadata_flag, exists_in_query_flag\n"
+			+ ",lookup_code, hover_column_code, editor_height From Table (form_utils.describe_form_columns_pl (:p_form_code)) Order By form_code, column_display_number, column_code";
 	private static final String formActionsSQL = "Select * From form_actions a Where a.form_code = :p_form_code order by 2";
 	private static final String argsSQLText = "Select a.position, a.argument_name, DECODE (a.in_out, 'IN/OUT', 'Y', 'IN', 'Y') in_flag, DECODE (a.in_out, 'IN/OUT', 'Y', 'OUT', 'Y') out_flag \n"
 			+ " From all_arguments a Where a.package_name || '.' || a.object_name = UPPER (:p_procedure_name) And a.owner = 'FORMS_CONSTRUCTOR' And a.Position != 0 Order By a.Position, a.Sequence";
