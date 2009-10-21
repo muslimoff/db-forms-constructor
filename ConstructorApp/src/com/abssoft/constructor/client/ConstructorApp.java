@@ -32,6 +32,7 @@ import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
+import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.PasswordItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
@@ -109,11 +110,13 @@ public class ConstructorApp implements EntryPoint {
 			form.setWidth100();
 			form.setPadding(5);
 			form.setLayoutAlign(VerticalAlignment.BOTTOM);
-			final SelectItem serverSelectItem = new SelectItem();
+			final ComboBoxItem serverSelectItem = new ComboBoxItem();
 			serverSelectItem.setTitle("Server");
 
 			LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
+			valueMap.put("jdbc:oracle:thin:@10.0.14.10:1521:APPLPR", "NBAPPLPR");
 			valueMap.put("jdbc:oracle:thin:@apps.abssoft.kz:1522:DEMO12i", "DemoLocal");
+			valueMap.put("jdbc:oracle:thin:@apps.ba-solutions.kz:1522:DEMO", "BAS_11");
 			valueMap.put("jdbc:oracle:thin:@VM_XE:1521:XE", "VM_XE");
 			valueMap.put("jdbc:oracle:thin:@rdbms.abssoft.kz:1524:VIS12", "VIS12");
 			valueMap.put("jdbc:oracle:thin:@192.168.110.3:1524:VIS12", "VIS12_IP");
@@ -122,7 +125,8 @@ public class ConstructorApp implements EntryPoint {
 			valueMap.put(s, "VIS12_full");
 
 			serverSelectItem.setValueMap(valueMap);
-			serverSelectItem.setValue("jdbc:oracle:thin:@VM_XE:1521:XE");
+			// serverSelectItem.setValue("jdbc:oracle:thin:@VM_XE:1521:XE");
+			serverSelectItem.setValue("jdbc:oracle:thin:@10.0.14.10:1521:APPLPR");
 
 			final TextItem textItem = new TextItem();
 			textItem.setTitle("User Name");
@@ -149,6 +153,7 @@ public class ConstructorApp implements EntryPoint {
 						}
 					}
 					Utils.debug("Create new session...");
+					Utils.debug("ModuleBaseURL:" + com.google.gwt.core.client.GWT.getModuleBaseURL());
 					queryService.connect(url, user, password, new ConnectDataCallback());
 					ConnectWindow.this.hide();
 				}
