@@ -6,6 +6,27 @@ Add your content here.
 
 
 = Details =
+  * Под пользователем SYS cоздать пользователя FORMS_CONSTRUCTOR (можно и по другому, например FC, единственный минус - то что в приложении по умолчанию забит FORMS_CONSTRUCTOR - пока придется при коннекте руками перебивать). *DEFAULT Tablespace* выбрать на свой вкус, если нет или не нравится это...
+
+{{{
+Create USER forms_constructor
+Identified By f
+DEFAULT Tablespace apps_ts_tx_data
+Temporary Tablespace TEMP
+/
+Grant Connect To forms_constructor
+/
+Grant Dba To forms_constructor
+/
+Grant Resource To forms_constructor
+/
+Grant Select On Sys.V_$SQL_CURSOR To forms_constructor
+/
+Grant Select On Sys.V_$SQL_BIND_METADATA  To forms_constructor
+/
+}}}
+
+  * Залить [http://db-forms-constructor.googlecode.com/files/fc20091029.zip дамп]
 
 Add your content here.  Format your content with:
   * Text in *bold* or _italic_
