@@ -28,3 +28,4 @@ Grant Select On Sys.V_$SQL_BIND_METADATA  To forms_constructor
 
   * Скачать и залить [http://db-forms-constructor.googlecode.com/files/fc20091029.zip дамп]
   * Скачать и задеплоить [http://db-forms-constructor.googlecode.com/files/ConstructorApp.war варик]
+  * Пробуем подключиться. Если в списке серверов подходящего нет или подключиться не получилось - можно указать строку вида * jdbc:oracle:thin:@host:port:sid*, например *jdbc:oracle:thin:@192.168.110.3:1524:VIS12*
