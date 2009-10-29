@@ -38,14 +38,32 @@ public class FormDataSource extends GwtRpcDataSource {
 
 	private Integer totalRows;
 
-	public FormDataSource(MainFormPane mainFormPane) {
+	public FormDataSource() {
+	}
+
+	public void setMainFormPane(MainFormPane mainFormPane) {
 		this.mainFormPane = mainFormPane;
 		this.dsFields = mainFormPane.getFormColumns().getDSFields();
 		this.formCode = mainFormPane.getFormCode();
-		this.gridHashCode = mainFormPane.getMainForm().getHashCode();
+		System.out.println("setMainFormPane:" + formCode + "; ID:" + this.getID());
 		setFields(dsFields);
-		setID(formCode + "_" + gridHashCode);
-		Utils.debug("Datasource ID: " + getID());
+	}
+
+	/**
+	 * @return the gridHashCode
+	 */
+	public int getGridHashCode() {
+		return gridHashCode;
+	}
+
+	/**
+	 * @param gridHashCode
+	 *            the gridHashCode to set
+	 */
+	public void setGridHashCode(int gridHashCode) {
+		this.gridHashCode = gridHashCode;
+		// setID(formCode + "_" + gridHashCode);
+		// Utils.debug("Datasource ID: " + getID());
 	}
 
 	@Override
@@ -70,7 +88,7 @@ public class FormDataSource extends GwtRpcDataSource {
 
 	@Override
 	protected void executeFetch(final String requestId, final DSRequest request, final DSResponse response) {
-		Utils.debug("DS Fetch");
+		Utils.debug("DS Fetch:" + formCode + "; ID: " + this.getID());
 		final Integer startRow = (null == request.getStartRow()) ? 0 : request.getStartRow();
 		final Integer endRow = (null == request.getEndRow()) ? 1000 : request.getEndRow();
 		Map<?, ?> filterValues;
@@ -94,10 +112,11 @@ public class FormDataSource extends GwtRpcDataSource {
 			filterValues = request.getCriteria().getValues();
 		}
 		QueryServiceAsync service = GWT.create(QueryService.class);
-		service.fetch(ConstructorApp.sessionId, formCode, gridHashCode, request.getSortBy(), startRow, endRow, filterValues,
+		service.fetch(ConstructorApp.sessionId, formCode, gridHashCode, request.getSortBy(), startRow, endRow, filterValues, false,
 				new DSAsyncCallback<RowsArr>(requestId, response, this) {
 					public void onSuccess(RowsArr result) {
-						Utils.debug("...............DataSource: " + FormDataSource.this.getID() + " - before fetch...............");
+						Utils.debug(formCode + "...............DataSource: " + FormDataSource.this.getID()
+								+ " - before fetch...............");
 						showActionStatus(result.getStatus());
 						int rowsCount = result.size();
 						ListGridRecord[] records = new ListGridRecord[rowsCount];

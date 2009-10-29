@@ -38,11 +38,12 @@ public class FormInstance {
 		}
 	}
 
-	public RowsArr fetch(String sortBy, int startRow, int endRow, Map<?, ?> filterValues) {
+	public RowsArr fetch(String sortBy, int startRow, int endRow, Map<?, ?> filterValues, boolean forceFetch) {
 		RowsArr currentData = new RowsArr();
 		try {
-			// Первый вызов DataSource или изменение сортировки
-			if (-1 == currentEndRow || currentSortBy != sortBy || !currentFilterValues.equals(filterValues)) {
+			// Первый вызов DataSource или изменение сортировки, фильтров, а
+			// также принудительно
+			if (forceFetch || -1 == currentEndRow || currentSortBy != sortBy || !currentFilterValues.equals(filterValues)) {
 				Utils.debug("Erase ResultSetData....");
 				currentEndRow = -1;
 				resultData = new RowsArr();
@@ -65,7 +66,7 @@ public class FormInstance {
 
 			}
 			Utils.debug("currentEndRow before: " + currentEndRow + "; Cashe: " + resultData.size() + "; startRow: " + startRow
-					+ "; endRow: " + endRow + "; gridHashCode: " + "; sortBy: " + sortBy);
+					+ "; endRow: " + endRow + "; gridHashCode: " + "; sortBy: " + sortBy + "; forceFetch: " + forceFetch);
 			// Пробегаем по ResultSet от последней строки, считанной при
 			// предыдущем вызове (currentEndRow), до конца текущего диапазона
 			// (endRow) или до оконца ResultSet. Если currentEndRow>endRow -

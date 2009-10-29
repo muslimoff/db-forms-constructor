@@ -5,8 +5,9 @@ import java.util.LinkedHashMap;
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.form.MainFormPane;
 import com.abssoft.constructor.client.metadata.FormColumnMD;
+import com.abssoft.constructor.client.widgets.GridComboBoxItem;
 import com.smartgwt.client.types.ListGridFieldType;
-import com.smartgwt.client.widgets.form.fields.SelectItem;
+import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.grid.CellFormatter;
 import com.smartgwt.client.widgets.grid.HoverCustomizer;
@@ -40,50 +41,13 @@ public class FormTreeGridField extends TreeGridField {
 
 	public FormTreeGridField(MainFormPane mainFormPane, int colNum, final FormColumnMD c) {
 		final String colName = c.getName();
+		String lookupCode = c.getLookupCode();
 		this.setMainFormPane(mainFormPane);
 		this.setColNum(colNum);
 		this.setColumn(c);
 		this.setName(colName);
 		this.setTitle(c.getDisplayName());
 		this.setWidth(c.getDisplaySize());
-		String lookupCode = c.getLookupCode();
-		if ("3".equals(c.getFieldType())) {
-			this.setType(ListGridFieldType.IMAGE);
-		} else if ("4".equals(c.getFieldType())) {
-			this.setType(ListGridFieldType.TEXT);
-			this.setEditorType(new TextAreaItem());
-
-		} else if (null != lookupCode) {
-			SelectItem s = new SelectItem();
-			// StaticLookup
-			if (ConstructorApp.staticLookupsArr.containsKey(lookupCode)) {
-				final LinkedHashMap<String, String> lhm = new LinkedHashMap<String, String>();
-				lhm.putAll(ConstructorApp.staticLookupsArr.get(lookupCode));
-				// boolean nullsAllowed = true;
-				// if (nullsAllowed && !lhm.containsKey(null)) {
-				// lhm.put(null, "");
-				// }
-				s.setValueMap(lhm);
-				this.setCellFormatter(new CellFormatter() {
-					@Override
-					public String format(Object value, ListGridRecord record, int rowNum, int colNum) {
-						String result;
-						try {
-							result = lhm.get(value);
-						} catch (Exception e) {
-							result = e.toString();
-						}
-						return result;
-					}
-				});
-			}
-			// SQL Lookup
-			else {
-				ReadOnlyDataSource ds = new ReadOnlyDataSource(lookupCode);
-				s.setOptionDataSource(ds);
-			}
-			this.setEditorType(s);
-		}
 		this.setFrozen(c.isFrozen());
 		this.setShowHover(c.isShowHover());
 		if (null != c.getHoverСolumnСode()) {
@@ -104,6 +68,41 @@ public class FormTreeGridField extends TreeGridField {
 
 		// При редактировании грида изменять и значения в редакторе
 		this.addChangedHandler(new GridFieldChangedHandler(colName));
+		if ("3".equals(c.getFieldType())) {
+			this.setType(ListGridFieldType.IMAGE);
+		} else if ("4".equals(c.getFieldType())) {
+			this.setType(ListGridFieldType.TEXT);
+			this.setEditorType(new TextAreaItem());
+
+		}
+		// StaticLookup
+		else if ("8".equals(c.getFieldType()) && null != lookupCode && ConstructorApp.staticLookupsArr.containsKey(lookupCode)) {
+			ComboBoxItem s = new ComboBoxItem();
+			final LinkedHashMap<String, String> lhm = new LinkedHashMap<String, String>();
+			lhm.putAll(ConstructorApp.staticLookupsArr.get(lookupCode));
+			s.setValueMap(lhm);
+			this.setCellFormatter(new CellFormatter() {
+				@Override
+				public String format(Object value, ListGridRecord record, int rowNum, int colNum) {
+					String result;
+					try {
+						result = lhm.get(value);
+					} catch (Exception e) {
+						result = e.toString();
+					}
+					return result;
+				}
+			});
+			this.setEditorType(s);
+		}
+		// SQL Lookup
+		else if ("9".equals(c.getFieldType()) && null != lookupCode) {
+			// PickTreeItem departmentItem;
+			// SelectOtherItem selectOtherItem;
+			GridComboBoxItem s = new GridComboBoxItem(mainFormPane);
+			s.setFormTreeGridField(this);
+			mainFormPane.putLookup(c.getLookupCode(), s);
+		}
 	}
 
 	/**

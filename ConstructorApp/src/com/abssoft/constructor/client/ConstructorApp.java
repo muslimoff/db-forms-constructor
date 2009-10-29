@@ -125,8 +125,8 @@ public class ConstructorApp implements EntryPoint {
 			valueMap.put(s, "VIS12_full");
 
 			serverSelectItem.setValueMap(valueMap);
-			// serverSelectItem.setValue("jdbc:oracle:thin:@VM_XE:1521:XE");
-			serverSelectItem.setValue("jdbc:oracle:thin:@10.0.14.10:1521:APPLPR");
+			 serverSelectItem.setValue("jdbc:oracle:thin:@VM_XE:1521:XE");
+			//serverSelectItem.setValue("jdbc:oracle:thin:@10.0.14.10:1521:APPLPR");
 
 			final TextItem textItem = new TextItem();
 			textItem.setTitle("User Name");

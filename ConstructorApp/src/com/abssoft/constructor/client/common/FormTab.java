@@ -6,7 +6,7 @@ import com.smartgwt.client.types.ValueEnum;
 import com.smartgwt.client.widgets.Canvas;
 
 public class FormTab extends com.smartgwt.client.widgets.tab.Tab {
-	private MainFormPane mainFormPane;
+	protected MainFormPane mainFormPane;
 
 	private String formCode;
 
