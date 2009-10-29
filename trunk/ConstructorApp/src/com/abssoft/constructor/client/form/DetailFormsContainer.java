@@ -249,7 +249,7 @@ public class DetailFormsContainer extends TabSet {
 			this.selectTab(dynMultiDetailTabsArr.get(detFormCode));
 		} else {
 			if (null != detFormCode) {
-				MainFormPane mfp = new MainFormPane(detFormCode, false, mainFormPane);
+				MainFormPane mfp = new MainFormPane(detFormCode, false, false, mainFormPane);
 				dynMultiDetailTabsArr.put(detFormCode, mfp);
 				new MainFormContainer(FormTab.TabType.DYNAMIC_DETAIL_MULTI, this, mfp, detFormCode, false, true, true, mainFormPane,
 						dynamicDetailTab.getTitle(), dynamicDetailTab.getIconId());

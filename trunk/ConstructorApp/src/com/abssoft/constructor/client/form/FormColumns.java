@@ -7,24 +7,23 @@ import com.abssoft.constructor.client.metadata.FormColumnMD;
 import com.abssoft.constructor.client.metadata.FormColumnsArr;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.FormTabMD;
-import com.smartgwt.client.widgets.grid.ListGridField;
 
 public class FormColumns {
 	int columnsCount;
 	FormColumnsArr columns;
 	FormMD formMetadata;
-	ListGridField[] gridFields;
+	FormTreeGridField[] gridFields;
 	FormDataSourceField[] dataSourceFields;
 	MainFormPane mainFormPane;
 	boolean hasBottomTabsCount = false;
 	boolean hasSideTabsCount = false;
 
-	FormColumns(MainFormPane mainFormPane) {
+	public FormColumns(MainFormPane mainFormPane) {
 		this.formMetadata = mainFormPane.getFormMetadata();
 		this.columns = formMetadata.getColumns();
 		this.mainFormPane = mainFormPane;
 		this.columnsCount = columns.size();
-		this.gridFields = new ListGridField[columnsCount];
+		this.gridFields = new FormTreeGridField[columnsCount];
 		this.dataSourceFields = new FormDataSourceField[columnsCount];
 
 		for (FormTabMD e : formMetadata.getTabs()) {
@@ -51,7 +50,7 @@ public class FormColumns {
 		return dataSourceFields;
 	}
 
-	public ListGridField[] getGridFields() {
+	public FormTreeGridField[] getGridFields() {
 		for (int i = 0; i < columnsCount; i++) {
 			FormColumnMD m = columns.get(i);
 			gridFields[i] = new FormTreeGridField(mainFormPane, i, m);

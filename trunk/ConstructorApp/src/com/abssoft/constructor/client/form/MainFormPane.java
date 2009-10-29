@@ -1,18 +1,22 @@
 package com.abssoft.constructor.client.form;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.FormTab;
 import com.abssoft.constructor.client.data.FormDataSource;
+import com.abssoft.constructor.client.data.LookupDataSource;
 import com.abssoft.constructor.client.data.QueryService;
 import com.abssoft.constructor.client.data.QueryServiceAsync;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
-import com.abssoft.constructor.client.widgets.HTMLPaneItem;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.MenuMD;
+import com.abssoft.constructor.client.widgets.GridComboBoxItem;
+import com.abssoft.constructor.client.widgets.HTMLPaneItem;
 import com.google.gwt.core.client.GWT;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.Record;
@@ -31,13 +35,9 @@ import com.smartgwt.client.widgets.layout.SectionStackSection;
 
 public class MainFormPane extends Canvas {
 	private String formCode;
-
 	private DetailFormsContainer bottomDetailFormsContainer;
-
 	private DetailFormsContainer sideDetailFormsContainer;
-
 	private MainFormPane parentFormPane;
-
 	private FormMD formMetadata;
 	private FormColumns formColumns;
 	private MainForm mainForm;
@@ -46,6 +46,25 @@ public class MainFormPane extends Canvas {
 	private MainFormContainer mainFormContainer;
 	private FormToolbar buttonsToolBar;
 	private int currentGridRowSelected = -999;
+	// String LookupDS, ComboboxesList
+	private HashMap<String, ArrayList<GridComboBoxItem>> lookupComboboxes = new HashMap<String, ArrayList<GridComboBoxItem>>();
+
+	/**
+	 * @return the lookupComboboxes
+	 */
+	public HashMap<String, ArrayList<GridComboBoxItem>> getLookupComboboxes() {
+		return lookupComboboxes;
+	}
+
+	public void putLookup(String lookupCode, GridComboBoxItem comboBoxItem) {
+		if (lookupComboboxes.containsKey(lookupCode)) {
+			lookupComboboxes.get(lookupCode).add(comboBoxItem);
+		} else {
+			ArrayList<GridComboBoxItem> comboboxesList = new ArrayList<GridComboBoxItem>();
+			comboboxesList.add(comboBoxItem);
+			lookupComboboxes.put(lookupCode, comboboxesList);
+		}
+	}
 
 	/**
 	 * @param buttonsToolBar
@@ -139,8 +158,10 @@ public class MainFormPane extends Canvas {
 	public MainFormPane() {
 	}
 
-	public MainFormPane(final String formCode, boolean isMasterForm, MainFormPane parentFormPane) {
+	public MainFormPane(final String formCode, boolean isMasterForm, final boolean isLookup, MainFormPane parentFormPane) {
 		this.setFormCode(formCode);
+		dataSource = new FormDataSource();
+		System.out.println(formCode + " isLookup:" + isLookup);
 		this.setParentFormPane(parentFormPane);
 		this.setMasterForm(isMasterForm);
 		this.buttonsToolBar = new FormToolbar(this);
@@ -149,23 +170,43 @@ public class MainFormPane extends Canvas {
 			public void onSuccess(FormMD result) {
 				setFormMetadata(result);
 				setFormColumns(new FormColumns(MainFormPane.this));
-				mainForm = new MainForm(MainFormPane.this, formColumns.hasSideTabsCount);
-				System.out.println("2* mainForm: " + mainForm);
-				dataSource = new FormDataSource(MainFormPane.this);
-				ListGrid grid = mainForm.getTreeGrid();
-				grid.setDataSource(dataSource);
-				valuesManager.setDataSource(dataSource);
-				grid.setFields(formColumns.getGridFields());
-				filterData();
-				buttonsToolBar.createButtons();
-				createDetailForms();
-				if (isMasterForm()) {
-					ConstructorApp.mainToolBar.setForm(MainFormPane.this);
+				if (!isLookup) {
+					mainForm = new MainForm(MainFormPane.this, formColumns.hasSideTabsCount);
 				}
-				Utils.debug("Actions allowed on form: Ins:" + result.getActions().isInsertAllowed() + "; Upd:"
-						+ result.getActions().isUpdateAllowed() + "; Del:" + result.getActions().isDeleteAllowed());
+				System.out.println("z1");
+				// dataSource = new FormDataSource(MainFormPane.this);
+				dataSource.setMainFormPane(MainFormPane.this);
+				System.out.println("z2:" + dataSource);
+				if (!isLookup) {
+					dataSource.setGridHashCode(mainForm.getHashCode());
+					ListGrid grid = mainForm.getTreeGrid();
+					grid.setDataSource(dataSource);
+					valuesManager.setDataSource(dataSource);
+					System.out.println(formCode + " 2isLookup:" + isLookup);
+					grid.setFields(formColumns.getGridFields());
+					System.out.println(formCode + " 3isLookup:" + isLookup);
+					filterData();
+					buttonsToolBar.createButtons();
+					createLookups();
+					createDetailForms();
+					if (isMasterForm()) {
+						ConstructorApp.mainToolBar.setForm(MainFormPane.this);
+					}
+					Utils.debug("Actions allowed on form: Ins:" + result.getActions().isInsertAllowed() + "; Upd:"
+							+ result.getActions().isUpdateAllowed() + "; Del:" + result.getActions().isDeleteAllowed());
+				}
+				System.out.println("MainFormPane created");
 			}
 		});
+	}
+
+	void createLookups() {
+		Iterator<String> it = lookupComboboxes.keySet().iterator();
+		while (it.hasNext()) {
+			String lookupCode = it.next();
+			System.out.println(">>>>>>>>>lookup<<<<<<: " + lookupCode);
+			new LookupDataSource(lookupCode, this);
+		}
 	}
 
 	public void filterData() {
@@ -224,23 +265,8 @@ public class MainFormPane extends Canvas {
 		setInitialFilter(Utils.getCriteriaFromListGridRecord(record, this.getFormCode()));
 		getBottomDetailFormsContainer().filterData();
 		getSideDetailFormsContainer().filterData();
-		// System.out.println("SelectedRecordIndex: " +
-		// treeGrid.getRecordIndex(treeGrid.getSelectedRecord()));
 		setCurrentGridRowSelected(treeGrid.getRecordIndex(treeGrid.getSelectedRecord()));
 		((FormValuesManager) valuesManager).editRecord2(record);
-		// if (0 != valuesManager.getMembers().length) {
-		// // Установка редактированных ранее значений из строки грида
-		// ListGridRecord r = new ListGridRecord(record.getJsObj());
-		// Map<?, ?> ev = treeGrid.getEditValues(record);
-		// Iterator<?> it = ev.keySet().iterator();
-		// while (it.hasNext()) {
-		// String mapKey = (String) it.next();
-		// String value = (String) ev.get(mapKey);
-		// Utils.debug("Nonsaved Edit: " + mapKey + "=" + value);
-		// r.setAttribute(mapKey, value);
-		// }
-		// valuesManager.editRecord(r);
-		// }
 	}
 
 	/**
@@ -261,6 +287,7 @@ public class MainFormPane extends Canvas {
 	 * @return the dataSource
 	 */
 	public FormDataSource getDataSource() {
+		System.out.println("z3:" + dataSource);
 		return dataSource;
 	}
 

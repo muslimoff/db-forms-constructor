@@ -19,6 +19,7 @@ public class FormColumnMD implements IsSerializable {
 	private boolean isFrozen;
 	private boolean isPrimaryKey;
 	private String lookupCode;
+	private String lookupFieldType;
 	private String name;
 	private boolean showHover;
 	private String showOnGrid;
@@ -26,6 +27,7 @@ public class FormColumnMD implements IsSerializable {
 	private String treeInitializationValue;
 	private String hoverСolumnСode;
 	private String editorHeight;
+	private String helpText;
 
 	public FormColumnMD() {
 	}
@@ -66,6 +68,13 @@ public class FormColumnMD implements IsSerializable {
 	}
 
 	/**
+	 * @return the editorHeight
+	 */
+	public String getEditorHeight() {
+		return editorHeight;
+	}
+
+	/**
 	 * @return the editorTabCode
 	 */
 	public String getEditorTabCode() {
@@ -77,6 +86,13 @@ public class FormColumnMD implements IsSerializable {
 	 */
 	public String getFieldType() {
 		return fieldType;
+	}
+
+	/**
+	 * @return the hoverСolumnСode
+	 */
+	public String getHoverСolumnСode() {
+		return hoverСolumnСode;
 	}
 
 	/**
@@ -176,6 +192,14 @@ public class FormColumnMD implements IsSerializable {
 	}
 
 	/**
+	 * @param editorHeight
+	 *            the editorHeight to set
+	 */
+	public void setEditorHeight(String editorHeight) {
+		this.editorHeight = editorHeight;
+	}
+
+	/**
 	 * @param editorTabCode
 	 *            the editorTabCode to set
 	 */
@@ -197,6 +221,14 @@ public class FormColumnMD implements IsSerializable {
 	 */
 	public void setFrozen(boolean isFrozen) {
 		this.isFrozen = isFrozen;
+	}
+
+	/**
+	 * @param hoverСolumnСode
+	 *            the hoverСolumnСode to set
+	 */
+	public void setHoverСolumnСode(String hoverСolumnСode) {
+		this.hoverСolumnСode = hoverСolumnСode;
 	}
 
 	/**
@@ -256,32 +288,32 @@ public class FormColumnMD implements IsSerializable {
 	}
 
 	/**
-	 * @param hoverСolumnСode
-	 *            the hoverСolumnСode to set
+	 * @param lookupFieldType
+	 *            the lookupFieldType to set
 	 */
-	public void setHoverСolumnСode(String hoverСolumnСode) {
-		this.hoverСolumnСode = hoverСolumnСode;
+	public void setLookupFieldType(String lookupFieldType) {
+		this.lookupFieldType = lookupFieldType;
 	}
 
 	/**
-	 * @return the hoverСolumnСode
+	 * @return the lookupFieldType
 	 */
-	public String getHoverСolumnСode() {
-		return hoverСolumnСode;
+	public String getLookupFieldType() {
+		return lookupFieldType;
 	}
 
 	/**
-	 * @param editorHeight
-	 *            the editorHeight to set
+	 * @param helpText
+	 *            the helpText to set
 	 */
-	public void setEditorHeight(String editorHeight) {
-		this.editorHeight = editorHeight;
+	public void setHelpText(String helpText) {
+		this.helpText = helpText;
 	}
 
 	/**
-	 * @return the editorHeight
+	 * @return the helpText
 	 */
-	public String getEditorHeight() {
-		return editorHeight;
+	public String getHelpText() {
+		return helpText;
 	}
 }

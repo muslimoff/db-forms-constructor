@@ -10,6 +10,7 @@ import com.abssoft.constructor.client.metadata.FormColumnMD;
 import com.abssoft.constructor.client.metadata.FormColumnsArr;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.FormTabMD;
+import com.abssoft.constructor.client.widgets.GridComboBoxItem;
 import com.abssoft.constructor.client.widgets.HTMLPaneItem;
 import com.smartgwt.client.types.TitleOrientation;
 import com.smartgwt.client.util.SC;
@@ -17,8 +18,6 @@ import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.FormItemHoverFormatter;
 import com.smartgwt.client.widgets.form.events.ItemChangedEvent;
 import com.smartgwt.client.widgets.form.events.ItemChangedHandler;
-import com.smartgwt.client.widgets.form.events.ItemKeyPressEvent;
-import com.smartgwt.client.widgets.form.events.ItemKeyPressHandler;
 import com.smartgwt.client.widgets.form.fields.BooleanItem;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.FormItem;
@@ -41,65 +40,76 @@ public class FormRowEditorTab extends FormTab {
 	DynamicForm form;
 	private int parentGridSelectedRow;
 
-	FormRowEditorTab(FormTabMD editorTab, final MainFormPane mainFormPane) {
+	static FormItem createItem(final FormColumnMD c, MainFormPane mainFormPane) {
+		FormItem item;
+		boolean showHint = true;
+		if ("3".equals(c.getTreeFieldType()) || "B".equals(c.getDataType())) {
+			item = new BooleanItem();
+		} else if ("4".equals(c.getFieldType())) {
+			item = new TextAreaItem(); // new AutoFitTextAreaItem();
+			item.setTitleOrientation(TitleOrientation.TOP);
+		} else if ("5".equals(c.getFieldType())) {
+			showHint = false;
+			item = new RichTextItem();
+			item.setTitleOrientation(TitleOrientation.TOP);
+			item.setShowTitle(true);
+		} else if ("6".equals(c.getFieldType())) {
+			showHint = false;
+			item = new HeaderItem();
+		} else if ("7".equals(c.getFieldType())) {
+			showHint = false;
+			item = new HTMLPaneItem();
+		} else if ("8".equals(c.getFieldType()) && null != c.getLookupCode()
+				&& ConstructorApp.staticLookupsArr.containsKey(c.getLookupCode())) {
+			item = new ComboBoxItem(); // new SelectItem();
+			LinkedHashMap<String, String> lhm = new LinkedHashMap<String, String>();
+			lhm.putAll(ConstructorApp.staticLookupsArr.get(c.getLookupCode()));
+			item.setValueMap(lhm);
+		} else if ("9".equals(c.getFieldType()) && null != c.getLookupCode()) {
+			item = new GridComboBoxItem(mainFormPane);
+			mainFormPane.putLookup(c.getLookupCode(), (GridComboBoxItem) item);
+		} else {
+			item = new TextItem();
+		}
+		// item.setTextBoxStyle("textItem");
+		item.setName(c.getName());
+		item.setTitle(c.getDisplayName());
+		item.setWidth("*");
+		item.setColSpan("*"); // item.setRowSpan("*");
+		item.setHeight(c.getEditorHeight());
+		item.setEndRow(true);
+		// Hint
+		if (showHint) {
+			final FormItemIcon icon = new FormItemIcon();
+			icon.setSrc("[SKIN]/actions/help.png");
+			item.setIcons(icon);
+			// item.setShowDisabled(false);
+
+			item.addIconClickHandler(new IconClickHandler() {
+				public void onIconClick(IconClickEvent event) {
+					if (icon.getSrc().equals(event.getIcon().getSrc())) {
+						String helpText = c.getHelpText();
+						helpText = null != helpText ? helpText : c.getDescription();
+						helpText = null != helpText ? helpText : "???";
+						SC.say(helpText);
+					}
+				}
+			});
+		}
+		return item;
+	}
+
+	FormRowEditorTab(FormTabMD editorTab, MainFormPane mainFormPane) {
 		super(FormTab.TabType.EDITOR, mainFormPane.getFormCode());
 		this.setMainFormPane(mainFormPane);
-		// if (2 == 1) {
-		final FormMD formMetadata = mainFormPane.getFormMetadata();
+		final FormMD formMetadata = getMainFormPane().getFormMetadata();
 		final FormColumnsArr columns = formMetadata.getColumns();
 		final int columnsCount = columns.size();
 		ArrayList<FormItem> fieldsList = new ArrayList<FormItem>();
 		for (int i = 0; i < columnsCount; i++) {
-			boolean showHint = true;
-			final FormColumnMD c = columns.get(i);
+			FormColumnMD c = columns.get(i);
 			if (editorTab.getTabCode().equals(c.getEditorTabCode())) {
-				FormItem item;
-				if ("3".equals(c.getTreeFieldType()) || "B".equals(c.getDataType())) {
-					item = new BooleanItem();
-				} else if ("4".equals(c.getFieldType())) {
-					item = new TextAreaItem(); // new AutoFitTextAreaItem();
-					item.setTitleOrientation(TitleOrientation.TOP);
-				} else if ("5".equals(c.getFieldType())) {
-					showHint = false;
-					item = new RichTextItem();
-					item.setTitleOrientation(TitleOrientation.TOP);
-					item.setShowTitle(true);
-				} else if ("6".equals(c.getFieldType())) {
-					showHint = false;
-					item = new HeaderItem();
-				} else if ("7".equals(c.getFieldType())) {
-					showHint = false;
-					item = new HTMLPaneItem();
-				} else if (null != c.getLookupCode() && ConstructorApp.staticLookupsArr.containsKey(c.getLookupCode())) {
-					item = new ComboBoxItem(); // new SelectItem();
-					LinkedHashMap<String, String> lhm = new LinkedHashMap<String, String>();
-					lhm.putAll(ConstructorApp.staticLookupsArr.get(c.getLookupCode()));
-					item.setValueMap(lhm);
-				} else {
-					item = new TextItem();
-				}
-				// item.setTextBoxStyle("textItem");
-				item.setName(c.getName());
-				item.setTitle(c.getDisplayName());
-				item.setWidth("*");
-				item.setColSpan("*"); // item.setRowSpan("*");
-				item.setHeight(c.getEditorHeight());
-				item.setEndRow(true);
-				// Hint
-				if (showHint) {
-					final FormItemIcon icon = new FormItemIcon();
-					icon.setSrc("[SKIN]/actions/help.png");
-					item.setIcons(icon);
-					// item.setShowDisabled(false);
-
-					item.addIconClickHandler(new IconClickHandler() {
-						public void onIconClick(IconClickEvent event) {
-							if (icon.getSrc().equals(event.getIcon().getSrc())) {
-								SC.say(c.getDescription());
-							}
-						}
-					});
-				}
+				FormItem item = createItem(c, mainFormPane);
 				fieldsList.add(item);
 			}
 		}
@@ -119,7 +129,6 @@ public class FormRowEditorTab extends FormTab {
 		form.setFields(fieldsList.toArray(new FormItem[fieldsList.size()]));
 		this.setTitle(getIconTitle(editorTab.getTabName(), editorTab.getIconId()));
 		form.setCellBorder(1);
-		// form.setit
 		form.setItemTitleHoverFormatter(new FormItemHoverFormatter() {
 			@Override
 			public String getHoverHTML(FormItem item, DynamicForm form) {
@@ -144,7 +153,7 @@ public class FormRowEditorTab extends FormTab {
 					String itemName = event.getItem().getName();
 					Utils.debug("onItemChanged... " + itemName);
 					ListGrid g = getMainFormPane().getMainForm().getTreeGrid();
-					int rn = mainFormPane.getCurrentGridRowSelected();
+					int rn = getMainFormPane().getCurrentGridRowSelected();
 					if ("boolean".equals(event.getItem().getType())) {
 						g.setEditValue(rn, itemName, event.getItem().getAttributeAsBoolean("value"));
 					} else {
@@ -154,15 +163,6 @@ public class FormRowEditorTab extends FormTab {
 					Utils.logException(e, "FormRowEditorTab.onItemChanged");
 					e.printStackTrace();
 				}
-			}
-		});
-		form.addItemKeyPressHandler(new ItemKeyPressHandler() {
-
-			@Override
-			public void onItemKeyPress(ItemKeyPressEvent event) {
-				// Escape
-				System.out.println("FormRowEditorTab ItemKeyPressHandler KeyName: " + event.getKeyName());
-				event.getItem().getName();
 			}
 		});
 		this.setPane(form);

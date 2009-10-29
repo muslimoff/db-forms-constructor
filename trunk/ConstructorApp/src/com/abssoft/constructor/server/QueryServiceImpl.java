@@ -75,8 +75,9 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 		return sessionData.get(sessionId).getFormMetaData(formCode);
 	}
 
-	public RowsArr fetch(int sessionId, String formCode, int gridHashCode, String sortBy, int startRow, int endRow, Map<?, ?> criteria) {
-		return sessionData.get(sessionId).fetch(formCode, gridHashCode, sortBy, startRow, endRow, criteria);
+	public RowsArr fetch(int sessionId, String formCode, int gridHashCode, String sortBy, int startRow, int endRow, Map<?, ?> criteria,
+			boolean forceFetch) {
+		return sessionData.get(sessionId).fetch(formCode, gridHashCode, sortBy, startRow, endRow, criteria, forceFetch);
 	}
 
 	public Row executeDML(int sessionId, String formCode, int gridHashCode, Row row, String actionCode, ClientActionType clientActionType) {

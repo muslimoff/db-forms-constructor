@@ -102,13 +102,19 @@ public class Utils {
 		return row;
 	}
 
-	public static Criteria getCriteriaFromListGridRecord(ListGridRecord record, String formCode) {
+	public static Criteria getCriteriaFromListGridRecord(ListGridRecord record) {
 		Criteria criteria = new Criteria();
-		criteria.addCriteria(new Criteria("P_$MASTER_FORM_CODE", formCode));
 		for (String s : record.getAttributes()) {
 			criteria.addCriteria(new Criteria(s, record.getAttribute(s)));
 			Utils.debug(s + " >> " + record.getAttribute(s));
 		}
+		return criteria;
+
+	}
+
+	public static Criteria getCriteriaFromListGridRecord(ListGridRecord record, String formCode) {
+		Criteria criteria = getCriteriaFromListGridRecord(record);
+		criteria.addCriteria(new Criteria("P_$MASTER_FORM_CODE", formCode));
 		Utils.debug(formCode + "getCriteriaFromListGridRecord executed..");
 		return criteria;
 

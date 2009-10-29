@@ -1,6 +1,9 @@
 package com.abssoft.constructor.client.data;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
@@ -10,14 +13,15 @@ import com.abssoft.constructor.client.form.FormColumns;
 import com.abssoft.constructor.client.form.MainFormPane;
 import com.abssoft.constructor.client.metadata.FormColumnMD;
 import com.abssoft.constructor.client.metadata.FormMD;
+import com.abssoft.constructor.client.widgets.GridComboBoxItem;
 import com.google.gwt.core.client.GWT;
+import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.types.DSDataFormat;
 import com.smartgwt.client.types.DSProtocol;
-import com.smartgwt.client.widgets.Canvas;
-import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
+import com.smartgwt.client.widgets.form.fields.FilterCriteriaFunction;
 import com.smartgwt.client.widgets.grid.CellFormatter;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.tree.TreeNode;
@@ -28,7 +32,7 @@ import com.smartgwt.client.widgets.tree.TreeNode;
  * @author User
  * 
  */
-public class ReadOnlyDataSource extends DataSource {
+public class LookupDataSource extends DataSource {
 	private String lookupCode;
 	private LinkedHashMap<String, TreeNode> values = new LinkedHashMap<String, TreeNode>();
 	FormTreeGridField[] gridFields;
@@ -37,15 +41,10 @@ public class ReadOnlyDataSource extends DataSource {
 	String valueFieldName = null;
 	String displayFieldName = null;
 	int valueFieldNum = 0;
+	private MainFormPane parentFormPane;
 
-	/**
-	 * Creates new data source which communicates with server by GWT RPC. It is
-	 * normal server side SmartClient data source with data protocol set to
-	 * <code>DSProtocol.CLIENTCUSTOM</code> ("clientCustom" - natively supported
-	 * by SmartClient but should be added to smartGWT) and with data format
-	 * <code>DSDataFormat.CUSTOM</code>.
-	 */
-	public ReadOnlyDataSource(final String lookupCode, final ComboBoxItem comboBoxItem, final FormTreeGridField formTreeGridField) {
+	public LookupDataSource(final String lookupCode, final MainFormPane parentFormPane) {
+		this.setParentFormPane(parentFormPane);
 		setLookupCode(lookupCode);
 		setDataProtocol(DSProtocol.CLIENTCUSTOM);
 		setDataFormat(DSDataFormat.CUSTOM);
@@ -60,7 +59,7 @@ public class ReadOnlyDataSource extends DataSource {
 				mfp.setFormMetadata(result);
 				mfp.setFormColumns(new FormColumns(mfp));
 				dsFields = mfp.getFormColumns().getDSFields();
-				ReadOnlyDataSource.this.setFields(dsFields);
+				LookupDataSource.this.setFields(dsFields);
 				gridFields = mfp.getFormColumns().getGridFields();
 				boolean showPickListHeader = false;
 				valueFieldName = gridFields[0].getName();
@@ -70,7 +69,6 @@ public class ReadOnlyDataSource extends DataSource {
 					if ("1".equals(colMD.getLookupFieldType())) {
 						valueFieldName = fieldName;
 						valueFieldNum = f.getColNum();
-						// f.setHidden(true);
 					} else if ("2".equals(colMD.getLookupFieldType())) {
 						f.setHidden(false);
 						displayFieldName = fieldName;
@@ -78,30 +76,37 @@ public class ReadOnlyDataSource extends DataSource {
 						showPickListHeader = true;
 					}
 				}
-				comboBoxItem.setOptionDataSource(ReadOnlyDataSource.this);
-				comboBoxItem.setValueField(valueFieldName);
-				comboBoxItem.setDisplayField(displayFieldName);
+				ArrayList<GridComboBoxItem> list = parentFormPane.getLookupComboboxes().get(lookupCode);
+				for (int i = 0; i < list.size(); i++) {
+					GridComboBoxItem comboBoxItem = list.get(i);
+					System.out.println("%%%%%Combobox%%%%" + comboBoxItem + "; " + comboBoxItem.getForm());
+					comboBoxItem.setOptionDataSource(LookupDataSource.this);
+					comboBoxItem.setValueField(valueFieldName);
+					comboBoxItem.setDisplayField(displayFieldName);
 
-				if (showPickListHeader) {
-					try {
-						comboBoxItem.setPickListWidth(Integer.decode(result.getWidth()));
-					} catch (Exception e) {
-					}
-					comboBoxItem.setPickListFields(gridFields);
-				}
-				System.out.println("valueFieldName:" + valueFieldName + "; displayFieldName:" + displayFieldName + " *"
-						+ showPickListHeader);
-
-				formTreeGridField.setEditorType(comboBoxItem);
-				if (!"3".equals(formTreeGridField.getColumn().getFieldType()))
-					formTreeGridField.setCellFormatter(new CellFormatter() {
-						@Override
-						public String format(Object value, ListGridRecord record, int rowNum, int colNum) {
-							return values.containsKey(value) ? values.get(value).getAttribute(displayFieldName) : (String) value;
+					if (showPickListHeader) {
+						try {
+							comboBoxItem.setPickListWidth(Integer.decode(result.getWidth()));
+						} catch (Exception e) {
 						}
-					});
-				System.out.println("comboBoxItem:" + comboBoxItem.getName() + " >" + comboBoxItem);
-
+						comboBoxItem.setPickListFields(gridFields);
+					}
+					System.out.println("valueFieldName:" + valueFieldName + "; displayFieldName:" + displayFieldName + " *"
+							+ showPickListHeader);
+					FormTreeGridField formTreeGridField = comboBoxItem.getFormTreeGridField();
+					if (null != formTreeGridField) {
+						formTreeGridField.setEditorType(comboBoxItem);
+						// if
+						//(!"3".equals(formTreeGridField.getColumn().getFieldType
+						// ()))
+						formTreeGridField.setCellFormatter(new CellFormatter() {
+							@Override
+							public String format(Object value, ListGridRecord record, int rowNum, int colNum) {
+								return values.containsKey(value) ? values.get(value).getAttribute(displayFieldName) : (String) value;
+							}
+						});
+					}
+				}
 				DSRequest request = new DSRequest();
 				String requestId = request.getRequestId();
 				DSResponse response = new DSResponse();
@@ -152,22 +157,17 @@ public class ReadOnlyDataSource extends DataSource {
 	 *            called on successful execution of this method.
 	 *            <code>setStatus (&lt;0)</code> should be called on failure.
 	 */
-	protected void executeFetch(String requestId, DSRequest request, DSResponse response) {
-		System.out.println("ReadOnlyDataSource FETCH:");
-		System.out.println(getLookupCode());
-		// System.out.println("request.getStartRow:" + request.getStartRow());
-		// System.out.println("request.getEndRow:" + request.getEndRow());
-		Canvas c = Canvas.getById(request.getComponentId());
-		System.out.println("request.getJsObj():" + request.getJsObj());
-		System.out.println("c:" + c);
-		System.out.println("c:" + request.getComponentId());
-		if (0 == values.size()) {
-			LinkedHashMap<String, String> filterValues = new LinkedHashMap<String, String>();
+	protected void executeFetch(final String requestId, DSRequest request, final DSResponse response) {
+		System.out.println("ReadOnlyDataSource Fetch. Lookup:" + getLookupCode());
+		if (1 == 1 || 0 == values.size()) {
+			Map<?, ?> filterValues = request.getCriteria().getValues();
 			QueryServiceAsync service = GWT.create(QueryService.class);
-			service.fetch(ConstructorApp.sessionId, getLookupCode(), -999, request.getSortBy(), 0, 1000, filterValues,
+			service.fetch(ConstructorApp.sessionId, getLookupCode(), -999, request.getSortBy(), 0, 1000, filterValues, false,
 					new DSAsyncCallback<RowsArr>(requestId, response, this) {
 						public void onSuccess(RowsArr result) {
+							System.out.println("ReadOnlyDataSource Fetch.onSuccess. Lookup:" + getLookupCode());
 							records = new TreeNode[result.size()];
+							values.clear();
 							for (int r = 0; r < result.size(); r++) {
 								System.out.println("##" + result.get(r));
 								try {
@@ -178,13 +178,14 @@ public class ReadOnlyDataSource extends DataSource {
 									e.printStackTrace();
 								}
 							}
+							response.setData(records);
+							processResponse(requestId, response);
 						}
 					});
-			response.setData(records);
-			processResponse(requestId, response);
+
 		} else {
-			response.setData(records);
-			processResponse(requestId, response);
+			// response.setData(records);
+			// processResponse(requestId, response);
 		}
 	}
 
@@ -199,6 +200,21 @@ public class ReadOnlyDataSource extends DataSource {
 
 	public String getLookupCode() {
 		return lookupCode;
+	}
+
+	/**
+	 * @param parentFormPane
+	 *            the parentFormPane to set
+	 */
+	public void setParentFormPane(MainFormPane parentFormPane) {
+		this.parentFormPane = parentFormPane;
+	}
+
+	/**
+	 * @return the parentFormPane
+	 */
+	public MainFormPane getParentFormPane() {
+		return parentFormPane;
 	}
 
 }

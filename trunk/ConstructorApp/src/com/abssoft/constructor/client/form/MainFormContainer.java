@@ -30,7 +30,7 @@ public class MainFormContainer extends FormTab {
 				mfp.filterData();
 			}
 		} else {
-			mfp = (null == formCode) ? defaultFormPane : new MainFormPane(formCode, false, parentFormPane);
+			mfp = (null == formCode) ? defaultFormPane : new MainFormPane(formCode, false, false, parentFormPane);
 			detailTabsArr.put(formCode, mfp);
 		}
 
@@ -51,13 +51,13 @@ public class MainFormContainer extends FormTab {
 
 	public MainFormContainer(FormTab.TabType tabType, TabSet parentTabSet, String formCode, boolean isMasterForm, boolean canClose,
 			boolean selectAfterCreation, MainFormPane parentFormPane) {
-		this(tabType, parentTabSet, new MainFormPane(formCode, isMasterForm, parentFormPane), formCode, isMasterForm, canClose,
+		this(tabType, parentTabSet, new MainFormPane(formCode, isMasterForm, false, parentFormPane), formCode, isMasterForm, canClose,
 				selectAfterCreation, parentFormPane, null, 0);
 	}
 
 	public MainFormContainer(FormTab.TabType tabType, TabSet parentTabSet, String formCode, boolean isMasterForm, boolean canClose,
 			boolean selectAfterCreation, MainFormPane parentFormPane, String title, int iconId) {
-		this(tabType, parentTabSet, new MainFormPane(formCode, isMasterForm, parentFormPane), formCode, isMasterForm, canClose,
+		this(tabType, parentTabSet, new MainFormPane(formCode, isMasterForm, false, parentFormPane), formCode, isMasterForm, canClose,
 				selectAfterCreation, parentFormPane, title, iconId);
 	}
 

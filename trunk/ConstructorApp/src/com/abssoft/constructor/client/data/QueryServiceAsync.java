@@ -16,7 +16,7 @@ public interface QueryServiceAsync {
 	public void connect(String url, String user, String password, AsyncCallback<ConnectionInfo> callback);
 
 	public void fetch(int sessionId, String formCode, int gridHashCode, String sortBy, int startRow, int endRow, Map<?, ?> criteria,
-			AsyncCallback<RowsArr> callback);
+			boolean forceFetch, AsyncCallback<RowsArr> callback);
 
 	public void executeDML(int sessionId, String formCode, int gridHashCode, Row t, String actionCode, ClientActionType clientActionType,
 			AsyncCallback<Row> callback);

@@ -71,7 +71,7 @@ public class Session {
 
 	public StaticLookupsArr getStaticLookupsArr() {
 		String statLookupsSQL = "Select l.lookup_code, lv.lookup_value_code, lv.lookup_display_value \n"
-				+ "From lookups l, lookup_values lv \n" + "Where l.lookup_type = 'S' And l.lookup_code = lv.lookup_code\n"
+				+ "From lookups l, lookup_values lv \n" + "Where l.lookup_code = lv.lookup_code\n"
 				+ "Order By l.lookup_code, lv.lookup_value_code";
 		StaticLookupsArr lookupsArr = new StaticLookupsArr();
 		String currentLookupCode = "-9999";
@@ -109,8 +109,8 @@ public class Session {
 		return formDataHashMap.get(formCode).getFormMetaData();
 	}
 
-	public RowsArr fetch(String formCode, int gridHashCode, String sortBy, int startRow, int endRow, Map<?, ?> criteria) {
-		return formDataHashMap.get(formCode).fetch(gridHashCode, sortBy, startRow, endRow, criteria);
+	public RowsArr fetch(String formCode, int gridHashCode, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch) {
+		return formDataHashMap.get(formCode).fetch(gridHashCode, sortBy, startRow, endRow, criteria, forceFetch);
 	}
 
 	public Row executeDML(String formCode, int gridHashCode, Row row, String actionCode, ClientActionType clientActionType)

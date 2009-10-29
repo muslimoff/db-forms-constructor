@@ -24,7 +24,7 @@ public class FormDataSourceField extends com.smartgwt.client.data.DataSourceFiel
 		FieldType type = FieldType.TEXT;
 		if // Tree
 		("T".equals(formType)) {
-			TreeGrid treeGrid = ((TreeGrid) mainFormContainer.getMainForm().getTreeGrid());
+			//TreeGrid treeGrid = ((TreeGrid) mainFormContainer.getMainForm().getTreeGrid());
 			String treeFieldType = columnMD.getTreeFieldType();
 			if ("1".equals(treeFieldType)) {
 				this.setPrimaryKey(true);
@@ -33,8 +33,8 @@ public class FormDataSourceField extends com.smartgwt.client.data.DataSourceFiel
 			} else if ("3".equals(treeFieldType)) {
 				setTreeFolder(true);
 				type = FieldType.BOOLEAN;
-			} else if ("4".equals(treeFieldType)) {
-				treeGrid.setCustomIconProperty(colName);
+			} else if ("4".equals(treeFieldType) && null != mainFormContainer.getMainForm()) {
+				((TreeGrid) mainFormContainer.getMainForm().getTreeGrid()).setCustomIconProperty(colName);
 			}
 		} else // Grid
 		{

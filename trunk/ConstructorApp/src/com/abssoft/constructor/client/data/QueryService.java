@@ -54,7 +54,8 @@ public interface QueryService extends RemoteService {
 	 * @param endRow
 	 * @return <code>RowsArr</code>
 	 */
-	public RowsArr fetch(int sessionId, String formCode, int gridHashCode, String sortBy, int startRow, int endRow, Map<?, ?> criteria);
+	public RowsArr fetch(int sessionId, String formCode, int gridHashCode, String sortBy, int startRow, int endRow, Map<?, ?> criteria,
+			boolean forceFetch);
 
 	/**
 	 * Выполнение DML на сервере
