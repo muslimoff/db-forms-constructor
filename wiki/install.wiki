@@ -26,9 +26,5 @@ Grant Select On Sys.V_$SQL_BIND_METADATA  To forms_constructor
 /
 }}}
 
-  * Залить [http://db-forms-constructor.googlecode.com/files/fc20091029.zip дамп]
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+  * Скачать и залить [http://db-forms-constructor.googlecode.com/files/fc20091029.zip дамп]
+  * Скачать и задеплоить [http://db-forms-constructor.googlecode.com/files/ConstructorApp.war варик]
