@@ -39,7 +39,7 @@ public class Form {
 			+ ",lookup_code, hover_column_code, editor_height, lookup_field_type, help_text From Table (form_utils.describe_form_columns_pl (:p_form_code)) Order By form_code, column_display_number, column_code";
 	private static final String formActionsSQL = "Select * From form_actions a Where a.form_code = :p_form_code order by 2";
 	private static final String argsSQLText = "Select a.position, a.argument_name, DECODE (a.in_out, 'IN/OUT', 'Y', 'IN', 'Y') in_flag, DECODE (a.in_out, 'IN/OUT', 'Y', 'OUT', 'Y') out_flag \n"
-			+ " From all_arguments a Where a.package_name || '.' || a.object_name = UPPER (:p_procedure_name) And a.owner = 'FORMS_CONSTRUCTOR' And a.Position != 0 Order By a.Position, a.Sequence";
+			+ " From all_arguments a Where a.package_name || '.' || a.object_name = UPPER (:p_procedure_name) And a.owner = User And a.Position != 0 Order By a.Position, a.Sequence";
 	private static final String detailFormSQL = "Select * From form_tabs_v a Where a.form_code = :p_form_code order by tab_display_number, tab_name, tab_code";
 	private String formSQLText;
 	private FormColumnsArr metadata = new FormColumnsArr();
