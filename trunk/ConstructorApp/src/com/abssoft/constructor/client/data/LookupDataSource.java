@@ -1,7 +1,6 @@
 package com.abssoft.constructor.client.data;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -15,13 +14,11 @@ import com.abssoft.constructor.client.metadata.FormColumnMD;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.widgets.GridComboBoxItem;
 import com.google.gwt.core.client.GWT;
-import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.types.DSDataFormat;
 import com.smartgwt.client.types.DSProtocol;
-import com.smartgwt.client.widgets.form.fields.FilterCriteriaFunction;
 import com.smartgwt.client.widgets.grid.CellFormatter;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.tree.TreeNode;
