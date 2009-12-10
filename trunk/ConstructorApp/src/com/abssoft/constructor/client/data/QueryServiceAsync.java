@@ -8,6 +8,7 @@ import com.abssoft.constructor.client.data.common.Row;
 import com.abssoft.constructor.client.data.common.RowsArr;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.MenusArr;
+import com.abssoft.constructor.client.metadata.ServerInfoArr;
 import com.abssoft.constructor.client.metadata.StaticLookupsArr;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -30,4 +31,6 @@ public interface QueryServiceAsync {
 	public void closeForm(int sessionId, String formCode, int gridHashCode, AsyncCallback<Void> callback);
 
 	public void getStaticLookupsArr(int sessionId, AsyncCallback<StaticLookupsArr> callback);
+
+	public void getServerInfoArr(AsyncCallback<ServerInfoArr> callback);
 }

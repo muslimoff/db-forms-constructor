@@ -102,8 +102,10 @@ public class MainFormPane extends Canvas {
 			// Вместо просто super.editRecord(record) приходится так, потому
 			// что: http://code.google.com/p/smartgwt/issues/detail?id=336
 			try {
-				if (Utils.isChrome() || Utils.isFirefox() || Utils.isMoz()) {
+				if (1==2/*||Utils.isChrome() || Utils.isFirefox() || Utils.isMoz()*/) {
 					super.editRecord(Utils.getTreeNodeFromRecordWithoutRef(formColumns.getDSFields(), record));
+					// record.setAttribute("__ref", "");
+					// super.editRecord(record);
 				} else {
 					super.editRecord(record);
 

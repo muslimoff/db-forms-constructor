@@ -3,6 +3,7 @@ package com.abssoft.constructor.client;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
+import com.abssoft.constructor.client.common.Constants;
 import com.abssoft.constructor.client.common.FormTab;
 import com.abssoft.constructor.client.common.KeyIdentifier;
 import com.abssoft.constructor.client.common.TabSet;
@@ -16,6 +17,8 @@ import com.abssoft.constructor.client.form.ApplicationToolBar;
 import com.abssoft.constructor.client.form.MainFormContainer;
 import com.abssoft.constructor.client.metadata.MenuMD;
 import com.abssoft.constructor.client.metadata.MenusArr;
+import com.abssoft.constructor.client.metadata.ServerInfoArr;
+import com.abssoft.constructor.client.metadata.ServerInfoMD;
 import com.abssoft.constructor.client.metadata.StaticLookupsArr;
 import com.abssoft.constructor.client.widgets.MenuWithHover;
 import com.google.gwt.core.client.EntryPoint;
@@ -113,20 +116,46 @@ public class ConstructorApp implements EntryPoint {
 			final ComboBoxItem serverSelectItem = new ComboBoxItem();
 			serverSelectItem.setTitle("Server");
 
-			LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
-			valueMap.put("jdbc:oracle:thin:@10.0.14.10:1521:APPLPR", "NBAPPLPR");
-			valueMap.put("jdbc:oracle:thin:@apps.abssoft.kz:1522:DEMO12i", "DemoLocal");
-			valueMap.put("jdbc:oracle:thin:@apps.ba-solutions.kz:1522:DEMO", "BAS_11");
-			valueMap.put("jdbc:oracle:thin:@VM_XE:1521:XE", "VM_XE");
-			valueMap.put("jdbc:oracle:thin:@rdbms.abssoft.kz:1524:VIS12", "VIS12");
-			valueMap.put("jdbc:oracle:thin:@192.168.110.3:1524:VIS12", "VIS12_IP");
-			String s = "jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = rdbms.abssoft.kz)(PORT = 1524)))"
-					+ "(CONNECT_DATA = (SID = VIS12) (SERVER = DEDICATED)))";
-			valueMap.put(s, "VIS12_full");
+			final LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
+			queryService.getServerInfoArr(new DSAsyncCallback<ServerInfoArr>() {
+				@Override
+				public void onSuccess(ServerInfoArr result) {
+					String defaultValue = "";
+					for (int i = 0; i < result.size(); i++) {
+						ServerInfoMD si = result.get(i);
+						String displayName = si.getDisplay_name();
+						String url = "jdbc:oracle:thin:@" + si.getDbUrl();
+						valueMap.put(url, displayName);
+						if (si.isDefault())
+							defaultValue = url;
 
-			serverSelectItem.setValueMap(valueMap);
-			 serverSelectItem.setValue("jdbc:oracle:thin:@VM_XE:1521:XE");
-			//serverSelectItem.setValue("jdbc:oracle:thin:@10.0.14.10:1521:APPLPR");
+					}
+					serverSelectItem.setValueMap(valueMap);
+					serverSelectItem.setValue(defaultValue);
+
+				}
+
+			});
+			// valueMap.put("jdbc:oracle:thin:@10.0.14.10:1521:APPLPR",
+			// "NBAPPLPR");
+			// valueMap.put("jdbc:oracle:thin:@apps.abssoft.kz:1522:DEMO12i",
+			// "DemoLocal");
+			// valueMap.put("jdbc:oracle:thin:@apps.ba-solutions.kz:1522:DEMO",
+			// "BAS_11");
+			// valueMap.put("jdbc:oracle:thin:@VM_XE:1521:XE", "VM_XE");
+			// valueMap.put("jdbc:oracle:thin:@rdbms.abssoft.kz:1524:VIS12",
+			// "VIS12");
+			// valueMap.put("jdbc:oracle:thin:@192.168.110.3:1524:VIS12",
+			// "VIS12_IP");
+			// String s =
+			// "jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = rdbms.abssoft.kz)(PORT = 1524)))"
+			// + "(CONNECT_DATA = (SID = VIS12) (SERVER = DEDICATED)))";
+			// valueMap.put(s, "VIS12_full");
+			//
+			// serverSelectItem.setValueMap(valueMap);
+			// serverSelectItem.setValue("jdbc:oracle:thin:@VM_XE:1521:XE");
+			// serverSelectItem.setValue(
+			// "jdbc:oracle:thin:@10.0.14.10:1521:APPLPR");
 
 			final TextItem textItem = new TextItem();
 			textItem.setTitle("User Name");
@@ -154,6 +183,8 @@ public class ConstructorApp implements EntryPoint {
 					}
 					Utils.debug("Create new session...");
 					Utils.debug("ModuleBaseURL:" + com.google.gwt.core.client.GWT.getModuleBaseURL());
+					// ((ServiceDefTarget) queryService).setServiceEntryPoint(
+					// "/OA_HTML/constructorapp/query");
 					queryService.connect(url, user, password, new ConnectDataCallback());
 					ConnectWindow.this.hide();
 				}
@@ -306,10 +337,8 @@ public class ConstructorApp implements EntryPoint {
 		}
 	}
 
-	private static final String defaultTitle = "Forms Constructor";
-
 	public static void setPageTitle(String title) {
-		Page.setTitle(defaultTitle + " " + title);
+		Page.setTitle(Constants.defaultTitle + " " + title);
 	}
 }
 

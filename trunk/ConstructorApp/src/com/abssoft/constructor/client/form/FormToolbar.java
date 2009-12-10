@@ -4,16 +4,14 @@ import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.metadata.FormActionMD;
 import com.abssoft.constructor.client.metadata.FormActionsArr;
+import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.form.DynamicForm;
-import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.RichTextItem;
-import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
-import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
+import com.smartgwt.client.widgets.form.fields.ToolbarItem;
 import com.smartgwt.client.widgets.grid.ListGrid;
 
 public class FormToolbar extends DynamicForm {
-	private FormItem[] formItems;
 	private MainFormPane mainFormPane;
 
 	public FormToolbar(MainFormPane mainFormPane) {
@@ -24,58 +22,49 @@ public class FormToolbar extends DynamicForm {
 
 	public void createButtons() {
 		FormActionsArr formActionsArr = mainFormPane.getFormMetadata().getActions();
-		int btnCnt = formActionsArr.size();
-		formItems = new FormItem[1 + 1 + btnCnt];
-		for (int i = 0; i < btnCnt; i++) {
+
+		final int bCnt = formActionsArr.size();
+		ToolbarItem t = new ToolbarItem();
+		IButton[] btns = new IButton[bCnt + 2];
+		for (int i = 0; i < formActionsArr.size(); i++) {
 			FormActionMD m = formActionsArr.get(i);
-			formItems[i] = new ButtonItem(m.getDisplayName());
-			((ButtonItem) formItems[i]).setIcon(ConstructorApp.menus.getIcons().get(m.getIconId()));
-			formItems[i].setHeight(18);
-			formItems[i].setStartRow(false);
-			formItems[i].setEndRow(false);
-			formItems[i].addClickHandler(new ButtonClickHandler(m));
+			btns[i] = new IButton(m.getDisplayName());
+			btns[i].setPrompt(m.getDisplayName());
+			btns[i].setIcon(ConstructorApp.menus.getIcons().get(m.getIconId()));
+			btns[i].addClickHandler(new ButtonClickHandler(m));
 		}
+
 		// Refresh
-		{
-			formItems[btnCnt] = new ButtonItem(mainFormPane.getFormCode());
-			formItems[btnCnt].setHeight(18);
-			formItems[btnCnt].setStartRow(false);
-			formItems[btnCnt].setEndRow(false);
-			((ButtonItem) formItems[btnCnt]).setIcon("[SKIN]actions/refresh.png");
+		IButton refreshBtn = new IButton(mainFormPane.getFormCode());
+		refreshBtn.setIcon("[SKIN]actions/refresh.png");
+		refreshBtn.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
+			@Override
+			public void onClick(com.smartgwt.client.widgets.events.ClickEvent event) {
+				mainFormPane.filterData();
+			}
+		});
 
-			// Временно Refresh повесил...
-			formItems[btnCnt].addClickHandler(new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {
-					mainFormPane.filterData();
-				}
-			});
-		}
-
-		{ // next record button
-			btnCnt++;
-			formItems[btnCnt] = new ButtonItem("1");
-			formItems[btnCnt].setHeight(18);
-			((ButtonItem) formItems[btnCnt]).setIcon("[SKIN]actions/next.png");
-			formItems[btnCnt].setPrompt("next record");
-			formItems[btnCnt].setStartRow(false);
-			formItems[btnCnt].setEndRow(false);
-			formItems[btnCnt].addClickHandler(new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {
-					ListGrid g = mainFormPane.getMainForm().getTreeGrid();
-					int currRecSelected = g.getRecordIndex(g.getSelectedRecord());
-					g.selectSingleRecord(++currRecSelected);
-					mainFormPane.filterDetailData(g.getRecord(currRecSelected), g);
-					event.getItem().setTitle((currRecSelected + 1) + "");
-				}
-			});
-		}
-
-		setItems(formItems);
+		// next record button
+		IButton nextBtn = new IButton("1");
+		nextBtn.setIcon("[SKIN]actions/next.png");
+		nextBtn.setPrompt("next record");
+		nextBtn.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
+			@Override
+			public void onClick(com.smartgwt.client.widgets.events.ClickEvent event) {
+				ListGrid g = mainFormPane.getMainForm().getTreeGrid();
+				int currRecSelected = g.getRecordIndex(g.getSelectedRecord());
+				g.selectSingleRecord(++currRecSelected);
+				mainFormPane.filterDetailData(g.getRecord(currRecSelected), g);
+				((IButton) event.getSource()).setTitle((currRecSelected + 1) + "");
+			}
+		});
+		btns[bCnt] = refreshBtn;
+		btns[bCnt + 1] = nextBtn;
+		t.setButtons(btns);
+		setItems(t);
 	}
 
-	class ButtonClickHandler implements ClickHandler {
+	class ButtonClickHandler implements com.smartgwt.client.widgets.events.ClickHandler {
 		private FormActionMD m;
 
 		ButtonClickHandler(FormActionMD m) {
@@ -83,7 +72,8 @@ public class FormToolbar extends DynamicForm {
 		}
 
 		@Override
-		public void onClick(ClickEvent event) {
+		public void onClick(com.smartgwt.client.widgets.events.ClickEvent event) {
+			ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 			if ("2".equals(m.getType())) {
 				mainFormPane.setCurrentActionCode(m.getCode());
 				// TODO Проблема с DynamicForm.ItemChangedHandler в хроме -
@@ -101,8 +91,16 @@ public class FormToolbar extends DynamicForm {
 						}
 					}
 				}
-				mainFormPane.getMainForm().getTreeGrid().saveAllEdits();
+				grid.saveAllEdits();
+			} else if ("1".equals(m.getType())) {
+				mainFormPane.setCurrentActionCode(m.getCode());
+				grid.startEditingNew();
+
+			} else if ("3".equals(m.getType())) {
+				mainFormPane.setCurrentActionCode(m.getCode());
+				grid.removeSelectedData();
 			}
+
 		}
 	}
 }

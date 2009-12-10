@@ -41,6 +41,10 @@ public class FormDataSource extends GwtRpcDataSource {
 	public FormDataSource() {
 	}
 
+	public FormDataSourceField[] getFormDSFields() {
+		return dsFields;
+	}
+
 	public void setMainFormPane(MainFormPane mainFormPane) {
 		this.mainFormPane = mainFormPane;
 		this.dsFields = mainFormPane.getFormColumns().getDSFields();
@@ -159,21 +163,31 @@ public class FormDataSource extends GwtRpcDataSource {
 	@Override
 	protected void executeRemove(final String requestId, final DSRequest request, final DSResponse response) {
 		// Retrieve record which should be removed.
+		System.out.println("x1");
 		JavaScriptObject data = request.getData();
+		System.out.println("x2");
 		final ListGridRecord listGridRec = new ListGridRecord(data);
+		System.out.println("x3");
 		Row removedRec = Utils.getRowFromListGridRecord(dsFields, listGridRec);
+		System.out.println("x4");
 		QueryServiceAsync service = GWT.create(QueryService.class);
+		System.out.println("x5");
 		service.executeDML(ConstructorApp.sessionId, formCode, gridHashCode, removedRec, mainFormPane.getCurrentActionCode(),
 				ClientActionType.DEL, new DSAsyncCallback<Row>(requestId, response, this) {
 					public void onSuccess(Row result) {
+						System.out.println("x6");
 						ListGridRecord[] list = new ListGridRecord[1];
 						// We do not receive removed record from server.
 						// Return record from request.
 						list[0] = listGridRec;
+						System.out.println("x7");
 						response.setData(list);
+						System.out.println("x8");
 						processResponse(requestId, response);
+						System.out.println("x9");
 						totalRows = totalRows - 1;
 						showActionStatus(result.getServerMessage());
+						System.out.println("x10");
 					}
 				});
 	}
