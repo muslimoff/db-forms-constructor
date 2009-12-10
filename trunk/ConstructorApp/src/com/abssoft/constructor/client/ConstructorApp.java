@@ -136,26 +136,6 @@ public class ConstructorApp implements EntryPoint {
 				}
 
 			});
-			// valueMap.put("jdbc:oracle:thin:@10.0.14.10:1521:APPLPR",
-			// "NBAPPLPR");
-			// valueMap.put("jdbc:oracle:thin:@apps.abssoft.kz:1522:DEMO12i",
-			// "DemoLocal");
-			// valueMap.put("jdbc:oracle:thin:@apps.ba-solutions.kz:1522:DEMO",
-			// "BAS_11");
-			// valueMap.put("jdbc:oracle:thin:@VM_XE:1521:XE", "VM_XE");
-			// valueMap.put("jdbc:oracle:thin:@rdbms.abssoft.kz:1524:VIS12",
-			// "VIS12");
-			// valueMap.put("jdbc:oracle:thin:@192.168.110.3:1524:VIS12",
-			// "VIS12_IP");
-			// String s =
-			// "jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = rdbms.abssoft.kz)(PORT = 1524)))"
-			// + "(CONNECT_DATA = (SID = VIS12) (SERVER = DEDICATED)))";
-			// valueMap.put(s, "VIS12_full");
-			//
-			// serverSelectItem.setValueMap(valueMap);
-			// serverSelectItem.setValue("jdbc:oracle:thin:@VM_XE:1521:XE");
-			// serverSelectItem.setValue(
-			// "jdbc:oracle:thin:@10.0.14.10:1521:APPLPR");
 
 			final TextItem textItem = new TextItem();
 			textItem.setTitle("User Name");

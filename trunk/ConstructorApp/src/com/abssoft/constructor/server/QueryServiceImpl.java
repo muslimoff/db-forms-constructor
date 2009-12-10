@@ -40,40 +40,6 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 	/**
 	 * 
 	 */
-
-	// public static final String formSQL =
-	// "Select * From forms_v a Where a.form_code = :p_form_code";
-	// public static final String extendedFormSQL =
-	// "Select form_utils.get_extended_sql_text(a.sql_text)  From forms_v a Where a.form_code = :p_form_code"
-	// ;
-	// public static final String ColumnsMetaDataSQL =
-	// "Select column_display_number, form_code, column_code, column_data_type, column_user_name, column_display_size\n"
-	// +
-	// ",pimary_key_flag, show_on_grid, tree_initialization_value, tree_field_type, editor_tab_code, field_type\n"
-	// +
-	// ",column_description, is_frozen_flag, show_hover_flag, exists_in_metadata_flag, exists_in_query_flag\n"
-	// +
-	// ",lookup_code, hover_column_code, editor_height, lookup_field_type, help_text From Table (form_utils.describe_form_columns_pl (:p_form_code)) Order By form_code, column_display_number, column_code"
-	// ;
-	// public static final String formActionsSQL =
-	// "Select * From form_actions_old a Where a.form_code = :p_form_code order by 2"
-	// ;
-	// public static final String argsSQLText =
-	// "Select a.position, a.argument_name, DECODE (a.in_out, 'IN/OUT', 'Y', 'IN', 'Y') in_flag, DECODE (a.in_out, 'IN/OUT', 'Y', 'OUT', 'Y') out_flag \n"
-	// +
-	// " From all_arguments a Where a.package_name || '.' || a.object_name = UPPER (:p_procedure_name) And a.owner = User And a.Position != 0 Order By a.Position, a.Sequence"
-	// ;
-	// public static final String detailFormSQL =
-	// "Select * From form_tabs_v a Where a.form_code = :p_form_code order by tab_display_number, tab_name, tab_code"
-	// ;
-	// //
-//	public static final String statLookupsSQL = "Select l.lookup_code, lv.lookup_value_code, lv.lookup_display_value \n"
-//			+ "From lookups l, lookup_values lv \n" + "Where l.lookup_code = lv.lookup_code\n"
-//			+ "Order By l.lookup_code, lv.lookup_value_code";
-//	//public static final String menusSQL = "Select a.form_code, a.hot_key, a.form_name, a.description, a.icon_id From forms_v a order by a.form_name";
-	//public static final String iconsSQL = "Select i.icon_id, i.icon_file_name From icons i";
-
-	// //
 	private static final long serialVersionUID = 9137729400867519828L;
 	private HashMap<Integer, Session> sessionData = new HashMap<Integer, Session>();
 	public static final HashMap<String, String> queryMap = new HashMap<String, String>();
