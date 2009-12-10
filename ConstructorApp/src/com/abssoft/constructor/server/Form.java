@@ -31,16 +31,7 @@ import com.abssoft.constructor.client.metadata.FormTabsArr;
 public class Form {
 	private HashMap<Integer, FormInstance> formInstance = new HashMap<Integer, FormInstance>();
 	private OracleConnection connection;
-	private static final String formSQL = "Select * From forms_v a Where a.form_code = :p_form_code";
-	private static final String extendedFormSQL = "Select form_utils.get_extended_sql_text(a.sql_text)  From forms_v a Where a.form_code = :p_form_code";
-	private static final String ColumnsMetaDataSQL = "Select column_display_number, form_code, column_code, column_data_type, column_user_name, column_display_size\n"
-			+ ",pimary_key_flag, show_on_grid, tree_initialization_value, tree_field_type, editor_tab_code, field_type\n"
-			+ ",column_description, is_frozen_flag, show_hover_flag, exists_in_metadata_flag, exists_in_query_flag\n"
-			+ ",lookup_code, hover_column_code, editor_height, lookup_field_type, help_text From Table (form_utils.describe_form_columns_pl (:p_form_code)) Order By form_code, column_display_number, column_code";
-	private static final String formActionsSQL = "Select * From form_actions a Where a.form_code = :p_form_code order by 2";
-	private static final String argsSQLText = "Select a.position, a.argument_name, DECODE (a.in_out, 'IN/OUT', 'Y', 'IN', 'Y') in_flag, DECODE (a.in_out, 'IN/OUT', 'Y', 'OUT', 'Y') out_flag \n"
-			+ " From all_arguments a Where a.package_name || '.' || a.object_name = UPPER (:p_procedure_name) And a.owner = User And a.Position != 0 Order By a.Position, a.Sequence";
-	private static final String detailFormSQL = "Select * From form_tabs_v a Where a.form_code = :p_form_code order by tab_display_number, tab_name, tab_code";
+
 	private String formSQLText;
 	private FormColumnsArr metadata = new FormColumnsArr();
 	private String formCode;
@@ -63,46 +54,53 @@ public class Form {
 		Utils.debug("actionCode:" + actionCode + "; clientActionType:" + clientActionType, row);
 		FormActionsArr fActArr = formMetaData.getActions();
 		FormActionMD fActMD = null;
+		System.out.println("z1:" + fActArr);
 		for (int i = 0; i < fActArr.size(); i++) {
+			System.out.println("z2:" + i + "; " + fActArr.get(i).getCode());
 			if (actionCode.equals(fActArr.get(i).getCode())) {
 				fActMD = fActArr.get(i);
+				System.out.println("z3:" + fActMD);
 			}
 		}
-		String dmlProcText = fActMD.getDmlProcText();
-		if (null != dmlProcText) {
-			// ----------------------------------
-			HashMap<String, String> rowValues = new HashMap<String, String>();
-			for (int j = 0; j < resultRow.size(); j++) {
-				rowValues.put("P_" + formMetaData.getColumns().get(j).getName(), row.get(j));
-			}
-			OracleCallableStatement stmnt = (OracleCallableStatement) connection.prepareCall(dmlProcText);
-			Utils.debug(dmlProcText, row);
-			Iterator<Integer> allParamsIterator = fActMD.getAllArgs().keySet().iterator();
-			while (allParamsIterator.hasNext()) {
-				Integer paramNum = allParamsIterator.next();
-				String paramName = fActMD.getAllArgs().get(paramNum);
-				if (fActMD.getInputs().containsKey(paramNum)) {
-					Utils.debug("IN:" + paramName + "=>" + rowValues.get(paramName), row);
-					stmnt.setString(paramNum, rowValues.get(paramName));
+		System.out.println("z4");
+		{
+			String dmlProcText = fActMD.getDmlProcText();
+			System.out.println("z5");
+			if (null != dmlProcText) {
+				// ----------------------------------
+				HashMap<String, String> rowValues = new HashMap<String, String>();
+				for (int j = 0; j < resultRow.size(); j++) {
+					rowValues.put("P_" + formMetaData.getColumns().get(j).getName(), row.get(j));
 				}
-				if (fActMD.getOutputs().containsKey(paramNum)) {
-					stmnt.registerOutParameter(paramNum, Types.VARCHAR);
+				OracleCallableStatement stmnt = (OracleCallableStatement) connection.prepareCall(dmlProcText);
+				Utils.debug(dmlProcText, row);
+				Iterator<Integer> allParamsIterator = fActMD.getAllArgs().keySet().iterator();
+				while (allParamsIterator.hasNext()) {
+					Integer paramNum = allParamsIterator.next();
+					String paramName = fActMD.getAllArgs().get(paramNum);
+					if (fActMD.getInputs().containsKey(paramNum)) {
+						Utils.debug("IN:" + paramName + "=>" + rowValues.get(paramName), row);
+						stmnt.setString(paramNum, rowValues.get(paramName));
+					}
+					if (fActMD.getOutputs().containsKey(paramNum)) {
+						stmnt.registerOutParameter(paramNum, Types.VARCHAR);
+					}
 				}
-			}
-			stmnt.execute();
-			for (int j = 0; j < resultRow.size(); j++) {
-				String colName = "P_" + formMetaData.getColumns().get(j).getName();
-				if (fActMD.getOutputsByName().containsKey(colName)) {
-					String newValue = stmnt.getString(fActMD.getOutputsByName().get(colName));
-					Utils.debug("OUT:" + colName + "=>" + newValue, row);
-					resultRow.remove(j);
-					resultRow.put(j, newValue);
+				stmnt.execute();
+				for (int j = 0; j < resultRow.size(); j++) {
+					String colName = "P_" + formMetaData.getColumns().get(j).getName();
+					if (fActMD.getOutputsByName().containsKey(colName)) {
+						String newValue = stmnt.getString(fActMD.getOutputsByName().get(colName));
+						Utils.debug("OUT:" + colName + "=>" + newValue, row);
+						resultRow.remove(j);
+						resultRow.put(j, newValue);
+					}
 				}
-			}
-			stmnt.close();
-			connection.commit();
-			// ----------------------------------
+				stmnt.close();
+				connection.commit();
+				// ----------------------------------
 
+			}
 		}
 		return resultRow;
 	}
@@ -117,8 +115,9 @@ public class Form {
 	private FormColumnsArr getColumns() {
 		try {
 			Utils.debug("Parse Query: ");
-			Utils.debug(ColumnsMetaDataSQL);
-			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(ColumnsMetaDataSQL);
+			Utils.debug(QueryServiceImpl.queryMap.get("ColumnsMetaDataSQL"));
+			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(QueryServiceImpl.queryMap
+					.get("ColumnsMetaDataSQL"));
 			Utils.debug("Parameters: ");
 			Utils.setStringParameterValue(statement, "p_form_code", formCode);
 			ResultSet rs = statement.executeQuery();
@@ -195,7 +194,8 @@ public class Form {
 		boolean deleteAllowed = false;
 		FormActionsArr result = new FormActionsArr();
 		try {
-			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(formActionsSQL);
+			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(QueryServiceImpl.queryMap
+					.get("formActionsSQL"));
 			Utils.setStringParameterValue(statement, "p_form_code", formCode);
 			ResultSet actRs = statement.executeQuery();
 			while (actRs.next()) {
@@ -229,7 +229,8 @@ public class Form {
 
 	private String getDMLProcText(FormActionMD actionData) throws java.sql.SQLException {
 		String dmlProcText = "begin " + actionData.getSqlProcedureName() + "(";
-		OraclePreparedStatement actProcStmnt = (OraclePreparedStatement) connection.prepareStatement(argsSQLText);
+		OraclePreparedStatement actProcStmnt = (OraclePreparedStatement) connection.prepareStatement(QueryServiceImpl.queryMap
+				.get("argsSQLText"));
 		Utils.setStringParameterValue(actProcStmnt, "p_procedure_name", actionData.getSqlProcedureName());
 		ResultSet actProcRs = actProcStmnt.executeQuery();
 		while (actProcRs.next()) {
@@ -253,7 +254,8 @@ public class Form {
 
 	public FormMD getFormMetaData() {
 		try {
-			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(formSQL);
+			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(QueryServiceImpl.queryMap
+					.get("formSQL"));
 			Utils.setStringParameterValue(statement, "p_form_code", formCode);
 			ResultSet rs = statement.executeQuery();
 			while (rs.next()) {
@@ -295,7 +297,8 @@ public class Form {
 	private FormTabsArr getFormTabsArr() {
 		FormTabsArr result = new FormTabsArr();
 		try {
-			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(detailFormSQL);
+			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(QueryServiceImpl.queryMap
+					.get("detailFormSQL"));
 			Utils.setStringParameterValue(statement, "p_form_code", formCode);
 			ResultSet detRs = statement.executeQuery();
 			while (detRs.next()) {
@@ -324,7 +327,8 @@ public class Form {
 	private void setFormSQLText(String formCode) {
 
 		try {
-			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(extendedFormSQL);
+			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(QueryServiceImpl.queryMap
+					.get("extendedFormSQL"));
 			Utils.setStringParameterValue(statement, "p_form_code", formCode);
 			ResultSet rs = statement.executeQuery();
 			rs.next();

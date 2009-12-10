@@ -99,6 +99,7 @@ class MainForm extends Canvas {
 			treeGrid = new FormListGrid();
 		}
 		treeGrid.addRecordClickHandler(new GridRecordClickHandler());
+		//treeGrid.setCanRemoveRecords(true);
 		treeGrid.addClickHandler(new ClickHandler() {
 			// не работает...
 
