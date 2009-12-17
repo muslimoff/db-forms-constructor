@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary Этот документ описывает как использовать Генератор форм
 
 = Introduction =
 
