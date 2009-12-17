@@ -1,13 +1,16 @@
 #summary Этот документ описывает как использовать Генератор форм
 
-= Introduction =
+= Введение =
 
-Add your content here.
+Траля-ля
 
 
-= Details =
-
-Add your content here.  Format your content with:
+= Содержание =
+  * Запуск Генератора форм
+  * 
   * Text in *bold* or _italic_
   * Headings, paragraphs, and lists
   * Automatic links to other wiki pages
+
+= Запуск Генератора форм =
+ * Запустите Web-сервер (например Apache Tomkat)
