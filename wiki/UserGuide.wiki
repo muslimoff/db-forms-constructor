@@ -2,17 +2,20 @@
 
 = Введение =
 
-Траля-ля
+Генератор форм (далее ГФ или Генератор)
 
 
 = Содержание =
   * Запуск Генератора форм
-  * 
+  * Вход в Генератор
   * Text in *bold* or _italic_
   * Headings, paragraphs, and lists
   * Automatic links to other wiki pages
 
 = Запуск Генератора форм =
   * Запустите Web-сервер (например Apache Tomkat)
-  * В Браузере введите адрес http://localhost:8080/ConstructorApp/
-где
+  * В Браузере введите адрес (например http://localhost:8080/ConstructorApp/)
+
+= Вход в Генератор =
+  * В окне логина выберите свой сервер БД из списка. 
+  * Если Ваш сервер отсутствует в списке введите строку подключения к БД подобно jdbc:oracle:thin:@localhost:1521:KevinOra10g
