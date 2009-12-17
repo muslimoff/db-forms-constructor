@@ -13,4 +13,6 @@
   * Automatic links to other wiki pages
 
 = Запуск Генератора форм =
- * Запустите Web-сервер (например Apache Tomkat)
+  * Запустите Web-сервер (например Apache Tomkat)
+  * В Браузере введите адрес http://localhost:8080/ConstructorApp/
+где
