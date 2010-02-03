@@ -88,36 +88,6 @@ public class MainFormPane extends Canvas {
 		public void editRecord2() {
 			if (0 != this.getMembers().length) {
 				// Установка редактированных ранее значений из строки грида
-				// TODO заменить на код, аналогичный GridComboBoxItem.setPickListFilterCriteriaFunction
-				// ListGridRecord r = new ListGridRecord(record.getJsObj());
-				// Map<?, ?> ev = MainFormPane.this.getMainForm().getTreeGrid().getEditValues(record);
-				// Iterator<?> it = ev.keySet().iterator();
-				// while (it.hasNext()) {
-				// String mapKey = (String) it.next();
-				// String value = (String) ev.get(mapKey);
-				// Utils.debug("Nonsaved Edit: " + mapKey + "=" + value);
-				// r.setAttribute(mapKey, value);
-				// }
-				// this.editRecord(r);
-				// //////////////////////////
-				// ListGrid grid = MainFormPane.this.getMainForm().getTreeGrid();
-				// Record record;
-				// int editRowIdx = grid.getEditRow();
-				// System.out.println("FormValuesManager editRowIdx=" + editRowIdx);
-				// if (-1 != editRowIdx) {
-				// record = grid.getEditedRecord(editRowIdx);
-				// } else {
-				// Record selRec = grid.getSelectedRecord();
-				// record = new ListGridRecord(selRec.getJsObj());
-				// Map<?, ?> ev = grid.getEditValues(selRec);
-				// Iterator<?> it = ev.keySet().iterator();
-				// while (it.hasNext()) {
-				// String mapKey = (String) it.next();
-				// String value = (String) ev.get(mapKey);
-				// Utils.debug("Nonsaved Edit: " + mapKey + "=" + value);
-				// record.setAttribute(mapKey, value);
-				// }
-				// }
 				Record record = Utils.getEditedRow(MainFormPane.this);
 				this.editRecord(record);
 			}
@@ -159,7 +129,6 @@ public class MainFormPane extends Canvas {
 			menu.setFormCode(formCode);
 			menu.setFormName(formCode);
 			menu.setIconId(0);
-			// //ConstructorApp.menus.add(menu);
 			ConstructorApp.formIconArr.put(formCode, 0);
 			ConstructorApp.formNameArr.put(formCode, formCode);
 		}
@@ -177,7 +146,6 @@ public class MainFormPane extends Canvas {
 					mainForm = new MainForm(MainFormPane.this, formColumns.hasSideTabsCount);
 				}
 				System.out.println("z1");
-				// dataSource = new FormDataSource(MainFormPane.this);
 				dataSource.setMainFormPane(MainFormPane.this);
 				System.out.println("z2:" + dataSource);
 				if (!isLookup) {
@@ -279,7 +247,6 @@ public class MainFormPane extends Canvas {
 		setInitialFilter(Utils.getCriteriaFromListGridRecord(record, this.getFormCode()));
 		getBottomDetailFormsContainer().filterData(filterDynamicMultiDetails);
 		getSideDetailFormsContainer().filterData(filterDynamicMultiDetails);
-		// mmsetCurrentGridRowSelected(treeGrid.getRecordIndex(treeGrid.getSelectedRecord()));
 		setCurrentGridRowSelected(selectedRecordIndex);
 		((FormValuesManager) valuesManager).editRecord2();
 	}
@@ -429,21 +396,11 @@ public class MainFormPane extends Canvas {
 	}
 
 	public void setBorder(boolean showBorder) {
-
-		Canvas cnv;
-
-		cnv = this;
-
+		Canvas cnv = this;
 		if (showBorder) {
 			cnv.setBorder("2px solid green");
-			// cnv.setShadowOffset(20);
-			// cnv.setShadowSoftness(4);
-			// cnv.setOpacity(100);
 		} else {
 			cnv.setBorder("2px");
-			// cnv.setShadowOffset(0);
-			// cnv.setShadowSoftness(0);
-			// cnv.setOpacity(60);
 		}
 	}
 

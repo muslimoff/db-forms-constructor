@@ -275,17 +275,12 @@ public class DetailFormsContainer extends TabSet {
 	public void filterData(boolean filterDynamicMultiDetails) {
 		Utils.debug("tabCounter:" + tabCounter);
 		if (0 != tabCounter) {
-			// Criteria criteria = mainFormPane.getInitialFilter();
 			Utils.debug("DetailFormsContainer[" + orientation + "] - filterData");
 			for (Tab t : this.getTabs()) {
 				Utils.debug("GridRecordClickHandler.onRecordClick. Tab: " + t.getID());
 				FormTab ft = (FormTab) t;
 				Utils.debug("Tab " + ft.getFormCode() + ": " + ft.getTabType() + "; " + ft.getClass());
 				if (ft.getTabType().equals(FormTab.TabType.DETAIL) && ft instanceof MainFormContainer) {
-					// ListGrid g = ((MainFormContainer) ft).getMainFormPane().getMainForm().getTreeGrid();
-					// g.invalidateCache();
-					// g.filterData(criteria);
-					// TODO
 					((MainFormContainer) ft).getMainFormPane().filterData();
 				}
 				if (ft.getTabType().equals(FormTab.TabType.EDITOR) && ft instanceof FormRowEditorTab) {
