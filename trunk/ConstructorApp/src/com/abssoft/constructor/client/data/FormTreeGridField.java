@@ -12,6 +12,7 @@ import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.grid.CellFormatter;
 import com.smartgwt.client.widgets.grid.HoverCustomizer;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.SortNormalizer;
 import com.smartgwt.client.widgets.grid.events.ChangedEvent;
 import com.smartgwt.client.widgets.grid.events.ChangedHandler;
 import com.smartgwt.client.widgets.tree.TreeGridField;
@@ -76,10 +77,12 @@ public class FormTreeGridField extends TreeGridField {
 
 		}
 		// StaticLookup
-		else if ("8".equals(c.getFieldType()) && null != lookupCode && ConstructorApp.staticLookupsArr.containsKey(lookupCode)) {
+		// TODO вывести одинаковый код
+		else if (("8".equals(c.getFieldType()) || "10".equals(c.getFieldType())) && null != lookupCode
+				&& ConstructorApp.staticLookupsArr.containsKey(lookupCode)) {
 			ComboBoxItem s = new ComboBoxItem();
-			final LinkedHashMap<String, String> lhm = new LinkedHashMap<String, String>();
-			lhm.putAll(ConstructorApp.staticLookupsArr.get(lookupCode));
+			final LinkedHashMap<String, String> lhm = Utils.createStrSortedLinkedHashMap(ConstructorApp.staticLookupsArr.get(lookupCode),
+					!"8".equals(c.getFieldType()));
 			s.setValueMap(lhm);
 			this.setCellFormatter(new CellFormatter() {
 				@Override
@@ -102,6 +105,25 @@ public class FormTreeGridField extends TreeGridField {
 			GridComboBoxItem s = new GridComboBoxItem(mainFormPane);
 			s.setFormTreeGridField(this);
 			mainFormPane.putLookup(c.getLookupCode(), s);
+		}
+
+		if ("N".equals(c.getDataType())) {
+			this.setSortNormalizer(new SortNormalizer() {
+
+				@Override
+				public Object normalize(ListGridRecord record, String fieldName) {
+					String value = record.getAttribute(fieldName);
+					if (value == null)
+						return null;
+					Float val = null;
+					try {
+						val = Float.parseFloat((String) value);
+					} catch (Exception e) {
+						return value.toString();
+					}
+					return val;
+				}
+			});
 		}
 	}
 

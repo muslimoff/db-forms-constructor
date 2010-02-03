@@ -1,17 +1,18 @@
 package com.abssoft.constructor.client.widgets;
 
+import com.abssoft.constructor.client.app.MenusDataCallback.FormMenuItem;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.menu.Menu;
 
 public class MenuWithHover extends Menu {
+
 	public interface CellHoverCustomizer {
 		String cellHoverHTML(ListGridRecord record, int rowNum, int colNum);
 
 	}
 
 	/**
-	 * * HTML to be shown in hovers over cells in the column described by this
-	 * field.
+	 * * HTML to be shown in hovers over cells in the column described by this field.
 	 * 
 	 * @param hoverCustomizer
 	 *            the hover customizer
@@ -25,4 +26,20 @@ public class MenuWithHover extends Menu {
 	   };
 	}-*/;
 
+	public void setHover() {
+		this.setCanHover(true);
+		this.setShowHover(true);
+		this.setHoverWidth(300);
+		this.setCellHoverCustomizer(new MenuWithHover.CellHoverCustomizer() {
+
+			@Override
+			public String cellHoverHTML(ListGridRecord record, int rowNum, int colNum) {
+				String hover = null;
+				if (record instanceof FormMenuItem) {
+					hover = ((FormMenuItem) record).getFormMetadata().getDescription();
+				}
+				return hover;
+			}
+		});
+	}
 }

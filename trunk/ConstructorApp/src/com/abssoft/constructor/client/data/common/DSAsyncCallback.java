@@ -1,5 +1,6 @@
 package com.abssoft.constructor.client.data.common;
 
+import com.abssoft.constructor.client.data.Utils;
 import com.google.gwt.user.client.Window;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSource;
@@ -25,6 +26,7 @@ public abstract class DSAsyncCallback<T> implements AsyncCallback<T> {
 	 * 
 	 */
 	public DSAsyncCallback() {
+		Utils.debug("DSAsyncCallback.CreateInstance");
 	}
 
 	/**
@@ -34,7 +36,8 @@ public abstract class DSAsyncCallback<T> implements AsyncCallback<T> {
 	 * @param response
 	 * @param dataSource
 	 */
-	public DSAsyncCallback(String requestId, DSResponse response, DataSource dataSource) {
+	public DSAsyncCallback(String requestId, DSResponse response,
+			DataSource dataSource) {
 		super();
 		this.requestId = requestId;
 		this.response = response;
@@ -43,10 +46,10 @@ public abstract class DSAsyncCallback<T> implements AsyncCallback<T> {
 
 	public void onFailure(Throwable caught) {
 		String details = caught.getMessage();
-		Window.alert(details);
-		SC.logWarn(details);
+		Window.alert("Ашипка: " + details);
+		SC.logWarn("Ашипка2: " + details);
 		caught.printStackTrace();
-		SC.logWarn(caught.toString());
+		SC.logWarn("Ашипка3: " + caught.toString());
 		// for (String s : caught.getStackTrace())
 		if (null != dataSource) {
 			response.setStatus(RPCResponse.STATUS_FAILURE);

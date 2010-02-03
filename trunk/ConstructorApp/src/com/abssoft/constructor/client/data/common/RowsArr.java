@@ -2,6 +2,7 @@ package com.abssoft.constructor.client.data.common;
 
 import java.util.HashMap;
 
+import com.abssoft.constructor.client.metadata.ActionStatus;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -12,26 +13,12 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class RowsArr extends HashMap<Integer, Row> implements IsSerializable {
 
 	private static final long serialVersionUID = -6017120529964851633L;
+
 	/**
 	 * Статус (ошибка/успешно)...
 	 */
-	private String status;
+	private ActionStatus status = new ActionStatus();
 	private int totalRows;
-
-	/**
-	 * @param status
-	 *            the status to set
-	 */
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	/**
-	 * @return the status
-	 */
-	public String getStatus() {
-		return status;
-	}
 
 	/**
 	 * @param totalRows
@@ -46,6 +33,14 @@ public class RowsArr extends HashMap<Integer, Row> implements IsSerializable {
 	 */
 	public int getTotalRows() {
 		return totalRows;
+	}
+
+	public void setStatus(ActionStatus status) {
+		this.status = status;
+	}
+
+	public ActionStatus getStatus() {
+		return status;
 	}
 
 }

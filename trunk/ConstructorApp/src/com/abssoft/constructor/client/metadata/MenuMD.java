@@ -4,34 +4,38 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class MenuMD implements IsSerializable {
 
+	private String formCode;
+	private String formName;
+	private Integer iconId;
+	private String hotKey;
+	private String description;
+	private String lvl;
+	private String menuCode;
+	private String parentMenuCode;
+	private String menuPosition;
+	private String showInNavigator;
+	private String menuName;
+	private int childCount;
+
+	public MenuMD() {
+	}
+
+	public int getChildCount() {
+		return childCount;
+	}
+
+	/**
+	 * @return the description
+	 */
+	public String getDescription() {
+		return description;
+	}
+
 	/**
 	 * @return the formCode
 	 */
 	public String getFormCode() {
 		return formCode;
-	}
-
-	/**
-	 * @param formCode
-	 *            the formCode to set
-	 */
-	public void setFormCode(String formCode) {
-		this.formCode = formCode;
-	}
-
-	/**
-	 * @return the hotKey
-	 */
-	public String getHotKey() {
-		return hotKey;
-	}
-
-	/**
-	 * @param hotKey
-	 *            the hotKey to set
-	 */
-	public void setHotKey(String hotKey) {
-		this.hotKey = hotKey;
 	}
 
 	/**
@@ -42,18 +46,45 @@ public class MenuMD implements IsSerializable {
 	}
 
 	/**
-	 * @param formName
-	 *            the formName to set
+	 * @return the hotKey
 	 */
-	public void setFormName(String formName) {
-		this.formName = formName;
+	public String getHotKey() {
+		return hotKey;
 	}
 
 	/**
-	 * @return the description
+	 * @return the iconId
 	 */
-	public String getDescription() {
-		return description;
+	public Integer getIconId() {
+		return iconId;
+	}
+
+	public String getLvl() {
+		return lvl;
+	}
+
+	public String getMenuCode() {
+		return menuCode;
+	}
+
+	public String getMenuName() {
+		return menuName;
+	}
+
+	public String getMenuPosition() {
+		return menuPosition;
+	}
+
+	public String getParentMenuCode() {
+		return parentMenuCode;
+	}
+
+	public String getShowInNavigator() {
+		return showInNavigator;
+	}
+
+	public void setChildCount(int childCount) {
+		this.childCount = childCount;
 	}
 
 	/**
@@ -65,10 +96,27 @@ public class MenuMD implements IsSerializable {
 	}
 
 	/**
-	 * @return the iconId
+	 * @param formCode
+	 *            the formCode to set
 	 */
-	public Integer getIconId() {
-		return iconId;
+	public void setFormCode(String formCode) {
+		this.formCode = formCode;
+	}
+
+	/**
+	 * @param formName
+	 *            the formName to set
+	 */
+	public void setFormName(String formName) {
+		this.formName = formName;
+	}
+
+	/**
+	 * @param hotKey
+	 *            the hotKey to set
+	 */
+	public void setHotKey(String hotKey) {
+		this.hotKey = hotKey;
 	}
 
 	/**
@@ -79,21 +127,28 @@ public class MenuMD implements IsSerializable {
 		this.iconId = iconId;
 	}
 
-	MenuMD() {
+	public void setLvl(String lvl) {
+		this.lvl = lvl;
 	}
 
-	public MenuMD(String formCode, String hotKey, String formName, String description, Integer iconId) {
-		setFormCode(formCode);
-		setHotKey(hotKey);
-		setFormName(formName);
-		setDescription(description);
-		setIconId(iconId);
+	public void setMenuCode(String menuCode) {
+		this.menuCode = menuCode;
 	}
 
-	private String formCode;
-	private String hotKey;
-	private String formName;
-	private String description;
-	private Integer iconId;
+	public void setMenuName(String menuName) {
+		this.menuName = menuName;
+	}
+
+	public void setMenuPosition(String menuPosition) {
+		this.menuPosition = menuPosition;
+	}
+
+	public void setParentMenuCode(String parentMenuCode) {
+		this.parentMenuCode = parentMenuCode;
+	}
+
+	public void setShowInNavigator(String showInNavigator) {
+		this.showInNavigator = showInNavigator;
+	}
 
 }

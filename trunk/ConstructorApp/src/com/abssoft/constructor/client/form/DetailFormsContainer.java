@@ -14,20 +14,11 @@ import com.abssoft.constructor.client.metadata.FormTabsArr;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.types.Orientation;
 import com.smartgwt.client.types.Side;
-import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.events.CloseClickHandler;
 import com.smartgwt.client.widgets.tab.events.TabCloseClickEvent;
 
 public class DetailFormsContainer extends TabSet {
-	private final String defTabPrefix = "GEN_TAB_";
-	private MainFormPane mainFormPane;
-	Orientation orientation;
-	private int tabCounter = 0;
-	private DetailTabsArr dynMultiDetailTabsArr = new DetailTabsArr();
-	private FormMD formMetadata;
-	private HashMap<String, DynamicDetailTab> dynamicDetailTabs = new HashMap<String, DynamicDetailTab>();
-
 	class DetailTabsArr extends HashMap<String, MainFormPane> {
 		private static final long serialVersionUID = -6202855546066039640L;
 	}
@@ -123,11 +114,20 @@ public class DetailFormsContainer extends TabSet {
 		}
 	}
 
+	private final String defTabPrefix = "GEN_TAB_";
+	private MainFormPane mainFormPane;
+	Orientation orientation;
+	private int tabCounter = 0;
+	private DetailTabsArr dynMultiDetailTabsArr = new DetailTabsArr();
+
+	private FormMD formMetadata;
+
+	private HashMap<String, DynamicDetailTab> dynamicDetailTabs = new HashMap<String, DynamicDetailTab>();
+
 	DetailFormsContainer(MainFormPane mainFormPane, Orientation orientation) {
 		this.setDestroyPanes(false);
 		this.mainFormPane = mainFormPane;
 		this.orientation = orientation;
-		// this.setBorder("2px dotted red");
 		formMetadata = mainFormPane.getFormMetadata();
 		String tabsOrientStr;
 		if (Orientation.VERTICAL == orientation) {
@@ -210,7 +210,7 @@ public class DetailFormsContainer extends TabSet {
 		Utils.debug("before DetailFormsContainer.filterData()...");
 		if (null != mainFormPane.getInitialFilter()) {
 
-			filterData();
+			filterData(true);
 			Utils.debug("DetailFormsContainer.filterData() executed...");
 		}
 
@@ -224,7 +224,7 @@ public class DetailFormsContainer extends TabSet {
 		});
 	}
 
-	public void createDynamicDetails() {
+	public void createDynamicDetails(boolean filterDynamicMultiDetails) {
 		Criteria criteria = mainFormPane.getInitialFilter();
 		FormColumnsArr fc = formMetadata.getColumns();
 		Iterator<Integer> columnIterator = fc.keySet().iterator();
@@ -236,7 +236,9 @@ public class DetailFormsContainer extends TabSet {
 				DynamicDetailTab dynamicDetailTab = dynamicDetailTabs.get(tabCode);
 				dynamicDetailTab.getDetailTab().updateTab(detFormCode, mainFormPane);
 			}
-			if ("2".equals(c.getFieldType()) && dynamicDetailTabs.containsKey(tabCode)) {
+			// Обновление/Создание множественных детейлов только в случае явного нажатия на запись родителя. При открытии родительской формы
+			// не создавать.
+			if (filterDynamicMultiDetails && "2".equals(c.getFieldType()) && dynamicDetailTabs.containsKey(tabCode)) {
 				DynamicDetailTab dynamicDetailTab = dynamicDetailTabs.get(tabCode);
 				createDynamicMultiDetails(dynamicDetailTab, detFormCode);
 			}
@@ -270,25 +272,27 @@ public class DetailFormsContainer extends TabSet {
 		}
 	}
 
-	public void filterData() {
+	public void filterData(boolean filterDynamicMultiDetails) {
 		Utils.debug("tabCounter:" + tabCounter);
 		if (0 != tabCounter) {
-			Criteria criteria = mainFormPane.getInitialFilter();
+			// Criteria criteria = mainFormPane.getInitialFilter();
 			Utils.debug("DetailFormsContainer[" + orientation + "] - filterData");
 			for (Tab t : this.getTabs()) {
 				Utils.debug("GridRecordClickHandler.onRecordClick. Tab: " + t.getID());
 				FormTab ft = (FormTab) t;
 				Utils.debug("Tab " + ft.getFormCode() + ": " + ft.getTabType() + "; " + ft.getClass());
 				if (ft.getTabType().equals(FormTab.TabType.DETAIL) && ft instanceof MainFormContainer) {
-					ListGrid g = ((MainFormContainer) ft).getMainFormPane().getMainForm().getTreeGrid();
-					g.invalidateCache();
-					g.filterData(criteria);
+					// ListGrid g = ((MainFormContainer) ft).getMainFormPane().getMainForm().getTreeGrid();
+					// g.invalidateCache();
+					// g.filterData(criteria);
+					// TODO
+					((MainFormContainer) ft).getMainFormPane().filterData();
 				}
 				if (ft.getTabType().equals(FormTab.TabType.EDITOR) && ft instanceof FormRowEditorTab) {
 					Utils.debug("FormRowEditorTab>>" + ((FormRowEditorTab) ft).getForm().getID());
 				}
 			}
-			createDynamicDetails();
+			createDynamicDetails(filterDynamicMultiDetails);
 		}
 	}
 
@@ -304,6 +308,18 @@ public class DetailFormsContainer extends TabSet {
 	 */
 	public int getTabCounter() {
 		return tabCounter;
+	}
+
+	public void releaseFocus() {
+		for (Tab t : this.getTabs()) {
+			FormTab ft = (FormTab) t;
+			Utils.debug("DetailFormsContainer.releaseFocus tabFormCode:" + ft.getFormCode() + " >>" + ft);
+			if (ft instanceof MainFormContainer) {
+				MainFormPane mfp = ((MainFormContainer) ft).getMainFormPane();
+				mfp.setBorder(false);
+				mfp.releaseDetailsFocus();
+			}
+		}
 	}
 
 	/**

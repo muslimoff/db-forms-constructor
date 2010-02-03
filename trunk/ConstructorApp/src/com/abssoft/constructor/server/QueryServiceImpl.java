@@ -27,6 +27,7 @@ import com.abssoft.constructor.client.data.common.ClientActionType;
 import com.abssoft.constructor.client.data.common.ConnectionInfo;
 import com.abssoft.constructor.client.data.common.Row;
 import com.abssoft.constructor.client.data.common.RowsArr;
+import com.abssoft.constructor.client.metadata.ActionStatus;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.MenusArr;
 import com.abssoft.constructor.client.metadata.ServerInfoArr;
@@ -41,9 +42,9 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 	 * 
 	 */
 	private static final long serialVersionUID = 9137729400867519828L;
-	private HashMap<Integer, Session> sessionData = new HashMap<Integer, Session>();
 	public static final HashMap<String, String> queryMap = new HashMap<String, String>();
 	private ServerInfoArr serverInfoArr = new ServerInfoArr();
+	private HashMap<Integer, Session> sessionData = new HashMap<Integer, Session>();
 
 	public QueryServiceImpl() {
 		Utils.debug("Middle tier service 'QueryServiceImpl' started...");
@@ -54,31 +55,73 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 		String filename = "constructorapp.xml";
 		XPathFactory factory = XPathFactory.newInstance();
 		XPath xPath = factory.newXPath();
+		String defaultUsername = "";
+		String defaultTitle = "";
+		String defaultDebugValue = "";
+		String defaultfcSchemaOwner = "";
 
 		try {
+			XPathExpression findDefalutServerSettings = xPath.compile("//dbConnections/defaultValues");
 			XPathExpression findServers = xPath.compile("//dbConnections/server");
 			XPathExpression findSQL = xPath.compile("//metadataQuery/sqlStatement");
 			File xmlDocument = new File(filename);
-			InputSource inputSource = new InputSource(new FileInputStream(xmlDocument));
-			NodeList serversList = (NodeList) findServers.evaluate(inputSource, XPathConstants.NODESET);
+
+			InputSource dfltServerSettingsIS = new InputSource(new FileInputStream(xmlDocument));
+			NodeList defalutServerSettings = (NodeList) findDefalutServerSettings.evaluate(dfltServerSettingsIS, XPathConstants.NODESET);
+			for (int i = 0; i < defalutServerSettings.getLength(); i++) {
+				Node node = defalutServerSettings.item(i);
+				NamedNodeMap attributes = node.getAttributes();
+				defaultUsername = Utils.getTextFromAttr(attributes, "dbusername");
+				defaultTitle = Utils.getTextFromAttr(attributes, "title");
+				defaultDebugValue = Utils.getTextFromAttr(attributes, "debug");
+				defaultfcSchemaOwner = Utils.getTextFromAttr(attributes, "fcSchemaOwner");
+			}
+
+			InputSource serversIS = new InputSource(new FileInputStream(xmlDocument));
+			NodeList serversList = (NodeList) findServers.evaluate(serversIS, XPathConstants.NODESET);
 			for (int i = 0; i < serversList.getLength(); i++) {
 				Node node = serversList.item(i);
 				NamedNodeMap attributes = node.getAttributes();
-				String displayName = attributes.getNamedItem("display").getTextContent();
-				boolean isDefault = "true".equals(attributes.getNamedItem("default").getTextContent());
-				System.out.println("server: " + node.getTextContent() + "; displayName=" + displayName + "; isDefault = " + isDefault);
+
 				ServerInfoMD si = new ServerInfoMD();
 				si.setDbUrl(node.getTextContent());
-				si.setDefault(isDefault);
-				si.setDisplay_name(displayName);
+				si.setDefault("true".equals(Utils.getTextFromAttr(attributes, "default")));
+				si.setDisplayName(Utils.getTextFromAttr(attributes, "display"));
+				si.setDbUsername(Utils.getTextFromAttr(attributes, "dbusername"));
+				si.setDbPassword(Utils.getTextFromAttr(attributes, "dbpassword"));
+				String debugValue = Utils.getTextFromAttr(attributes, "debug");
+				si.setDebug("true".equals(null == debugValue ? defaultDebugValue : debugValue));
+				si.setTitle(Utils.getTextFromAttr(attributes, "title"));
+				si.setFcSchemaOwner(Utils.getTextFromAttr(attributes, "fcSchemaOwner"));
+				si.setAllowUserChange(!"false".equals(Utils.getTextFromAttr(attributes, "allowuserchange")));
+				// Если пароль и пользователь БД заданы - не передаем на клиента и воспринимаем логин/пароль как паользователя приложения
+				si.setTransferPassToClient(si.isAllowUserChange() || null == si.getDbPassword() || null == si.getDbUsername());
+				System.out.println("getDisplayName>>" + si.getDisplayName());
+				System.out.println("isAllowUserChange>>" + si.isAllowUserChange());
+				System.out.println("getDbUsername>>" + si.getDbUsername());
+				System.out.println("getDbPassword>>" + si.getDbPassword());
+				System.out.println("isTransferPassToClient>>" + si.isTransferPassToClient());
+				if (null == si.getDbUsername()) {
+					si.setDbUsername(defaultUsername);
+				}
+				if (null == si.getDbPassword()) {
+					si.setDbPassword("");
+				}
+				if (null == si.getTitle()) {
+					si.setTitle(defaultTitle);
+				}
+				if (null == si.getFcSchemaOwner()) {
+					si.setFcSchemaOwner(defaultfcSchemaOwner);
+				}
+
 				serverInfoArr.add(si);
 			}
-			InputSource inputSource2 = new InputSource(new FileInputStream(xmlDocument));
-			NodeList queryList = (NodeList) findSQL.evaluate(inputSource2, XPathConstants.NODESET);
+			InputSource queryIS = new InputSource(new FileInputStream(xmlDocument));
+			NodeList queryList = (NodeList) findSQL.evaluate(queryIS, XPathConstants.NODESET);
 			for (int i = 0; i < queryList.getLength(); i++) {
 				Node node = queryList.item(i);
 				NamedNodeMap attributes = node.getAttributes();
-				queryMap.put(attributes.getNamedItem("name").getTextContent(), node.getTextContent());
+				queryMap.put(Utils.getTextFromAttr(attributes, "name"), node.getTextContent());
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -91,10 +134,22 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 	 * @return the serverInfoArr
 	 */
 	public ServerInfoArr getServerInfoArr() {
-		return serverInfoArr;
+		ServerInfoArr result = new ServerInfoArr();
+		for (int i = 0; i < serverInfoArr.size(); i++) {
+			ServerInfoMD x = (ServerInfoMD) serverInfoArr.get(i).clone();
+			x.setDbUrl(null);
+			if (!x.isTransferPassToClient()) {
+				x.setDbPassword(null);
+				x.setDbUsername(null);
+			}
+			result.add(x);
+		}
+		System.out.println("serverInfoArr:" + serverInfoArr);
+		System.out.println("result:" + result);
+		return result;
 	}
 
-	public ConnectionInfo connect(String url, String user, String password) {
+	public ConnectionInfo connect(int ServerIdx, String user, String password, boolean isScript) {
 		String result = "";
 		int sessionId = -1;
 		try {
@@ -105,18 +160,27 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 		}
 		try {
 			Utils.debug("Server. Before connect...");
+
+			ServerInfoMD serverInfoMD = serverInfoArr.get(ServerIdx);
+			System.out.println("serverInfoMD:" + serverInfoMD);
+			String userName = serverInfoMD.isTransferPassToClient() ? user : serverInfoMD.getDbUsername();
+			String userPass = serverInfoMD.isTransferPassToClient() ? password : serverInfoMD.getDbPassword();
 			Locale.setDefault(Locale.ENGLISH);
-			Connection connection = DriverManager.getConnection(url, user, password);
+			Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@" + serverInfoMD.getDbUrl(), userName, userPass);
 			Utils.debug("Server. Connected..");
 			connection.createStatement().execute("alter session set nls_language='AMERICAN'");
 			ResultSet rs = connection.createStatement().executeQuery("Select USERENV ('sessionid') From DUAL");
 			rs.next();
 			sessionId = rs.getBigDecimal(1).intValue();
 			rs.close();
-			sessionData.put(sessionId, new Session(connection));
+			Session session = new Session(connection);
+			session.setScript(isScript);
+			session.setFcSchemaOwner(serverInfoMD.getFcSchemaOwner());
+			sessionData.put(sessionId, session);
 		} catch (java.sql.SQLException e) {
 			e.printStackTrace();
-			result = e.toString();
+			result = e.getMessage();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			result = e.toString();
@@ -127,7 +191,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 	}
 
 	public MenusArr getMenusArr(int sessionId) {
-		return sessionData.get(sessionId).getMenusArr();
+		return sessionData.get(sessionId).getMenusArrOld();
 	}
 
 	public StaticLookupsArr getStaticLookupsArr(int sessionId) {
@@ -143,13 +207,17 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 		return sessionData.get(sessionId).fetch(formCode, gridHashCode, sortBy, startRow, endRow, criteria, forceFetch);
 	}
 
-	public Row executeDML(int sessionId, String formCode, int gridHashCode, Row row, String actionCode, ClientActionType clientActionType) {
+	public Row executeDML(int sessionId, String formCode, int gridHashCode, Row oldRow, Row newRow, String actionCode,
+			ClientActionType clientActionType) {
 		try {
-			return sessionData.get(sessionId).executeDML(formCode, gridHashCode, row, actionCode, clientActionType);
+			return sessionData.get(sessionId).executeDML(formCode, gridHashCode, oldRow, newRow, actionCode, clientActionType);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			row.setServerMessage(e.getMessage());
-			return row;
+			System.out.println("QueryServiceImpl.executeDML... oldRow:" + oldRow + "; newRow:" + newRow);
+			// newRow.setServerMessage(e.getMessage());
+
+			newRow.setStatus(new ActionStatus(e.getMessage(), ActionStatus.StatusType.ERROR));
+			return newRow;
 		}
 	}
 
@@ -165,6 +233,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 	}
 
 	public void closeForm(int sessionId, String formCode, int gridHashCode) {
+		Utils.debug("Server:service form " + formCode + " - gridHashCode:" + gridHashCode + " before close...");
 		sessionData.get(sessionId).closeForm(formCode, gridHashCode);
 		Utils.debug("Server:service form " + formCode + " - gridHashCode:" + gridHashCode + " closed...");
 	}

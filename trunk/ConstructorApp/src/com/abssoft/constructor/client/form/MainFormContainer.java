@@ -5,7 +5,6 @@ import java.util.HashMap;
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.FormTab;
 import com.abssoft.constructor.client.common.TabSet;
-import com.abssoft.constructor.client.metadata.MenuMD;
 
 public class MainFormContainer extends FormTab {
 	class DetailTabsArr extends HashMap<String, MainFormPane> {
@@ -69,9 +68,10 @@ public class MainFormContainer extends FormTab {
 		this.setParentTabSet(parentTabSet);
 		setPane(mainFormPane);
 		setCanClose(canClose);
-		MenuMD menu = ConstructorApp.menus.get(this.getFormCode());
-		if (null != menu) {
-			defaultTitle = getIconTitle((null != title) ? title : menu.getFormName(), (0 != iconId) ? iconId : menu.getIconId());
+		String fc = this.getFormCode();
+		if (ConstructorApp.formNameArr.containsKey(fc)) {
+			defaultTitle = getIconTitle((null != title) ? title : ConstructorApp.formNameArr.get(fc), (0 != iconId) ? iconId
+					: ConstructorApp.formIconArr.get(fc));
 		} else {
 			defaultTitle = getIconTitle((null != title) ? title : "xxx", (0 != iconId) ? iconId : 1);
 		}

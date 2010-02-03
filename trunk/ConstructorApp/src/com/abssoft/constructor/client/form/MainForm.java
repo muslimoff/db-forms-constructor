@@ -8,6 +8,7 @@ import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.google.gwt.core.client.GWT;
+import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.types.RowEndEditAction;
 import com.smartgwt.client.widgets.Canvas;
@@ -36,10 +37,13 @@ public/*
 	 * @author User
 	 */
 class MainForm extends Canvas {
+
 	public class FormListGrid extends ListGrid {
+
 	}
 
 	public class FormTreeGrid extends TreeGrid {
+
 		FormTreeGrid() {
 			this.setShowConnectors(true);
 			this.addNodeClickHandler(new NodeClickHandler() {
@@ -69,7 +73,24 @@ class MainForm extends Canvas {
 
 	class GridRecordClickHandler implements RecordClickHandler {
 		public void onRecordClick(RecordClickEvent event) {
-			mainFormPane.filterDetailData((ListGridRecord) event.getRecord(), treeGrid);
+			System.out.println("************** 1: " + event.getRecordNum());
+			mainFormPane.setCurrentGridRowSelected(event.getRecordNum());
+			System.out.println("************** 2: " + mainFormPane.getCurrentGridRowSelected());
+			System.out.println("************** 2: " + event.getSource());
+			System.out.println("************** 3: " + ((ListGrid) event.getSource()).getEditedRecord(event.getRecordNum()));
+			System.out.println("************** 3: " + ((ListGrid) event.getSource()).getRecord(event.getRecordNum()));
+			System.out.println("************** 4: " + event.getRecord());
+
+			// System.out.println(FormTreeGrid.this.getEditedRecord(event.getRecordNum()));
+			Record r = event.getRecord();
+			if (null == r) {
+				r = ((ListGrid) event.getSource()).getEditedRecord(event.getRecordNum());
+			}
+			// ((ListGrid) event.getSource()).selectRecord(event.getRecordNum());
+			System.out.println("************** 5: " + r);
+			mainFormPane.setCurrentGridRowSelected(event.getRecordNum());
+			mainFormPane.filterDetailData((ListGridRecord) r, treeGrid, event.getRecordNum());
+			System.out.println("************** 6 ");
 		}
 	}
 
@@ -98,8 +119,12 @@ class MainForm extends Canvas {
 		} else {
 			treeGrid = new FormListGrid();
 		}
+		treeGrid.setAlternateRecordStyles(true);
+		treeGrid.setCanMultiSort(true);
 		treeGrid.addRecordClickHandler(new GridRecordClickHandler());
-		//treeGrid.setCanRemoveRecords(true);
+		// treeGrid.setCanRemoveRecords(true);
+		// treeGrid.setShowFilterEditor(true);
+
 		treeGrid.addClickHandler(new ClickHandler() {
 			// не работает...
 
@@ -127,8 +152,9 @@ class MainForm extends Canvas {
 		}
 		treeGrid.setHoverWidth(300);
 
+		treeGrid.setCellHeight(16);
+		treeGrid.setInitialSort(mainFormPane.getFormColumns().getDefaultSort());
 		VLayout mainLayout = new VLayout();
-		// this.setBorder("2px dotted blue");
 		mainLayout.setWidth100();
 		mainLayout.setHeight100();
 		mainLayout.addMember(treeGrid);
@@ -177,9 +203,11 @@ class MainForm extends Canvas {
 	}
 
 	public void doBeforeClose() {
+
 		final int gridHashCode = getHashCode();
 		QueryServiceAsync queryService = (QueryServiceAsync) GWT.create(QueryService.class);
 		final String formCode = mainFormPane.getFormCode();
+		Utils.debug(formCode + ": mainForm.doBeforeClose(). sessionId = " + ConstructorApp.sessionId + "; gridHashCode = " + gridHashCode);
 		queryService.closeForm(ConstructorApp.sessionId, formCode, gridHashCode, new DSAsyncCallback<Void>() {
 			@Override
 			public void onSuccess(Void result) {

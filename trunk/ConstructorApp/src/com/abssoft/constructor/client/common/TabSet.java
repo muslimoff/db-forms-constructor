@@ -15,13 +15,7 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 		super();
 		addCloseClickHandler(new CloseClickHandler() {
 			public void onCloseClick(TabCloseClickEvent event) {
-				if (event.getTab() instanceof MainFormContainer) {
-					MainFormContainer t = (MainFormContainer) event.getTab();
-					Utils.debug("OnClose Tab: " + t.getFormCode());
-					t.getMainFormPane().doBeforeClose();
-					TabSet.this.removeTab(event.getTab().getID());
-					ConstructorApp.mainToolBar.clear();
-				}
+				removeMainFormContainerTab(event.getTab());
 			}
 		});
 		addTabSelectedHandler(new TabSelectedHandler() {
@@ -42,6 +36,17 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 				this.selectTab(t);
 				break;
 			}
+		}
+	}
+
+	public void removeMainFormContainerTab(Tab tab) {
+
+		if (tab instanceof MainFormContainer) {
+			MainFormContainer t = (MainFormContainer) tab;
+			Utils.debug("OnClose Tab: " + t.getFormCode());
+			t.getMainFormPane().doBeforeClose();
+			this.removeTab(tab);
+			ConstructorApp.mainToolBar.clear();
 		}
 	}
 }

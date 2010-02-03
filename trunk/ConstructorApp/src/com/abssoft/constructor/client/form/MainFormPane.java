@@ -3,7 +3,6 @@ package com.abssoft.constructor.client.form;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.FormTab;
@@ -32,114 +31,9 @@ import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
+import com.smartgwt.client.widgets.tree.TreeGrid;
 
 public class MainFormPane extends Canvas {
-	private String formCode;
-	private DetailFormsContainer bottomDetailFormsContainer;
-	private DetailFormsContainer sideDetailFormsContainer;
-	private MainFormPane parentFormPane;
-	private FormMD formMetadata;
-	private FormColumns formColumns;
-	private MainForm mainForm;
-	private Criteria initialFilter = null;
-	private boolean isMasterForm;
-	private MainFormContainer mainFormContainer;
-	private FormToolbar buttonsToolBar;
-	private int currentGridRowSelected = -999;
-	// String LookupDS, ComboboxesList
-	private HashMap<String, ArrayList<GridComboBoxItem>> lookupComboboxes = new HashMap<String, ArrayList<GridComboBoxItem>>();
-
-	/**
-	 * @return the lookupComboboxes
-	 */
-	public HashMap<String, ArrayList<GridComboBoxItem>> getLookupComboboxes() {
-		return lookupComboboxes;
-	}
-
-	public void putLookup(String lookupCode, GridComboBoxItem comboBoxItem) {
-		if (lookupComboboxes.containsKey(lookupCode)) {
-			lookupComboboxes.get(lookupCode).add(comboBoxItem);
-		} else {
-			ArrayList<GridComboBoxItem> comboboxesList = new ArrayList<GridComboBoxItem>();
-			comboboxesList.add(comboBoxItem);
-			lookupComboboxes.put(lookupCode, comboboxesList);
-		}
-	}
-
-	/**
-	 * @param buttonsToolBar
-	 *            the buttonsToolBar to set
-	 */
-	public void setButtonsToolBar(FormToolbar buttonsToolBar) {
-		this.buttonsToolBar = buttonsToolBar;
-	}
-
-	Canvas tabPane;
-	private ValuesManager valuesManager = new FormValuesManager();
-	private FormDataSource dataSource;
-	private String currentActionCode = "";
-
-	public class FormValuesManager extends ValuesManager {
-		public void editRecord2(ListGridRecord record) {
-			if (0 != this.getMembers().length) {
-				// Установка редактированных ранее значений из строки грида
-				ListGridRecord r = new ListGridRecord(record.getJsObj());
-				Map<?, ?> ev = MainFormPane.this.getMainForm().getTreeGrid().getEditValues(record);
-				Iterator<?> it = ev.keySet().iterator();
-				while (it.hasNext()) {
-					String mapKey = (String) it.next();
-					String value = (String) ev.get(mapKey);
-					Utils.debug("Nonsaved Edit: " + mapKey + "=" + value);
-					r.setAttribute(mapKey, value);
-				}
-				this.editRecord(r);
-			}
-
-		}
-
-		@Override
-		public void editRecord(Record record) {
-			// Вместо просто super.editRecord(record) приходится так, потому
-			// что: http://code.google.com/p/smartgwt/issues/detail?id=336
-			try {
-				if (1==2/*||Utils.isChrome() || Utils.isFirefox() || Utils.isMoz()*/) {
-					super.editRecord(Utils.getTreeNodeFromRecordWithoutRef(formColumns.getDSFields(), record));
-					// record.setAttribute("__ref", "");
-					// super.editRecord(record);
-				} else {
-					super.editRecord(record);
-
-				}
-			} catch (Exception e) {
-				Utils.logException(e, "MainFormPane.FormValuesManager.editRecord()");
-			}
-			// Пробежка по CanvasItem c HTMLPane
-			try {
-				for (DynamicForm d : this.getMembers()) {
-					for (FormItem f : d.getFields()) {
-						String fieldName = f.getFieldName();
-						String fieldValue = record.getAttribute(fieldName);
-
-						// вот так вот потому что:
-						//http://code.google.com/p/smartgwt/issues/detail?id=266
-						FormItem ff = d.getField(fieldName);
-						if (ff instanceof HTMLPaneItem) {
-							((HTMLPaneItem) ff).setValue(fieldValue);
-						}
-						// В SmartGWT 1.3 поломали super.editRecord для
-						// HeaderItem
-						if (ff instanceof HeaderItem) {
-							((HeaderItem) ff).setValue(fieldValue);
-						}
-					}
-				}
-			} catch (Exception e) {
-				Utils.logException(e, "MainFormPane.FormValuesManager.editRecord()");
-			}
-
-		}
-	}
-
 	class FormHLayout extends SectionStack {
 		public FormHLayout(String formTitle, Canvas topForm, DetailFormsContainer bottomForm) {
 			//
@@ -157,11 +51,118 @@ public class MainFormPane extends Canvas {
 		}
 	}
 
+	public class FormValuesManager extends ValuesManager {
+		@Override
+		public void editRecord(Record record) {
+			try {
+				super.editRecord(record);
+			} catch (Exception e) {
+				Utils.logException(e, "MainFormPane.FormValuesManager.editRecord()");
+			}
+			// Пробежка по CanvasItem c HTMLPane
+			try {
+				for (DynamicForm d : this.getMembers()) {
+					for (FormItem f : d.getFields()) {
+						String fieldName = f.getFieldName();
+						String fieldValue = record.getAttribute(fieldName);
+
+						// вот так вот потому что:
+						// http://code.google.com/p/smartgwt/issues/detail?id=266
+						FormItem ff = d.getField(fieldName);
+						if (ff instanceof HTMLPaneItem) {
+							((HTMLPaneItem) ff).setValue(fieldValue);
+						}
+						// В SmartGWT 1.3 поломали super.editRecord для
+						// HeaderItem
+						if (ff instanceof HeaderItem) {
+							((HeaderItem) ff).setValue(fieldValue);
+						}
+					}
+				}
+			} catch (Exception e) {
+				Utils.logException(e, "MainFormPane.FormValuesManager.editRecord()");
+			}
+
+		}
+
+		public void editRecord2() {
+			if (0 != this.getMembers().length) {
+				// Установка редактированных ранее значений из строки грида
+				// TODO заменить на код, аналогичный GridComboBoxItem.setPickListFilterCriteriaFunction
+				// ListGridRecord r = new ListGridRecord(record.getJsObj());
+				// Map<?, ?> ev = MainFormPane.this.getMainForm().getTreeGrid().getEditValues(record);
+				// Iterator<?> it = ev.keySet().iterator();
+				// while (it.hasNext()) {
+				// String mapKey = (String) it.next();
+				// String value = (String) ev.get(mapKey);
+				// Utils.debug("Nonsaved Edit: " + mapKey + "=" + value);
+				// r.setAttribute(mapKey, value);
+				// }
+				// this.editRecord(r);
+				// //////////////////////////
+				// ListGrid grid = MainFormPane.this.getMainForm().getTreeGrid();
+				// Record record;
+				// int editRowIdx = grid.getEditRow();
+				// System.out.println("FormValuesManager editRowIdx=" + editRowIdx);
+				// if (-1 != editRowIdx) {
+				// record = grid.getEditedRecord(editRowIdx);
+				// } else {
+				// Record selRec = grid.getSelectedRecord();
+				// record = new ListGridRecord(selRec.getJsObj());
+				// Map<?, ?> ev = grid.getEditValues(selRec);
+				// Iterator<?> it = ev.keySet().iterator();
+				// while (it.hasNext()) {
+				// String mapKey = (String) it.next();
+				// String value = (String) ev.get(mapKey);
+				// Utils.debug("Nonsaved Edit: " + mapKey + "=" + value);
+				// record.setAttribute(mapKey, value);
+				// }
+				// }
+				Record record = Utils.getEditedRow(MainFormPane.this);
+				this.editRecord(record);
+			}
+
+		}
+	}
+
+	private String formCode;
+	private DetailFormsContainer bottomDetailFormsContainer;
+	private DetailFormsContainer sideDetailFormsContainer;
+	private MainFormPane parentFormPane;
+	private FormMD formMetadata;
+	private FormColumns formColumns;
+	private MainForm mainForm;
+	private Criteria initialFilter = null;
+	private boolean isMasterForm;
+	private MainFormContainer mainFormContainer;
+	private FormToolbar buttonsToolBar;
+	private int currentGridRowSelected = -999;
+
+	private boolean forceFetch = false;
+
+	// String LookupDS, ComboboxesList
+	private HashMap<String, ArrayList<GridComboBoxItem>> lookupComboboxes = new HashMap<String, ArrayList<GridComboBoxItem>>();
+
+	Canvas tabPane;
+
+	private ValuesManager valuesManager = new FormValuesManager();
+	private FormDataSource dataSource;
+	private String currentActionCode = "";
+
 	public MainFormPane() {
 	}
 
 	public MainFormPane(final String formCode, boolean isMasterForm, final boolean isLookup, MainFormPane parentFormPane) {
 		this.setFormCode(formCode);
+		if (!ConstructorApp.formNameArr.containsKey(formCode)) {
+			MenuMD menu = new MenuMD();
+			menu.setFormCode(formCode);
+			menu.setFormName(formCode);
+			menu.setIconId(0);
+			// //ConstructorApp.menus.add(menu);
+			ConstructorApp.formIconArr.put(formCode, 0);
+			ConstructorApp.formNameArr.put(formCode, formCode);
+		}
 		dataSource = new FormDataSource();
 		System.out.println(formCode + " isLookup:" + isLookup);
 		this.setParentFormPane(parentFormPane);
@@ -202,29 +203,10 @@ public class MainFormPane extends Canvas {
 		});
 	}
 
-	void createLookups() {
-		Iterator<String> it = lookupComboboxes.keySet().iterator();
-		while (it.hasNext()) {
-			String lookupCode = it.next();
-			System.out.println(">>>>>>>>>lookup<<<<<<: " + lookupCode);
-			new LookupDataSource(lookupCode, this);
-		}
-	}
-
-	public void filterData() {
-		ListGrid g = mainForm.getTreeGrid();
-		g.invalidateCache();
-		if (isMasterForm()) {
-			g.filterData();
-		} else {
-			if (null != getParentFormPane())
-				g.filterData(getParentFormPane().getInitialFilter());
-		}
-	}
-
 	public void createDetailForms() {
-		MenuMD menu = ConstructorApp.menus.get(this.getFormCode());
-		String formTitle = FormTab.getIconTitle(menu.getFormName(), menu.getIconId());
+		String fc = this.getFormCode();
+
+		String formTitle = FormTab.getIconTitle(ConstructorApp.formNameArr.get(fc), ConstructorApp.formIconArr.get(fc));
 		sideDetailFormsContainer = new DetailFormsContainer(this, Orientation.HORIZONTAL);
 		bottomDetailFormsContainer = new DetailFormsContainer(this, Orientation.VERTICAL);
 
@@ -247,6 +229,15 @@ public class MainFormPane extends Canvas {
 		this.addChild(tabPane);
 	}
 
+	void createLookups() {
+		Iterator<String> it = lookupComboboxes.keySet().iterator();
+		while (it.hasNext()) {
+			String lookupCode = it.next();
+			System.out.println(">>>>>>>>>lookup<<<<<<: " + lookupCode);
+			new LookupDataSource(lookupCode, this);
+		}
+	}
+
 	public void doBeforeClose() {
 		if (null != getBottomDetailFormsContainer()) {
 			getBottomDetailFormsContainer().doBeforeClose();
@@ -259,16 +250,42 @@ public class MainFormPane extends Canvas {
 		}
 	}
 
+	public void filterData() {
+		setForceFetch(true);
+		System.out.println(this.formCode + " @@@@@@@@@ " + this.getMainForm());
+		if (null != this.getMainForm()) {
+			ListGrid g = this.getMainForm().getTreeGrid();
+			// Отличие TreeGrid от ListGrid в том, что при TreeGrid.invalidateCache выполняется запрос к БД
+			if (!(g instanceof TreeGrid)) {
+				g.invalidateCache();
+			}
+			System.out.println("isMasterForm() => " + isMasterForm());
+			if (isMasterForm()) {
+				g.filterData();
+			} else {
+				if (null != getParentFormPane())
+					g.filterData(getParentFormPane().getInitialFilter());
+			}
+
+		}
+		setForceFetch(false);
+	}
+
 	/**
 	 * @param record
 	 */
-	public void filterDetailData(ListGridRecord record, ListGrid treeGrid) {
+	public void filterDetailData(ListGridRecord record, ListGrid treeGrid, boolean filterDynamicMultiDetails, int selectedRecordIndex) {
 		System.out.println("filterDetailData.... record:" + record);
 		setInitialFilter(Utils.getCriteriaFromListGridRecord(record, this.getFormCode()));
-		getBottomDetailFormsContainer().filterData();
-		getSideDetailFormsContainer().filterData();
-		setCurrentGridRowSelected(treeGrid.getRecordIndex(treeGrid.getSelectedRecord()));
-		((FormValuesManager) valuesManager).editRecord2(record);
+		getBottomDetailFormsContainer().filterData(filterDynamicMultiDetails);
+		getSideDetailFormsContainer().filterData(filterDynamicMultiDetails);
+		// mmsetCurrentGridRowSelected(treeGrid.getRecordIndex(treeGrid.getSelectedRecord()));
+		setCurrentGridRowSelected(selectedRecordIndex);
+		((FormValuesManager) valuesManager).editRecord2();
+	}
+
+	public void filterDetailData(ListGridRecord record, ListGrid treeGrid, int selectedRecordIndex) {
+		filterDetailData(record, treeGrid, true, selectedRecordIndex);
 	}
 
 	/**
@@ -283,6 +300,21 @@ public class MainFormPane extends Canvas {
 	 */
 	public DynamicForm getButtonsToolBar() {
 		return buttonsToolBar;
+	}
+
+	/**
+	 * @return the currentActionCode
+	 */
+	public String getCurrentActionCode() {
+		return currentActionCode;
+	}
+
+	/**
+	 * @return the currentGridRowSelected
+	 */
+	public int getCurrentGridRowSelected() {
+		System.out.println("currentGridRowSelected:  " + currentGridRowSelected);
+		return currentGridRowSelected;
 	}
 
 	/**
@@ -322,6 +354,13 @@ public class MainFormPane extends Canvas {
 		return initialFilter;
 	}
 
+	/**
+	 * @return the lookupComboboxes
+	 */
+	public HashMap<String, ArrayList<GridComboBoxItem>> getLookupComboboxes() {
+		return lookupComboboxes;
+	}
+
 	public MainForm getMainForm() {
 		return mainForm;
 	}
@@ -343,8 +382,8 @@ public class MainFormPane extends Canvas {
 	public String getPath() {
 		String path = "";
 		MainFormPane mfp = this;
-		while (null != mfp && ConstructorApp.menus.containsKey(mfp.getFormCode())) {
-			path = ConstructorApp.menus.get(mfp.getFormCode()).getFormName() + "-" + path;
+		while (null != mfp && ConstructorApp.formNameArr.containsKey(mfp.getFormCode())) {
+			path = ConstructorApp.formNameArr.get(mfp.getFormCode()) + "-" + path;
 			mfp = mfp.getParentFormPane();
 		}
 		return path;
@@ -361,11 +400,51 @@ public class MainFormPane extends Canvas {
 		return valuesManager;
 	}
 
+	public boolean isForceFetch() {
+		return forceFetch;
+	}
+
 	/**
 	 * @return the isMasterForm
 	 */
 	public boolean isMasterForm() {
 		return isMasterForm;
+	}
+
+	public void putLookup(String lookupCode, GridComboBoxItem comboBoxItem) {
+		if (lookupComboboxes.containsKey(lookupCode)) {
+			lookupComboboxes.get(lookupCode).add(comboBoxItem);
+		} else {
+			ArrayList<GridComboBoxItem> comboboxesList = new ArrayList<GridComboBoxItem>();
+			comboboxesList.add(comboBoxItem);
+			lookupComboboxes.put(lookupCode, comboboxesList);
+		}
+	}
+
+	public void releaseDetailsFocus() {
+		if (null != this.getBottomDetailFormsContainer())
+			this.getBottomDetailFormsContainer().releaseFocus();
+		if (null != this.getSideDetailFormsContainer())
+			this.getSideDetailFormsContainer().releaseFocus();
+	}
+
+	public void setBorder(boolean showBorder) {
+
+		Canvas cnv;
+
+		cnv = this;
+
+		if (showBorder) {
+			cnv.setBorder("2px solid green");
+			// cnv.setShadowOffset(20);
+			// cnv.setShadowSoftness(4);
+			// cnv.setOpacity(100);
+		} else {
+			cnv.setBorder("2px");
+			// cnv.setShadowOffset(0);
+			// cnv.setShadowSoftness(0);
+			// cnv.setOpacity(60);
+		}
 	}
 
 	/**
@@ -377,11 +456,54 @@ public class MainFormPane extends Canvas {
 	}
 
 	/**
+	 * @param buttonsToolBar
+	 *            the buttonsToolBar to set
+	 */
+	public void setButtonsToolBar(FormToolbar buttonsToolBar) {
+		this.buttonsToolBar = buttonsToolBar;
+	}
+
+	/**
+	 * @param currentActionCode
+	 *            the currentActionCode to set
+	 */
+	public void setCurrentActionCode(String currentActionCode) {
+		this.currentActionCode = currentActionCode;
+	}
+
+	/**
+	 * @param currentGridRowSelected
+	 *            the currentGridRowSelected to set
+	 */
+	public void setCurrentGridRowSelected(int currentGridRowSelected) {
+		this.currentGridRowSelected = currentGridRowSelected;
+		System.out.println("currentGridRowSelected set to " + currentGridRowSelected);
+	}
+
+	/**
 	 * @param dataSource
 	 *            the dataSource to set
 	 */
 	public void setDataSource(FormDataSource dataSource) {
 		this.dataSource = dataSource;
+	}
+
+	public void setFocus() {
+		Utils.debug("Path: " + this.getPath());
+		ConstructorApp.setPageTitle(this.getPath());
+
+		MainFormPane parentFP = this.getParentFormPane();
+		while (null != parentFP) {
+			parentFP.setBorder(false);
+			parentFP = parentFP.getParentFormPane();
+		}
+		this.setBorder(true);
+		this.releaseDetailsFocus();
+
+	}
+
+	public void setForceFetch(boolean forceRefresh) {
+		this.forceFetch = forceRefresh;
 	}
 
 	/**
@@ -461,37 +583,5 @@ public class MainFormPane extends Canvas {
 	 */
 	public void setValuesManager(ValuesManager valuesManager) {
 		this.valuesManager = valuesManager;
-	}
-
-	/**
-	 * @param currentActionCode
-	 *            the currentActionCode to set
-	 */
-	public void setCurrentActionCode(String currentActionCode) {
-		this.currentActionCode = currentActionCode;
-	}
-
-	/**
-	 * @return the currentActionCode
-	 */
-	public String getCurrentActionCode() {
-		return currentActionCode;
-	}
-
-	/**
-	 * @param currentGridRowSelected
-	 *            the currentGridRowSelected to set
-	 */
-	public void setCurrentGridRowSelected(int currentGridRowSelected) {
-		this.currentGridRowSelected = currentGridRowSelected;
-		System.out.println("currentGridRowSelected set to " + currentGridRowSelected);
-	}
-
-	/**
-	 * @return the currentGridRowSelected
-	 */
-	public int getCurrentGridRowSelected() {
-		System.out.println("currentGridRowSelected:  " + currentGridRowSelected);
-		return currentGridRowSelected;
 	}
 }

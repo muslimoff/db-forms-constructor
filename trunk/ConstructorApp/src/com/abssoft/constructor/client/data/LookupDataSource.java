@@ -14,6 +14,7 @@ import com.abssoft.constructor.client.metadata.FormColumnMD;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.widgets.GridComboBoxItem;
 import com.google.gwt.core.client.GWT;
+import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSource;
@@ -60,6 +61,7 @@ public class LookupDataSource extends DataSource {
 				gridFields = mfp.getFormColumns().getGridFields();
 				boolean showPickListHeader = false;
 				valueFieldName = gridFields[0].getName();
+
 				for (FormTreeGridField f : gridFields) {
 					FormColumnMD colMD = f.getColumn();
 					String fieldName = f.getName();
@@ -69,9 +71,15 @@ public class LookupDataSource extends DataSource {
 					} else if ("2".equals(colMD.getLookupFieldType())) {
 						f.setHidden(false);
 						displayFieldName = fieldName;
-					} else if ("Y".equals(colMD.getShowOnGrid())) {
+					} else if ("3".equals(colMD.getLookupFieldType())) {
 						showPickListHeader = true;
+						f.setHidden(false);
+					} else {
+						f.setHidden(true);
 					}
+					// else if ("Y".equals(colMD.getShowOnGrid())) {
+					// showPickListHeader = true;
+					// }
 				}
 				ArrayList<GridComboBoxItem> list = parentFormPane.getLookupComboboxes().get(lookupCode);
 				for (int i = 0; i < list.size(); i++) {
@@ -94,7 +102,7 @@ public class LookupDataSource extends DataSource {
 					if (null != formTreeGridField) {
 						formTreeGridField.setEditorType(comboBoxItem);
 						// if
-						//(!"3".equals(formTreeGridField.getColumn().getFieldType
+						// (!"3".equals(formTreeGridField.getColumn().getFieldType
 						// ()))
 						formTreeGridField.setCellFormatter(new CellFormatter() {
 							@Override
@@ -140,26 +148,40 @@ public class LookupDataSource extends DataSource {
 	}
 
 	/**
-	 * Executed on <code>FETCH</code> operation.
-	 * <code>processResponse (requestId, response)</code> should be called when
-	 * operation completes (either successful or failure).
+	 * Executed on <code>FETCH</code> operation. <code>processResponse (requestId, response)</code> should be called when operation
+	 * completes (either successful or failure).
 	 * 
 	 * @param requestId
-	 *            <code>String</code> extracted from
-	 *            <code>DSRequest.getRequestId ()</code>.
+	 *            <code>String</code> extracted from <code>DSRequest.getRequestId ()</code>.
 	 * @param request
 	 *            <code>DSRequest</code> being processed.
 	 * @param response
-	 *            <code>DSResponse</code>. <code>setData (list)</code> should be
-	 *            called on successful execution of this method.
+	 *            <code>DSResponse</code>. <code>setData (list)</code> should be called on successful execution of this method.
 	 *            <code>setStatus (&lt;0)</code> should be called on failure.
 	 */
 	protected void executeFetch(final String requestId, DSRequest request, final DSResponse response) {
+		boolean forceFetch = true;
 		System.out.println("ReadOnlyDataSource Fetch. Lookup:" + getLookupCode());
-		if (1 == 1 || 0 == values.size()) {
-			Map<?, ?> filterValues = request.getCriteria().getValues();
+		if (forceFetch || 0 == values.size()) {
+			Map<?, ?> filterValues = (new Criteria()).getValues();
+			try {
+				filterValues = request.getCriteria().getValues();
+			} catch (Exception e) {
+				System.out.println("Exception on request.getCriteria().getValues():" + e.getMessage());
+			}
+			// TODO request.getSortBy() не работает так, как описано.
+			System.out.println("request = " + request);
+			String sortBy = null;
+			try {
+				sortBy = request.getAttribute("sortBy");
+			} catch (Exception e) {
+				Utils.debug("Exception on request.getAttribute(\"sortBy\"):" + e.getMessage());
+				e.printStackTrace();
+			}
+			System.out.println("LookupDataSource.filterValues:" + filterValues);
 			QueryServiceAsync service = GWT.create(QueryService.class);
-			service.fetch(ConstructorApp.sessionId, getLookupCode(), -999, request.getSortBy(), 0, 1000, filterValues, false,
+			//TODO вынести в XML параметров endRow - фактически размер лова.
+			service.fetch(ConstructorApp.sessionId, getLookupCode(), -999, sortBy, 0, 3000, filterValues, false,
 					new DSAsyncCallback<RowsArr>(requestId, response, this) {
 						public void onSuccess(RowsArr result) {
 							System.out.println("ReadOnlyDataSource Fetch.onSuccess. Lookup:" + getLookupCode());
@@ -169,7 +191,7 @@ public class LookupDataSource extends DataSource {
 								System.out.println("##" + result.get(r));
 								try {
 									Row row = result.get(r);
-									records[r] = Utils.getListGridRecordFromRow(dsFields, row);
+									records[r] = Utils.getTreeNodeFromRow(dsFields, row);
 									values.put(row.get(valueFieldNum), records[r]);
 								} catch (Exception e) {
 									e.printStackTrace();

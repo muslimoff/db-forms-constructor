@@ -24,11 +24,10 @@ public interface QueryService extends RemoteService {
 	 * @param password
 	 * @return <code>ConnectionInfo</code> Результаты подключения
 	 */
-	public ConnectionInfo connect(String url, String user, String password);
+	public ConnectionInfo connect(int ServerIdx, String user, String password, boolean isScript);
 
 	/**
-	 * Получение метаданных формы (наименований столбцов и их типов и
-	 * характеристик)
+	 * Получение метаданных формы (наименований столбцов и их типов и характеристик)
 	 * 
 	 * @param sessionId
 	 * @param formCode
@@ -67,7 +66,8 @@ public interface QueryService extends RemoteService {
 	 * @return Возвращает измененные на сервере данные;
 	 */
 
-	public Row executeDML(int sessionId, String formCode, int gridHashCode, Row row, String actionCode, ClientActionType clientActionType);
+	public Row executeDML(int sessionId, String formCode, int gridHashCode, Row oldRow, Row newRow, String actionCode,
+			ClientActionType clientActionType);
 
 	/**
 	 * Закрывает текущую сессию (перед выходом из приложения).

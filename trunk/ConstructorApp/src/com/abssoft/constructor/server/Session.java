@@ -20,36 +20,88 @@ import com.abssoft.constructor.client.metadata.StaticLookup;
 import com.abssoft.constructor.client.metadata.StaticLookupsArr;
 
 /**
- * Данные сессии приложения - метаданные, <CODE>Connection</CODE>. Хранит
- * {@link Form}
+ * Данные сессии приложения - метаданные, <CODE>Connection</CODE>. Хранит {@link Form}
  * 
  * @author User
  */
 public class Session {
 
 	private OracleConnection connection;
+	private boolean isScript;
 	private HashMap<String, Form> formDataHashMap = new HashMap<String, Form>();
-
-	public OracleConnection getConnection() {
-		return connection;
-	}
+	private String fcSchemaOwner;
 
 	public Session(Connection connection) {
 		this.connection = (OracleConnection) connection;
 		getStaticLookupsArr();
 	}
 
-	public MenusArr getMenusArr() {
+	public void closeForm(String formCode, int gridHashCode) {
+		Utils.debug("Server:session form " + formCode + " - gridHashCode:" + gridHashCode + " before close...");
+		formDataHashMap.get(formCode).closeForm(gridHashCode);
+		// TODO Было закомментировано: Во избежание повторной вычитки настроек формы. Но тогда возникают проблемы при изменении формы на
+		// лету. Приходится делать реконнект. Раскомментировал. Предусмотреть режимы работы debug и рабочий. Или забить - пусть так будет.
+		// А еще лучше - при старте сессии вычитывать настройки всех форм, а потом только перечитывать при изменении OVN.
+		int instCount = formDataHashMap.get(formCode).getInstancesCount();
+		System.out.println("Form " + formCode + " instances: " + instCount);
+		if (0 == instCount) {
+			formDataHashMap.remove(formCode);
+		}
+		Utils.debug("Server:session form " + formCode + " - gridHashCode:" + gridHashCode + " closed...");
+	}
+
+	public Row executeDML(String formCode, int gridHashCode, Row oldRow, Row newRow, String actionCode, ClientActionType clientActionType)
+			throws SQLException {
+		return formDataHashMap.get(formCode).executeDML(gridHashCode, oldRow, newRow, actionCode, clientActionType);
+	}
+
+	public RowsArr fetch(String formCode, int gridHashCode, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch) {
+		return formDataHashMap.get(formCode).fetch(gridHashCode, sortBy, startRow, endRow, criteria, forceFetch);
+	}
+
+	public OracleConnection getConnection() {
+		return connection;
+	}
+
+	public String getFcSchemaOwner() {
+		return fcSchemaOwner;
+	}
+
+	public FormMD getFormMetaData(String formCode) {
+		if (!formDataHashMap.containsKey(formCode)) {
+			Form form = new Form(connection, formCode);
+			form.setFcSchemaOwner(fcSchemaOwner);
+			formDataHashMap.put(formCode, form);
+		}
+		return formDataHashMap.get(formCode).getFormMetaData();
+	}
+
+	public MenusArr getMenusArrOld() {
 		MenusArr metadata = new MenusArr();
 		try {
-			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(QueryServiceImpl.queryMap
-					.get("menusSQL"));
+			OraclePreparedStatement statement = //
+			(OraclePreparedStatement) connection.prepareStatement(QueryServiceImpl.queryMap.get("menusSQL"));
 			ResultSet rs = statement.executeQuery();
 			while (rs.next()) {
 				String formCode = rs.getString("form_code");
-				MenuMD col = new MenuMD(formCode, rs.getString("hot_key"), rs.getString("form_name"), rs.getString("description"), rs
-						.getInt("icon_id"));
-				metadata.put(formCode, col);
+				// String formName = rs.getString("form_name");
+				String formName = rs.getString("menu_name");
+				MenuMD menu = new MenuMD();
+				menu.setFormCode(formCode);
+				menu.setFormName(formName);
+				menu.setIconId(rs.getInt("icon_id"));
+				menu.setHotKey(rs.getString("hot_key"));
+				menu.setDescription(rs.getString("description"));
+				//
+				menu.setLvl(rs.getString("lvl"));
+				menu.setMenuCode(rs.getString("menu_code"));
+				menu.setParentMenuCode(rs.getString("parent_menu_code"));
+				menu.setMenuPosition(rs.getString("menu_position"));
+				menu.setShowInNavigator(rs.getString("show_in_navigator"));
+				menu.setMenuName(rs.getString("menu_name"));
+				menu.setChildCount(rs.getInt("child_count"));
+
+				metadata.add(menu);
 			}
 			rs.close();
 			// icons
@@ -57,7 +109,7 @@ public class Session {
 			rs = statement.executeQuery();
 			IconsArr icons = new IconsArr();
 			while (rs.next()) {
-				icons.put(rs.getInt("icon_id"), rs.getString("icon_file_name"));
+				icons.put(rs.getInt("icon_id"), rs.getString("icon_file_name"), rs.getString("icon_path"), isScript);
 			}
 			rs.close();
 			statement.close();
@@ -65,6 +117,7 @@ public class Session {
 		} catch (java.sql.SQLException e) {
 			e.printStackTrace();
 		}
+		System.out.println("Server:session - MenusArr.size=" + metadata.size());
 		return metadata;
 	}
 
@@ -99,27 +152,16 @@ public class Session {
 		return lookupsArr;
 	}
 
-	public FormMD getFormMetaData(String formCode) {
-		if (!formDataHashMap.containsKey(formCode)) {
-			formDataHashMap.put(formCode, new Form(connection, formCode));
-		}
-		return formDataHashMap.get(formCode).getFormMetaData();
+	public boolean isScript() {
+		return isScript;
 	}
 
-	public RowsArr fetch(String formCode, int gridHashCode, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch) {
-		return formDataHashMap.get(formCode).fetch(gridHashCode, sortBy, startRow, endRow, criteria, forceFetch);
+	public void setFcSchemaOwner(String fcSchemaOwner) {
+		this.fcSchemaOwner = fcSchemaOwner;
 	}
 
-	public Row executeDML(String formCode, int gridHashCode, Row row, String actionCode, ClientActionType clientActionType)
-			throws SQLException {
-		return formDataHashMap.get(formCode).executeDML(gridHashCode, row, actionCode, clientActionType);
-	}
-
-	public void closeForm(String formCode, int gridHashCode) {
-		formDataHashMap.get(formCode).closeForm(gridHashCode);
-		// if (0 == formDataHashMap.get(formCode).getInstancesCount()) {
-		// formDataHashMap.remove(formCode); }
-		Utils.debug("Server:session form " + formCode + " - gridHashCode:" + gridHashCode + " closed...");
+	public void setScript(boolean isScript) {
+		this.isScript = isScript;
 	}
 
 }
