@@ -26,6 +26,8 @@ import com.smartgwt.client.widgets.form.fields.HeaderItem;
 import com.smartgwt.client.widgets.form.fields.RichTextItem;
 import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
+import com.smartgwt.client.widgets.form.fields.events.FocusEvent;
+import com.smartgwt.client.widgets.form.fields.events.FocusHandler;
 import com.smartgwt.client.widgets.form.fields.events.IconClickEvent;
 import com.smartgwt.client.widgets.form.fields.events.IconClickHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
@@ -40,18 +42,18 @@ public class FormRowEditorTab extends FormTab {
 	DynamicForm form;
 	private int parentGridSelectedRow;
 
-	static FormItem createItem(final FormColumnMD c, MainFormPane mainFormPane) {
+	static FormItem createItem(final FormColumnMD c, final MainFormPane mainFormPane) {
 		FormItem item;
 		boolean showHint = true;
 		if ("3".equals(c.getTreeFieldType()) || "B".equals(c.getDataType())) {
 			item = new BooleanItem();
 		} else if ("4".equals(c.getFieldType())) {
 			item = new TextAreaItem(); // new AutoFitTextAreaItem();
-			item.setTitleOrientation(TitleOrientation.TOP);
+			//@item.setTitleOrientation(TitleOrientation.TOP);
 		} else if ("5".equals(c.getFieldType())) {
 			showHint = false;
 			item = new RichTextItem();
-			item.setTitleOrientation(TitleOrientation.TOP);
+			//@item.setTitleOrientation(TitleOrientation.TOP);
 			item.setShowTitle(true);
 		} else if ("6".equals(c.getFieldType())) {
 			showHint = false;
@@ -59,25 +61,31 @@ public class FormRowEditorTab extends FormTab {
 		} else if ("7".equals(c.getFieldType())) {
 			showHint = false;
 			item = new HTMLPaneItem();
-		} else if ("8".equals(c.getFieldType()) && null != c.getLookupCode()
+		} else if (("8".equals(c.getFieldType()) || "10".equals(c.getFieldType())) && null != c.getLookupCode()
 				&& ConstructorApp.staticLookupsArr.containsKey(c.getLookupCode())) {
-			item = new ComboBoxItem(); // new SelectItem();
-			LinkedHashMap<String, String> lhm = new LinkedHashMap<String, String>();
-			lhm.putAll(ConstructorApp.staticLookupsArr.get(c.getLookupCode()));
+			item = new ComboBoxItem();
+			LinkedHashMap<String, String> lhm = Utils.createStrSortedLinkedHashMap(ConstructorApp.staticLookupsArr.get(c.getLookupCode()),
+					!"8".equals(c.getFieldType()));
 			item.setValueMap(lhm);
 		} else if ("9".equals(c.getFieldType()) && null != c.getLookupCode()) {
 			item = new GridComboBoxItem(mainFormPane);
 			mainFormPane.putLookup(c.getLookupCode(), (GridComboBoxItem) item);
 		} else {
 			item = new TextItem();
+			if (null != c.getTextMask())
+				((TextItem) item).setMask(c.getTextMask());
 		}
 		// item.setTextBoxStyle("textItem");
 		item.setName(c.getName());
 		item.setTitle(c.getDisplayName());
 		item.setWidth("*");
-		item.setColSpan("*"); // item.setRowSpan("*");
+		item.setColSpan(c.getEditorColsSpan());
+		// item.setRowSpan("*");
 		item.setHeight(c.getEditorHeight());
-		item.setEndRow(true);
+		item.setEndRow(c.isEditorEndRow());
+		TitleOrientation titleOrientation = "L".equals(c.getEditorTitleOrientation()) ? TitleOrientation.LEFT : ("R".equals(c
+				.getEditorTitleOrientation()) ? TitleOrientation.LEFT : TitleOrientation.TOP);
+		item.setTitleOrientation(titleOrientation);
 		// Hint
 		if (showHint) {
 			final FormItemIcon icon = new FormItemIcon();
@@ -96,6 +104,15 @@ public class FormRowEditorTab extends FormTab {
 				}
 			});
 		}
+		item.addFocusHandler(new FocusHandler() {
+
+			@Override
+			public void onFocus(FocusEvent event) {
+				Utils.debug("Formcode: " + mainFormPane.getFormCode() + " Event: onFocus; FormRowEditorTab > Item:"
+						+ event.getItem().getFieldName());
+				ConstructorApp.mainToolBar.setForm(mainFormPane);
+			}
+		});
 		return item;
 	}
 
@@ -128,7 +145,9 @@ public class FormRowEditorTab extends FormTab {
 		form.setAutoWidth();
 		form.setFields(fieldsList.toArray(new FormItem[fieldsList.size()]));
 		this.setTitle(getIconTitle(editorTab.getTabName(), editorTab.getIconId()));
-		form.setCellBorder(1);
+		if (false && ConstructorApp.debugEnabled) {
+			form.setCellBorder(1);
+		}
 		form.setItemTitleHoverFormatter(new FormItemHoverFormatter() {
 			@Override
 			public String getHoverHTML(FormItem item, DynamicForm form) {
@@ -156,15 +175,23 @@ public class FormRowEditorTab extends FormTab {
 					int rn = getMainFormPane().getCurrentGridRowSelected();
 					if ("boolean".equals(event.getItem().getType())) {
 						g.setEditValue(rn, itemName, event.getItem().getAttributeAsBoolean("value"));
+					} else if (
+					// TODO Пустышки в richTextItem косячат.. Возможно из-за преобразования (String) event.getItem().getValue()
+					"RichTextItem".equals(event.getItem().getType())) {
+						if (!"".equals(event.getItem().getValue()) && null != g.getRecord(rn).getAttribute(itemName)) {
+							g.setEditValue(rn, itemName, (String) event.getItem().getValue());
+						}
 					} else {
 						g.setEditValue(rn, itemName, (String) event.getItem().getValue());
 					}
+
 				} catch (Exception e) {
 					Utils.logException(e, "FormRowEditorTab.onItemChanged");
 					e.printStackTrace();
 				}
 			}
 		});
+
 		this.setPane(form);
 		// }
 	}

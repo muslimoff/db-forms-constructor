@@ -28,6 +28,13 @@ public class FormColumnMD implements IsSerializable {
 	private String hoverСolumnСode;
 	private String editorHeight;
 	private String helpText;
+	private String textMask;
+	private String validationRegexp;
+	private String defaultOrderByNumber;
+	private String defaultValue;
+	private String editorTitleOrientation;
+	private boolean editorEndRow;
+	private String editorColsSpan;
 
 	public FormColumnMD() {
 	}
@@ -37,6 +44,14 @@ public class FormColumnMD implements IsSerializable {
 	 */
 	public String getDataType() {
 		return dataType;
+	}
+
+	public String getDefaultOrderByNumber() {
+		return defaultOrderByNumber;
+	}
+
+	public String getDefaultValue() {
+		return defaultValue;
 	}
 
 	/**
@@ -67,6 +82,10 @@ public class FormColumnMD implements IsSerializable {
 		return displaySize;
 	}
 
+	public String getEditorColsSpan() {
+		return editorColsSpan;
+	}
+
 	/**
 	 * @return the editorHeight
 	 */
@@ -81,11 +100,22 @@ public class FormColumnMD implements IsSerializable {
 		return EditorTabCode;
 	}
 
+	public String getEditorTitleOrientation() {
+		return editorTitleOrientation;
+	}
+
 	/**
 	 * @return the fieldType
 	 */
 	public String getFieldType() {
 		return fieldType;
+	}
+
+	/**
+	 * @return the helpText
+	 */
+	public String getHelpText() {
+		return helpText;
 	}
 
 	/**
@@ -103,6 +133,13 @@ public class FormColumnMD implements IsSerializable {
 	}
 
 	/**
+	 * @return the lookupFieldType
+	 */
+	public String getLookupFieldType() {
+		return lookupFieldType;
+	}
+
+	/**
 	 * @return the name
 	 */
 	public String getName() {
@@ -114,6 +151,10 @@ public class FormColumnMD implements IsSerializable {
 	 */
 	public String getShowOnGrid() {
 		return showOnGrid;
+	}
+
+	public String getTextMask() {
+		return textMask;
 	}
 
 	/**
@@ -128,6 +169,14 @@ public class FormColumnMD implements IsSerializable {
 	 */
 	public String getTreeInitializationValue() {
 		return treeInitializationValue;
+	}
+
+	public String getValidationRegexp() {
+		return validationRegexp;
+	}
+
+	public boolean isEditorEndRow() {
+		return editorEndRow;
 	}
 
 	/**
@@ -157,6 +206,14 @@ public class FormColumnMD implements IsSerializable {
 	 */
 	public void setDataType(String dataType) {
 		this.dataType = dataType;
+	}
+
+	public void setDefaultOrderByNumber(String defaultOrderByNumber) {
+		this.defaultOrderByNumber = defaultOrderByNumber;
+	}
+
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 
 	/**
@@ -191,6 +248,14 @@ public class FormColumnMD implements IsSerializable {
 		this.displaySize = displaySize;
 	}
 
+	public void setEditorColsSpan(String editorColsSpan) {
+		this.editorColsSpan = editorColsSpan;
+	}
+
+	public void setEditorEndRow(boolean editorEndRow) {
+		this.editorEndRow = editorEndRow;
+	}
+
 	/**
 	 * @param editorHeight
 	 *            the editorHeight to set
@@ -205,6 +270,10 @@ public class FormColumnMD implements IsSerializable {
 	 */
 	public void setEditorTabCode(String editorTabCode) {
 		EditorTabCode = editorTabCode;
+	}
+
+	public void setEditorTitleOrientation(String editorTitleOrientation) {
+		this.editorTitleOrientation = editorTitleOrientation;
 	}
 
 	/**
@@ -224,6 +293,14 @@ public class FormColumnMD implements IsSerializable {
 	}
 
 	/**
+	 * @param helpText
+	 *            the helpText to set
+	 */
+	public void setHelpText(String helpText) {
+		this.helpText = helpText;
+	}
+
+	/**
 	 * @param hoverСolumnСode
 	 *            the hoverСolumnСode to set
 	 */
@@ -237,6 +314,14 @@ public class FormColumnMD implements IsSerializable {
 	 */
 	public void setLookupCode(String lookupCode) {
 		this.lookupCode = lookupCode;
+	}
+
+	/**
+	 * @param lookupFieldType
+	 *            the lookupFieldType to set
+	 */
+	public void setLookupFieldType(String lookupFieldType) {
+		this.lookupFieldType = lookupFieldType;
 	}
 
 	/**
@@ -271,6 +356,10 @@ public class FormColumnMD implements IsSerializable {
 		this.showOnGrid = showOnGrid;
 	}
 
+	public void setTextMask(String textMask) {
+		this.textMask = textMask;
+	}
+
 	/**
 	 * @param treeFieldType
 	 *            the treeFieldType to set
@@ -287,33 +376,7 @@ public class FormColumnMD implements IsSerializable {
 		this.treeInitializationValue = treeInitializationValue;
 	}
 
-	/**
-	 * @param lookupFieldType
-	 *            the lookupFieldType to set
-	 */
-	public void setLookupFieldType(String lookupFieldType) {
-		this.lookupFieldType = lookupFieldType;
-	}
-
-	/**
-	 * @return the lookupFieldType
-	 */
-	public String getLookupFieldType() {
-		return lookupFieldType;
-	}
-
-	/**
-	 * @param helpText
-	 *            the helpText to set
-	 */
-	public void setHelpText(String helpText) {
-		this.helpText = helpText;
-	}
-
-	/**
-	 * @return the helpText
-	 */
-	public String getHelpText() {
-		return helpText;
+	public void setValidationRegexp(String validationRegexp) {
+		this.validationRegexp = validationRegexp;
 	}
 }

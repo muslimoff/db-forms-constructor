@@ -2,6 +2,7 @@ package com.abssoft.constructor.client.data.common;
 
 import java.util.HashMap;
 
+import com.abssoft.constructor.client.metadata.ActionStatus;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -15,20 +16,22 @@ public class Row extends HashMap<Integer, String> implements IsSerializable {
 	/**
 	 * Статус (ошибка/успешно)...
 	 */
-	private String serverMessage;
+	private ActionStatus status = new ActionStatus();
 
 	/**
 	 * @param serverMessage
 	 *            the status to set
 	 */
-	public void setServerMessage(String serverMessage) {
-		this.serverMessage = serverMessage;
-	}
 
 	/**
 	 * @return the status
 	 */
-	public String getServerMessage() {
-		return serverMessage;
+
+	public void setStatus(ActionStatus status) {
+		this.status = status;
+	}
+
+	public ActionStatus getStatus() {
+		return status;
 	}
 }

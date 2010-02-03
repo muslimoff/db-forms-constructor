@@ -14,13 +14,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface QueryServiceAsync {
 
-	public void connect(String url, String user, String password, AsyncCallback<ConnectionInfo> callback);
+	public void connect(int ServerIdx, String user, String password, boolean isScript, AsyncCallback<ConnectionInfo> callback);
 
 	public void fetch(int sessionId, String formCode, int gridHashCode, String sortBy, int startRow, int endRow, Map<?, ?> criteria,
 			boolean forceFetch, AsyncCallback<RowsArr> callback);
 
-	public void executeDML(int sessionId, String formCode, int gridHashCode, Row t, String actionCode, ClientActionType clientActionType,
-			AsyncCallback<Row> callback);
+	public void executeDML(int sessionId, String formCode, int gridHashCode, Row oldRow, Row newRow, String actionCode,
+			ClientActionType clientActionType, AsyncCallback<Row> callback);
 
 	public void getFormMetaData(int sessionId, String formCode, AsyncCallback<FormMD> callback);
 

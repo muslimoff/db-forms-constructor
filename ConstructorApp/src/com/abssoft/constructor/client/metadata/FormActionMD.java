@@ -16,6 +16,7 @@ public class FormActionMD implements IsSerializable {
 	private String type;
 	private String sqlProcedureName;
 	private String dmlProcText;
+	private String confirmText;
 
 	private HashMap<Integer, String> inputs = new HashMap<Integer, String>();
 	private HashMap<Integer, String> outputs = new HashMap<Integer, String>();
@@ -171,4 +172,13 @@ public class FormActionMD implements IsSerializable {
 	public HashMap<String, Integer> getOutputsByName() {
 		return outputsByName;
 	}
+
+	public void setConfirmText(String confirmText) {
+		this.confirmText = confirmText;
+	}
+
+	public String getConfirmText() {
+		return confirmText;
+	}
+
 }

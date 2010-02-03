@@ -1,11 +1,10 @@
 package com.abssoft.constructor.client.metadata;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-//extends ArrayList<MenuMD>
-public class MenusArr extends HashMap<String, MenuMD> implements IsSerializable {
+public class MenusArr extends ArrayList<MenuMD> implements IsSerializable {
 
 	/**
 	 * 
@@ -27,4 +26,5 @@ public class MenusArr extends HashMap<String, MenuMD> implements IsSerializable 
 	public IconsArr getIcons() {
 		return icons;
 	}
+
 }

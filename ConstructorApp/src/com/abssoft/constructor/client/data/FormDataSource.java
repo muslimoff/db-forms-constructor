@@ -9,25 +9,22 @@ import com.abssoft.constructor.client.data.common.GwtRpcDataSource;
 import com.abssoft.constructor.client.data.common.Row;
 import com.abssoft.constructor.client.data.common.RowsArr;
 import com.abssoft.constructor.client.form.MainFormPane;
+import com.abssoft.constructor.client.metadata.ActionStatus;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.user.client.Window;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
+import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.ResultSet;
 import com.smartgwt.client.util.JSOHelper;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.tree.TreeNode;
 
 public class FormDataSource extends GwtRpcDataSource {
-
-	private static void showActionStatus(String status) {
-		if (null != status)
-			Window.alert("Message from server: " + status);
-	}
 
 	private FormDataSourceField[] dsFields;
 	private String formCode;
@@ -71,64 +68,42 @@ public class FormDataSource extends GwtRpcDataSource {
 	}
 
 	@Override
-	protected void executeAdd(final String requestId, final DSRequest request, final DSResponse response) {
-		// Retrieve record which should be added.
-		JavaScriptObject data = request.getData();
-		ListGridRecord listGridRec = new ListGridRecord(data);
-		Row newRow = Utils.getRowFromListGridRecord(dsFields, listGridRec);
-		QueryServiceAsync service = GWT.create(QueryService.class);
-		service.executeDML(ConstructorApp.sessionId, formCode, gridHashCode, newRow, mainFormPane.getCurrentActionCode(),
-				ClientActionType.ADD, new DSAsyncCallback<Row>(requestId, response, this) {
-					public void onSuccess(Row result) {
-						ListGridRecord[] list = new ListGridRecord[1];
-						list[0] = Utils.getListGridRecordFromRow(dsFields, result);
-						response.setData(list);
-						processResponse(requestId, response);
-						showActionStatus(result.getServerMessage());
-						totalRows = totalRows + 1;
-					}
-				});
-	}
-
-	@Override
 	protected void executeFetch(final String requestId, final DSRequest request, final DSResponse response) {
 		Utils.debug("DS Fetch:" + formCode + "; ID: " + this.getID());
 		final Integer startRow = (null == request.getStartRow()) ? 0 : request.getStartRow();
+
 		final Integer endRow = (null == request.getEndRow()) ? 1000 : request.getEndRow();
 		Map<?, ?> filterValues;
 		final ListGrid g = mainFormPane.getMainForm().getTreeGrid();
 		if (g instanceof com.smartgwt.client.widgets.tree.TreeGrid) {
 			Criteria treeCriteria = new Criteria();
-			// Обработка Exception при g.getEventRow()
-			// для дерева без замороженых столбцов
-			// int gridEventRow = -2;
-			// try {
-			int gridEventRow = (0 != g.getTotalRows()) ? g.getEventRow() : -2;
-			// } catch (Exception e) {
-			// Utils.logException(e, "DS - g.getEventRow()");
-			// }
-			if (-2 != gridEventRow) {
-				treeCriteria = Utils.getCriteriaFromListGridRecord(g.getRecord(g.getEventRow()), formCode);
+			if (!mainFormPane.isForceFetch()) {
+				int gridEventRow = (0 != g.getTotalRows()) ? g.getEventRow() : -2;
+				if (-2 != gridEventRow) {
+					treeCriteria = Utils.getCriteriaFromListGridRecord(g.getRecord(g.getEventRow()), formCode);
+				}
 			}
 			treeCriteria.addCriteria(request.getCriteria());
 			filterValues = treeCriteria.getValues();
 		} else {
 			filterValues = request.getCriteria().getValues();
 		}
+		// TODO request.getSortBy() не работает так, как описано. отписался в форуме
+		String sortBy = request.getAttribute("sortBy");
 		QueryServiceAsync service = GWT.create(QueryService.class);
-		service.fetch(ConstructorApp.sessionId, formCode, gridHashCode, request.getSortBy(), startRow, endRow, filterValues, false,
-				new DSAsyncCallback<RowsArr>(requestId, response, this) {
+		service.fetch(ConstructorApp.sessionId, formCode, gridHashCode, sortBy, startRow, endRow, filterValues,
+				mainFormPane.isForceFetch(), new DSAsyncCallback<RowsArr>(requestId, response, this) {
 					public void onSuccess(RowsArr result) {
 						Utils.debug(formCode + "...............DataSource: " + FormDataSource.this.getID()
 								+ " - before fetch...............");
-						showActionStatus(result.getStatus());
+						ActionStatus.showActionStatus(result.getStatus());
 						int rowsCount = result.size();
 						ListGridRecord[] records = new ListGridRecord[rowsCount];
 						Utils.debug("service.fetch. rowsCount: " + rowsCount);
 						for (int r = 0; r < rowsCount; r++) {
 							try {
 								Row row = result.get(r);
-								records[r] = Utils.getListGridRecordFromRow(dsFields, row);
+								records[r] = Utils.getTreeNodeFromRow(dsFields, row);
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -143,6 +118,8 @@ public class FormDataSource extends GwtRpcDataSource {
 							g.focus();
 							g.selectRecord(0);
 							mainFormPane.setCurrentGridRowSelected(0);
+							// Refresh только для static detail
+							mainFormPane.filterDetailData(g.getSelectedRecord(), g, false, 0);
 							Utils.debug("mainFormPane.getValuesManager().getMembers().length="
 									+ mainFormPane.getValuesManager().getMembers().length);
 							if (0 != mainFormPane.getValuesManager().getMembers().length) {
@@ -161,73 +138,102 @@ public class FormDataSource extends GwtRpcDataSource {
 	}
 
 	@Override
+	protected void executeAdd(final String requestId, final DSRequest request, final DSResponse response) {
+		// Retrieve record which should be added.
+		JavaScriptObject data = request.getData();
+		TreeNode listGridRec = new TreeNode(data);
+		Row newRow = Utils.getRowFromRecord(dsFields, listGridRec);
+		Row oldRow = null;
+		QueryServiceAsync service = GWT.create(QueryService.class);
+		service.executeDML(ConstructorApp.sessionId, formCode, gridHashCode, oldRow, newRow, mainFormPane.getCurrentActionCode(),
+				ClientActionType.ADD, new DSAsyncCallback<Row>(requestId, response, this) {
+					public void onSuccess(Row result) {
+						ActionStatus.showActionStatus(result.getStatus());
+						if (!ActionStatus.StatusType.ERROR.equals(result.getStatus().getStatusType())) {
+							TreeNode[] list = new TreeNode[1];
+							list[0] = Utils.getTreeNodeFromRow(dsFields, result);
+							response.setData(list);
+							processResponse(requestId, response);
+							totalRows = totalRows + 1;
+						}
+					}
+				});
+	}
+
+	@Override
 	protected void executeRemove(final String requestId, final DSRequest request, final DSResponse response) {
 		// Retrieve record which should be removed.
-		System.out.println("x1");
-		JavaScriptObject data = request.getData();
-		System.out.println("x2");
-		final ListGridRecord listGridRec = new ListGridRecord(data);
-		System.out.println("x3");
-		Row removedRec = Utils.getRowFromListGridRecord(dsFields, listGridRec);
-		System.out.println("x4");
+
+		Row oldRow = Utils.getRowFromRecord(dsFields, new Record(request.getData()));
 		QueryServiceAsync service = GWT.create(QueryService.class);
-		System.out.println("x5");
-		service.executeDML(ConstructorApp.sessionId, formCode, gridHashCode, removedRec, mainFormPane.getCurrentActionCode(),
+		service.executeDML(ConstructorApp.sessionId, formCode, gridHashCode, oldRow, null, mainFormPane.getCurrentActionCode(),
 				ClientActionType.DEL, new DSAsyncCallback<Row>(requestId, response, this) {
 					public void onSuccess(Row result) {
-						System.out.println("x6");
-						ListGridRecord[] list = new ListGridRecord[1];
-						// We do not receive removed record from server.
-						// Return record from request.
-						list[0] = listGridRec;
-						System.out.println("x7");
-						response.setData(list);
-						System.out.println("x8");
-						processResponse(requestId, response);
-						System.out.println("x9");
-						totalRows = totalRows - 1;
-						showActionStatus(result.getServerMessage());
-						System.out.println("x10");
+						ActionStatus.showActionStatus(result.getStatus());
+						// We do not receive removed record from server. Return record from request.
+						if (!ActionStatus.StatusType.ERROR.equals(result.getStatus().getStatusType())) {
+							response.setData(new ListGridRecord[] { new ListGridRecord(request.getData()) });
+							processResponse(requestId, response);
+							totalRows = totalRows - 1;
+						}
 					}
 				});
 	}
 
 	@Override
 	protected void executeUpdate(final String requestId, final DSRequest request, final DSResponse response) {
-		Row changedRow = new Row();
+		Row newRow = new Row();
+		/***************************/
+		for (String s : request.getAttributes()) {
+			System.out.println("xx>>>>>>> " + s + ": " + request.getAttribute(s));
+		}
+		Record r1 = Record.getOrCreateRef(request.getData());
+		for (String s2 : r1.getAttributes()) {
+			System.out.println("zz>>>>>>> " + s2 + ": " + request.getAttribute(s2));
+		}
+		/***************************/
+		Row oldRow = null;
+		Record oldValues = request.getOldValues();
+		if (null != oldValues) {
+			oldRow = Utils.getRowFromRecord(dsFields, oldValues);
+		}
 		Canvas c = Canvas.getById(request.getComponentId());
 		if (null != c) {
 			if (c instanceof DynamicForm) {
-				changedRow = Utils.getRowFromFormFields(((DynamicForm) c).getFields());
+				newRow = Utils.getRowFromFormFields(((DynamicForm) c).getFields());
 			} else {
 				ListGridRecord listGridRec = new ListGridRecord(request.getData());
 				ListGrid grid = (ListGrid) c;
 				int index = grid.getRecordIndex(listGridRec);
 				listGridRec = (ListGridRecord) grid.getEditedRecord(index);
-				changedRow = Utils.getRowFromListGridRecord(dsFields, listGridRec);
+				newRow = Utils.getRowFromRecord(dsFields, listGridRec);
 			}
 		} else {
 			ListGridRecord listGridRec = new ListGridRecord();
 			JSOHelper.apply(request.getData(), listGridRec.getJsObj());
-			changedRow = Utils.getRowFromListGridRecord(dsFields, listGridRec);
+			newRow = Utils.getRowFromRecord(dsFields, listGridRec);
 		}
 
 		QueryServiceAsync service = GWT.create(QueryService.class);
-		service.executeDML(ConstructorApp.sessionId, formCode, gridHashCode, changedRow, mainFormPane.getCurrentActionCode(),
+		service.executeDML(ConstructorApp.sessionId, formCode, gridHashCode, oldRow, newRow, mainFormPane.getCurrentActionCode(),
 				ClientActionType.UPD, new DSAsyncCallback<Row>(requestId, response, this) {
 					public void onSuccess(Row result) {
-						ListGridRecord[] list = new ListGridRecord[1];
-						ListGridRecord updRec = Utils.getListGridRecordFromRow(dsFields, result);
-						list[0] = updRec;
-						System.out.println(result);
-						response.setData(list);
-						ResultSet rs = mainFormPane.getMainForm().getTreeGrid().getResultSet();
-						System.out.println("zz " + rs.getCriteria().getValues());
-						rs.setCriteria(new Criteria());
-						processResponse(requestId, response);
-						showActionStatus(result.getServerMessage());
-						mainFormPane.getMainForm().getTreeGrid().selectRecord(mainFormPane.getCurrentGridRowSelected());
-						((MainFormPane.FormValuesManager) mainFormPane.getValuesManager()).editRecord2(updRec);
+						ActionStatus.showActionStatus(result.getStatus());
+						if (!ActionStatus.StatusType.ERROR.equals(result.getStatus().getStatusType())) {
+							response.setData(new ListGridRecord[] { Utils.getTreeNodeFromRow(dsFields, result) });
+							try {
+								ResultSet rs = mainFormPane.getMainForm().getTreeGrid().getResultSet();
+								rs.setCriteria(new Criteria());
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							processResponse(requestId, response);
+							ListGridRecord selectedRec = mainFormPane.getMainForm().getTreeGrid().getRecord(
+									mainFormPane.getCurrentGridRowSelected());
+							mainFormPane.getMainForm().getTreeGrid().selectRecord(selectedRec);
+							int selectedRecIdx = mainFormPane.getMainForm().getTreeGrid().getRecordIndex(selectedRec);
+							mainFormPane.filterDetailData(selectedRec, mainFormPane.getMainForm().getTreeGrid(), selectedRecIdx);
+						}
 					}
 				});
 	}

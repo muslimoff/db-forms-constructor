@@ -1,15 +1,12 @@
 package com.abssoft.constructor.client.widgets;
 
-import java.util.Iterator;
-import java.util.Map;
-
 import com.abssoft.constructor.client.data.FormTreeGridField;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.form.MainFormPane;
 import com.smartgwt.client.data.Criteria;
+import com.smartgwt.client.data.Record;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.FilterCriteriaFunction;
-import com.smartgwt.client.widgets.grid.ListGridRecord;
 
 public class GridComboBoxItem extends ComboBoxItem {
 	private MainFormPane mainFormPane;
@@ -18,15 +15,8 @@ public class GridComboBoxItem extends ComboBoxItem {
 		this.mainFormPane = mainFormPane;
 		this.setPickListFilterCriteriaFunction(new FilterCriteriaFunction() {
 			public Criteria getCriteria() {
-				ListGridRecord r = getMainFormPane().getMainForm().getTreeGrid().getSelectedRecord();
-				Map<?, ?> ev = getMainFormPane().getMainForm().getTreeGrid().getEditValues(r);
-				Iterator<?> it = ev.keySet().iterator();
-				while (it.hasNext()) {
-					String mapKey = (String) it.next();
-					String value = (String) ev.get(mapKey);
-					r.setAttribute(mapKey, value);
-				}
-				Criteria criteria = Utils.getCriteriaFromListGridRecord(r);
+				Record record = Utils.getEditedRow(getMainFormPane());
+				Criteria criteria = Utils.getCriteriaFromListGridRecord(record, "GridComboBoxItem:" + GridComboBoxItem.this.getName());
 				return criteria;
 			}
 		});

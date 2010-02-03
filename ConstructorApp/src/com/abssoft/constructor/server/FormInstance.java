@@ -8,6 +8,7 @@ import oracle.jdbc.OraclePreparedStatement;
 
 import com.abssoft.constructor.client.data.common.Row;
 import com.abssoft.constructor.client.data.common.RowsArr;
+import com.abssoft.constructor.client.metadata.ActionStatus;
 import com.abssoft.constructor.client.metadata.FormColumnsArr;
 import com.abssoft.constructor.client.metadata.FormMD;
 
@@ -30,16 +31,44 @@ public class FormInstance {
 	}
 
 	public void closeForm() {
+		Utils.debug("Server:FormInstance. before close...");
 		try {
 			rs.close();
+		} catch (java.sql.SQLException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Utils.debug("Server:FormInstance. Resultset closed.");
+		try {
+
 			statement.close();
 		} catch (java.sql.SQLException e) {
 			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
+		Utils.debug("Server:FormInstance. Statement closed.");
+		Utils.debug("Server:FormInstance closed...");
 	}
 
 	public RowsArr fetch(String sortBy, int startRow, int endRow, Map<?, ?> filterValues, boolean forceFetch) {
 		RowsArr currentData = new RowsArr();
+		// /////////////////////////
+		if (null != sortBy) {
+			String[] sortByArr = sortBy.split(",");
+			sortBy = "";
+			for (String ss : sortByArr) {
+				System.out.println("######>" + ss);
+				sortBy = sortBy + ("".equals(sortBy) ? "" : ", ") + ss.replaceAll("-", "") + (ss.contains("-") ? " desc" : "");
+			}
+			sortBy = "\n" + "order by " + sortBy;
+			Utils.debug("sortBy:" + sortBy);
+
+		}
+
+		// ////////////////////////
 		try {
 			// Первый вызов DataSource или изменение сортировки, фильтров, а
 			// также принудительно
@@ -47,9 +76,7 @@ public class FormInstance {
 				Utils.debug("Erase ResultSetData....");
 				currentEndRow = -1;
 				resultData = new RowsArr();
-				String sqlText = formSQLText
-						+ ((sortBy != null) ? ("\n" + "order by " + sortBy.replaceAll("-", "") + (sortBy.contains("-") ? " desc" : ""))
-								: "");
+				String sqlText = formSQLText + ((sortBy != null) ? sortBy : "");
 				Utils.debug(sqlText);
 				statement = (OraclePreparedStatement) connection.prepareStatement("select count(*) cnt from (" + sqlText + "\n)"); // statement
 				Utils.setFilterValues(statement, filterValues);
@@ -73,7 +100,9 @@ public class FormInstance {
 			// цикл не выполняется - данные уже считаны.
 			for (int rowNum = currentEndRow + 1; rowNum <= endRow; rowNum++) {
 				try {
-					if (!rs.next()) {
+					// System.out.println("isAfterLast(): " + rs.isAfterLast());
+					if (!rs.next() // !rs.isAfterLast() //!rs.isClosed() &&
+					) {
 						rs.close();
 						statement.close();
 						break;
@@ -118,10 +147,10 @@ public class FormInstance {
 			currentData.setTotalRows(resultData.getTotalRows());
 		} catch (java.sql.SQLException e) {
 			e.printStackTrace();
-			currentData.setStatus(e.toString());
+			currentData.setStatus(new ActionStatus(e.getMessage(), ActionStatus.StatusType.ERROR));
 		} catch (Exception e) {
 			e.printStackTrace();
-			currentData.setStatus(e.toString());
+			currentData.setStatus(new ActionStatus(e.toString(), ActionStatus.StatusType.ERROR));
 		}
 		currentSortBy = sortBy;
 		return currentData;

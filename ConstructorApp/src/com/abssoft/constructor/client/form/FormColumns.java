@@ -1,5 +1,10 @@
 package com.abssoft.constructor.client.form;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
+
 import com.abssoft.constructor.client.data.FormDataSourceField;
 import com.abssoft.constructor.client.data.FormTreeGridField;
 import com.abssoft.constructor.client.data.Utils;
@@ -7,6 +12,8 @@ import com.abssoft.constructor.client.metadata.FormColumnMD;
 import com.abssoft.constructor.client.metadata.FormColumnsArr;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.FormTabMD;
+import com.smartgwt.client.data.SortSpecifier;
+import com.smartgwt.client.types.SortDirection;
 
 public class FormColumns {
 	int columnsCount;
@@ -34,8 +41,7 @@ public class FormColumns {
 		}
 		for (int i = 0; i < columnsCount; i++) {
 			FormColumnMD m = columns.get(i);
-			// По умолчанию, если getFieldType=1 или =2, и табик не указан,
-			// значит боковой динамический детейл
+			// По умолчанию, если getFieldType=1 или =2, и табик не указан, значит боковой динамический детейл
 			if (("1".equals(m.getFieldType()) || "2".equals(m.getFieldType())) && null == m.getEditorTabCode())
 				hasSideTabsCount = true;
 		}
@@ -57,5 +63,33 @@ public class FormColumns {
 			gridFields[i].setPrompt(m.getDescription());
 		}
 		return gridFields;
+	}
+
+	public SortSpecifier[] getDefaultSort() {
+		Utils.debug("getDefaultSort.columns:" + columns);
+		HashMap<String, String> x = new HashMap<String, String>();
+		Iterator<Integer> itr = columns.keySet().iterator();
+		while (itr.hasNext()) {
+			Integer colIdx = itr.next();
+			FormColumnMD cmd = columns.get(colIdx);
+			if (null != cmd.getDefaultOrderByNumber()) {
+				x.put(cmd.getDefaultOrderByNumber(), cmd.getName());
+			}
+		}
+		SortSpecifier[] result = null;
+		if (0 != x.size()) {
+			Vector<String> v = new Vector<String>(x.keySet());
+			Collections.sort(v);
+			Iterator<String> i1 = v.iterator();
+			result = new SortSpecifier[x.size()];
+			int k = 0;
+			while (i1.hasNext()) {
+				String colSortIdx = i1.next();
+				Utils.debug("getDefaultSort. colSortIdx: " + colSortIdx + " => " + x.get(colSortIdx));
+				SortDirection sd = colSortIdx.contains("-") ? SortDirection.DESCENDING : SortDirection.ASCENDING;
+				result[k++] = new SortSpecifier(x.get(colSortIdx).replaceAll("-", ""), sd);
+			}
+		}
+		return result;
 	}
 }
