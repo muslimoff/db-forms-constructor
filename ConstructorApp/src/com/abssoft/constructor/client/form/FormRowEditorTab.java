@@ -49,11 +49,11 @@ public class FormRowEditorTab extends FormTab {
 			item = new BooleanItem();
 		} else if ("4".equals(c.getFieldType())) {
 			item = new TextAreaItem(); // new AutoFitTextAreaItem();
-			//@item.setTitleOrientation(TitleOrientation.TOP);
+			// @item.setTitleOrientation(TitleOrientation.TOP);
 		} else if ("5".equals(c.getFieldType())) {
 			showHint = false;
 			item = new RichTextItem();
-			//@item.setTitleOrientation(TitleOrientation.TOP);
+			// @item.setTitleOrientation(TitleOrientation.TOP);
 			item.setShowTitle(true);
 		} else if ("6".equals(c.getFieldType())) {
 			showHint = false;
@@ -132,9 +132,8 @@ public class FormRowEditorTab extends FormTab {
 		}
 		form = new DynamicForm();
 
-		// !!
+		//TODO Дизейбл формы при отсутствии изменений сделать.
 		// form.setDisabled(!formMetadata.getActions().isUpdateAllowed());
-
 		if (0 != editorTab.getNumberOfColumns()) {
 			form.setNumCols(editorTab.getNumberOfColumns());
 		}
@@ -145,14 +144,12 @@ public class FormRowEditorTab extends FormTab {
 		form.setAutoWidth();
 		form.setFields(fieldsList.toArray(new FormItem[fieldsList.size()]));
 		this.setTitle(getIconTitle(editorTab.getTabName(), editorTab.getIconId()));
-		if (false && ConstructorApp.debugEnabled) {
-			form.setCellBorder(1);
-		}
+		// TODO Рамки формочек вынести в опции приложения. Пока убрал.
+		// if (false && ConstructorApp.debugEnabled) {form.setCellBorder(1);}
 		form.setItemTitleHoverFormatter(new FormItemHoverFormatter() {
 			@Override
 			public String getHoverHTML(FormItem item, DynamicForm form) {
-				// TODO цикл - возможно медленно, а что делать... Нужно добавить
-				// еще HashMap<ColumnName, ColIndex> и по нему искать
+				// TODO цикл - возможно медленно, а что делать... Нужно добавить еще HashMap<ColumnName, ColIndex> и по нему искать
 				String s = item.getName();
 				for (int i = 0; i < columnsCount; i++) {
 					FormColumnMD c = columns.get(i);

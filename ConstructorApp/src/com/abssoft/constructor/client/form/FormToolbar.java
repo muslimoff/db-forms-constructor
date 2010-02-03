@@ -112,9 +112,8 @@ public class FormToolbar extends DynamicForm {
 		final ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		mainFormPane.setCurrentActionCode(m.getCode());
 		if ("2".equals(m.getType())) {
-			// TODO Проблема с DynamicForm.ItemChangedHandler в хроме -
-			// приходится сохранять данные RichTextItem не по событию, а по
-			// кнопке сохранения
+			// TODO Проблема с DynamicForm.ItemChangedHandler в хроме - приходится сохранять данные RichTextItem не по событию, а по кнопке
+			// сохранения
 			if (Utils.isChrome()) {
 				for (DynamicForm form : mainFormPane.getValuesManager().getMembers()) {
 					System.out.println("form: " + form);
@@ -162,7 +161,6 @@ public class FormToolbar extends DynamicForm {
 				}
 			}
 			grid.startEditingNew(defVals);
-			// mainFormPane.getValuesManager().clearValues();
 			((FormValuesManager) mainFormPane.getValuesManager()).editRecord2();
 		} else if ("3".equals(m.getType())) {
 			try {
