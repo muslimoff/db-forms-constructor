@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="ConstructorApp" default="build" basedir=".">
 	<!-- Configure path to GWT SDK -->
-	<property name="gwt.sdk" 	location="C:/GWT/lib/gwt-2.0.0" />
-	<property name="smartgwt" 	location="C:/GWT/lib/smartgwt-2.0" />
+	<property name="gwt.sdk" location="C:/GWT/lib/gwt-2.0.1" />
+	<property name="smartgwt" location="C:/GWT/lib/smartgwt-2.0" />
 
 	<path id="project.class.path">
 		<pathelement location="war/WEB-INF/classes" />
@@ -44,37 +44,54 @@
 		</java>
 	</target>
 
-	
+
 	<target name="build" depends="gwtc" description="Build this project" />
 
 	<target name="war" depends="build" description="Create a war file">
 		<zip destfile="ConstructorApp.war" basedir="war" />
 	</target>
 
+	<!--
 	<target name="StopTomcat" depends="war" description="Stop Tomcat">
-			<exec command="net stop Tomcat6"/>
+		<exec command="net stop Tomcat6" />
 	</target>
-	
+-->
+	<target name="StopTomcat" depends="war" description="Stop Tomcat">
+		<exec executable="net">
+			<arg value="stop" />
+			<arg value="Tomcat6" />
+		</exec>
+	</target>
+
 	<target name="deploy" depends="StopTomcat" description="Copy a war file to Apache">
 		<copy todir="C:\Program Files\Apache Software Foundation\Tomcat 6.0\webapps" file="ConstructorApp.war" />
 	</target>
 
+
 	<target name="cleanApache" depends="deploy" description="Apache dirs clean">
 		<delete dir="C:\Program Files\Apache Software Foundation\Tomcat 6.0\webapps\ConstructorApp" failonerror="false" />
 	</target>
-	
+
+	<!--
 	<target name="StartTomcat" depends="cleanApache" description="Start Tomcat">
 				<exec command="net start Tomcat6"/>
 	</target>
-	
+-->
+	<target name="StartTomcat" depends="cleanApache" description="Start Tomcat">
+		<exec executable="net">
+			<arg value="start" />
+			<arg value="Tomcat6" />
+		</exec>
+	</target>
+
 	<target name="javadoc" depends="StartTomcat">
-		<javadoc encoding="UTF-8" access="public" author="true" classpath="C:\GWT\gwt-windows-2.0.0\gwt-dev-oophm.jar;C:\GWT\smartgwt-1.1\smartgwt-skins.jar;C:\GWT\gwt-windows-2.0.0\gwt-dev-windows.jar;C:\GWT\jdbc14.zip;C:\GWT\smartgwt-1.1\smartgwt.jar;C:\GWT\gwt-windows-2.0.0\gwt-user.jar;C:\GWT\nls_charset12.zip;C:\GWT\eclipse 3.4\plugins\org.junit_3.8.2.v20080602-1318\junit.jar" destdir="doc" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="com.abssoft.constructor.client.common,com.abssoft.constructor.client.data,com.abssoft.constructor.client,com.abssoft.constructor.server,com.abssoft.constructor.client.form,com.abssoft.constructor.client.data.common,com.abssoft.constructor.client.metadata,com.abssoft.constructor.client.event" source="1.6" sourcepath="src" splitindex="true" use="true" version="true">
+		<javadoc encoding="UTF-8" access="public" author="true" classpath="${gwt.sdk}\gwt-dev-oophm.jar;C:\GWT\smartgwt-1.1\smartgwt-skins.jar;${gwt.sdk}\gwt-dev-windows.jar;C:\GWT\jdbc14.zip;C:\GWT\smartgwt-1.1\smartgwt.jar;${gwt.sdk}\gwt-user.jar;C:\GWT\nls_charset12.zip;C:\GWT\eclipse 3.4\plugins\org.junit_3.8.2.v20080602-1318\junit.jar" destdir="doc" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="com.abssoft.constructor.client.common,com.abssoft.constructor.client.data,com.abssoft.constructor.client,com.abssoft.constructor.server,com.abssoft.constructor.client.form,com.abssoft.constructor.client.data.common,com.abssoft.constructor.client.metadata,com.abssoft.constructor.client.event" source="1.6" sourcepath="src" splitindex="true" use="true" version="true">
 			<link href="jar:file:/C:/Oracle/ora92/jdbc/doc/javadoc.zip!/" />
-			<link href="file:/C:/GWT/gwt-windows-2.0.0/doc/javadoc/" />
-			<link href="file:/C:/GWT/smartgwt-1.1/doc/javadoc/" />
+			<link href="file:${gwt.sdk}/doc/javadoc/" />
+			<link href="file:${smartgwt}/doc/javadoc/" />
 		</javadoc>
 	</target>
-	
+
 	<target name="clean" description="Cleans this project">
 		<delete dir="war/WEB-INF/classes" failonerror="false" />
 		<delete dir="war/constructorapp" failonerror="false" />

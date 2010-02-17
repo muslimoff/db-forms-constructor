@@ -14,11 +14,12 @@
 		<server display="EPM_EXT-Конструктор" allowuserchange="false"
 			default="true" debug="true" title="EPM Ext - Forms Constructor">hypo:8521:epm</server>
 		<server display="EPM_RATES-Тарифы" dbusername="APP_RATES"
-			default="false" dbpassword="" allowuserchange="false" debug="true"
+			default="true" dbpassword="" allowuserchange="false" debug="true"
 			title="Формирование тарифов на медицинские услуги">hypo:1521:epm</server>
 		<server display="EPM_RATES_EXT-Тарифы" dbusername="APP_RATES"
 			dbpassword="A" allowuserchange="false" debug="true"
 			title="Формирование тарифов на медицинские услуги">hypo:8521:epm</server>
+		<server display="FC VM_XE" default="true" fcSchemaOwner="FC" dbusername="FC">VM_XE:1521:XE</server>
 		<server display="VIS12_full">
 			<![CDATA[
 			(DESCRIPTION =

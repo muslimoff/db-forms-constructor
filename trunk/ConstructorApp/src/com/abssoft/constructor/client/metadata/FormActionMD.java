@@ -17,6 +17,33 @@ public class FormActionMD implements IsSerializable {
 	private String sqlProcedureName;
 	private String dmlProcText;
 	private String confirmText;
+	private String hotKey;
+	private Boolean showSeparatorBelow;
+	private Boolean displayOnToolbar;
+
+	public String getHotKey() {
+		return hotKey;
+	}
+
+	public void setHotKey(String hotKey) {
+		this.hotKey = hotKey;
+	}
+
+	public Boolean getShowSeparatorBelow() {
+		return showSeparatorBelow;
+	}
+
+	public void setShowSeparatorBelow(Boolean showSeparatorBelow) {
+		this.showSeparatorBelow = showSeparatorBelow;
+	}
+
+	public Boolean getDisplayOnToolbar() {
+		return displayOnToolbar;
+	}
+
+	public void setDisplayOnToolbar(Boolean displayOnToolbar) {
+		this.displayOnToolbar = displayOnToolbar;
+	}
 
 	private HashMap<Integer, String> inputs = new HashMap<Integer, String>();
 	private HashMap<Integer, String> outputs = new HashMap<Integer, String>();

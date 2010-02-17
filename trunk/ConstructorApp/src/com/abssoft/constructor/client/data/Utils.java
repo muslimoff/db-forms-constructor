@@ -24,7 +24,7 @@ import com.smartgwt.client.widgets.tree.TreeNode;
 public class Utils {
 	public static TreeNode getTreeNodeFromRow(FormDataSourceField[] dsFields, Row row) {
 		TreeNode result = new TreeNode();
-		Utils.debug("getListGridRecordFromRow:" + row);
+		//Utils.debug("getListGridRecordFromRow:" + row);
 		for (int c = 0; null != row && c < row.size(); c++) {
 			String dsFieldName = dsFields[c].getName();
 			String cellValue = row.get(c);
@@ -192,7 +192,6 @@ public class Utils {
 	public static LinkedHashMap<String, String> createStrSortedLinkedHashMap(HashMap<String, String> mm, boolean isSortByValue) {
 		if (isSortByValue) {
 			return createStrValSortedLinkedHashMap(mm);
-			// return createStrKeySortedLinkedHashMap(mm);
 		} else {
 			return createStrKeySortedLinkedHashMap(mm);
 		}

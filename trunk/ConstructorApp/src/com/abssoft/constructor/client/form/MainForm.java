@@ -66,6 +66,7 @@ class MainForm extends Canvas {
 				@Override
 				public void onFolderOpened(FolderOpenedEvent event) {
 					Utils.debug("onFolderOpened>>>>" + event.getNode().getTitle());
+					System.out.println("@@" + FormTreeGrid.this.getOpenState());
 				}
 			});
 		}
@@ -73,14 +74,7 @@ class MainForm extends Canvas {
 
 	class GridRecordClickHandler implements RecordClickHandler {
 		public void onRecordClick(RecordClickEvent event) {
-			System.out.println("************** 1: " + event.getRecordNum());
 			mainFormPane.setCurrentGridRowSelected(event.getRecordNum());
-			System.out.println("************** 2: " + mainFormPane.getCurrentGridRowSelected());
-			System.out.println("************** 2: " + event.getSource());
-			System.out.println("************** 3: " + ((ListGrid) event.getSource()).getEditedRecord(event.getRecordNum()));
-			System.out.println("************** 3: " + ((ListGrid) event.getSource()).getRecord(event.getRecordNum()));
-			System.out.println("************** 4: " + event.getRecord());
-
 			// System.out.println(FormTreeGrid.this.getEditedRecord(event.getRecordNum()));
 			Record r = event.getRecord();
 			if (null == r) {
