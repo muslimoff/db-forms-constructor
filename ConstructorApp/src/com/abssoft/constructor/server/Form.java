@@ -32,7 +32,6 @@ public class Form {
 	private HashMap<Integer, FormInstance> formInstance = new HashMap<Integer, FormInstance>();
 	private OracleConnection connection;
 	private String fcSchemaOwner;
-
 	private String formSQLText;
 	private FormColumnsArr metadata = new FormColumnsArr();
 	private String formCode;
@@ -56,21 +55,15 @@ public class Form {
 		Row resultRow = null != newRow ? newRow : oldRow;
 		Utils.debug("actionCode:" + actionCode + "; clientActionType:" + clientActionType, resultRow);
 		FormActionsArr fActArr = formMetaData.getActions();
-		System.out.println("q1");
 		FormActionMD fActMD = null;
 		for (int i = 0; i < fActArr.size(); i++) {
-			System.out.println("q2:" + i);
 			if (actionCode.equals(fActArr.get(i).getCode())) {
-				System.out.println("q2.1");
 				fActMD = fActArr.get(i);
 			}
 
 		}
-		System.out.println("q3");
 		{
-			System.out.println("q4");
 			String dmlProcText = fActMD.getDmlProcText();
-			System.out.println("q5:" + dmlProcText);
 			if (null != dmlProcText) {
 				OracleCallableStatement stmnt = (OracleCallableStatement) connection.prepareCall(dmlProcText);
 				Utils.debug(dmlProcText, resultRow);
@@ -276,6 +269,9 @@ public class Form {
 				if (null != actionData.getSqlProcedureName()) {
 					actionData.setDmlProcText(getDMLProcText(actionData));
 				}
+				actionData.setHotKey(actRs.getString("hot_key"));
+				actionData.setShowSeparatorBelow("Y".equals(actRs.getString("show_separator_below")));
+				actionData.setDisplayOnToolbar("Y".equals(actRs.getString("display_on_toolbar")));
 				result.add(actionData);
 
 				insertAllowed = ClientActionType.ADD.getValue().equals(actionData.getType()) ? true : insertAllowed;

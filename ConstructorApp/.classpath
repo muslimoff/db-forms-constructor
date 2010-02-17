@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/GWT SDK [2.0.0]"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/GWT SDK [2.0.1]"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/Oracle JDBC 10"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/SmartGWT 2.0"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>

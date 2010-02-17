@@ -188,7 +188,7 @@ public class LookupDataSource extends DataSource {
 							records = new TreeNode[result.size()];
 							values.clear();
 							for (int r = 0; r < result.size(); r++) {
-								System.out.println("##" + result.get(r));
+								//System.out.println("##" + result.get(r));
 								try {
 									Row row = result.get(r);
 									records[r] = Utils.getTreeNodeFromRow(dsFields, row);

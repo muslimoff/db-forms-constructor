@@ -44,7 +44,8 @@ public class FormRowEditorTab extends FormTab {
 
 	static FormItem createItem(final FormColumnMD c, final MainFormPane mainFormPane) {
 		FormItem item;
-		boolean showHint = true;
+		// boolean showHint = true;
+		boolean showHint = !(null == c.getHelpText() || "".equals(c.getHelpText()));
 		if ("3".equals(c.getTreeFieldType()) || "B".equals(c.getDataType())) {
 			item = new BooleanItem();
 		} else if ("4".equals(c.getFieldType())) {
@@ -66,6 +67,7 @@ public class FormRowEditorTab extends FormTab {
 			item = new ComboBoxItem();
 			LinkedHashMap<String, String> lhm = Utils.createStrSortedLinkedHashMap(ConstructorApp.staticLookupsArr.get(c.getLookupCode()),
 					!"8".equals(c.getFieldType()));
+			System.out.println("$$ LHM: " + c.getLookupCode() + ". Values: " + lhm);
 			item.setValueMap(lhm);
 		} else if ("9".equals(c.getFieldType()) && null != c.getLookupCode()) {
 			item = new GridComboBoxItem(mainFormPane);
@@ -132,7 +134,7 @@ public class FormRowEditorTab extends FormTab {
 		}
 		form = new DynamicForm();
 
-		//TODO Дизейбл формы при отсутствии изменений сделать.
+		// TODO Дизейбл формы при отсутствии изменений сделать.
 		// form.setDisabled(!formMetadata.getActions().isUpdateAllowed());
 		if (0 != editorTab.getNumberOfColumns()) {
 			form.setNumCols(editorTab.getNumberOfColumns());
