@@ -119,7 +119,7 @@ public class FormDataSource extends GwtRpcDataSource {
 							g.selectRecord(0);
 							mainFormPane.setCurrentGridRowSelected(0);
 							// Refresh только для static detail
-							mainFormPane.filterDetailData(g.getSelectedRecord(), g, false, 0);
+							mainFormPane.filterDetailData(g.getSelectedRecord(), g, 0, false, true, true);
 							Utils.debug("mainFormPane.getValuesManager().getMembers().length="
 									+ mainFormPane.getValuesManager().getMembers().length);
 							if (0 != mainFormPane.getValuesManager().getMembers().length) {
