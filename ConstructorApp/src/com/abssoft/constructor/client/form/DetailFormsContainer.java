@@ -210,7 +210,7 @@ public class DetailFormsContainer extends TabSet {
 		Utils.debug("before DetailFormsContainer.filterData()...");
 		if (null != mainFormPane.getInitialFilter()) {
 
-			filterData(true);
+			filterData(true, true, true);
 			Utils.debug("DetailFormsContainer.filterData() executed...");
 		}
 
@@ -224,7 +224,7 @@ public class DetailFormsContainer extends TabSet {
 		});
 	}
 
-	public void createDynamicDetails(boolean filterDynamicMultiDetails) {
+	public void createDynamicDetails(boolean filterDynamicMultiDetails, boolean filterDynamicSingleDetails) {
 		Criteria criteria = mainFormPane.getInitialFilter();
 		FormColumnsArr fc = formMetadata.getColumns();
 		Iterator<Integer> columnIterator = fc.keySet().iterator();
@@ -232,7 +232,8 @@ public class DetailFormsContainer extends TabSet {
 			FormColumnMD c = fc.get(columnIterator.next());
 			String tabCode = null != c.getEditorTabCode() ? c.getEditorTabCode() : defTabPrefix + c.getName();
 			String detFormCode = criteria.getAttribute(c.getName());
-			if ("1".equals(c.getFieldType()) && dynamicDetailTabs.containsKey(tabCode)) {
+			// Для контекстного меню
+			if (filterDynamicSingleDetails && "1".equals(c.getFieldType()) && dynamicDetailTabs.containsKey(tabCode)) {
 				DynamicDetailTab dynamicDetailTab = dynamicDetailTabs.get(tabCode);
 				dynamicDetailTab.getDetailTab().updateTab(detFormCode, mainFormPane);
 			}
@@ -272,7 +273,7 @@ public class DetailFormsContainer extends TabSet {
 		}
 	}
 
-	public void filterData(boolean filterDynamicMultiDetails) {
+	public void filterData(boolean filterDynamicMultiDetails, boolean filterDynamicSingleDetails, boolean filterStaticDetails) {
 		Utils.debug("tabCounter:" + tabCounter);
 		if (0 != tabCounter) {
 			Utils.debug("DetailFormsContainer[" + orientation + "] - filterData");
@@ -280,14 +281,14 @@ public class DetailFormsContainer extends TabSet {
 				Utils.debug("GridRecordClickHandler.onRecordClick. Tab: " + t.getID());
 				FormTab ft = (FormTab) t;
 				Utils.debug("Tab " + ft.getFormCode() + ": " + ft.getTabType() + "; " + ft.getClass());
-				if (ft.getTabType().equals(FormTab.TabType.DETAIL) && ft instanceof MainFormContainer) {
+				if (filterStaticDetails && ft.getTabType().equals(FormTab.TabType.DETAIL) && ft instanceof MainFormContainer) {
 					((MainFormContainer) ft).getMainFormPane().filterData();
 				}
 				if (ft.getTabType().equals(FormTab.TabType.EDITOR) && ft instanceof FormRowEditorTab) {
 					Utils.debug("FormRowEditorTab>>" + ((FormRowEditorTab) ft).getForm().getID());
 				}
 			}
-			createDynamicDetails(filterDynamicMultiDetails);
+			createDynamicDetails(filterDynamicMultiDetails, filterDynamicSingleDetails);
 		}
 	}
 

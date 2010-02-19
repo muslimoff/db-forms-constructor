@@ -242,17 +242,20 @@ public class MainFormPane extends Canvas {
 	/**
 	 * @param record
 	 */
-	public void filterDetailData(ListGridRecord record, ListGrid treeGrid, boolean filterDynamicMultiDetails, int selectedRecordIndex) {
+	public void filterDetailData(ListGridRecord record, ListGrid treeGrid, int selectedRecordIndex, boolean filterDynamicMultiDetails,
+			boolean filterDynamicSingleDetails, boolean filterStaticDetails) {
 		System.out.println("filterDetailData.... record:" + record);
-		setInitialFilter(Utils.getCriteriaFromListGridRecord(record, this.getFormCode()));
-		getBottomDetailFormsContainer().filterData(filterDynamicMultiDetails);
-		getSideDetailFormsContainer().filterData(filterDynamicMultiDetails);
 		setCurrentGridRowSelected(selectedRecordIndex);
+		setInitialFilter(Utils.getCriteriaFromListGridRecord(record, this.getFormCode()));
+		getBottomDetailFormsContainer().filterData(filterDynamicMultiDetails, filterDynamicSingleDetails, filterStaticDetails);
+		getSideDetailFormsContainer().filterData(filterDynamicMultiDetails, filterDynamicSingleDetails, filterStaticDetails);
+		// setCurrentGridRowSelected(selectedRecordIndex);
 		((FormValuesManager) valuesManager).editRecord2();
+		buttonsToolBar.setActionsStatuses();
 	}
 
 	public void filterDetailData(ListGridRecord record, ListGrid treeGrid, int selectedRecordIndex) {
-		filterDetailData(record, treeGrid, true, selectedRecordIndex);
+		filterDetailData(record, treeGrid, selectedRecordIndex, true, true, true);
 	}
 
 	/**

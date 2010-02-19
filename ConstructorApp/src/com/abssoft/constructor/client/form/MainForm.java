@@ -20,6 +20,8 @@ import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
+import com.smartgwt.client.widgets.grid.events.RowContextClickEvent;
+import com.smartgwt.client.widgets.grid.events.RowContextClickHandler;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.tree.Tree;
 import com.smartgwt.client.widgets.tree.TreeGrid;
@@ -74,17 +76,28 @@ class MainForm extends Canvas {
 
 	class GridRecordClickHandler implements RecordClickHandler {
 		public void onRecordClick(RecordClickEvent event) {
-			mainFormPane.setCurrentGridRowSelected(event.getRecordNum());
-			// System.out.println(FormTreeGrid.this.getEditedRecord(event.getRecordNum()));
+			// mainFormPane.setCurrentGridRowSelected(event.getRecordNum());
 			Record r = event.getRecord();
 			if (null == r) {
 				r = ((ListGrid) event.getSource()).getEditedRecord(event.getRecordNum());
 			}
-			// ((ListGrid) event.getSource()).selectRecord(event.getRecordNum());
-			System.out.println("************** 5: " + r);
-			mainFormPane.setCurrentGridRowSelected(event.getRecordNum());
+			// mainFormPane.setCurrentGridRowSelected(event.getRecordNum());
 			mainFormPane.filterDetailData((ListGridRecord) r, treeGrid, event.getRecordNum());
-			System.out.println("************** 6 ");
+		}
+	}
+
+	class GridRowContextClickHandler implements RowContextClickHandler {
+
+		@Override
+		public void onRowContextClick(RowContextClickEvent event) {
+			System.out.println("$$$$$$$$$$$$$$$");
+			// mainFormPane.setCurrentGridRowSelected(event.getRecordNum());
+			Record r = event.getRecord();
+			if (null == r) {
+				r = ((ListGrid) event.getSource()).getEditedRecord(event.getRowNum());
+			}
+			// mainFormPane.setCurrentGridRowSelected(event.getRowNum());
+			mainFormPane.filterDetailData((ListGridRecord) r, treeGrid, event.getRowNum(), false, false, false);
 		}
 	}
 
@@ -116,6 +129,8 @@ class MainForm extends Canvas {
 		treeGrid.setAlternateRecordStyles(true);
 		treeGrid.setCanMultiSort(true);
 		treeGrid.addRecordClickHandler(new GridRecordClickHandler());
+		// Правая кнопка
+		treeGrid.addRowContextClickHandler(new GridRowContextClickHandler());
 		// treeGrid.setCanRemoveRecords(true);
 		// treeGrid.setShowFilterEditor(true);
 

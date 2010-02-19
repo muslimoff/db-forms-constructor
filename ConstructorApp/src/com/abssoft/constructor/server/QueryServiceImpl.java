@@ -48,7 +48,12 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 
 	public QueryServiceImpl() {
 		Utils.debug("Middle tier service 'QueryServiceImpl' started...");
+		File f = new File(".");
+		for (String s : f.list()) {
+			System.out.println(s);
+		}
 		ReadSettingsXML();
+
 	}
 
 	public void ReadSettingsXML() {

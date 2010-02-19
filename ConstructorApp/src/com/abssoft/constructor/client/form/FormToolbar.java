@@ -31,9 +31,6 @@ import com.smartgwt.client.widgets.menu.events.ClickHandler;
 import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
 
 public class FormToolbar extends DynamicForm {
-	private ArrayList<MenuItem> actionMenuItemsArr = new ArrayList<MenuItem>();
-	private ArrayList<IButton> actionButtonsArr = new ArrayList<IButton>();
-
 	class ActionItem extends MenuItem {
 		class ActionButtonClickHandler implements com.smartgwt.client.widgets.events.ClickHandler {
 			private FormActionMD m;
@@ -82,9 +79,13 @@ public class FormToolbar extends DynamicForm {
 			this.addClickHandler(new ActionCtxMenuClickHandler(formActionMD));
 			if (formActionMD.getDisplayOnToolbar()) {
 				button = new IButton(formActionMD.getDisplayName());
+				button.setShowDisabledIcon(false);
 				button.setPrompt(displayName);
 				button.setIcon(iconPath);
 				button.addClickHandler(new ActionButtonClickHandler(formActionMD));
+				//
+				// button.setWidth(button.getHeight());
+				// button.setTitle("");
 			}
 
 		}
@@ -97,8 +98,29 @@ public class FormToolbar extends DynamicForm {
 			return formActionMD;
 		}
 
+		public void setActionStatus() throws Exception {
+			String actionType = formActionMD.getType();
+			if ("1".equals(actionType)) {
+			} else if ("2".equals(actionType)) {
+			} else if ("3".equals(actionType)) {
+			} else if ("4".equals(actionType)) {
+			} else if ("5".equals(actionType)) {
+				this.setEnabled(0 != mainFormPane.getCurrentGridRowSelected());
+			} else if ("6".equals(actionType)) {
+				this.setEnabled((1 + mainFormPane.getCurrentGridRowSelected()) != mainFormPane.getMainForm().getTreeGrid().getTotalRows());
+			} else if ("7".equals(actionType)) {
+			}
+		}
+
 		public void setButton(IButton button) {
 			this.button = button;
+		}
+
+		public void setEnabled(boolean enabled) {
+			super.setEnabled(enabled);
+			if (null != button) {
+				button.setDisabled(!enabled);
+			}
 		}
 
 		public void setFormActionMD(FormActionMD formActionMD) {
@@ -107,9 +129,12 @@ public class FormToolbar extends DynamicForm {
 
 	}
 
+	private ArrayList<MenuItem> actionMenuItemsArr = new ArrayList<MenuItem>();
+	private ArrayList<IButton> actionButtonsArr = new ArrayList<IButton>();
 	private MainFormPane mainFormPane;
-
 	private Menu ctxMenu;
+	private ToolbarItem btnToolbar = new ToolbarItem();
+	private IButton[] btns;
 
 	public FormToolbar(MainFormPane mainFormPane) {
 		this.mainFormPane = mainFormPane;
@@ -159,18 +184,17 @@ public class FormToolbar extends DynamicForm {
 			menuItems[i + additionalMICount] = actionMenuItemsArr.get(i);
 		}
 		// Buttons
-		ToolbarItem t = new ToolbarItem();
-		IButton[] btns = new IButton[actionButtonsArr.size()];
+		btns = new IButton[actionButtonsArr.size()];
 		for (int i = 0; i < actionButtonsArr.size(); i++) {
 			btns[i] = actionButtonsArr.get(i);
 		}
 
-		t.setButtons(btns);
+		btnToolbar.setButtons(btns);
 		ctxMenu.setData(menuItems);
 		this.setContextMenu(ctxMenu);
 		mainFormPane.setContextMenu(ctxMenu);
-		t.setStartRow(false);
-		setItems(formNameItem, t);
+		btnToolbar.setStartRow(false);
+		setItems(formNameItem, btnToolbar);
 	}
 
 	public void doAction(final FormActionMD m) {
@@ -291,5 +315,21 @@ public class FormToolbar extends DynamicForm {
 				doAction(m);
 			}
 		}
+	}
+
+	public void setActionsStatuses() {
+		for (int i = 0; i < actionMenuItemsArr.size(); i++) {
+			MenuItem mi = actionMenuItemsArr.get(i);
+			if (mi instanceof ActionItem) {
+				try {
+					((ActionItem) mi).setActionStatus();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		// TODO не отображается изменение состояния действия Disabled/Enabled
+		// ctxMenu.markForRedraw();
+		ctxMenu.redraw();
 	}
 }
