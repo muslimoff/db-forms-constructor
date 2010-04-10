@@ -6,10 +6,10 @@ import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.common.ClientActionType;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.data.common.GwtRpcDataSource;
-import com.abssoft.constructor.client.data.common.Row;
-import com.abssoft.constructor.client.data.common.RowsArr;
 import com.abssoft.constructor.client.form.MainFormPane;
 import com.abssoft.constructor.client.metadata.ActionStatus;
+import com.abssoft.constructor.client.metadata.Row;
+import com.abssoft.constructor.client.metadata.RowsArr;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.smartgwt.client.data.Criteria;
@@ -44,7 +44,7 @@ public class FormDataSource extends GwtRpcDataSource {
 
 	public void setMainFormPane(MainFormPane mainFormPane) {
 		this.mainFormPane = mainFormPane;
-		this.dsFields = mainFormPane.getFormColumns().getDSFields();
+		this.dsFields = mainFormPane.getFormColumns().createDSFields();
 		this.formCode = mainFormPane.getFormCode();
 		System.out.println("setMainFormPane:" + formCode + "; ID:" + this.getID());
 		setFields(dsFields);
@@ -69,12 +69,13 @@ public class FormDataSource extends GwtRpcDataSource {
 
 	@Override
 	protected void executeFetch(final String requestId, final DSRequest request, final DSResponse response) {
-		Utils.debug("DS Fetch:" + formCode + "; ID: " + this.getID());
+		Utils.debug("........DS Fetch:" + formCode + "; ID: " + this.getID());
 		final Integer startRow = (null == request.getStartRow()) ? 0 : request.getStartRow();
-
 		final Integer endRow = (null == request.getEndRow()) ? 1000 : request.getEndRow();
 		Map<?, ?> filterValues;
 		final ListGrid g = mainFormPane.getMainForm().getTreeGrid();
+		Utils.debug("ListGrid: " + g);
+		Criteria cr;
 		if (g instanceof com.smartgwt.client.widgets.tree.TreeGrid) {
 			Criteria treeCriteria = new Criteria();
 			if (!mainFormPane.isForceFetch()) {
@@ -83,10 +84,12 @@ public class FormDataSource extends GwtRpcDataSource {
 					treeCriteria = Utils.getCriteriaFromListGridRecord(g.getRecord(g.getEventRow()), formCode);
 				}
 			}
-			treeCriteria.addCriteria(request.getCriteria());
+			cr = request.getCriteria();
+			treeCriteria.addCriteria(cr);
 			filterValues = treeCriteria.getValues();
 		} else {
-			filterValues = request.getCriteria().getValues();
+			cr = request.getCriteria();
+			filterValues = cr.getValues();
 		}
 		// TODO request.getSortBy() не работает так, как описано. отписался в форуме
 		String sortBy = request.getAttribute("sortBy");

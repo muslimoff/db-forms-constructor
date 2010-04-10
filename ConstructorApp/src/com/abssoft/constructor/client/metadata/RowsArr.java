@@ -1,8 +1,7 @@
-package com.abssoft.constructor.client.data.common;
+package com.abssoft.constructor.client.metadata;
 
 import java.util.HashMap;
 
-import com.abssoft.constructor.client.metadata.ActionStatus;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**

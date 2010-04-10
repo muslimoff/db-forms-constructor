@@ -17,6 +17,7 @@ public class SkinSelectorMenu extends MenuItem {
 		LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
 		valueMap.put("Enterprise", "Enterprise");
 		valueMap.put("EnterpriseBlue", "Enterprise Blue");
+		valueMap.put("Graphite", "Graphite");
 		valueMap.put("SilverWave", "Silver Wave");
 		valueMap.put("BlackOps", "Black Ops");
 		valueMap.put("TreeFrog", "Tree Frog");

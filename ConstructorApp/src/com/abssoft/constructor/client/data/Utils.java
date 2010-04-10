@@ -2,6 +2,7 @@ package com.abssoft.constructor.client.data;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -10,8 +11,9 @@ import java.util.Vector;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.MapPair;
-import com.abssoft.constructor.client.data.common.Row;
 import com.abssoft.constructor.client.form.MainFormPane;
+import com.abssoft.constructor.client.metadata.Attribute;
+import com.abssoft.constructor.client.metadata.Row;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.FieldType;
@@ -24,38 +26,42 @@ import com.smartgwt.client.widgets.tree.TreeNode;
 public class Utils {
 	public static TreeNode getTreeNodeFromRow(FormDataSourceField[] dsFields, Row row) {
 		TreeNode result = new TreeNode();
-		//Utils.debug("getListGridRecordFromRow:" + row);
 		for (int c = 0; null != row && c < row.size(); c++) {
 			String dsFieldName = dsFields[c].getName();
-			String cellValue = row.get(c);
+			Attribute attr = row.get(c);
+			String cellValue = attr.getAttribute();
 			boolean b = "T".equals(dsFields[c].getFormMetadata().getFormType()) && "4".equals(dsFields[c].getColumnMD().getTreeFieldType());
-
-			if (dsFields[c].getType().equals(FieldType.BOOLEAN)) {
-				result.setAttribute(dsFieldName, "1".equals(cellValue) || "Y".equals(cellValue));
-			} else if (b || null != dsFields[c].getColumnMD().getFieldType() && dsFields[c].getColumnMD().getFieldType().equals("3")
+			if (b || null != dsFields[c].getColumnMD().getFieldType() && dsFields[c].getColumnMD().getFieldType().equals("3")
 					&& null != cellValue) {
 				try {
-					String iconFileName = ConstructorApp.menus.getIcons().get(Integer.decode(cellValue));
+
+					String iconFileName = ConstructorApp.menus.getIcons().get((Float.valueOf(cellValue)).intValue());
 					result.setAttribute(dsFieldName, iconFileName);
 				} catch (Exception e) {
 					Utils.debug("Icon " + cellValue + " not found: " + e);
 				}
-			}
 
-			else {
+			} else if (dsFields[c].getType().equals(FieldType.BOOLEAN)) {
+				Boolean bVal = attr.getAttributeAsBoolean();
+				result.setAttribute(dsFieldName, bVal);
+				if (dsFields[c].isTreeFolder()) {
+					result.setIsFolder(bVal);
+				}
+			} else if (dsFields[c].getType().equals(FieldType.FLOAT)) {
+				result.setAttribute(dsFieldName, attr.getAttributeAsDouble());
+			} else if (dsFields[c].getType().equals(FieldType.DATE)) {
+				result.setAttribute(dsFieldName, attr.getAttributeAsDate());
+			} else {
 				result.setAttribute(dsFieldName, cellValue);
 			}
 
 			// 1
-			if (dsFields[c].getType().equals(FieldType.BOOLEAN)) {
-				result.setIsFolder(("1".equals(cellValue) || "Y".equals(cellValue)) && dsFields[c].isTreeFolder());
-			}
-			// if (dsFields[c].isTreeId()) {
-			// listGridRecord.setID(cellValue);
-			// listGridRecord.setName(cellValue);
+			// if ("1".equals(dsFields[c].getColumnMD().getTreeFieldType())) {
+			// result.setID(cellValue);
+			// result.setName(cellValue);
 			// }
-			// if (dsFields[c].isTreeParentId()) {
-			// listGridRecord.setParentID(cellValue);
+			// if ("2".equals(dsFields[c].getColumnMD().getTreeFieldType())) {
+			// result.setParentID(cellValue);
 			// }
 			// if (dsFields[c].isTreeTitle()) {
 			// listGridRecord.setTitle(cellValue);
@@ -79,7 +85,8 @@ public class Utils {
 		Utils.debug("record>" + record);
 		Row row = new Row();
 		for (int i = 0; i < record.length; i++) {
-			row.put(i, (String) record[i].getValue());
+			Attribute attr = new Attribute((String) record[i].getValue());
+			row.put(i, attr);
 		}
 		return row;
 	}
@@ -101,14 +108,24 @@ public class Utils {
 		Row row = new Row();
 		for (int c = 0; c < dsFields.length; c++) {
 			String colName = dsFields[c].getName();
-			String cellValue;
+
+			Attribute attr;
 			if (FieldType.BOOLEAN.equals(dsFields[c].getType())) {
-				cellValue = record.getAttributeAsBoolean(colName) ? "Y" : "N";
+				Boolean cellValue = record.getAttributeAsBoolean(colName);
+				attr = new Attribute(cellValue);
+			} else if (FieldType.FLOAT.equals(dsFields[c].getType())) {
+				Float fVal = record.getAttributeAsFloat(colName);
+				Double cellValue = (null == fVal) ? null : fVal.doubleValue();
+				attr = new Attribute(cellValue);
+			} else if (FieldType.DATE.equals(dsFields[c].getType())) {
+				Date cellValue = record.getAttributeAsDate(colName);
+				attr = new Attribute(cellValue);
 			} else {
-				cellValue = record.getAttribute(colName);
+				String cellValue = record.getAttribute(colName);
+				attr = new Attribute(cellValue);
 			}
-			debug(colName + ":" + cellValue + "; is null:" + (null == cellValue));
-			row.put(c, cellValue);
+			debug(colName + ":" + attr.getAttribute() + "; is null:" /* + (null == cellValue) */);
+			row.put(c, attr);
 		}
 		return row;
 	}

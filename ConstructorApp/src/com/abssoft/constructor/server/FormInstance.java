@@ -6,11 +6,12 @@ import java.util.Map;
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 
-import com.abssoft.constructor.client.data.common.Row;
-import com.abssoft.constructor.client.data.common.RowsArr;
 import com.abssoft.constructor.client.metadata.ActionStatus;
+import com.abssoft.constructor.client.metadata.FormColumnMD;
 import com.abssoft.constructor.client.metadata.FormColumnsArr;
 import com.abssoft.constructor.client.metadata.FormMD;
+import com.abssoft.constructor.client.metadata.Row;
+import com.abssoft.constructor.client.metadata.RowsArr;
 
 public class FormInstance {
 	private OracleConnection connection;
@@ -113,16 +114,33 @@ public class FormInstance {
 				}
 
 				Row r = new Row();
-				// System.out.println("rowNum: " + rowNum);
 				for (int colNum = 0; colNum < columnsArr.size(); colNum++) {
 					try {
-						String cellVal = rs.getString(columnsArr.get(colNum).getName());
-						// Необходимо убирать символы chr #00, которые может
-						// возвращать БД - иначе grid вылетает..
-						if (null != cellVal) {
-							cellVal = cellVal.replaceAll(Character.toString((char) 0), "");
-						}
-						r.put(colNum, cellVal);
+						FormColumnMD cmd = columnsArr.get(colNum);
+						String colName = cmd.getName();
+						String formColDataType = cmd.getDataType();
+						// String val;
+						// Attribute attr;
+						// if ("N".equals(cmd.getDataType())) {
+						// Double dVal = rs.getDouble(colName);
+						// dVal = rs.wasNull() ? null : dVal;
+						// attr = new Attribute(dVal);
+						// System.out.println(dVal + "###" + attr.getAttributeAsDouble());
+						// } else if ("D".equals(cmd.getDataType())) {
+						// attr = new Attribute(rs.getDate(colName));
+						// } else if ("B".equals(cmd.getDataType())) {
+						// val = rs.getString(colName);
+						// attr = new Attribute("1".equals(val) || "Y".equals(val));
+						// } else {
+						// val = rs.getString(colName);
+						// // Необходимо убирать символы chr #00, которые может возвращать БД - иначе grid вылетает..
+						// if (null != val) {
+						// val = val.replaceAll(Character.toString((char) 0), "");
+						// }
+						// attr = new Attribute(val);
+						// }
+						// r.put(colNum, attr);
+						r.put(colNum, Utils.getAttribute(colName, formColDataType, rs));
 					} catch (java.sql.SQLException e) {
 						Utils.debug("Error on column: " + columnsArr.get(colNum).getName());
 						e.printStackTrace();
@@ -153,6 +171,7 @@ public class FormInstance {
 			currentData.setStatus(new ActionStatus(e.toString(), ActionStatus.StatusType.ERROR));
 		}
 		currentSortBy = sortBy;
+		Utils.debug("FormInstance.fetch... return");
 		return currentData;
 	}
 }

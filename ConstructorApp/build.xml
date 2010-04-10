@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="ConstructorApp" default="build" basedir=".">
 	<!-- Configure path to GWT SDK -->
-	<property name="gwt.sdk" location="C:/GWT/lib/gwt-2.0.1" />
-	<property name="smartgwt" location="C:/GWT/lib/smartgwt-2.0" />
+	<property name="gwt.sdk" location="C:/GWT/lib/gwt-2.0.3" />
+	<property name="smartgwt" location="C:/GWT/lib/smartgwt-2.1" />
 
 	<path id="project.class.path">
 		<pathelement location="war/WEB-INF/classes" />

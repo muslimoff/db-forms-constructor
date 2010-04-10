@@ -10,12 +10,12 @@ import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 
 import com.abssoft.constructor.client.data.common.ClientActionType;
-import com.abssoft.constructor.client.data.common.Row;
-import com.abssoft.constructor.client.data.common.RowsArr;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.IconsArr;
 import com.abssoft.constructor.client.metadata.MenuMD;
 import com.abssoft.constructor.client.metadata.MenusArr;
+import com.abssoft.constructor.client.metadata.Row;
+import com.abssoft.constructor.client.metadata.RowsArr;
 import com.abssoft.constructor.client.metadata.StaticLookup;
 import com.abssoft.constructor.client.metadata.StaticLookupsArr;
 
@@ -68,8 +68,12 @@ public class Session {
 	}
 
 	public FormMD getFormMetaData(String formCode) {
+		return getFormMetaData(formCode, true);
+	}
+
+	public FormMD getFormMetaData(String formCode, boolean isNonLookupForm) {
 		if (!formDataHashMap.containsKey(formCode)) {
-			Form form = new Form(connection, formCode);
+			Form form = new Form(connection, formCode, this);
 			form.setFcSchemaOwner(fcSchemaOwner);
 			formDataHashMap.put(formCode, form);
 		}

@@ -5,10 +5,6 @@ import java.util.HashMap;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class FormActionMD implements IsSerializable {
-	// // agrNum, argName
-	// public class ParamsList extends HashMap<Integer, String> {
-	// private static final long serialVersionUID = 3033743661297719831L;
-	// }
 
 	private String code;
 	private String displayName;

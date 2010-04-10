@@ -4,10 +4,10 @@ import java.util.Map;
 
 import com.abssoft.constructor.client.data.common.ClientActionType;
 import com.abssoft.constructor.client.data.common.ConnectionInfo;
-import com.abssoft.constructor.client.data.common.Row;
-import com.abssoft.constructor.client.data.common.RowsArr;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.MenusArr;
+import com.abssoft.constructor.client.metadata.Row;
+import com.abssoft.constructor.client.metadata.RowsArr;
 import com.abssoft.constructor.client.metadata.ServerInfoArr;
 import com.abssoft.constructor.client.metadata.StaticLookupsArr;
 import com.google.gwt.user.client.rpc.RemoteService;

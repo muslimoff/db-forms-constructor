@@ -41,6 +41,9 @@ public/*
 class MainForm extends Canvas {
 
 	public class FormListGrid extends ListGrid {
+		public FormListGrid() {
+			this.setShowRowNumbers(true);
+		}
 
 	}
 
@@ -126,6 +129,7 @@ class MainForm extends Canvas {
 		} else {
 			treeGrid = new FormListGrid();
 		}
+
 		treeGrid.setAlternateRecordStyles(true);
 		treeGrid.setCanMultiSort(true);
 		treeGrid.addRecordClickHandler(new GridRecordClickHandler());

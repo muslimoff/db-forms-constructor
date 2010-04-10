@@ -15,7 +15,7 @@ public class HTMLPaneItem extends CanvasItem {
 	public HTMLPaneItem() {
 		htmlPane.setContentsType(ContentsType.PAGE);
 		htmlPane.setContentsURL("http://www.google.com");
-		htmlPane.setBorder("2px dotted green");
+		//htmlPane.setBorder("2px dotted green");
 		this.setCanvas(htmlPane);
 		this.setTitleOrientation(TitleOrientation.TOP);
 		this.setColSpan("*");
