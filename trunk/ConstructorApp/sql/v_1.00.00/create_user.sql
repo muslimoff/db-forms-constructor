@@ -1,6 +1,4 @@
-Drop User &fc_user
-  Cascade
-/
+--Drop User &fc_user Cascade;
 
 Create User &fc_user
 Identified By &fc_user_pass
