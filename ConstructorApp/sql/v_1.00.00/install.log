@@ -1,0 +1,1875 @@
+instance (default VM_XE): 
+FC Username (default FC22): 
+Connected.
+Create user
+old   1: Drop User &fc_user
+new   1: Drop User FC22
+
+User dropped.
+
+old   1: Create User &fc_user
+new   1: Create User FC22
+old   2: Identified By &fc_user_pass
+new   2: Identified By FC
+
+User created.
+
+old   1: Grant CREATE ANY PROCEDURE To &fc_user
+new   1: Grant CREATE ANY PROCEDURE To FC22
+
+Grant succeeded.
+
+old   1: Grant CREATE ANY TABLE To &fc_user
+new   1: Grant CREATE ANY TABLE To FC22
+
+Grant succeeded.
+
+old   1: Grant DROP ANY TABLE To &fc_user
+new   1: Grant DROP ANY TABLE To FC22
+
+Grant succeeded.
+
+old   1: Grant SELECT ANY TABLE To &fc_user
+new   1: Grant SELECT ANY TABLE To FC22
+
+Grant succeeded.
+
+old   1: Grant UNLIMITED TABLESPACE To &fc_user
+new   1: Grant UNLIMITED TABLESPACE To FC22
+
+Grant succeeded.
+
+old   1: Grant CONNECT To &fc_user
+new   1: Grant CONNECT To FC22
+
+Grant succeeded.
+
+old   1: Grant DBA To &fc_user
+new   1: Grant DBA To FC22
+
+Grant succeeded.
+
+old   1: Grant RESOURCE To &fc_user
+new   1: Grant RESOURCE To FC22
+
+Grant succeeded.
+
+old   1: Alter User &fc_user Default Role All
+new   1: Alter User FC22 Default Role All
+
+User altered.
+
+old   1: Grant SELECT On dba_data_files To &fc_user
+new   1: Grant SELECT On dba_data_files To FC22
+
+Grant succeeded.
+
+old   1: Grant SELECT On dba_objects To &fc_user
+new   1: Grant SELECT On dba_objects To FC22
+
+Grant succeeded.
+
+old   1: Grant SELECT On dba_roles To &fc_user
+new   1: Grant SELECT On dba_roles To FC22
+
+Grant succeeded.
+
+old   1: Grant SELECT On dba_role_privs To &fc_user
+new   1: Grant SELECT On dba_role_privs To FC22
+
+Grant succeeded.
+
+old   1: Grant SELECT On dba_source To &fc_user
+new   1: Grant SELECT On dba_source To FC22
+
+Grant succeeded.
+
+old   1: Grant SELECT On dba_sys_privs To &fc_user
+new   1: Grant SELECT On dba_sys_privs To FC22
+
+Grant succeeded.
+
+old   1: Grant SELECT On dba_tab_columns To &fc_user
+new   1: Grant SELECT On dba_tab_columns To FC22
+
+Grant succeeded.
+
+old   1: Grant SELECT On dba_users To &fc_user
+new   1: Grant SELECT On dba_users To FC22
+
+Grant succeeded.
+
+old   1: Grant EXECUTE On utl_tcp To &fc_user
+new   1: Grant EXECUTE On utl_tcp To FC22
+
+Grant succeeded.
+
+old   1: Grant EXECUTE On utl_tcp To &fc_user
+new   1: Grant EXECUTE On utl_tcp To FC22
+
+Grant succeeded.
+
+old   1: Grant SELECT On v_$instance To &fc_user
+new   1: Grant SELECT On v_$instance To FC22
+
+Grant succeeded.
+
+old   1: Grant SELECT On v_$session To &fc_user
+new   1: Grant SELECT On v_$session To FC22
+
+Grant succeeded.
+
+old   1: Grant SELECT On v_$sql_bind_metadata To &fc_user
+new   1: Grant SELECT On v_$sql_bind_metadata To FC22
+
+Grant succeeded.
+
+old   1: Grant SELECT On v_$sql_cursor To &fc_user
+new   1: Grant SELECT On v_$sql_cursor To FC22
+
+Grant succeeded.
+
+Connected.
+Create FC22 Objects
+
+Table created.
+
+
+Grant succeeded.
+
+
+Grant succeeded.
+
+
+Table altered.
+
+
+Warning: Trigger created with compilation errors.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Table created.
+
+
+Table altered.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Table created.
+
+
+Grant succeeded.
+
+
+Table created.
+
+
+Table altered.
+
+
+Table created.
+
+
+Grant succeeded.
+
+
+Table altered.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Table altered.
+
+
+Table altered.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Grant succeeded.
+
+
+Comment created.
+
+
+Table created.
+
+
+Grant succeeded.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Table created.
+
+
+Grant succeeded.
+
+
+Grant succeeded.
+
+
+Table created.
+
+
+Grant succeeded.
+
+
+Grant succeeded.
+
+
+Table altered.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Warning: View created with compilation errors.
+
+old  25:    And (   SYS_CONTEXT ('USERENV', 'SESSION_USER') = '&fc_user'
+new  25:    And (   SYS_CONTEXT ('USERENV', 'SESSION_USER') = 'FC22'
+
+View created.
+
+
+Grant succeeded.
+
+
+Grant succeeded.
+
+
+View created.
+
+
+Grant succeeded.
+
+
+Sequence created.
+
+
+Type created.
+
+
+Type body created.
+
+
+Function created.
+
+
+Type created.
+
+
+Grant succeeded.
+
+
+Grant succeeded.
+
+
+Package created.
+
+
+Warning: Package Body created with compilation errors.
+
+
+Package created.
+
+
+Warning: Package Body created with compilation errors.
+
+
+Package created.
+
+
+Warning: Package Body created with compilation errors.
+
+
+Package created.
+
+
+Warning: Package Body created with compilation errors.
+
+
+Package created.
+
+
+Package body created.
+
+
+Package created.
+
+
+Warning: Package Body created with compilation errors.
+
+
+Package created.
+
+
+Grant succeeded.
+
+
+Grant succeeded.
+
+
+Warning: Package Body created with compilation errors.
+
+
+Package created.
+
+
+Warning: Package Body created with compilation errors.
+
+
+Package created.
+
+
+Package body created.
+
+
+Package created.
+
+
+Package body created.
+
+
+Package created.
+
+
+Package body created.
+
+
+Package created.
+
+
+Package body created.
+
+
+Package created.
+
+
+Package body created.
+
+
+Package created.
+
+
+Package body created.
+
+
+Table altered.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+Insert Into menus
+*
+ERROR at line 1:
+ORA-00001: unique constraint (FC22.MENUS_PK) violated 
+
+
+
+1 row created.
+
+Insert Into menus
+*
+ERROR at line 1:
+ORA-00001: unique constraint (FC22.MENUS_PK) violated 
+
+
+Insert Into menus
+*
+ERROR at line 1:
+ORA-00001: unique constraint (FC22.MENUS_PK) violated 
+
+
+
+1 row created.
+
+Insert Into menus
+*
+ERROR at line 1:
+ORA-00001: unique constraint (FC22.MENUS_PK) violated 
+
+
+Insert Into menus
+*
+ERROR at line 1:
+ORA-00001: unique constraint (FC22.MENUS_PK) violated 
+
+
+
+1 row created.
+
+Insert Into menus
+*
+ERROR at line 1:
+ORA-00001: unique constraint (FC22.MENUS_PK) violated 
+
+
+Insert Into menus
+*
+ERROR at line 1:
+ORA-00001: unique constraint (FC22.MENUS_PK) violated 
+
+
+
+1 row created.
+
+Insert Into menus
+*
+ERROR at line 1:
+ORA-00001: unique constraint (FC22.MENUS_PK) violated 
+
+
+Insert Into menus
+*
+ERROR at line 1:
+ORA-00001: unique constraint (FC22.MENUS_PK) violated 
+
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+Commit complete.
+
+
+Table altered.
+
+
+PL/SQL procedure successfully completed.
+
+
+no rows selected
+
