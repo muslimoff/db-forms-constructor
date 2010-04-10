@@ -36,7 +36,9 @@ public class MainFormContainer extends FormTab {
 		this.setMainFormPane(mfp);
 		parentTabSet.updateTab(this, mfp);
 		parentTabSet.setTabTitle(this, defaultTitle);
-		parentTabSet.selectTab(this);
+		if (null != formCode) {
+			parentTabSet.selectTab(this);
+		}
 	}
 
 	public MainFormContainer(FormTab.TabType tabType, TabSet parentTabSet, final String formCode) {

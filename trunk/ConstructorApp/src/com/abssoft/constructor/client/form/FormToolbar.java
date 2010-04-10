@@ -100,14 +100,20 @@ public class FormToolbar extends DynamicForm {
 
 		public void setActionStatus() throws Exception {
 			String actionType = formActionMD.getType();
+			ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
+			int currRow = mainFormPane.getCurrentGridRowSelected();
+			// System.out.println("^^currRow:" + currRow);
+			// System.out.println("^^grid.getEditRow()" + grid.getEditRow());
 			if ("1".equals(actionType)) {
 			} else if ("2".equals(actionType)) {
+				// TODO ошибка в редакторе - невозможно сохранить строку
+				// this.setEnabled(currRow == grid.getEditRow() || 0 != grid.getAllEditRows().length);
 			} else if ("3".equals(actionType)) {
 			} else if ("4".equals(actionType)) {
 			} else if ("5".equals(actionType)) {
-				this.setEnabled(0 != mainFormPane.getCurrentGridRowSelected());
+				this.setEnabled(0 != currRow);
 			} else if ("6".equals(actionType)) {
-				this.setEnabled((1 + mainFormPane.getCurrentGridRowSelected()) != mainFormPane.getMainForm().getTreeGrid().getTotalRows());
+				this.setEnabled((1 + currRow) != grid.getTotalRows());
 			} else if ("7".equals(actionType)) {
 			}
 		}
@@ -200,6 +206,7 @@ public class FormToolbar extends DynamicForm {
 	public void doAction(final FormActionMD m) {
 		final ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		mainFormPane.setCurrentActionCode(m.getCode());
+		//int selRow = mainFormPane.getCurrentGridRowSelected();
 		if ("2".equals(m.getType())) {
 			// TODO Проблема с DynamicForm.ItemChangedHandler в хроме - приходится сохранять данные RichTextItem не по событию, а по кнопке
 			// сохранения
@@ -277,9 +284,12 @@ public class FormToolbar extends DynamicForm {
 		}
 		// Custom PL/SQL
 		else if ("7".equals(m.getType())) {
-			System.out.println("xxxxxxxxx");
+			System.out.println("Custom PL/SQL - start execution...");
 			int currRecSelected = grid.getRecordIndex(grid.getSelectedRecord());
 			grid.updateData(grid.getRecord(currRecSelected));
+			System.out.println("Custom PL/SQL - end execution...");
+		} else if ("8".equals(m.getType())) {
+			grid.startEditing(mainFormPane.getCurrentGridRowSelected(), 0, false);
 		}
 	}
 

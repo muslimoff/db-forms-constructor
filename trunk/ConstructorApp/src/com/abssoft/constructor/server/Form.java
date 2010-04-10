@@ -1,9 +1,11 @@
 package com.abssoft.constructor.server;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -13,8 +15,7 @@ import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 
 import com.abssoft.constructor.client.data.common.ClientActionType;
-import com.abssoft.constructor.client.data.common.Row;
-import com.abssoft.constructor.client.data.common.RowsArr;
+import com.abssoft.constructor.client.metadata.Attribute;
 import com.abssoft.constructor.client.metadata.FormActionMD;
 import com.abssoft.constructor.client.metadata.FormActionsArr;
 import com.abssoft.constructor.client.metadata.FormColumnMD;
@@ -22,6 +23,8 @@ import com.abssoft.constructor.client.metadata.FormColumnsArr;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.FormTabMD;
 import com.abssoft.constructor.client.metadata.FormTabsArr;
+import com.abssoft.constructor.client.metadata.Row;
+import com.abssoft.constructor.client.metadata.RowsArr;
 
 /**
  * Данные формы <CODE>formCode</CODE> (метаданные, данные запроса).
@@ -36,11 +39,15 @@ public class Form {
 	private FormColumnsArr metadata = new FormColumnsArr();
 	private String formCode;
 	private FormMD formMetaData = null;
+	private ArrayList<Integer> formLookupsIdx = new ArrayList<Integer>();
+	private Session session;
 
-	public Form(OracleConnection connection, String formCode) {
+	public Form(OracleConnection connection, String formCode, Session session) {
 		this.connection = connection;
 		this.formCode = formCode;
+		this.session = session;
 		setFormSQLText(formCode);
+		Utils.debug("" + this);
 	}
 
 	public void closeForm(int gridHashCode) {
@@ -68,30 +75,52 @@ public class Form {
 				OracleCallableStatement stmnt = (OracleCallableStatement) connection.prepareCall(dmlProcText);
 				Utils.debug(dmlProcText, resultRow);
 				// ----------------------------------
-				HashMap<String, String> rowValues = new HashMap<String, String>();
+				HashMap<String, Attribute> rowValues = new HashMap<String, Attribute>();
 				for (int j = 0; j < resultRow.size(); j++) {
+					String newParamName = "P_" + formMetaData.getColumns().get(j).getName();
+					String oldParamName = "P_OLD_" + formMetaData.getColumns().get(j).getName();
 					if (null != newRow && null != oldRow) {
-						rowValues.put("P_" + formMetaData.getColumns().get(j).getName(), newRow.get(j));
-						rowValues.put("P_OLD_" + formMetaData.getColumns().get(j).getName(), oldRow.get(j));
+						rowValues.put(newParamName, newRow.get(j));
+						rowValues.put(oldParamName, oldRow.get(j));
 					} else if (null != newRow) {
-						rowValues.put("P_" + formMetaData.getColumns().get(j).getName(), newRow.get(j));
+						rowValues.put(newParamName, newRow.get(j));
 					} else if (null != oldRow) {
-						rowValues.put("P_" + formMetaData.getColumns().get(j).getName(), oldRow.get(j));
-						rowValues.put("P_OLD_" + formMetaData.getColumns().get(j).getName(), oldRow.get(j));
+						rowValues.put(newParamName, oldRow.get(j));
+						rowValues.put(oldParamName, oldRow.get(j));
 					}
 
 				}
 				// Цикл по IN-параметрам перед выполнением процедуры
 				Iterator<Integer> allParamsIterator = fActMD.getAllArgs().keySet().iterator();
 				while (allParamsIterator.hasNext()) {
-					Integer paramNum = allParamsIterator.next();
+					int paramNum = allParamsIterator.next();
+					int outParamType = Types.VARCHAR;
 					String paramName = fActMD.getAllArgs().get(paramNum);
 					if (fActMD.getInputs().containsKey(paramNum)) {
-						Utils.debug("IN:" + paramName + " => " + rowValues.get(paramName), resultRow);
-						stmnt.setString(paramNum, rowValues.get(paramName));
+						Attribute attr = rowValues.get(paramName);
+						if ("D".equals(attr.getDataType())) {
+							// Converting java.util.Date to java.sql.Date
+							java.util.Date dd = attr.getAttributeAsDate();
+							Date d = null == dd ? null : new Date(dd.getTime());
+							stmnt.setDate(paramNum, d);
+							outParamType = Types.DATE;
+						} else if ("N".equals(attr.getDataType())) {
+							try {
+								stmnt.setDouble(paramNum, attr.getAttributeAsDouble());
+								outParamType = Types.DOUBLE;
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						} else if ("B".equals(attr.getDataType())) {
+							stmnt.setString(paramNum, attr.getAttributeAsBoolean() ? "Y" : "N");
+							outParamType = Types.VARCHAR;
+						} else {
+							stmnt.setString(paramNum, attr.getAttribute());
+						}
+						Utils.debug("(" + attr.getDataType() + ")" + "IN:" + paramName + " => " + attr.getAttribute() + ";", resultRow);
 					}
 					if (fActMD.getOutputs().containsKey(paramNum)) {
-						stmnt.registerOutParameter(paramNum, Types.VARCHAR);
+						stmnt.registerOutParameter(paramNum, outParamType);
 					}
 				}
 				stmnt.execute();
@@ -99,10 +128,25 @@ public class Form {
 				for (int j = 0; j < resultRow.size(); j++) {
 					String colName = "P_" + formMetaData.getColumns().get(j).getName();
 					if (fActMD.getOutputsByName().containsKey(colName)) {
-						String newValue = stmnt.getString(fActMD.getOutputsByName().get(colName));
-						Utils.debug("OUT:" + colName + " => " + newValue, resultRow);
+						String dataType = resultRow.get(j).getDataType();
 						resultRow.remove(j);
-						resultRow.put(j, newValue);
+						Attribute attr;
+						Integer colIdx = fActMD.getOutputsByName().get(colName);
+						if ("D".equals(dataType)) {
+							Date newValue = stmnt.getDate(colIdx);
+							attr = new Attribute(newValue);
+						} else if ("N".equals(dataType)) {
+							Double newValue = stmnt.getDouble(colIdx);
+							attr = new Attribute(newValue);
+						} else if ("B".equals(dataType)) {
+							Boolean newValue = "Y".equals(stmnt.getString(colIdx)) || "1".equals(stmnt.getString(colIdx));
+							attr = new Attribute(newValue);
+						} else {
+							String newValue = stmnt.getString(colIdx);
+							attr = new Attribute(newValue);
+						}
+						Utils.debug("(" + dataType + ")" + "OUT:" + colName + " => " + attr.getAttribute() + ";", resultRow);
+						resultRow.put(j, attr);
 					}
 				}
 				stmnt.close();
@@ -161,7 +205,11 @@ public class Form {
 				cmd.setEditorTitleOrientation(rs.getString("editor_title_orientation"));
 				cmd.setEditorEndRow("Y".equals(rs.getString("editor_end_row_flag")));
 				cmd.setEditorColsSpan(rs.getString("editor_cols_span"));
+				cmd.setLookupDisplayValue(rs.getString("lookup_display_value"));
 				metadata.put(colNum, cmd);
+				if (null != cmd.getLookupCode()) {
+					formLookupsIdx.add(colNum);
+				}
 			}
 			// Если распарсить колонки на БД не получилось, пробуем распарсить с
 			// помощью Java (statement.getMetaData).
@@ -291,6 +339,10 @@ public class Form {
 	}
 
 	public FormMD getFormMetaData() {
+		return getFormMetaData(true);
+	}
+
+	public FormMD getFormMetaData(boolean isNonLookupForm) {
 		try {
 			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(QueryServiceImpl.queryMap
 					.get("formSQL"));
@@ -319,9 +371,12 @@ public class Form {
 				formMetaData.setSideTabsPosition(rs.getString("side_tabs_orientation"));
 				formMetaData.setShowBottomToolBar(rs.getString("show_bottom_toolbar").equals("Y") ? true : false);
 				formMetaData.setColumns(getColumns());
-				formMetaData.setTabs(getFormTabsArr());
-				formMetaData.setActions(getFormActionsArr());
 				formMetaData.setObjectVersionNumber(ovn);
+				if (isNonLookupForm) {
+					formMetaData.setTabs(getFormTabsArr());
+					formMetaData.setActions(getFormActionsArr());
+				}
+
 			}
 			rs.close();
 			statement.close();
@@ -330,7 +385,21 @@ public class Form {
 		}
 		// Принудительно приводим все bind variables к lowerCase
 		formSQLText = Utils.bindVarsToLowerCase(formSQLText, "(?i):[\\w\\$]+");
-		Utils.debug("Form: getFormMetaData executed...");
+		Utils.debug("Form: Lookups Metadata...");
+		for (int i = 0; i < formLookupsIdx.size(); i++) {
+			FormColumnMD cmd = formMetaData.getColumns().get(formLookupsIdx.get(i));
+			String formLookupCode = cmd.getLookupCode();
+			if ("9".equals(cmd.getFieldType()) || "99".equals(cmd.getFieldType())) {
+				FormMD fmd = session.getFormMetaData(formLookupCode, false);
+				formMetaData.getLookupsArr().put(formLookupCode, fmd);
+				Utils.debug("***: " + formMetaData.getLookupsArr().get(formLookupCode).getFormCode());
+			}
+			if ("8".equals(cmd.getFieldType())) {
+				// TODO Static Lookups - вычитывать для формы
+			}
+		}
+		Utils.debug("Form: Lookups Metadata finished...");
+		Utils.debug("Form: getFormMetaData(" + formCode+") executed...");
 		return formMetaData;
 	}
 

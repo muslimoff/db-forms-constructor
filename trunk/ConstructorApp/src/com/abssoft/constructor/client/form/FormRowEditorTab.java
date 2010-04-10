@@ -10,8 +10,10 @@ import com.abssoft.constructor.client.metadata.FormColumnMD;
 import com.abssoft.constructor.client.metadata.FormColumnsArr;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.FormTabMD;
+import com.abssoft.constructor.client.widgets.FormPickTreeItem;
 import com.abssoft.constructor.client.widgets.GridComboBoxItem;
 import com.abssoft.constructor.client.widgets.HTMLPaneItem;
+import com.smartgwt.client.types.DateDisplayFormat;
 import com.smartgwt.client.types.TitleOrientation;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.form.DynamicForm;
@@ -20,6 +22,8 @@ import com.smartgwt.client.widgets.form.events.ItemChangedEvent;
 import com.smartgwt.client.widgets.form.events.ItemChangedHandler;
 import com.smartgwt.client.widgets.form.fields.BooleanItem;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
+import com.smartgwt.client.widgets.form.fields.DateItem;
+import com.smartgwt.client.widgets.form.fields.FloatItem;
 import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.FormItemIcon;
 import com.smartgwt.client.widgets.form.fields.HeaderItem;
@@ -43,18 +47,17 @@ public class FormRowEditorTab extends FormTab {
 	private int parentGridSelectedRow;
 
 	static FormItem createItem(final FormColumnMD c, final MainFormPane mainFormPane) {
-		FormItem item;
+		final FormItem item;
 		// boolean showHint = true;
+		String lookupCode = c.getLookupCode();
 		boolean showHint = !(null == c.getHelpText() || "".equals(c.getHelpText()));
-		if ("3".equals(c.getTreeFieldType()) || "B".equals(c.getDataType())) {
+		if ("3".equals(c.getTreeFieldType())) {
 			item = new BooleanItem();
 		} else if ("4".equals(c.getFieldType())) {
 			item = new TextAreaItem(); // new AutoFitTextAreaItem();
-			// @item.setTitleOrientation(TitleOrientation.TOP);
 		} else if ("5".equals(c.getFieldType())) {
 			showHint = false;
 			item = new RichTextItem();
-			// @item.setTitleOrientation(TitleOrientation.TOP);
 			item.setShowTitle(true);
 		} else if ("6".equals(c.getFieldType())) {
 			showHint = false;
@@ -62,20 +65,35 @@ public class FormRowEditorTab extends FormTab {
 		} else if ("7".equals(c.getFieldType())) {
 			showHint = false;
 			item = new HTMLPaneItem();
-		} else if (("8".equals(c.getFieldType()) || "10".equals(c.getFieldType())) && null != c.getLookupCode()
-				&& ConstructorApp.staticLookupsArr.containsKey(c.getLookupCode())) {
+		} else if (("8".equals(c.getFieldType()) || "10".equals(c.getFieldType())) && null != lookupCode
+				&& ConstructorApp.staticLookupsArr.containsKey(lookupCode)) {
 			item = new ComboBoxItem();
-			LinkedHashMap<String, String> lhm = Utils.createStrSortedLinkedHashMap(ConstructorApp.staticLookupsArr.get(c.getLookupCode()),
-					!"8".equals(c.getFieldType()));
-			System.out.println("$$ LHM: " + c.getLookupCode() + ". Values: " + lhm);
+			LinkedHashMap<String, String> lhm = Utils.createStrSortedLinkedHashMap(ConstructorApp.staticLookupsArr.get(lookupCode), !"8"
+					.equals(c.getFieldType()));
 			item.setValueMap(lhm);
-		} else if ("9".equals(c.getFieldType()) && null != c.getLookupCode()) {
-			item = new GridComboBoxItem(mainFormPane);
-			mainFormPane.putLookup(c.getLookupCode(), (GridComboBoxItem) item);
-		} else {
-			item = new TextItem();
-			if (null != c.getTextMask())
-				((TextItem) item).setMask(c.getTextMask());
+		} else if ("9".equals(c.getFieldType()) && null != lookupCode) {
+			item = new GridComboBoxItem(c, mainFormPane);
+		}
+		// TODO PickTreeItem
+		else if ("99".equals(c.getFieldType())) {
+			item = new FormPickTreeItem(c, mainFormPane, null);
+			item.setValue("Support");
+		}
+		//
+		else {
+			if ("D".equals(c.getDataType())) {
+				item = new DateItem();
+				((DateItem) item).setUseTextField(true);
+				((DateItem) item).setDisplayFormat(DateDisplayFormat.TOEUROPEANSHORTDATE);
+			} else if ("B".equals(c.getDataType())) {
+				item = new BooleanItem();
+			} else if ("N".equals(c.getDataType())) {
+				item = new FloatItem();
+			} else {
+				item = new TextItem();
+				if (null != c.getTextMask())
+					((TextItem) item).setMask(c.getTextMask());
+			}
 		}
 		// item.setTextBoxStyle("textItem");
 		item.setName(c.getName());
@@ -115,6 +133,7 @@ public class FormRowEditorTab extends FormTab {
 				ConstructorApp.mainToolBar.setForm(mainFormPane);
 			}
 		});
+
 		return item;
 	}
 
@@ -168,20 +187,30 @@ public class FormRowEditorTab extends FormTab {
 			@Override
 			public void onItemChanged(ItemChangedEvent event) {
 				try {
-					String itemName = event.getItem().getName();
-					Utils.debug("onItemChanged... " + itemName);
+					FormItem item = event.getItem();
+					// item.setType(type);
+					String itemName = item.getName();
+					String itemType = item.getType();
+					Object itemValue = event.getItem().getValue();
+					Utils.debug("onItemChanged... " + itemName + "; " + itemType);
 					ListGrid g = getMainFormPane().getMainForm().getTreeGrid();
 					int rn = getMainFormPane().getCurrentGridRowSelected();
-					if ("boolean".equals(event.getItem().getType())) {
-						g.setEditValue(rn, itemName, event.getItem().getAttributeAsBoolean("value"));
-					} else if (
-					// TODO Пустышки в richTextItem косячат.. Возможно из-за преобразования (String) event.getItem().getValue()
-					"RichTextItem".equals(event.getItem().getType())) {
-						if (!"".equals(event.getItem().getValue()) && null != g.getRecord(rn).getAttribute(itemName)) {
-							g.setEditValue(rn, itemName, (String) event.getItem().getValue());
+					if ("boolean".equals(itemType)) {
+						g.setEditValue(rn, itemName, item.getAttributeAsBoolean("value"));
+					} else if ("date".equals(itemType)) {
+						g.setEditValue(rn, itemName, item.getAttributeAsDate("value"));
+					}
+					// else if ("float".equals(itemType)) {
+					// g.setEditValue(rn, itemName, item.getAttributeAsFloat("value"));
+					// }
+					/***/
+					else if ("RichTextItem".equals(itemType)) {
+						// TODO Пустышки в richTextItem косячат.. Возможно из-за преобразования (String) event.getItem().getValue()
+						if (!"".equals(itemValue) && null != g.getRecord(rn).getAttribute(itemName)) {
+							g.setEditValue(rn, itemName, item.getAttribute("value"));
 						}
 					} else {
-						g.setEditValue(rn, itemName, (String) event.getItem().getValue());
+						g.setEditValue(rn, itemName, item.getAttribute("value"));
 					}
 
 				} catch (Exception e) {
@@ -190,7 +219,14 @@ public class FormRowEditorTab extends FormTab {
 				}
 			}
 		});
-
+		/*
+		 * Read Only - reject changes
+		 * 
+		 * form.addItemChangeHandler(new ItemChangeHandler() {
+		 * 
+		 * @Override public void onItemChange(ItemChangeEvent event) {event.getItem().setAttribute("value", event.getItem().getValue() +"");
+		 * } });
+		 */
 		this.setPane(form);
 		// }
 	}

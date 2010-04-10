@@ -6,13 +6,13 @@ import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.form.MainFormPane;
 import com.abssoft.constructor.client.metadata.FormColumnMD;
 import com.abssoft.constructor.client.widgets.GridComboBoxItem;
+import com.smartgwt.client.types.DateDisplayFormat;
 import com.smartgwt.client.types.ListGridFieldType;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.grid.CellFormatter;
 import com.smartgwt.client.widgets.grid.HoverCustomizer;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
-import com.smartgwt.client.widgets.grid.SortNormalizer;
 import com.smartgwt.client.widgets.grid.events.ChangedEvent;
 import com.smartgwt.client.widgets.grid.events.ChangedHandler;
 import com.smartgwt.client.widgets.tree.TreeGridField;
@@ -20,7 +20,8 @@ import com.smartgwt.client.widgets.tree.TreeGridField;
 public class FormTreeGridField extends TreeGridField {
 	private MainFormPane mainFormPane;
 	private int colNum;
-	private FormColumnMD column;
+	private FormColumnMD columnMD;
+	private GridComboBoxItem gridComboBoxItem;
 
 	class GridFieldChangedHandler implements ChangedHandler {
 		String colName;
@@ -45,7 +46,7 @@ public class FormTreeGridField extends TreeGridField {
 		String lookupCode = c.getLookupCode();
 		this.setMainFormPane(mainFormPane);
 		this.setColNum(colNum);
-		this.setColumn(c);
+		this.setColumnMD(c);
 		this.setName(colName);
 		this.setTitle(c.getDisplayName());
 		this.setWidth(c.getDisplaySize());
@@ -69,6 +70,16 @@ public class FormTreeGridField extends TreeGridField {
 
 		// При редактировании грида изменять и значения в редакторе
 		this.addChangedHandler(new GridFieldChangedHandler(colName));
+
+		if ("N".equals(c.getDataType())) {
+			this.setType(ListGridFieldType.FLOAT);
+
+		}
+		if ("D".equals(c.getDataType())) {
+			this.setType(ListGridFieldType.DATE);
+			this.setDateFormatter(DateDisplayFormat.TOEUROPEANSHORTDATE);
+		}
+
 		if ("3".equals(c.getFieldType())) {
 			this.setType(ListGridFieldType.IMAGE);
 		} else if ("4".equals(c.getFieldType())) {
@@ -99,32 +110,10 @@ public class FormTreeGridField extends TreeGridField {
 			this.setEditorType(s);
 		}
 		// SQL Lookup
-		else if ("9".equals(c.getFieldType()) && null != lookupCode) {
-			// PickTreeItem departmentItem;
-			// SelectOtherItem selectOtherItem;
-			GridComboBoxItem s = new GridComboBoxItem(mainFormPane);
-			s.setFormTreeGridField(this);
-			mainFormPane.putLookup(c.getLookupCode(), s);
+		else if ("Y".equals(c.getShowOnGrid()) && null != lookupCode && ("9".equals(c.getFieldType()))) {
+			new GridComboBoxItem(c, mainFormPane, this);
 		}
 
-		if ("N".equals(c.getDataType())) {
-			this.setSortNormalizer(new SortNormalizer() {
-
-				@Override
-				public Object normalize(ListGridRecord record, String fieldName) {
-					String value = record.getAttribute(fieldName);
-					if (value == null)
-						return null;
-					Float val = null;
-					try {
-						val = Float.parseFloat((String) value);
-					} catch (Exception e) {
-						return value.toString();
-					}
-					return val;
-				}
-			});
-		}
 	}
 
 	/**
@@ -137,8 +126,8 @@ public class FormTreeGridField extends TreeGridField {
 	/**
 	 * @return the column
 	 */
-	public FormColumnMD getColumn() {
-		return column;
+	public FormColumnMD getColumnMD() {
+		return columnMD;
 	}
 
 	/**
@@ -157,11 +146,11 @@ public class FormTreeGridField extends TreeGridField {
 	}
 
 	/**
-	 * @param column
+	 * @param columnMD
 	 *            the column to set
 	 */
-	public void setColumn(FormColumnMD column) {
-		this.column = column;
+	public void setColumnMD(FormColumnMD columnMD) {
+		this.columnMD = columnMD;
 	}
 
 	/**
@@ -170,5 +159,13 @@ public class FormTreeGridField extends TreeGridField {
 	 */
 	public void setMainFormPane(MainFormPane mainFormPane) {
 		this.mainFormPane = mainFormPane;
+	}
+
+	public void setGridComboBoxItem(GridComboBoxItem gridComboBoxItem) {
+		this.gridComboBoxItem = gridComboBoxItem;
+	}
+
+	public GridComboBoxItem getGridComboBoxItem() {
+		return gridComboBoxItem;
 	}
 }

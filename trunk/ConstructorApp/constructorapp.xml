@@ -20,6 +20,7 @@
 			dbpassword="A" allowuserchange="false" debug="true"
 			title="Формирование тарифов на медицинские услуги">hypo:8521:epm</server>
 		<server display="FC VM_XE" default="true" fcSchemaOwner="FC" dbusername="FC">VM_XE:1521:XE</server>
+        <server display="FC BAS_XE" default="false" fcSchemaOwner="FC" dbusername="FC">my.bas.kz:1521:XE</server>		
 		<server display="VIS12_full">
 			<![CDATA[
 			(DESCRIPTION =
@@ -58,7 +59,7 @@
 						,column_description, is_frozen_flag, show_hover_flag, exists_in_metadata_flag, exists_in_query_flag
 						,lookup_code, hover_column_code, editor_height, lookup_field_type, help_text, text_mask
 						,validation_regexp, default_orderby_number, default_value, editor_title_orientation, editor_end_row_flag
-       					,editor_cols_span
+       					,editor_cols_span, lookup_display_value
 				  From Table (form_utils.describe_form_columns_pl (:p_form_code))
 			  Order By form_code, column_display_number, column_code
 			]]>

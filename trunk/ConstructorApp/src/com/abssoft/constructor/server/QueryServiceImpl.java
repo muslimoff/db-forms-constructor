@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -25,11 +24,11 @@ import org.xml.sax.InputSource;
 import com.abssoft.constructor.client.data.QueryService;
 import com.abssoft.constructor.client.data.common.ClientActionType;
 import com.abssoft.constructor.client.data.common.ConnectionInfo;
-import com.abssoft.constructor.client.data.common.Row;
-import com.abssoft.constructor.client.data.common.RowsArr;
 import com.abssoft.constructor.client.metadata.ActionStatus;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.MenusArr;
+import com.abssoft.constructor.client.metadata.Row;
+import com.abssoft.constructor.client.metadata.RowsArr;
 import com.abssoft.constructor.client.metadata.ServerInfoArr;
 import com.abssoft.constructor.client.metadata.ServerInfoMD;
 import com.abssoft.constructor.client.metadata.StaticLookupsArr;
@@ -216,11 +215,9 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 			ClientActionType clientActionType) {
 		try {
 			return sessionData.get(sessionId).executeDML(formCode, gridHashCode, oldRow, newRow, actionCode, clientActionType);
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("QueryServiceImpl.executeDML... oldRow:" + oldRow + "; newRow:" + newRow);
-			// newRow.setServerMessage(e.getMessage());
-
 			newRow.setStatus(new ActionStatus(e.getMessage(), ActionStatus.StatusType.ERROR));
 			return newRow;
 		}

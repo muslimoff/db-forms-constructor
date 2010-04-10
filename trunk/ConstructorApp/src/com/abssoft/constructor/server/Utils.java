@@ -1,17 +1,20 @@
 package com.abssoft.constructor.server;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.w3c.dom.NamedNodeMap;
-
 import oracle.jdbc.OraclePreparedStatement;
 import oracle.jdbc.driver.OracleParameterMetaData;
 
-import com.abssoft.constructor.client.data.common.Row;
+import org.w3c.dom.NamedNodeMap;
+
+import com.abssoft.constructor.client.metadata.Attribute;
+import com.abssoft.constructor.client.metadata.Row;
 
 public class Utils {
 	public static void debug(String text) {
@@ -51,7 +54,13 @@ public class Utils {
 		Iterator<?> it = filterValues.keySet().iterator();
 		while (it.hasNext()) {
 			String mapKey = (String) it.next();
-			String value = (String) filterValues.get(mapKey);
+			String value;
+			try {
+				value = (String) filterValues.get(mapKey);
+			} catch (Exception e) {
+				value = filterValues.get(mapKey) + "";
+				Utils.debug("setFilterValues. Error on filterValues.get(mapKey): " + e.getMessage());
+			}
 			Utils.setStringParameterValue(statement, mapKey.toLowerCase(), value);
 			Utils.debug("filterValues: " + mapKey + "=" + value);
 		}
@@ -98,5 +107,28 @@ public class Utils {
 			// e.printStackTrace();
 		}
 		return result;
+	}
+
+	public static Attribute getAttribute(String colName, String formColDataType, ResultSet rs) throws SQLException {
+		Attribute attr;
+		String val;
+		if ("N".equals(formColDataType)) {
+			Double dVal = rs.getDouble(colName);
+			dVal = rs.wasNull() ? null : dVal;
+			attr = new Attribute(dVal);
+		} else if ("D".equals(formColDataType)) {
+			attr = new Attribute(rs.getDate(colName));
+		} else if ("B".equals(formColDataType)) {
+			val = rs.getString(colName);
+			attr = new Attribute("1".equals(val) || "Y".equals(val));
+		} else {
+			val = rs.getString(colName);
+			// Необходимо убирать символы chr #00, которые может возвращать БД - иначе grid вылетает..
+			if (null != val) {
+				val = val.replaceAll(Character.toString((char) 0), "");
+			}
+			attr = new Attribute(val);
+		}
+		return attr;
 	}
 }

@@ -5,7 +5,8 @@
 	<inherits name="com.google.gwt.user.History" />
 	<inherits name="com.smartgwt.SmartGwtNoScript" />
 	<inherits name="com.smartclient.theme.enterprise.EnterpriseResources" />
-	<inherits name="com.smartclient.theme.enterpriseblue.EnterpriseBlueResources" />	
+	<inherits name="com.smartclient.theme.enterpriseblue.EnterpriseBlueResources" />
+	<inherits name="com.smartclient.theme.graphite.GraphiteResources" />
 	<inherits name="com.smartclient.theme.blackops.BlackOpsResources" />
 	<inherits name="com.smartclient.theme.silverwave.SilverWaveResources" />
 	<inherits name="com.smartclient.theme.treefrog.TreeFrogResources" />
@@ -16,7 +17,6 @@
 	<!-- < i n h e r i t s name="com.smartclient.theme.toolskin.ToolSkinResources" />  -->
 	
 	<inherits name="com.smartgwt.tools.SmartGwtTools"/>
-	
 	<entry-point class="com.abssoft.constructor.client.ConstructorApp" />
 	<servlet class="com.abssoft.constructor.server.QueryServiceImpl"
 		path="/query" />

@@ -21,7 +21,17 @@ public class FormDataSourceField extends com.smartgwt.client.data.DataSourceFiel
 
 		this.setColumnMD(columnMD);
 		String colName = columnMD.getName();
-		FieldType type = FieldType.TEXT;
+		FieldType type;
+		// Определение типа редактирования
+		if ("B".equals(columnMD.getDataType())) {
+			type = FieldType.BOOLEAN;
+		} else if ("N".equals(columnMD.getDataType())) {
+			type = FieldType.FLOAT;
+		} else if ("D".equals(columnMD.getDataType())) {
+			type = FieldType.DATE;
+		} else {
+			type = FieldType.TEXT;
+		}
 		if // Tree
 		("T".equals(formType)) {
 			// TreeGrid treeGrid = ((TreeGrid) mainFormContainer.getMainForm().getTreeGrid());
@@ -36,19 +46,7 @@ public class FormDataSourceField extends com.smartgwt.client.data.DataSourceFiel
 			} else if ("4".equals(treeFieldType) && null != mainFormContainer.getMainForm()) {
 				((TreeGrid) mainFormContainer.getMainForm().getTreeGrid()).setCustomIconProperty(colName);
 			}
-		} else // Grid
-		{
-			// Определение типа редактирования
-			if ("D-пока убрал".equals(columnMD.getDataType())) {
-				type = FieldType.DATE;
-			}
 		}
-		if ("B".equals(columnMD.getDataType())) {
-			type = FieldType.BOOLEAN;
-		}
-		// if ("N".equals(columnMD.getDataType())) {
-		// type = FieldType.FLOAT;
-		// }
 		this.setPrimaryKey(columnMD.isPrimaryKey());
 		this.setName(colName);
 		this.setTitle(columnMD.getDisplayName());

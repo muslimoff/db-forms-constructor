@@ -25,6 +25,7 @@ public class FormMD implements IsSerializable {
 	private FormTabsArr tabs;
 	private FormActionsArr actions;
 	private Integer objectVersionNumber;
+	private FormsArr lookupsArr = new FormsArr();
 
 	/**
 	 * 
@@ -53,7 +54,6 @@ public class FormMD implements IsSerializable {
 		return columns;
 	}
 
-	 
 	public String getFormCode() {
 		return formCode;
 	}
@@ -69,7 +69,6 @@ public class FormMD implements IsSerializable {
 		return formType;
 	}
 
-	 
 	public String getHeight() {
 		return height;
 	}
@@ -78,9 +77,12 @@ public class FormMD implements IsSerializable {
 		return hotKey;
 	}
 
-	 
 	public Integer getIconId() {
 		return iconId;
+	}
+
+	public FormsArr getLookupsArr() {
+		return lookupsArr;
 	}
 
 	/**
@@ -110,7 +112,7 @@ public class FormMD implements IsSerializable {
 	public FormTabsArr getTabs() {
 		return tabs;
 	}
- 
+
 	public String getWidth() {
 		return width;
 	}
@@ -191,6 +193,10 @@ public class FormMD implements IsSerializable {
 	 */
 	public void setIconId(Integer iconId) {
 		this.iconId = iconId;
+	}
+
+	public void setLookupsArr(FormsArr lookupsArr) {
+		this.lookupsArr = lookupsArr;
 	}
 
 	/**

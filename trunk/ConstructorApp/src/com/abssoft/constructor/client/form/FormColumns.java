@@ -21,10 +21,11 @@ public class FormColumns {
 	FormMD formMetadata;
 	FormTreeGridField[] gridFields;
 	FormDataSourceField[] dataSourceFields;
+
 	MainFormPane mainFormPane;
+
 	boolean hasBottomTabsCount = false;
 	boolean hasSideTabsCount = false;
-
 	public FormColumns(MainFormPane mainFormPane) {
 		this.formMetadata = mainFormPane.getFormMetadata();
 		this.columns = formMetadata.getColumns();
@@ -48,21 +49,24 @@ public class FormColumns {
 
 		Utils.debug("bottomTabsCount: " + hasBottomTabsCount + "; sideTabsCount: " + hasSideTabsCount);
 	}
-
-	public FormDataSourceField[] getDSFields() {
+	public FormDataSourceField[] createDSFields() {
 		for (int i = 0; i < columnsCount; i++) {
 			dataSourceFields[i] = new FormDataSourceField(i, mainFormPane);
 		}
 		return dataSourceFields;
 	}
 
-	public FormTreeGridField[] getGridFields() {
+	public FormTreeGridField[] createGridFields() {
 		for (int i = 0; i < columnsCount; i++) {
 			FormColumnMD m = columns.get(i);
 			gridFields[i] = new FormTreeGridField(mainFormPane, i, m);
 			gridFields[i].setPrompt(m.getDescription());
 		}
 		return gridFields;
+	}
+
+	public FormDataSourceField[] getDataSourceFields() {
+		return dataSourceFields;
 	}
 
 	public SortSpecifier[] getDefaultSort() {
@@ -91,5 +95,9 @@ public class FormColumns {
 			}
 		}
 		return result;
+	}
+
+	public FormTreeGridField[] getGridFields() {
+		return gridFields;
 	}
 }

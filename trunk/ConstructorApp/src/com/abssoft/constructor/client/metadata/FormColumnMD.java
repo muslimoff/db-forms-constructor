@@ -35,6 +35,7 @@ public class FormColumnMD implements IsSerializable {
 	private String editorTitleOrientation;
 	private boolean editorEndRow;
 	private String editorColsSpan;
+	private String lookupDisplayValue;
 
 	public FormColumnMD() {
 	}
@@ -130,6 +131,10 @@ public class FormColumnMD implements IsSerializable {
 	 */
 	public String getLookupCode() {
 		return lookupCode;
+	}
+
+	public String getLookupDisplayValue() {
+		return lookupDisplayValue;
 	}
 
 	/**
@@ -314,6 +319,10 @@ public class FormColumnMD implements IsSerializable {
 	 */
 	public void setLookupCode(String lookupCode) {
 		this.lookupCode = lookupCode;
+	}
+
+	public void setLookupDisplayValue(String lookupDisplayValue) {
+		this.lookupDisplayValue = lookupDisplayValue;
 	}
 
 	/**

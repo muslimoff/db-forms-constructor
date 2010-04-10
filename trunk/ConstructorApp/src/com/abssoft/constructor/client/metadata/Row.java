@@ -1,8 +1,7 @@
-package com.abssoft.constructor.client.data.common;
+package com.abssoft.constructor.client.metadata;
 
 import java.util.HashMap;
 
-import com.abssoft.constructor.client.metadata.ActionStatus;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -10,7 +9,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author User
  */
-public class Row extends HashMap<Integer, String> implements IsSerializable {
+public class Row extends HashMap<Integer, Attribute> implements IsSerializable {
 
 	private static final long serialVersionUID = -1005056453151583048L;
 	/**
