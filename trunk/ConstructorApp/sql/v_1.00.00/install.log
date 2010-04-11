@@ -1,9 +1,11 @@
 instance (default VM_XE): 
 FC Username (default FC22): 
 Connected.
+Press Enter to start
+
 Create user
-old   1: Drop User &fc_user
-new   1: Drop User FC22
+old   1: Drop User &fc_user Cascade
+new   1: Drop User FC22 Cascade
 
 User dropped.
 
@@ -935,6 +937,24 @@ Table altered.
 1 row created.
 
 
+Table altered.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
 1 row created.
 
 
@@ -948,8 +968,35 @@ Table altered.
 
 
 1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+Table altered.
+
+
+Table altered.
+
+
+0 rows deleted.
 
 
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
 1 row created.
 
 
@@ -975,8 +1022,29 @@ Table altered.
 
 
 1 row created.
+
+
+Table altered.
+
+
+Table altered.
 
 
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
 1 row created.
 
 
@@ -1002,8 +1070,29 @@ Table altered.
 
 
 1 row created.
+
+
+Table altered.
+
 
+Table altered.
 
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
 1 row created.
 
 
@@ -1017,8 +1106,29 @@ Table altered.
 
 
 1 row created.
+
+
+Table altered.
+
+
+Table altered.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
 
+0 rows deleted.
 
+
 1 row created.
 
 
@@ -1137,8 +1247,29 @@ Table altered.
 
 
 1 row created.
+
+
+Table altered.
+
+
+Table altered.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
 
+0 rows deleted.
 
+
+0 rows deleted.
+
+
 1 row created.
 
 
@@ -1227,8 +1358,29 @@ Table altered.
 
 
 1 row created.
+
+
+Table altered.
+
+
+Table altered.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
 
 
+0 rows deleted.
+
+
+0 rows deleted.
+
+
 1 row created.
 
 
@@ -1296,8 +1448,29 @@ Table altered.
 
 
 1 row created.
+
+
+Table altered.
+
+
+Table altered.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
 
 
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
 1 row created.
 
 
@@ -1389,8 +1562,29 @@ Table altered.
 
 
 1 row created.
+
+
+Table altered.
+
+
+Table altered.
+
+
+0 rows deleted.
 
 
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
 1 row created.
 
 
@@ -1594,71 +1788,65 @@ Table altered.
 
 1 row created.
 
-Insert Into menus
-*
-ERROR at line 1:
-ORA-00001: unique constraint (FC22.MENUS_PK) violated 
 
+1 row created.
 
 
 1 row created.
+
+
+Table altered.
+
 
-Insert Into menus
-*
-ERROR at line 1:
-ORA-00001: unique constraint (FC22.MENUS_PK) violated 
+Table altered.
 
 
-Insert Into menus
-*
-ERROR at line 1:
-ORA-00001: unique constraint (FC22.MENUS_PK) violated 
+0 rows deleted.
 
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+1 row created.
+
+
+1 row created.
 
 
 1 row created.
 
-Insert Into menus
-*
-ERROR at line 1:
-ORA-00001: unique constraint (FC22.MENUS_PK) violated 
 
+1 row created.
 
-Insert Into menus
-*
-ERROR at line 1:
-ORA-00001: unique constraint (FC22.MENUS_PK) violated 
 
+1 row created.
 
 
 1 row created.
 
-Insert Into menus
-*
-ERROR at line 1:
-ORA-00001: unique constraint (FC22.MENUS_PK) violated 
 
+1 row created.
 
-Insert Into menus
-*
-ERROR at line 1:
-ORA-00001: unique constraint (FC22.MENUS_PK) violated 
 
+1 row created.
 
 
 1 row created.
 
-Insert Into menus
-*
-ERROR at line 1:
-ORA-00001: unique constraint (FC22.MENUS_PK) violated 
 
+1 row created.
 
-Insert Into menus
-*
-ERROR at line 1:
-ORA-00001: unique constraint (FC22.MENUS_PK) violated 
 
+1 row created.
 
 
 1 row created.
@@ -1677,8 +1865,29 @@ ORA-00001: unique constraint (FC22.MENUS_PK) violated
 
 
 1 row created.
+
+
+Table altered.
+
+
+Table altered.
+
+
+0 rows deleted.
 
 
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
 1 row created.
 
 
@@ -1710,8 +1919,29 @@ ORA-00001: unique constraint (FC22.MENUS_PK) violated
 
 
 1 row created.
+
+
+Table altered.
+
+
+Table altered.
+
 
+0 rows deleted.
 
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
 1 row created.
 
 
@@ -1746,8 +1976,29 @@ ORA-00001: unique constraint (FC22.MENUS_PK) violated
 
 
 1 row created.
+
+
+Table altered.
+
 
+Table altered.
 
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
+0 rows deleted.
+
+
 1 row created.
 
 
@@ -1860,6 +2111,9 @@ ORA-00001: unique constraint (FC22.MENUS_PK) violated
 
 
 1 row created.
+
+
+Table altered.
 
 
 Commit complete.
@@ -1870,6 +2124,9 @@ Table altered.
 
 PL/SQL procedure successfully completed.
 
+Select invalid Objects....
 
 no rows selected
+
+Completed... Press Enter to exit
 
