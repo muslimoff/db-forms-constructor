@@ -6,6 +6,9 @@ ACCEPT fc_user_pass DEFAULT FC PROMPT 'FC Password: ' HIDE
 
 CONN sys/&sys_pass@&instance_name as sysdba
 
+PROMPT Press Enter to start
+PAUSE
+
 PROMPT Create user
 @create_user.sql
 
@@ -20,7 +23,9 @@ PROMPT Create &fc_user Objects
 @data\_data.sql
 
 @compile_invalids.sql
-
+PROMPT Select invalid Objects....
 Select o.object_name From user_objects o Where o.status = 'INVALID';
 
-exit
+PROMPT Completed... Press Enter to exit
+PAUSE
+EXIT

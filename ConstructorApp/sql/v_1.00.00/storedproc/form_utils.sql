@@ -1,8 +1,7 @@
--- Start of DDL Script for Package FC.FORM_UTILS
--- Generated 10.04.2010 22:26:05 from FC@VM_XE
+-- Start of DDL Script for Package FC22.FORM_UTILS
+-- Generated 12-апр-2010 0:23:30 from FC22@VM_XE
 
-Create Or Replace 
-PACKAGE form_utils As
+Create Or Replace Package form_utils As
    Type desc_rec2 Is Record (
       col_num                Integer
      ,col_type               Varchar2 (255)
@@ -117,6 +116,12 @@ PACKAGE form_utils As
      ,p_package_owner   Varchar2 Default Null
      ,p_table_name      Varchar2 Default Null
    );
+
+   Function get_entity_insetrs (p_entity_type Varchar2, p_form_code Varchar2)
+      Return Clob;
+
+   Function get_inserts (p_form_code Varchar2)
+      Return Clob;
 End form_utils;
 /
 
@@ -126,8 +131,7 @@ Grant Execute On form_utils To app_rates
 Grant Execute On form_utils To mz_so_integration
 /
 
-Create Or Replace 
-PACKAGE BODY form_utils As
+Create Or Replace Package Body form_utils As
    g_bind_variables   bind_variables_idx_t;
 
    Cursor forms_cur (c_form_code Varchar2) Is
@@ -308,13 +312,11 @@ PACKAGE BODY form_utils As
                          ,NVL (stat.editor_end_row_flag, 'Y') editor_end_row_flag, stat.lookup_display_value
                      From (Select *
                              From form_columns c
-                            Where c.form_code =
-                                     NVL
-                                        (p_form_code, c.form_code)
+                            Where c.form_code = NVL (p_form_code, c.form_code)
 /*  And Exists (Select 1
                                                                                                                                                                                                                                                                                                                                                                                                                                                                 From forms_v f
                                                                                                                                                                                                                                                                                                                                                                                                                                                                Where f.form_code = c.form_code)*/
-                                                                  ) stat
+                          ) stat
                           Full Outer Join
                           (Select *
                              From form_columns$ c
@@ -569,9 +571,129 @@ PACKAGE BODY form_utils As
          err_message (l_msg);
       End If;
    End check_nulls;
+
+   Function get_entity_insetrs (p_entity_type Varchar2, p_form_code Varchar2)
+      Return Clob Is
+      Type charArr Is Table Of Varchar2 (32000)
+         Index By Binary_integer;
+
+      l_res        Clob              := '/*  Form: ' || p_form_code || '. Entity: ' || p_entity_type || '.  */';
+      l_str        Varchar2 (32000);
+      l_ins_into   Varchar2 (32000);
+      p_select     Varchar2 (2000)   := 'select * from ' || p_entity_type || ' where form_code=:p_form_code';
+      l_char_arr   charArr;
+      l_tmp        Clob;
+      c            Integer;
+      col_cnt      Integer;
+      rows_cnt     Integer;
+      desc_t       DBMS_SQL.DESC_TAB;
+   Begin
+      c             := DBMS_SQL.open_cursor;
+      DBMS_SQL.PARSE (c, p_select, DBMS_SQL.NATIVE);
+      DBMS_SQL.DESCRIBE_COLUMNS (c, col_cnt, desc_t);
+
+      For j In 1 .. col_cnt Loop
+         l_str    := l_str || ', "' || desc_t (j).col_name || '"';
+
+         If DBMS_TYPES.typecode_clob = desc_t (j).col_type Then
+            DBMS_SQL.define_column (c, j, l_tmp);
+         Else
+            l_char_arr (j)    := Null;
+            DBMS_SQL.define_column (c, j, l_char_arr (j), 32000);
+         End If;
+      End Loop;
+
+      l_ins_into    :=
+            CHR (10) || CHR (10) || 'insert into ' || p_entity_type || '(' || SUBSTR (l_str, 3) || ') values ('
+            || CHR (10);
+      DBMS_SQL.bind_variable (c, 'p_form_code', p_form_code);
+      rows_cnt      := DBMS_SQL.Execute (c);
+
+      Loop
+         If DBMS_SQL.fetch_rows (c) = 0 Then
+            Exit;
+         End If;
+
+         l_res    := l_res || l_ins_into;
+
+         For j In 1 .. col_cnt Loop
+            If j != 1 Then
+               l_res    := l_res || CHR (10) || ',';
+            End If;
+
+            --Проблема с длинными Clob
+            If DBMS_TYPES.typecode_clob = desc_t (j).col_type Then
+               DBMS_SQL.COLUMN_VALUE (c, j, l_tmp);
+               l_res    := l_res || '''' || Replace (l_tmp, '''', '''''') || '''';
+            Else
+               DBMS_SQL.COLUMN_VALUE (c, j, l_char_arr (j));
+               l_res    := l_res || '''' || Replace (l_char_arr (j), '''', '''''') || '''';
+            End If;
+         End Loop;
+
+         l_res    := l_res || ');';
+      End Loop;
+
+      Return l_res;
+   End get_entity_insetrs;
+
+   Function get_inserts (p_form_code Varchar2)
+      Return Clob Is
+      l_res   Clob;
+   Begin
+      l_res    :=
+            l_res
+         || 'delete from '
+         || 'FORM_COLUMNS'
+         || ' where form_code = '''
+         || p_form_code
+         || ''';'
+         || CHR (10)
+         || 'delete from '
+         || 'FORM_COLUMNS$'
+         || ' where form_code = '''
+         || p_form_code
+         || ''';'
+         || CHR (10)
+         || 'delete from '
+         || 'FORM_ACTIONS'
+         || ' where form_code = '''
+         || p_form_code
+         || ''';'
+         || CHR (10)
+         || 'delete from '
+         || 'FORM_TABS'
+         || ' where form_code = '''
+         || p_form_code
+         || ''';'
+         || CHR (10)
+         || 'delete from '
+         || 'FORMS'
+         || ' where form_code = '''
+         || p_form_code
+         || ''';'
+         || CHR (10);
+      l_res    :=
+            l_res
+         || form_utils.get_entity_insetrs ('FORMS', p_form_code)
+         || CHR (10)
+         || form_utils.get_entity_insetrs ('FORM_TABS', p_form_code)
+         || CHR (10)
+         || form_utils.get_entity_insetrs ('FORM_ACTIONS', p_form_code)
+         || CHR (10)
+         || form_utils.get_entity_insetrs ('FORM_COLUMNS$', p_form_code)
+         || CHR (10)
+         || form_utils.get_entity_insetrs ('FORM_COLUMNS', p_form_code);
+      l_res    :=
+            'Alter Table FORMS Disable All Triggers;'
+         || CHR (10)
+         || l_res
+         || CHR (10)
+         || 'Alter Table FORMS Enable All Triggers;';
+      Return l_res;
+   End get_inserts;
 End FORM_UTILS;
 /
 
-
--- End of DDL Script for Package FC.FORM_UTILS
+-- End of DDL Script for Package FC22.FORM_UTILS
 
