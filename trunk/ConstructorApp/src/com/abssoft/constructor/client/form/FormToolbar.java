@@ -194,7 +194,6 @@ public class FormToolbar extends DynamicForm {
 		for (int i = 0; i < actionButtonsArr.size(); i++) {
 			btns[i] = actionButtonsArr.get(i);
 		}
-
 		btnToolbar.setButtons(btns);
 		ctxMenu.setData(menuItems);
 		this.setContextMenu(ctxMenu);
@@ -206,7 +205,7 @@ public class FormToolbar extends DynamicForm {
 	public void doAction(final FormActionMD m) {
 		final ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		mainFormPane.setCurrentActionCode(m.getCode());
-		//int selRow = mainFormPane.getCurrentGridRowSelected();
+		// int selRow = mainFormPane.getCurrentGridRowSelected();
 		if ("2".equals(m.getType())) {
 			// TODO Проблема с DynamicForm.ItemChangedHandler в хроме - приходится сохранять данные RichTextItem не по событию, а по кнопке
 			// сохранения
@@ -290,7 +289,10 @@ public class FormToolbar extends DynamicForm {
 			System.out.println("Custom PL/SQL - end execution...");
 		} else if ("8".equals(m.getType())) {
 			grid.startEditing(mainFormPane.getCurrentGridRowSelected(), 0, false);
+		} else if ("9".equals(m.getType())) {
+			grid.setShowFilterEditor(!grid.getShowFilterEditor());
 		}
+
 	}
 
 	public void doActionWithConfirm(final FormActionMD m) {

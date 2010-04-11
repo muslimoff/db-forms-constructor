@@ -7,12 +7,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.MapPair;
 import com.abssoft.constructor.client.form.MainFormPane;
 import com.abssoft.constructor.client.metadata.Attribute;
+import com.abssoft.constructor.client.metadata.IconsArr;
 import com.abssoft.constructor.client.metadata.Row;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.Record;
@@ -104,6 +106,16 @@ public class Utils {
 		return treeNode;
 	}
 
+	public static List<Object> getKeysFromValue(Map<?, ?> hm, Object value) {
+		List<Object> list = new ArrayList<Object>();
+		for (Object o : hm.keySet()) {
+			if (hm.get(o).equals(value)) {
+				list.add(o);
+			}
+		}
+		return list;
+	}
+
 	public static Row getRowFromRecord(FormDataSourceField[] dsFields, Record record) {
 		Row row = new Row();
 		for (int c = 0; c < dsFields.length; c++) {
@@ -114,7 +126,19 @@ public class Utils {
 				Boolean cellValue = record.getAttributeAsBoolean(colName);
 				attr = new Attribute(cellValue);
 			} else if (FieldType.FLOAT.equals(dsFields[c].getType())) {
-				Float fVal = record.getAttributeAsFloat(colName);
+				Float fVal = null;
+				// Icons
+				if ("3".equals(dsFields[c].getColumnMD().getFieldType()) //
+						|| "4".equals(dsFields[c].getColumnMD().getTreeFieldType())) {
+					try {
+						IconsArr iArr = ConstructorApp.menus.getIcons();
+						fVal = ((Integer) getKeysFromValue(iArr, record.getAttribute(colName)).get(0)).floatValue();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				} else {
+					fVal = record.getAttributeAsFloat(colName);
+				}
 				Double cellValue = (null == fVal) ? null : fVal.doubleValue();
 				attr = new Attribute(cellValue);
 			} else if (FieldType.DATE.equals(dsFields[c].getType())) {

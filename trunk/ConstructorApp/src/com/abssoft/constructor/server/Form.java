@@ -104,10 +104,15 @@ public class Form {
 							Date d = null == dd ? null : new Date(dd.getTime());
 							stmnt.setDate(paramNum, d);
 							outParamType = Types.DATE;
-						} else if ("N".equals(attr.getDataType())) {
+						} else if ("N".equals(attr.getDataType()) && null != attr.getAttributeAsDouble()) {
 							try {
-								stmnt.setDouble(paramNum, attr.getAttributeAsDouble());
+								System.out.println("@1");
+								Double d = attr.getAttributeAsDouble();
+								System.out.println("@2" + d + "; " + paramNum);
+								stmnt.setDouble(paramNum, d);
+								System.out.println("@3");
 								outParamType = Types.DOUBLE;
+								System.out.println("@4");
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -399,7 +404,7 @@ public class Form {
 			}
 		}
 		Utils.debug("Form: Lookups Metadata finished...");
-		Utils.debug("Form: getFormMetaData(" + formCode+") executed...");
+		Utils.debug("Form: getFormMetaData(" + formCode + ") executed...");
 		return formMetaData;
 	}
 
