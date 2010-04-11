@@ -62,20 +62,22 @@ public class ConstructorApp implements EntryPoint {
 	ConnectWindow connectWindow;
 
 	private void doBeforeClose(final String msg) {
-		QueryServiceAsync queryService = (QueryServiceAsync) GWT.create(QueryService.class);
-		queryService.sessionClose(sessionId, new DSAsyncCallback<Void>() {
-			@Override
-			public void onSuccess(Void result) {
-				String msg2 = msg + ": DB session " + sessionId + " closed...";
-				sessionId = -1;
-				Utils.debug(msg2);
-				// Window.alert(msg2);
+		if (-1 != sessionId) {
+			QueryServiceAsync queryService = (QueryServiceAsync) GWT.create(QueryService.class);
+			queryService.sessionClose(sessionId, new DSAsyncCallback<Void>() {
+				@Override
+				public void onSuccess(Void result) {
+					String msg2 = msg + ": DB session " + sessionId + " closed...";
+					sessionId = -1;
+					// Utils.debug(msg2);
+					System.out.println(msg2);
+				}
+			});
+			for (Tab t : tabSet.getTabs()) {
+				tabSet.removeTab(t);
 			}
-		});
-		for (Tab t : tabSet.getTabs()) {
-			tabSet.removeTab(t);
+			mainToolBar.clear();
 		}
-		mainToolBar.clear();
 	}
 
 	public void clearMenus() {

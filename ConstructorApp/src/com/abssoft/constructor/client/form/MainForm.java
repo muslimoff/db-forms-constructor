@@ -129,14 +129,13 @@ class MainForm extends Canvas {
 		} else {
 			treeGrid = new FormListGrid();
 		}
-
+		treeGrid.setShowFilterEditor(false);
 		treeGrid.setAlternateRecordStyles(true);
 		treeGrid.setCanMultiSort(true);
 		treeGrid.addRecordClickHandler(new GridRecordClickHandler());
 		// Правая кнопка
 		treeGrid.addRowContextClickHandler(new GridRowContextClickHandler());
 		// treeGrid.setCanRemoveRecords(true);
-		// treeGrid.setShowFilterEditor(true);
 
 		treeGrid.addClickHandler(new ClickHandler() {
 			// не работает...
