@@ -1,3 +1,4 @@
+1. Форма-матрица или Cube. Для Минздрава и для табеля. Selection  - по ячейке. При выборе - передавать пересечение.
 00:00:00,250 [WARN] The class com.google.gwt.dev.HostedMode is deprecated and will be removed -- use com.google.gwt.dev.DevMode instead
 ---------------------------- Глюки ------------------------
  +1. setFrozen = false в дереве - exception...

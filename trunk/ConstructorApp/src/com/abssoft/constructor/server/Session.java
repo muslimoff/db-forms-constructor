@@ -36,9 +36,9 @@ public class Session {
 		getStaticLookupsArr();
 	}
 
-	public void closeForm(String formCode, int gridHashCode) {
+	public void closeForm(String formCode, int gridHashCode, FormMD formState) {
 		Utils.debug("Server:session form " + formCode + " - gridHashCode:" + gridHashCode + " before close...");
-		formDataHashMap.get(formCode).closeForm(gridHashCode);
+		formDataHashMap.get(formCode).closeForm(gridHashCode, formState);
 		// TODO Было закомментировано: Во избежание повторной вычитки настроек формы. Но тогда возникают проблемы при изменении формы на
 		// лету. Приходится делать реконнект. Раскомментировал. Предусмотреть режимы работы debug и рабочий. Или забить - пусть так будет.
 		// А еще лучше - при старте сессии вычитывать настройки всех форм, а потом только перечитывать при изменении OVN.

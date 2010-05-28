@@ -156,10 +156,10 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 				int serverIdx = Integer.decode(serverSelectItem.getValue().toString());
 				String user = null;
 				String password = null;
-				if (ConstructorApp.serverInfoArr.get(serverIdx).isTransferPassToClient()) {
-					user = userNameItem.getValue().toString();
-					password = passItem.getValue().toString();
-				}
+				// if (ConstructorApp.serverInfoArr.get(serverIdx).isTransferPassToClient()) {
+				user = userNameItem.getValue().toString();
+				password = passItem.getValue().toString();
+				// }
 				Utils.debug("ConnId:" + serverSelectItem.getValue() + "; user:" + user + "; password:" + password);
 				сonstructorApp.clearMenus();
 				Utils.debug("Create new session...");

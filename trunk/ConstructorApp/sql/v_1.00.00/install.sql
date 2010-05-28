@@ -1,14 +1,17 @@
 SPOOL install.log
 ACCEPT instance_name DEFAULT vm_xe PROMPT 'instance (default VM_XE): '
-ACCEPT sys_pass DEFAULT simsim PROMPT 'SYS Password: ' HIDE	
+PROMPT Enter DBA Username(default SYS). If not SYS - grant privileges on SYS Objects manualy by starting script "sys_grants.sql "
+ACCEPT dba_user DEFAULT SYS PROMPT 'DBA Username: '
+ACCEPT dba_pass DEFAULT simsim PROMPT 'DBA Password: ' HIDE	
 ACCEPT fc_user DEFAULT FC22 PROMPT 'FC Username (default FC22): '
 ACCEPT fc_user_pass DEFAULT FC PROMPT 'FC Password: ' HIDE
+ACCEPT fc_user_ts DEFAULT HP_DATA PROMPT 'FC Tablespace (default HP_DATA): '
 
-CONN sys/&sys_pass@&instance_name as sysdba
-
+CONN &dba_user/&dba_pass@&instance_name 
 PROMPT Press Enter to start
 PAUSE
 
+rem as sysdba
 PROMPT Create user
 @create_user.sql
 

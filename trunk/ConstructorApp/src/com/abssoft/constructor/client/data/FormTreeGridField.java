@@ -57,7 +57,7 @@ public class FormTreeGridField extends TreeGridField {
 
 				@Override
 				public String hoverHTML(Object value, ListGridRecord record, int rowNum, int colNum) {
-					String hover = record.getAttribute(c.getHoverСolumnСode());
+					String hover = null != record ? record.getAttribute(c.getHoverСolumnСode()) : null;
 					return hover;
 				}
 			});
@@ -65,7 +65,7 @@ public class FormTreeGridField extends TreeGridField {
 		this.setPrompt(c.getDescription());
 		if (!"Y".equals(c.getShowOnGrid())) {
 			this.setHidden(true);
-			this.setCanHide(false); // Чтобы включить нельзя было
+			this.setCanHide(ConstructorApp.debugEnabled); // Чтобы включить нельзя было
 		}
 
 		// При редактировании грида изменять и значения в редакторе

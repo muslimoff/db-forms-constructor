@@ -1,7 +1,5 @@
 package com.abssoft.constructor.client.widgets;
 
-import java.util.Map;
-
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.FormDataSourceField;
 import com.abssoft.constructor.client.data.FormTreeGridField;
@@ -40,9 +38,9 @@ public class FormPickTreeItem extends IPickTreeItem {
 		@Override
 		protected void executeFetch(final String requestId, DSRequest request, final DSResponse response) {
 			Utils.debug("PickDataSource Fetch. Lookup:" + lookupCode);
-			Map<?, ?> filterValues = (new Criteria()).getValues();
+			Criteria cr = new Criteria();
 			try {
-				filterValues = request.getCriteria().getValues();
+				cr.addCriteria(request.getCriteria());
 			} catch (Exception e) {
 				Utils.debug("Exception on request.getCriteria().getValues():" + e.getMessage());
 			}
@@ -50,7 +48,7 @@ public class FormPickTreeItem extends IPickTreeItem {
 			int endRow = 10000;
 			String sortBy = request.getAttribute("sortBy");
 			QueryServiceAsync service = GWT.create(QueryService.class);
-			service.fetch(ConstructorApp.sessionId, lookupCode, -999, sortBy, startRow, endRow, filterValues, false,
+			service.fetch(ConstructorApp.sessionId, lookupCode, -999, sortBy, startRow, endRow, cr.getValues(), false,
 					new DSAsyncCallback<RowsArr>(requestId, response, this) {
 						public void onSuccess(RowsArr result) {
 							records = new TreeNode[result.size()];
@@ -93,6 +91,6 @@ public class FormPickTreeItem extends IPickTreeItem {
 		// this.setValueField("ID");
 		// this.setDisplayField(mfp.getFormColumns().getDataSourceFields()[0].getColumnMD().getName());
 		this.setDataSource(ds);
-		//this.setFetchMissingValues(true);
+		// this.setFetchMissingValues(true);
 	}
 }

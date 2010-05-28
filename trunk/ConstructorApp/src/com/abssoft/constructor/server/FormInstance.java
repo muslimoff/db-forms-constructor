@@ -78,9 +78,10 @@ public class FormInstance {
 				currentEndRow = -1;
 				resultData = new RowsArr();
 				String sqlText = formSQLText + ((sortBy != null) ? sortBy : "");
-				Utils.debug(sqlText);
-				statement = (OraclePreparedStatement) connection.prepareStatement("select count(*) cnt from (" + sqlText + "\n)"); // statement
+				String totalRowsSqlText = "select count(*) cnt from (" + sqlText + "\n)";
+				statement = (OraclePreparedStatement) connection.prepareStatement(totalRowsSqlText); // statement
 				Utils.setFilterValues(statement, filterValues);
+				Utils.debug("totalRowsSqlText:\n" + totalRowsSqlText);
 				rs = statement.executeQuery();
 				rs.next();
 				resultData.setTotalRows(rs.getInt("CNT"));
@@ -88,6 +89,7 @@ public class FormInstance {
 				statement.close();
 				statement = (OraclePreparedStatement) connection.prepareStatement(sqlText);
 				Utils.setFilterValues(statement, filterValues);
+				Utils.debug("sqlText:\n" + sqlText);
 				rs = statement.executeQuery();
 				currentSortBy = sortBy;
 				currentFilterValues = filterValues;
@@ -119,27 +121,6 @@ public class FormInstance {
 						FormColumnMD cmd = columnsArr.get(colNum);
 						String colName = cmd.getName();
 						String formColDataType = cmd.getDataType();
-						// String val;
-						// Attribute attr;
-						// if ("N".equals(cmd.getDataType())) {
-						// Double dVal = rs.getDouble(colName);
-						// dVal = rs.wasNull() ? null : dVal;
-						// attr = new Attribute(dVal);
-						// System.out.println(dVal + "###" + attr.getAttributeAsDouble());
-						// } else if ("D".equals(cmd.getDataType())) {
-						// attr = new Attribute(rs.getDate(colName));
-						// } else if ("B".equals(cmd.getDataType())) {
-						// val = rs.getString(colName);
-						// attr = new Attribute("1".equals(val) || "Y".equals(val));
-						// } else {
-						// val = rs.getString(colName);
-						// // Необходимо убирать символы chr #00, которые может возвращать БД - иначе grid вылетает..
-						// if (null != val) {
-						// val = val.replaceAll(Character.toString((char) 0), "");
-						// }
-						// attr = new Attribute(val);
-						// }
-						// r.put(colNum, attr);
 						r.put(colNum, Utils.getAttribute(colName, formColDataType, rs));
 					} catch (java.sql.SQLException e) {
 						Utils.debug("Error on column: " + columnsArr.get(colNum).getName());

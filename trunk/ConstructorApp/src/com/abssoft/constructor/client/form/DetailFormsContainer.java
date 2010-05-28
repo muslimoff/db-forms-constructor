@@ -265,14 +265,15 @@ public class DetailFormsContainer extends TabSet {
 			FormTab ft = (FormTab) t;
 			if (ft instanceof MainFormContainer) {
 				try {
-					((MainFormContainer) ft).getMainFormPane().getMainForm().doBeforeClose();
+					// ((MainFormContainer) ft).getMainFormPane().getMainForm().doBeforeClose();
+					((MainFormContainer) ft).getMainFormPane().doBeforeClose();
 				} catch (Exception e) {
 					Utils.logException(e, "DetailFormsContainer.doBeforeClose()");
 				}
 			}
 		}
 	}
-
+//@@@@ Не доделал 
 	public void filterData(boolean filterDynamicMultiDetails, boolean filterDynamicSingleDetails, boolean filterStaticDetails) {
 		Utils.debug("tabCounter:" + tabCounter);
 		if (0 != tabCounter) {

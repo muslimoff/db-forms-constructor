@@ -194,7 +194,7 @@ public class FormRowEditorTab extends FormTab {
 					Object itemValue = event.getItem().getValue();
 					Utils.debug("onItemChanged... " + itemName + "; " + itemType);
 					ListGrid g = getMainFormPane().getMainForm().getTreeGrid();
-					int rn = getMainFormPane().getCurrentGridRowSelected();
+					int rn = getMainFormPane().getSelectedRow();
 					if ("boolean".equals(itemType)) {
 						g.setEditValue(rn, itemName, item.getAttributeAsBoolean("value"));
 					} else if ("date".equals(itemType)) {

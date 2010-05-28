@@ -1,6 +1,5 @@
 package com.abssoft.constructor.server;
 
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -50,10 +49,15 @@ public class Form {
 		Utils.debug("" + this);
 	}
 
-	public void closeForm(int gridHashCode) {
+	public void closeForm(int gridHashCode, FormMD formState) {
 		Utils.debug("Server:form " + formCode + " - gridHashCode:" + gridHashCode + " before close...");
 		formInstance.get(gridHashCode).closeForm();
 		formInstance.remove(gridHashCode);
+		if (0 == getInstancesCount()) {
+			Utils.debug("Server:form " + formCode + " - gridHashCode:" + gridHashCode + " save current state for User...");
+			Utils.debug("formState:" + formState + "; FormCode:" + formState.getFormCode());
+			// TODO Обработка состояния формы при закрытии: FormMD formState - сохранение ширин, сортировок и прочей хери.
+		}
 		Utils.debug("Server:form " + formCode + " - gridHashCode:" + gridHashCode + " closed...");
 	}
 
@@ -79,16 +83,23 @@ public class Form {
 				for (int j = 0; j < resultRow.size(); j++) {
 					String newParamName = "P_" + formMetaData.getColumns().get(j).getName();
 					String oldParamName = "P_OLD_" + formMetaData.getColumns().get(j).getName();
+					// TODO Оптимизировать код
 					if (null != newRow && null != oldRow) {
 						rowValues.put(newParamName, newRow.get(j));
 						rowValues.put(oldParamName, oldRow.get(j));
 					} else if (null != newRow) {
 						rowValues.put(newParamName, newRow.get(j));
+						// rowValues.put(oldParamName, newRow.get(j));
+						rowValues.put(oldParamName, new Attribute());
 					} else if (null != oldRow) {
 						rowValues.put(newParamName, oldRow.get(j));
+						// rowValues.put(newParamName, new Attribute());
 						rowValues.put(oldParamName, oldRow.get(j));
 					}
-
+					// Attribute newVal = (null != newRow) ? newRow.get(j) : new Attribute();
+					// Attribute oldVal = (null != oldRow) ? oldRow.get(j) : newRow.get(j);
+					// rowValues.put(newParamName, newVal);
+					// rowValues.put(oldParamName, oldVal);
 				}
 				// Цикл по IN-параметрам перед выполнением процедуры
 				Iterator<Integer> allParamsIterator = fActMD.getAllArgs().keySet().iterator();
@@ -98,31 +109,25 @@ public class Form {
 					String paramName = fActMD.getAllArgs().get(paramNum);
 					if (fActMD.getInputs().containsKey(paramNum)) {
 						Attribute attr = rowValues.get(paramName);
-						if ("D".equals(attr.getDataType())) {
-							// Converting java.util.Date to java.sql.Date
-							java.util.Date dd = attr.getAttributeAsDate();
-							Date d = null == dd ? null : new Date(dd.getTime());
-							stmnt.setDate(paramNum, d);
-							outParamType = Types.DATE;
-						} else if ("N".equals(attr.getDataType()) && null != attr.getAttributeAsDouble()) {
-							try {
-								System.out.println("@1");
-								Double d = attr.getAttributeAsDouble();
-								System.out.println("@2" + d + "; " + paramNum);
-								stmnt.setDouble(paramNum, d);
-								System.out.println("@3");
+						Object val = attr.getAttributeAsObject();
+						if (null != val) {
+							if (val instanceof java.util.Date) {
+								// Converting java.util.Date to java.sql.Date
+								stmnt.setDate(paramNum, new java.sql.Date(((java.util.Date) val).getTime()));
+								outParamType = Types.DATE;
+							} else if (val instanceof Double) {
+								stmnt.setDouble(paramNum, (Double) val);
 								outParamType = Types.DOUBLE;
-								System.out.println("@4");
-							} catch (Exception e) {
-								e.printStackTrace();
+							} else if (val instanceof Boolean) {
+								stmnt.setString(paramNum, ((Boolean) val) ? "Y" : "N");
+								outParamType = Types.VARCHAR;
+							} else {
+								stmnt.setString(paramNum, (String) val);
 							}
-						} else if ("B".equals(attr.getDataType())) {
-							stmnt.setString(paramNum, attr.getAttributeAsBoolean() ? "Y" : "N");
-							outParamType = Types.VARCHAR;
 						} else {
-							stmnt.setString(paramNum, attr.getAttribute());
+							stmnt.setString(paramNum, null);
 						}
-						Utils.debug("(" + attr.getDataType() + ")" + "IN:" + paramName + " => " + attr.getAttribute() + ";", resultRow);
+						Utils.debug("(" + attr.getDataType() + ")" + "IN:" + paramName + " => " + val + ";", resultRow);
 					}
 					if (fActMD.getOutputs().containsKey(paramNum)) {
 						stmnt.registerOutParameter(paramNum, outParamType);
@@ -135,22 +140,10 @@ public class Form {
 					if (fActMD.getOutputsByName().containsKey(colName)) {
 						String dataType = resultRow.get(j).getDataType();
 						resultRow.remove(j);
-						Attribute attr;
 						Integer colIdx = fActMD.getOutputsByName().get(colName);
-						if ("D".equals(dataType)) {
-							Date newValue = stmnt.getDate(colIdx);
-							attr = new Attribute(newValue);
-						} else if ("N".equals(dataType)) {
-							Double newValue = stmnt.getDouble(colIdx);
-							attr = new Attribute(newValue);
-						} else if ("B".equals(dataType)) {
-							Boolean newValue = "Y".equals(stmnt.getString(colIdx)) || "1".equals(stmnt.getString(colIdx));
-							attr = new Attribute(newValue);
-						} else {
-							String newValue = stmnt.getString(colIdx);
-							attr = new Attribute(newValue);
-						}
-						Utils.debug("(" + dataType + ")" + "OUT:" + colName + " => " + attr.getAttribute() + ";", resultRow);
+						Attribute attr = Utils.getAttribute(colIdx, dataType, stmnt);
+						Utils.debug("(" + dataType + ")" + "OUT:" + colName + " => " + attr.getAttribute() + "; is null:"
+								+ (null == attr.getAttribute()), resultRow);
 						resultRow.put(j, attr);
 					}
 				}
@@ -223,10 +216,7 @@ public class Form {
 				Utils.debug("formSQLText = \n" + formSQLText);
 
 				try {
-					System.out.println("connection:" + connection);
 					statement = (OraclePreparedStatement) connection.prepareStatement(formSQLText);
-					System.out.println("zxxxxxxxxxxxxxxxxxx");
-					System.out.println("zzzzzzzzzzzzzzzzzzz");
 					// statement.setEscapeProcessing(false);
 					Utils.setFilterValues(statement, null);
 					rs = statement.executeQuery();

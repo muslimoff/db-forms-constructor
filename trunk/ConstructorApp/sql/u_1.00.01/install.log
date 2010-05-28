@@ -1,9 +1,9 @@
-instance (default VM_XE): 
-FC Username (default FC22): 
+instance (default VM_XE): kc_crp2
+FC Username (default FC22): FC
 Press Enter to start
 
 Connected.
-Create FC22 Objects
+Create FC Objects
 
 Sequence created.
 
@@ -43,11 +43,17 @@ Table altered.
 
 Package created.
 
+Grant Execute On form_utils To app_rates
+                               *
+ERROR at line 1:
+ORA-01917: user or role 'APP_RATES' does not exist 
 
-Grant succeeded.
 
+Grant Execute On form_utils To mz_so_integration
+                               *
+ERROR at line 1:
+ORA-01917: user or role 'MZ_SO_INTEGRATION' does not exist 
 
-Grant succeeded.
 
 
 Package body created.

@@ -83,7 +83,7 @@ public interface QueryService extends RemoteService {
 	 * @param formCode
 	 * @param gridHashCode
 	 */
-	public void closeForm(int sessionId, String formCode, int gridHashCode);
+	public void closeForm(int sessionId, String formCode, int gridHashCode, FormMD formState);
 
 	public StaticLookupsArr getStaticLookupsArr(int sessionId);
 

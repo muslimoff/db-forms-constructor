@@ -2,12 +2,14 @@ package com.abssoft.constructor.server;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Wrapper;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import oracle.jdbc.OracleCallableStatement;
 import oracle.jdbc.OraclePreparedStatement;
 import oracle.jdbc.driver.OracleParameterMetaData;
 
@@ -55,10 +57,12 @@ public class Utils {
 		while (it.hasNext()) {
 			String mapKey = (String) it.next();
 			String value;
+			Object valueObj = filterValues.get(mapKey);
 			try {
-				value = (String) filterValues.get(mapKey);
+				value = (String) valueObj;
+				Utils.debug("filterValues: " + mapKey + "=" + value + "; class: " + valueObj.getClass());
 			} catch (Exception e) {
-				value = filterValues.get(mapKey) + "";
+				value = valueObj + "";
 				Utils.debug("setFilterValues. Error on filterValues.get(mapKey): " + e.getMessage());
 			}
 			Utils.setStringParameterValue(statement, mapKey.toLowerCase(), value);
@@ -109,20 +113,21 @@ public class Utils {
 		return result;
 	}
 
-	public static Attribute getAttribute(String colName, String formColDataType, ResultSet rs) throws SQLException {
+	/******************************/
+	private static Attribute getAttribute(String column, String formColDataType, ResultSet rs) throws SQLException {
 		Attribute attr;
 		String val;
 		if ("N".equals(formColDataType)) {
-			Double dVal = rs.getDouble(colName);
+			Double dVal = rs.getDouble(column);
 			dVal = rs.wasNull() ? null : dVal;
 			attr = new Attribute(dVal);
 		} else if ("D".equals(formColDataType)) {
-			attr = new Attribute(rs.getDate(colName));
+			attr = new Attribute(rs.getDate(column));
 		} else if ("B".equals(formColDataType)) {
-			val = rs.getString(colName);
+			val = rs.getString(column);
 			attr = new Attribute("1".equals(val) || "Y".equals(val));
 		} else {
-			val = rs.getString(colName);
+			val = rs.getString(column);
 			// Необходимо убирать символы chr #00, которые может возвращать БД - иначе grid вылетает..
 			if (null != val) {
 				val = val.replaceAll(Character.toString((char) 0), "");
@@ -131,4 +136,41 @@ public class Utils {
 		}
 		return attr;
 	}
+
+	// TODO getAttribute - одинаковый код. Как быть?
+	private static Attribute getAttribute(Integer column, String formColDataType, OracleCallableStatement rs) throws SQLException {
+		Attribute attr;
+		String val;
+		if ("N".equals(formColDataType)) {
+			Double dVal = rs.getDouble(column);
+			dVal = rs.wasNull() ? null : dVal;
+			attr = new Attribute(dVal);
+		} else if ("D".equals(formColDataType)) {
+			attr = new Attribute(rs.getDate(column));
+		} else if ("B".equals(formColDataType)) {
+			val = rs.getString(column);
+			attr = new Attribute("1".equals(val) || "Y".equals(val));
+		} else {
+			val = rs.getString(column);
+			// Необходимо убирать символы chr #00, которые может возвращать БД - иначе grid вылетает..
+			if (null != val) {
+				val = val.replaceAll(Character.toString((char) 0), "");
+			}
+			attr = new Attribute(val);
+		}
+		return attr;
+	}
+
+	public static Attribute getAttribute(Object column, String formColDataType, Wrapper rs) throws SQLException {
+		Attribute attr = null;
+		if (column instanceof Integer && rs instanceof OracleCallableStatement) {
+			Integer col = (Integer) column;
+			attr = getAttribute(col, formColDataType, (OracleCallableStatement) rs);
+		} else if (column instanceof String && rs instanceof ResultSet) {
+			String col = (String) column;
+			attr = getAttribute(col, formColDataType, (ResultSet) rs);
+		}
+		return attr;
+	}
+	/******************************/
 }

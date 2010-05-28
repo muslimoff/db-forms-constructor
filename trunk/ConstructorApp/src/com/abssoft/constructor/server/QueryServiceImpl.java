@@ -10,11 +10,14 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.ServletException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
+import oracle.jdbc.OraclePreparedStatement;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -45,18 +48,26 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 	private ServerInfoArr serverInfoArr = new ServerInfoArr();
 	private HashMap<Integer, Session> sessionData = new HashMap<Integer, Session>();
 
-	public QueryServiceImpl() {
+	// public static String SERVER_WEB_INF;
+
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		String filename = getServletContext().getRealPath("/WEB-INF") + "/" + "constructorapp.xml";
+		System.out.println("filename: " + filename);
 		Utils.debug("Middle tier service 'QueryServiceImpl' started...");
 		File f = new File(".");
 		for (String s : f.list()) {
 			System.out.println(s);
 		}
-		ReadSettingsXML();
 
+		ReadSettingsXML(filename);
 	}
 
-	public void ReadSettingsXML() {
-		String filename = "constructorapp.xml";
+	public QueryServiceImpl() {
+	}
+
+	public void ReadSettingsXML(String filename) {
 		XPathFactory factory = XPathFactory.newInstance();
 		XPath xPath = factory.newXPath();
 		String defaultUsername = "";
@@ -154,17 +165,12 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 	}
 
 	public ConnectionInfo connect(int ServerIdx, String user, String password, boolean isScript) {
-		String result = "";
+		String errMsg = "";
 		int sessionId = -1;
-		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			result = e.toString();
-		}
+
 		try {
 			Utils.debug("Server. Before connect...");
-
+			Class.forName("oracle.jdbc.driver.OracleDriver");
 			ServerInfoMD serverInfoMD = serverInfoArr.get(ServerIdx);
 			System.out.println("serverInfoMD:" + serverInfoMD);
 			String userName = serverInfoMD.isTransferPassToClient() ? user : serverInfoMD.getDbUsername();
@@ -173,24 +179,50 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 			Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@" + serverInfoMD.getDbUrl(), userName, userPass);
 			Utils.debug("Server. Connected..");
 			connection.createStatement().execute("alter session set nls_language='AMERICAN'");
-			ResultSet rs = connection.createStatement().executeQuery("Select USERENV ('sessionid') From DUAL");
-			rs.next();
-			sessionId = rs.getBigDecimal(1).intValue();
-			rs.close();
+			ResultSet sessionidRS = connection.createStatement().executeQuery("Select USERENV ('sessionid') From DUAL");
+			sessionidRS.next();
+			sessionId = sessionidRS.getBigDecimal(1).intValue();
+			sessionidRS.close();
+			// Custom Login Validation
+			System.out.println("serverInfoMD.isTransferPassToClient():" + serverInfoMD.isTransferPassToClient());
+			if (!serverInfoMD.isTransferPassToClient()) {
+				Utils.debug("Server. Custom Login.");
+				System.out.println("user:" + user + "; password:" + password + "; userName:" + userName + "; userPass:" + userPass);
+				String validateLoginSQL = "Select " + serverInfoMD.getFcSchemaOwner()
+						+ ".users_pkg.validate_login (:p_username, :p_password) isValid From DUAL";
+				OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(validateLoginSQL);
+				Utils.debug("Parameters: ");
+				Utils.setStringParameterValue(statement, "p_username", user);
+				Utils.setStringParameterValue(statement, "p_password", password);
+				ResultSet loginRS = statement.executeQuery();
+				loginRS.next();
+				Boolean isLoginValid = "Y".equals(loginRS.getString("isValid"));
+				loginRS.close();
+				if (!isLoginValid) {
+					connection.close();
+					sessionId = -1;
+					throw new Exception("Пароль не тот...");
+				}
+			}
 			Session session = new Session(connection);
 			session.setScript(isScript);
 			session.setFcSchemaOwner(serverInfoMD.getFcSchemaOwner());
 			sessionData.put(sessionId, session);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			errMsg = e.toString();
+			sessionId = -1;
 		} catch (java.sql.SQLException e) {
 			e.printStackTrace();
-			result = e.getMessage();
-
+			errMsg = e.getMessage();
+			sessionId = -1;
 		} catch (Exception e) {
 			e.printStackTrace();
-			result = e.toString();
+			errMsg = e.toString();
+			sessionId = -1;
 		}
-		ConnectionInfo c = new ConnectionInfo(result, sessionId);
-		Utils.debug("Server:sessionId: " + sessionId + "; " + result);
+		ConnectionInfo c = new ConnectionInfo(errMsg, sessionId);
+		Utils.debug("Server:sessionId: " + sessionId + "; " + errMsg);
 		return c;
 	}
 
@@ -234,9 +266,9 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 		sessionData.remove(sessionId);
 	}
 
-	public void closeForm(int sessionId, String formCode, int gridHashCode) {
+	public void closeForm(int sessionId, String formCode, int gridHashCode, FormMD formState) {
 		Utils.debug("Server:service form " + formCode + " - gridHashCode:" + gridHashCode + " before close...");
-		sessionData.get(sessionId).closeForm(formCode, gridHashCode);
+		sessionData.get(sessionId).closeForm(formCode, gridHashCode, formState);
 		Utils.debug("Server:service form " + formCode + " - gridHashCode:" + gridHashCode + " closed...");
 	}
 }

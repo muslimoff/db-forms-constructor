@@ -1,146 +1,122 @@
-instance (default VM_XE): 
-FC Username (default FC22): 
+instance (default VM_XE): kc_crp2
+Enter DBA Username(default SYS). If not SYS - grant privileges on SYS Objects manualy by starting script "sys_grants.sql "
+DBA Username: system
+FC Username (default FC22): FC
+FC Tablespace (default HP_DATA): APPS_TS_TX_DATA
 Connected.
 Press Enter to start
 
 Create user
 old   1: Drop User &fc_user Cascade
-new   1: Drop User FC22 Cascade
+new   1: Drop User FC Cascade
+Drop User FC Cascade
+          *
+ERROR at line 1:
+ORA-01918: user 'FC' does not exist 
 
-User dropped.
 
 old   1: Create User &fc_user
-new   1: Create User FC22
+new   1: Create User FC
 old   2: Identified By &fc_user_pass
 new   2: Identified By FC
+old   3: Default Tablespace &fc_user_ts
+new   3: Default Tablespace APPS_TS_TX_DATA
 
 User created.
 
 old   1: Grant CREATE ANY PROCEDURE To &fc_user
-new   1: Grant CREATE ANY PROCEDURE To FC22
+new   1: Grant CREATE ANY PROCEDURE To FC
 
 Grant succeeded.
 
 old   1: Grant CREATE ANY TABLE To &fc_user
-new   1: Grant CREATE ANY TABLE To FC22
+new   1: Grant CREATE ANY TABLE To FC
 
 Grant succeeded.
 
 old   1: Grant DROP ANY TABLE To &fc_user
-new   1: Grant DROP ANY TABLE To FC22
+new   1: Grant DROP ANY TABLE To FC
 
 Grant succeeded.
 
 old   1: Grant SELECT ANY TABLE To &fc_user
-new   1: Grant SELECT ANY TABLE To FC22
+new   1: Grant SELECT ANY TABLE To FC
 
 Grant succeeded.
 
 old   1: Grant UNLIMITED TABLESPACE To &fc_user
-new   1: Grant UNLIMITED TABLESPACE To FC22
+new   1: Grant UNLIMITED TABLESPACE To FC
 
 Grant succeeded.
 
 old   1: Grant CONNECT To &fc_user
-new   1: Grant CONNECT To FC22
+new   1: Grant CONNECT To FC
 
 Grant succeeded.
 
 old   1: Grant DBA To &fc_user
-new   1: Grant DBA To FC22
+new   1: Grant DBA To FC
 
 Grant succeeded.
 
 old   1: Grant RESOURCE To &fc_user
-new   1: Grant RESOURCE To FC22
+new   1: Grant RESOURCE To FC
 
 Grant succeeded.
 
 old   1: Alter User &fc_user Default Role All
-new   1: Alter User FC22 Default Role All
+new   1: Alter User FC Default Role All
 
 User altered.
 
 old   1: Grant SELECT On dba_data_files To &fc_user
-new   1: Grant SELECT On dba_data_files To FC22
+new   1: Grant SELECT On dba_data_files To FC
 
 Grant succeeded.
 
 old   1: Grant SELECT On dba_objects To &fc_user
-new   1: Grant SELECT On dba_objects To FC22
-
-Grant succeeded.
-
-old   1: Grant SELECT On dba_roles To &fc_user
-new   1: Grant SELECT On dba_roles To FC22
+new   1: Grant SELECT On dba_objects To FC
 
 Grant succeeded.
 
 old   1: Grant SELECT On dba_role_privs To &fc_user
-new   1: Grant SELECT On dba_role_privs To FC22
+new   1: Grant SELECT On dba_role_privs To FC
 
 Grant succeeded.
 
 old   1: Grant SELECT On dba_source To &fc_user
-new   1: Grant SELECT On dba_source To FC22
+new   1: Grant SELECT On dba_source To FC
 
 Grant succeeded.
 
 old   1: Grant SELECT On dba_sys_privs To &fc_user
-new   1: Grant SELECT On dba_sys_privs To FC22
+new   1: Grant SELECT On dba_sys_privs To FC
 
 Grant succeeded.
 
 old   1: Grant SELECT On dba_tab_columns To &fc_user
-new   1: Grant SELECT On dba_tab_columns To FC22
+new   1: Grant SELECT On dba_tab_columns To FC
 
 Grant succeeded.
 
 old   1: Grant SELECT On dba_users To &fc_user
-new   1: Grant SELECT On dba_users To FC22
-
-Grant succeeded.
-
-old   1: Grant EXECUTE On utl_tcp To &fc_user
-new   1: Grant EXECUTE On utl_tcp To FC22
-
-Grant succeeded.
-
-old   1: Grant EXECUTE On utl_tcp To &fc_user
-new   1: Grant EXECUTE On utl_tcp To FC22
-
-Grant succeeded.
-
-old   1: Grant SELECT On v_$instance To &fc_user
-new   1: Grant SELECT On v_$instance To FC22
-
-Grant succeeded.
-
-old   1: Grant SELECT On v_$session To &fc_user
-new   1: Grant SELECT On v_$session To FC22
-
-Grant succeeded.
-
-old   1: Grant SELECT On v_$sql_bind_metadata To &fc_user
-new   1: Grant SELECT On v_$sql_bind_metadata To FC22
-
-Grant succeeded.
-
-old   1: Grant SELECT On v_$sql_cursor To &fc_user
-new   1: Grant SELECT On v_$sql_cursor To FC22
+new   1: Grant SELECT On dba_users To FC
 
 Grant succeeded.
 
 Connected.
-Create FC22 Objects
+Create FC Objects
 
 Table created.
 
 
 Grant succeeded.
 
+Grant Select On forms To mz_so_integration
+                         *
+ERROR at line 1:
+ORA-01917: user or role 'MZ_SO_INTEGRATION' does not exist 
 
-Grant succeeded.
 
 
 Table altered.
@@ -217,8 +193,11 @@ Comment created.
 
 Table created.
 
+Grant Select On form_actions To mz_so_integration
+                                *
+ERROR at line 1:
+ORA-01917: user or role 'MZ_SO_INTEGRATION' does not exist 
 
-Grant succeeded.
 
 
 Table created.
@@ -337,20 +316,11 @@ Table created.
 
 Table created.
 
+Grant Select On icons To mz_so_integration
+                         *
+ERROR at line 1:
+ORA-01917: user or role 'MZ_SO_INTEGRATION' does not exist 
 
-Grant succeeded.
-
-
-Comment created.
-
-
-Table created.
-
-
-Grant succeeded.
-
-
-Comment created.
 
 
 Comment created.
@@ -358,20 +328,47 @@ Comment created.
 
 Table created.
 
+Grant Select On lookups To mz_so_integration
+                           *
+ERROR at line 1:
+ORA-01917: user or role 'MZ_SO_INTEGRATION' does not exist 
 
-Grant succeeded.
 
 
-Grant succeeded.
+Comment created.
+
+
+Comment created.
 
 
 Table created.
 
+Grant Select On lookup_values To app_rates
+                                 *
+ERROR at line 1:
+ORA-01917: user or role 'APP_RATES' does not exist 
 
-Grant succeeded.
+
+Grant Select On lookup_values To mz_so_integration
+                                 *
+ERROR at line 1:
+ORA-01917: user or role 'MZ_SO_INTEGRATION' does not exist 
 
 
-Grant succeeded.
+
+Table created.
+
+Grant Select On menus To app_rates
+                         *
+ERROR at line 1:
+ORA-01917: user or role 'APP_RATES' does not exist 
+
+
+Grant Select On menus To mz_so_integration
+                         *
+ERROR at line 1:
+ORA-01917: user or role 'MZ_SO_INTEGRATION' does not exist 
+
 
 
 Table altered.
@@ -398,21 +395,30 @@ Comment created.
 Warning: View created with compilation errors.
 
 old  25:    And (   SYS_CONTEXT ('USERENV', 'SESSION_USER') = '&fc_user'
-new  25:    And (   SYS_CONTEXT ('USERENV', 'SESSION_USER') = 'FC22'
+new  25:    And (   SYS_CONTEXT ('USERENV', 'SESSION_USER') = 'FC'
 
 View created.
 
+Grant Select On forms_v To app_rates
+                           *
+ERROR at line 1:
+ORA-01917: user or role 'APP_RATES' does not exist 
 
-Grant succeeded.
 
+Grant Select On forms_v To mz_so_integration
+                           *
+ERROR at line 1:
+ORA-01917: user or role 'MZ_SO_INTEGRATION' does not exist 
 
-Grant succeeded.
 
 
 View created.
 
+Grant Select On form_tabs_v To mz_so_integration
+                               *
+ERROR at line 1:
+ORA-01917: user or role 'MZ_SO_INTEGRATION' does not exist 
 
-Grant succeeded.
 
 
 Sequence created.
@@ -432,8 +438,11 @@ Type created.
 
 Grant succeeded.
 
+Grant Execute On args_t To app_rates
+                           *
+ERROR at line 1:
+ORA-01917: user or role 'APP_RATES' does not exist 
 
-Grant succeeded.
 
 
 Package created.
@@ -474,11 +483,17 @@ Warning: Package Body created with compilation errors.
 
 Package created.
 
+Grant Execute On form_utils To app_rates
+                               *
+ERROR at line 1:
+ORA-01917: user or role 'APP_RATES' does not exist 
 
-Grant succeeded.
 
+Grant Execute On form_utils To mz_so_integration
+                               *
+ERROR at line 1:
+ORA-01917: user or role 'MZ_SO_INTEGRATION' does not exist 
 
-Grant succeeded.
 
 
 Warning: Package Body created with compilation errors.

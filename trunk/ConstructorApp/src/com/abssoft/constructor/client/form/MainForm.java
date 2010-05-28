@@ -9,6 +9,7 @@ import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.google.gwt.core.client.GWT;
 import com.smartgwt.client.data.Record;
+import com.smartgwt.client.types.EditCompletionEvent;
 import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.types.RowEndEditAction;
 import com.smartgwt.client.widgets.Canvas;
@@ -18,10 +19,14 @@ import com.smartgwt.client.widgets.events.ResizedEvent;
 import com.smartgwt.client.widgets.events.ResizedHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.events.EditorExitEvent;
+import com.smartgwt.client.widgets.grid.events.EditorExitHandler;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
 import com.smartgwt.client.widgets.grid.events.RowContextClickEvent;
 import com.smartgwt.client.widgets.grid.events.RowContextClickHandler;
+import com.smartgwt.client.widgets.grid.events.RowEditorEnterEvent;
+import com.smartgwt.client.widgets.grid.events.RowEditorEnterHandler;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.tree.Tree;
 import com.smartgwt.client.widgets.tree.TreeGrid;
@@ -79,12 +84,12 @@ class MainForm extends Canvas {
 
 	class GridRecordClickHandler implements RecordClickHandler {
 		public void onRecordClick(RecordClickEvent event) {
-			// mainFormPane.setCurrentGridRowSelected(event.getRecordNum());
 			Record r = event.getRecord();
 			if (null == r) {
 				r = ((ListGrid) event.getSource()).getEditedRecord(event.getRecordNum());
 			}
-			// mainFormPane.setCurrentGridRowSelected(event.getRecordNum());
+			treeGrid.deselectAllRecords();
+			treeGrid.selectRecord(event.getRecordNum());
 			mainFormPane.filterDetailData((ListGridRecord) r, treeGrid, event.getRecordNum());
 		}
 	}
@@ -93,26 +98,21 @@ class MainForm extends Canvas {
 
 		@Override
 		public void onRowContextClick(RowContextClickEvent event) {
-			System.out.println("$$$$$$$$$$$$$$$");
-			// mainFormPane.setCurrentGridRowSelected(event.getRecordNum());
+			// treeGrid.focus();
 			Record r = event.getRecord();
 			if (null == r) {
 				r = ((ListGrid) event.getSource()).getEditedRecord(event.getRowNum());
 			}
-			// mainFormPane.setCurrentGridRowSelected(event.getRowNum());
 			mainFormPane.filterDetailData((ListGridRecord) r, treeGrid, event.getRowNum(), false, false, false);
 		}
 	}
 
 	private FormBottomToolBar bottomToolBar;
-
 	private MainFormPane mainFormPane;
-
 	private ListGrid treeGrid;
 
 	MainForm(final MainFormPane mainFormPane, final boolean showResizeBar) {
 		Utils.debug("Constructor MainForm");
-		// this.addResizedHandler(new MainFormResizedHandler());
 		this.mainFormPane = mainFormPane;
 		FormMD formMetadata = mainFormPane.getFormMetadata();
 		String formWidth = formMetadata.getWidth();
@@ -123,7 +123,6 @@ class MainForm extends Canvas {
 			this.setResizeBarTarget("next");
 			this.setWidth(formWidth);
 		}
-		// bottomToolBar.setWidth(formMetadata.getWidth());
 		if ("T".equals(formMetadata.getFormType())) {
 			treeGrid = new FormTreeGrid();
 		} else {
@@ -135,7 +134,6 @@ class MainForm extends Canvas {
 		treeGrid.addRecordClickHandler(new GridRecordClickHandler());
 		// Правая кнопка
 		treeGrid.addRowContextClickHandler(new GridRowContextClickHandler());
-		// treeGrid.setCanRemoveRecords(true);
 
 		treeGrid.addClickHandler(new ClickHandler() {
 			// не работает...
@@ -178,6 +176,49 @@ class MainForm extends Canvas {
 			bottomToolBar.hide();
 		this.addChild(mainLayout);
 		this.setHeight100();
+		treeGrid.addEditorExitHandler(new EditorExitHandler() {
+			@Override
+			public void onEditorExit(EditorExitEvent event) {
+				System.out.println("onEditorExit..");
+				ListGrid grid = ((FormListGrid) event.getSource());
+				int rowNum = event.getRowNum();
+				// Обработка выхода по клавише ESCAPE
+				if (null == event.getRecord() && EditCompletionEvent.ESCAPE.equals(event.getEditCompletionEvent())) {
+					int nextRecord = (0 == rowNum && null != grid.getRecord(rowNum + 1)) ? rowNum + 1 : rowNum - 1;
+					System.out.println("rowNum:" + rowNum + "; nextRecord:" + nextRecord);
+					// mainFormPane.getValuesManager().clearValues();
+					grid.selectRecord(nextRecord);
+					mainFormPane.setSelectedRow(nextRecord);
+					mainFormPane.filterDetailData(grid.getRecord(nextRecord), treeGrid, nextRecord);
+				}
+			}
+		});
+		treeGrid.addRowEditorEnterHandler(new RowEditorEnterHandler() {
+			@Override
+			public void onRowEditorEnter(RowEditorEnterEvent event) {
+				ListGrid grid = ((FormListGrid) event.getSource());
+				int rowNum = event.getRowNum();
+				Record record = event.getRecord();
+				Record newRec = grid.getEditedRecord(rowNum);
+				System.out.println("RowEditorEnterHandler.getEditedRecord: " + newRec);
+				System.out.println("RowEditorEnterHandler.getRowNum: " + rowNum);
+
+				// Default Values для новой записи.
+				if (null == record && 0 == newRec.getAttributes().length) {
+					grid.setEditValues(rowNum, Utils.getRowDefaultValuesMap(mainFormPane));
+					// mainFormPane.clearDetailValues();
+					mainFormPane.filterDetailData(null, treeGrid, rowNum);
+				}
+			}
+		});
+		// TODO Полезные методы - использовать
+		// this.addResizedHandler(new MainFormResizedHandler());
+		// treeGrid.setCanRemoveRecords(true);
+		// treeGrid.setShowGroupSummary(true);
+		// treeGrid.setShowGridSummary(true);
+		// treeGrid.addEditFailedHandler(handler)
+
+		// TODO SmartGWT 2.2. - сделали сохранение состояния грида и дерева
 	}
 
 	/**
@@ -215,15 +256,16 @@ class MainForm extends Canvas {
 	}
 
 	public void doBeforeClose() {
-
 		final int gridHashCode = getHashCode();
 		QueryServiceAsync queryService = (QueryServiceAsync) GWT.create(QueryService.class);
 		final String formCode = mainFormPane.getFormCode();
 		Utils.debug(formCode + ": mainForm.doBeforeClose(). sessionId = " + ConstructorApp.sessionId + "; gridHashCode = " + gridHashCode);
-		queryService.closeForm(ConstructorApp.sessionId, formCode, gridHashCode, new DSAsyncCallback<Void>() {
+		FormMD formState = mainFormPane.getFormState();
+		System.out.println("mainFormPane.FormState: " + formState);
+		queryService.closeForm(ConstructorApp.sessionId, formCode, gridHashCode, formState, new DSAsyncCallback<Void>() {
 			@Override
 			public void onSuccess(Void result) {
-				Utils.debug("Tab: " + formCode + "; gridHashCode :" + gridHashCode);
+				Utils.debug("MainForm. Form " + formCode + "(" + gridHashCode + ")" + " closed...");
 			}
 		});
 	}
