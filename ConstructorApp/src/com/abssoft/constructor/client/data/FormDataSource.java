@@ -19,7 +19,7 @@ import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.ResultSet;
 import com.smartgwt.client.util.JSOHelper;
 import com.smartgwt.client.widgets.Canvas;
-import com.smartgwt.client.widgets.form.DynamicForm;
+import com.smartgwt.client.widgets.form.ValuesManager;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.tree.TreeNode;
@@ -69,19 +69,23 @@ public class FormDataSource extends GwtRpcDataSource {
 
 	@Override
 	protected void executeFetch(final String requestId, final DSRequest request, final DSResponse response) {
+		// TODO Посмотреть класс RPCManager
+		// com.smartgwt.client.rpc.RPCManager.setShowPrompt(true);
+
 		Utils.debug("........DS Fetch:" + formCode + "; ID: " + this.getID());
 		final Integer startRow = (null == request.getStartRow()) ? 0 : request.getStartRow();
 		final Integer endRow = (null == request.getEndRow()) ? 1000 : request.getEndRow();
 		Map<?, ?> filterValues;
-		final ListGrid g = mainFormPane.getMainForm().getTreeGrid();
-		Utils.debug("ListGrid: " + g);
+		final ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
+		Utils.debug("ListGrid: " + grid);
 		Criteria cr;
-		if (g instanceof com.smartgwt.client.widgets.tree.TreeGrid) {
+		// TODO Фильтры - передача на сервер так же строк вида "&field_name"="and field_name like 'Val%'"
+		if (grid instanceof com.smartgwt.client.widgets.tree.TreeGrid) {
 			Criteria treeCriteria = new Criteria();
 			if (!mainFormPane.isForceFetch()) {
-				int gridEventRow = (0 != g.getTotalRows()) ? g.getEventRow() : -2;
+				int gridEventRow = (0 != grid.getTotalRows()) ? grid.getEventRow() : -2;
 				if (-2 != gridEventRow) {
-					treeCriteria = Utils.getCriteriaFromListGridRecord(g.getRecord(g.getEventRow()), formCode);
+					treeCriteria = Utils.getxCriteriaFromListGridRecord(mainFormPane, grid.getRecord(grid.getEventRow()), formCode);
 				}
 			}
 			cr = request.getCriteria();
@@ -91,7 +95,17 @@ public class FormDataSource extends GwtRpcDataSource {
 			cr = request.getCriteria();
 			filterValues = cr.getValues();
 		}
-		// TODO request.getSortBy() не работает так, как описано. отписался в форуме
+
+		// TODO request.getSortBy() не работает так, как описано. отписался в форуме.
+		// Ошибка:
+		// java.lang.ClassCastException: java.lang.String cannot be cast to com.google.gwt.core.client.JavaScriptObject
+		// try {
+		// for (SortSpecifier ssp : request.getSortBy()) {
+		// System.out.println(ssp.getField() + ssp.getSortDirection());
+		// }
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
 		String sortBy = request.getAttribute("sortBy");
 		QueryServiceAsync service = GWT.create(QueryService.class);
 		service.fetch(ConstructorApp.sessionId, formCode, gridHashCode, sortBy, startRow, endRow, filterValues,
@@ -116,25 +130,30 @@ public class FormDataSource extends GwtRpcDataSource {
 						response.setData(records);
 						processResponse(requestId, response);
 						mainFormPane.getMainForm().getBottomToolBar().setRowsCount(totalRows + "");
-						if (0 == startRow && 0 != rowsCount) {
-							mainFormPane.setInitialFilter(Utils.getCriteriaFromListGridRecord(records[0], formCode));
-							g.focus();
-							g.selectRecord(0);
-							mainFormPane.setCurrentGridRowSelected(0);
-							// Refresh только для static detail
-							mainFormPane.filterDetailData(g.getSelectedRecord(), g, 0, false, true, true);
-							Utils.debug("mainFormPane.getValuesManager().getMembers().length="
-									+ mainFormPane.getValuesManager().getMembers().length);
-							if (0 != mainFormPane.getValuesManager().getMembers().length) {
-								mainFormPane.getValuesManager().editRecord(records[0]);
+						ValuesManager vm = mainFormPane.getValuesManager();
+						int dynFormsCount = vm.getMembers().length;
+						if (0 != rowsCount) {
+							if (0 == startRow) {
+								mainFormPane.setInitialFilter(Utils.getxCriteriaFromListGridRecord(mainFormPane, records[0], formCode));
+								if (mainFormPane.isMasterForm()) {
+									grid.focus();
+								}
+								grid.selectRecord(0);
+								mainFormPane.setSelectedRow(0);
+								// Refresh только для static detail
+								mainFormPane.filterDetailData(grid.getSelectedRecord(), grid, 0, false, true, true);
+								Utils.debug("vm.getMembers().length=" + dynFormsCount);
+								if (0 != dynFormsCount) {
+									vm.editRecord(records[0]);
+								}
 							}
+						} else {
+							mainFormPane.filterDetailData(null, grid, -1);
+							if (0 != dynFormsCount) {
+								vm.editNewRecord();
+							}
+						}
 
-						}
-						if (0 == rowsCount) {
-							if (0 != mainFormPane.getValuesManager().getMembers().length) {
-								mainFormPane.getValuesManager().editNewRecord();
-							}
-						}
 						Utils.debug("...............DataSource: " + FormDataSource.this.getID() + " - after fetch...............");
 					}
 				});
@@ -166,7 +185,6 @@ public class FormDataSource extends GwtRpcDataSource {
 	@Override
 	protected void executeRemove(final String requestId, final DSRequest request, final DSResponse response) {
 		// Retrieve record which should be removed.
-
 		Row oldRow = Utils.getRowFromRecord(dsFields, new Record(request.getData()));
 		QueryServiceAsync service = GWT.create(QueryService.class);
 		service.executeDML(ConstructorApp.sessionId, formCode, gridHashCode, oldRow, null, mainFormPane.getCurrentActionCode(),
@@ -186,37 +204,18 @@ public class FormDataSource extends GwtRpcDataSource {
 	@Override
 	protected void executeUpdate(final String requestId, final DSRequest request, final DSResponse response) {
 		Row newRow = new Row();
-		/***************************/
-		for (String s : request.getAttributes()) {
-			System.out.println("xx>>>>>>> " + s + ": " + request.getAttribute(s));
-		}
-		Record r1 = Record.getOrCreateRef(request.getData());
-		for (String s2 : r1.getAttributes()) {
-			System.out.println("zz>>>>>>> " + s2 + ": " + request.getAttribute(s2));
-		}
-		/***************************/
 		Row oldRow = null;
 		Record oldValues = request.getOldValues();
-		if (null != oldValues) {
-			oldRow = Utils.getRowFromRecord(dsFields, oldValues);
-		}
+		oldRow = (null != oldValues) ? Utils.getRowFromRecord(dsFields, oldValues) : null;
+		ListGridRecord listGridRec = new ListGridRecord();
+		JSOHelper.apply(request.getData(), listGridRec.getJsObj());
 		Canvas c = Canvas.getById(request.getComponentId());
 		if (null != c) {
-			if (c instanceof DynamicForm) {
-				newRow = Utils.getRowFromFormFields(((DynamicForm) c).getFields());
-			} else {
-				ListGridRecord listGridRec = new ListGridRecord(request.getData());
-				ListGrid grid = (ListGrid) c;
-				int index = grid.getRecordIndex(listGridRec);
-				listGridRec = (ListGridRecord) grid.getEditedRecord(index);
-				newRow = Utils.getRowFromRecord(dsFields, listGridRec);
-			}
-		} else {
-			ListGridRecord listGridRec = new ListGridRecord();
-			JSOHelper.apply(request.getData(), listGridRec.getJsObj());
-			newRow = Utils.getRowFromRecord(dsFields, listGridRec);
+			listGridRec = new ListGridRecord(request.getData());
+			int index = ((ListGrid) c).getRecordIndex(listGridRec);
+			listGridRec = (ListGridRecord) ((ListGrid) c).getEditedRecord(index);
 		}
-
+		newRow = Utils.getRowFromRecord(dsFields, listGridRec);
 		QueryServiceAsync service = GWT.create(QueryService.class);
 		service.executeDML(ConstructorApp.sessionId, formCode, gridHashCode, oldRow, newRow, mainFormPane.getCurrentActionCode(),
 				ClientActionType.UPD, new DSAsyncCallback<Row>(requestId, response, this) {
@@ -224,18 +223,18 @@ public class FormDataSource extends GwtRpcDataSource {
 						ActionStatus.showActionStatus(result.getStatus());
 						if (!ActionStatus.StatusType.ERROR.equals(result.getStatus().getStatusType())) {
 							response.setData(new ListGridRecord[] { Utils.getTreeNodeFromRow(dsFields, result) });
+							ListGrid lGrid = mainFormPane.getMainForm().getTreeGrid();
 							try {
-								ResultSet rs = mainFormPane.getMainForm().getTreeGrid().getResultSet();
+								ResultSet rs = lGrid.getResultSet();
 								rs.setCriteria(new Criteria());
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
 							processResponse(requestId, response);
-							ListGridRecord selectedRec = mainFormPane.getMainForm().getTreeGrid().getRecord(
-									mainFormPane.getCurrentGridRowSelected());
-							mainFormPane.getMainForm().getTreeGrid().selectRecord(selectedRec);
-							int selectedRecIdx = mainFormPane.getMainForm().getTreeGrid().getRecordIndex(selectedRec);
-							mainFormPane.filterDetailData(selectedRec, mainFormPane.getMainForm().getTreeGrid(), selectedRecIdx);
+							ListGridRecord selectedRec = lGrid.getRecord(mainFormPane.getSelectedRow());
+							lGrid.selectRecord(selectedRec);
+							int selectedRecIdx = lGrid.getRecordIndex(selectedRec);
+							mainFormPane.filterDetailData(selectedRec, lGrid, selectedRecIdx);
 						}
 					}
 				});

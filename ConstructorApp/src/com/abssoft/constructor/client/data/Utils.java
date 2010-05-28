@@ -21,7 +21,6 @@ import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.FieldType;
 import com.smartgwt.client.util.JSOHelper;
 import com.smartgwt.client.util.SC;
-import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.tree.TreeNode;
 
@@ -32,6 +31,7 @@ public class Utils {
 			String dsFieldName = dsFields[c].getName();
 			Attribute attr = row.get(c);
 			String cellValue = attr.getAttribute();
+			Object obj = attr.getAttributeAsObject();
 			boolean b = "T".equals(dsFields[c].getFormMetadata().getFormType()) && "4".equals(dsFields[c].getColumnMD().getTreeFieldType());
 			if (b || null != dsFields[c].getColumnMD().getFieldType() && dsFields[c].getColumnMD().getFieldType().equals("3")
 					&& null != cellValue) {
@@ -42,16 +42,15 @@ public class Utils {
 				} catch (Exception e) {
 					Utils.debug("Icon " + cellValue + " not found: " + e);
 				}
-
-			} else if (dsFields[c].getType().equals(FieldType.BOOLEAN)) {
+			} else if (obj instanceof Boolean) {
 				Boolean bVal = attr.getAttributeAsBoolean();
 				result.setAttribute(dsFieldName, bVal);
 				if (dsFields[c].isTreeFolder()) {
 					result.setIsFolder(bVal);
 				}
-			} else if (dsFields[c].getType().equals(FieldType.FLOAT)) {
+			} else if (obj instanceof Double) {
 				result.setAttribute(dsFieldName, attr.getAttributeAsDouble());
-			} else if (dsFields[c].getType().equals(FieldType.DATE)) {
+			} else if (obj instanceof Date) {
 				result.setAttribute(dsFieldName, attr.getAttributeAsDate());
 			} else {
 				result.setAttribute(dsFieldName, cellValue);
@@ -81,16 +80,6 @@ public class Utils {
 	public static void logException(Exception e, String txt) {
 		// e.printStackTrace();
 		Utils.debug(txt + ": " + e);
-	}
-
-	public static Row getRowFromFormFields(FormItem[] record) {
-		Utils.debug("record>" + record);
-		Row row = new Row();
-		for (int i = 0; i < record.length; i++) {
-			Attribute attr = new Attribute((String) record[i].getValue());
-			row.put(i, attr);
-		}
-		return row;
 	}
 
 	public static TreeNode getTreeNodeFromRecordWithoutRef(FormDataSourceField[] dsFields, Record record) {
@@ -134,10 +123,15 @@ public class Utils {
 						IconsArr iArr = ConstructorApp.menus.getIcons();
 						fVal = ((Integer) getKeysFromValue(iArr, record.getAttribute(colName)).get(0)).floatValue();
 					} catch (Exception e) {
-						e.printStackTrace();
+						// TODO Ошипка при редактировании новой записи сразу после сохранения.
+						// e.printStackTrace();
 					}
 				} else {
-					fVal = record.getAttributeAsFloat(colName);
+					try {
+						fVal = record.getAttributeAsFloat(colName);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 				Double cellValue = (null == fVal) ? null : fVal.doubleValue();
 				attr = new Attribute(cellValue);
@@ -148,26 +142,62 @@ public class Utils {
 				String cellValue = record.getAttribute(colName);
 				attr = new Attribute(cellValue);
 			}
-			debug(colName + ":" + attr.getAttribute() + "; is null:" /* + (null == cellValue) */);
+			debug(colName + ":" + attr.getAttribute());
 			row.put(c, attr);
 		}
 		return row;
 	}
 
-	public static Criteria getCriteriaFromListGridRecord(Record record) {
+	public static Map<String, Object> getRowDefaultValuesMap(MainFormPane mainFormPane) {
+		// TODO Issue 49 - Получение значения по умолчанию запросом.
+		Utils.debug("getRowDefaultValuesMap...");
+		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		for (FormDataSourceField dsf : mainFormPane.getDataSource().getFormDSFields()) {
+
+			String defVal = dsf.getColumnMD().getDefaultValue();
+			String dataType = dsf.getColumnMD().getDataType();
+			if (null != defVal) {
+				if (null != mainFormPane.getParentFormPane()) {
+					Criteria cc = mainFormPane.getParentFormPane().getInitialFilter();
+					for (String s : cc.getAttributes()) {
+						String attrVal = cc.getAttribute(s);
+						attrVal = (null == attrVal) ? "" : attrVal;
+						defVal = defVal.replaceAll("&" + s.toLowerCase() + "&", attrVal);
+					}
+				}
+				Utils.debug("Default Value: After Bind variables replaced: " + dsf.getName() + " => " + defVal);
+				if ("B".equals(dataType)) {
+					result.put(dsf.getName(), "1".equals(defVal) || "Y".equals(defVal));
+				} else {
+					result.put(dsf.getName(), defVal);
+				}
+			}
+		}
+		return result;
+	}
+
+	public static Criteria getCriteriaFromListGridRecord(MainFormPane mainFormPane, Record record) {
 		Criteria criteria = new Criteria();
-		for (String s : record.getAttributes()) {
-			criteria.addCriteria(new Criteria(s, record.getAttribute(s)));
-			Utils.debug("getCriteriaFromListGridRecord: " + s + " => " + record.getAttribute(s));
+		if (null != record) {
+			for (String s : record.getAttributes()) {
+				criteria.addCriteria(new Criteria(s, record.getAttribute(s)));
+				Utils.debug("getCriteriaFromListGridRecord: " + s + " => " + record.getAttribute(s));
+			}
+			// TODO getCriteriaFromListGridRecord из getRowFromRecord
+			/***********************/
+			// Row row = getRowFromRecord(mainFormPane.getDataSource().getFormDSFields(), record);
+			// for (int i = 0; i < row.size(); i++) {
+			// }
+			/***********************/
 		}
 		return criteria;
 
 	}
 
-	public static Criteria getCriteriaFromListGridRecord(Record record, String formCode) {
-		Criteria criteria = getCriteriaFromListGridRecord(record);
-		criteria.addCriteria(new Criteria("P_$MASTER_FORM_CODE", formCode));
-		Utils.debug(formCode + " getCriteriaFromListGridRecord executed..");
+	public static Criteria getxCriteriaFromListGridRecord(MainFormPane mainFormPane, Record record, String masterFormCode) {
+		Criteria criteria = getCriteriaFromListGridRecord(mainFormPane, record);
+		criteria.addCriteria(new Criteria("P_$MASTER_FORM_CODE", masterFormCode));
+		Utils.debug(masterFormCode + " getCriteriaFromListGridRecord executed..");
 		return criteria;
 
 	}
@@ -243,12 +273,12 @@ public class Utils {
 		Record record;
 		int editRowIdx = grid.getEditRow();
 		System.out.println("getEditedRow: editRowIdx=" + editRowIdx);
-		System.out.println("getEditedRow: getCurrentGridRowSelected=" + mainFormPane.getCurrentGridRowSelected());
+		System.out.println("getEditedRow: getCurrentGridRowSelected=" + mainFormPane.getSelectedRow());
 		if (-1 != editRowIdx) {
-			mainFormPane.setCurrentGridRowSelected(editRowIdx);
+			mainFormPane.setSelectedRow(editRowIdx);
 			record = grid.getEditedRecord(editRowIdx);
 		} else {
-			record = grid.getEditedRecord(mainFormPane.getCurrentGridRowSelected());
+			record = grid.getEditedRecord(mainFormPane.getSelectedRow());
 		}
 		// //////////
 		// else {

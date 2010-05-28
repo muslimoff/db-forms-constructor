@@ -1,5 +1,6 @@
 package com.abssoft.constructor.client.widgets;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import com.abssoft.constructor.client.data.QueryService;
 import com.abssoft.constructor.client.data.QueryServiceAsync;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
+import com.abssoft.constructor.client.data.common.GwtRpcDataSource;
 import com.abssoft.constructor.client.form.FormColumns;
 import com.abssoft.constructor.client.form.MainFormPane;
 import com.abssoft.constructor.client.metadata.FormColumnMD;
@@ -20,11 +22,7 @@ import com.google.gwt.core.client.GWT;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
-import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.data.Record;
-import com.smartgwt.client.types.DSDataFormat;
-import com.smartgwt.client.types.DSOperationType;
-import com.smartgwt.client.types.DSProtocol;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.FormItemValueFormatter;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
@@ -36,9 +34,8 @@ import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.tree.TreeNode;
 
 public class GridComboBoxItem extends ComboBoxItem {
-	public class LookupDataSource extends DataSource {
+	public class ComboBoxDataSource extends GwtRpcDataSource {
 		private String lookupCode;
-		public LinkedHashMap<String, TreeNode> values = new LinkedHashMap<String, TreeNode>();
 		private FormDataSourceField[] dsFields;
 		TreeNode[] records;
 		private int valueFieldNum = 0;
@@ -57,64 +54,32 @@ public class GridComboBoxItem extends ComboBoxItem {
 			super.setFields(dsFields);
 		}
 
-		public LookupDataSource(final String lookupCode, String lookupDisplValFld) {
+		public ComboBoxDataSource(final String lookupCode, String lookupDisplValFld) {
 			this.lookupCode = lookupCode;
 			this.lookupDisplValFld = lookupDisplValFld;
-			setDataProtocol(DSProtocol.CLIENTCUSTOM);
-			setDataFormat(DSDataFormat.CUSTOM);
-			setClientOnly(false);
-			setAttribute("dataProtocol", "clientCustom", false);
 		}
 
-		public DSRequest transformRequest(DSRequest request, final Boolean isInitialFetch) {
-			String requestId = request.getRequestId();
-			DSResponse response = new DSResponse();
-			response.setAttribute("clientContext", request.getAttributeAsObject("clientContext"));
-			response.setStatus(0);
-			if (DSOperationType.FETCH.equals(request.getOperationType())) {
-				executeFetch(requestId, request, response, isInitialFetch);
-			}
-			return request;
-		}
-
-		@Override
-		protected Object transformRequest(DSRequest request) {
-			DSRequest req = transformRequest(request, false);
-			return req.getData();
-		}
-
-		public void initialFetch() {
-			DSRequest request = new DSRequest();
-			request.setOperationType(DSOperationType.FETCH);
-			transformRequest(request, true);
-		}
-
-		protected void executeFetch(final String requestId, DSRequest request, final DSResponse response, final Boolean isInitialFetch) {
-			Utils.debug("ReadOnlyDataSource Fetch. Lookup:" + lookupCode);
-			Map<?, ?> filterValues = (new Criteria()).getValues();
+		protected void executeFetch(final String requestId, DSRequest request, final DSResponse response) {
+			Utils.debug("ReadOnlyDataSource Fetch. Lookup:" + lookupCode + "; " + request);
+			Criteria cr = new Criteria();
 			try {
-				filterValues = request.getCriteria().getValues();
+				cr.addCriteria(getMainFormCriteria());
+				cr.addCriteria(request.getCriteria());
 			} catch (Exception e) {
 				Utils.debug("Exception on request.getCriteria().getValues():" + e.getMessage());
 			}
 			int startRow = 0;
 			int endRow = 10000;
-			// TODO request.getSortBy() не работает так, как описано.
 			String sortBy = null;
-			try {
-				if (null != lookupDisplValFld) {
-					startRow = request.getStartRow();
-					endRow = request.getEndRow();
-				}
-				sortBy = request.getAttribute("sortBy");
-			} catch (Exception e) {
-				Utils.debug("Exception on request.getAttribute(\"sortBy\"):" + e.getMessage());
-				e.printStackTrace();
+			if (null != lookupDisplValFld) {
+				startRow = request.getStartRow();
+				endRow = request.getEndRow();
 			}
+			sortBy = request.getAttribute("sortBy");
 			System.out.println("startRow:" + startRow + "; endRow:" + endRow);
 			QueryServiceAsync service = GWT.create(QueryService.class);
 			// TODO вынести в XML параметров endRow - фактически размер лова.
-			service.fetch(ConstructorApp.sessionId, lookupCode, -999, sortBy, startRow, endRow, filterValues, false,
+			service.fetch(ConstructorApp.sessionId, lookupCode, -999, sortBy, startRow, endRow, cr.getValues(), false,
 					new DSAsyncCallback<RowsArr>(requestId, response, this) {
 						public void onSuccess(RowsArr result) {
 							records = new TreeNode[result.size()];
@@ -124,53 +89,61 @@ public class GridComboBoxItem extends ComboBoxItem {
 								try {
 									Row row = result.get(r);
 									records[r] = Utils.getTreeNodeFromRow(dsFields, row);
-									values.put(row.get(valueFieldNum).getAttribute(), records[r]);
+									Object key = row.get(valueFieldNum).getAttributeAsObject();
+									values.put(key, records[r]);
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
 							}
-							if (!isInitialFetch) {
-								Utils.debug("LookupDataSource.fetch. response.setTotalRows...");
-								response.setTotalRows(result.getTotalRows());
-								Utils.debug("LookupDataSource.fetch. response.setData...");
-								response.setData(records);
-								Utils.debug("LookupDataSource.fetch. processResponse...");
-								try {
-									processResponse(requestId, response);
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-								Utils.debug("LookupDataSource.fetch. ended...");
+							response.setTotalRows(result.getTotalRows());
+							response.setData(records);
+							try {
+								processResponse(requestId, response);
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
+							Utils.debug("LookupDataSource.fetch. ended...");
 						}
 					});
 		}
 	}
 
+	public LinkedHashMap<Object, TreeNode> values = new LinkedHashMap<Object, TreeNode>();
 	private String valueFieldName = null;
 	private String displayFieldName = null;
-	private LookupDataSource lookupDataSource;
 	private String lookupDisplValFld;
+	private MainFormPane mainFormPane;
+	private FormColumnMD columnMD;
 
 	public GridComboBoxItem(FormColumnMD columnMD, MainFormPane mainFormPane) {
 		this(columnMD, mainFormPane, null);
 	}
 
-	public GridComboBoxItem(final FormColumnMD columnMD, final MainFormPane mainFormPane, final FormTreeGridField formTreeGridField) {
-		String lookupCode = columnMD.getLookupCode();
+	public Criteria getMainFormCriteria() {
+		Utils.debug("FilterCriteriaFunction");
+		Record record = Utils.getEditedRow(GridComboBoxItem.this.mainFormPane);
+		Criteria criteria = Utils.getxCriteriaFromListGridRecord(GridComboBoxItem.this.mainFormPane, record, "GridComboBoxItem:"
+				+ GridComboBoxItem.this.getName());
+		return criteria;
+	}
+
+	public GridComboBoxItem(FormColumnMD columnMD, MainFormPane mainFormPane, FormTreeGridField formTreeGridField) {
+
+		this.columnMD = columnMD;
+		this.mainFormPane = mainFormPane;
+		// this.formTreeGridField = formTreeGridField;
+
+		final String lookupCode = columnMD.getLookupCode();
 		lookupDisplValFld = columnMD.getLookupDisplayValue();
-		this.setFetchMissingValues(null == lookupDisplValFld);
 		GridComboBoxItem.this.setShowOptionsFromDataSource(true);
 		this.setPickListFilterCriteriaFunction(new FilterCriteriaFunction() {
 			public Criteria getCriteria() {
-				Record record = Utils.getEditedRow(mainFormPane);
-				Criteria criteria = Utils.getCriteriaFromListGridRecord(record, "GridComboBoxItem:" + GridComboBoxItem.this.getName());
-				return criteria;
+				return getMainFormCriteria();
 			}
 		});
 
 		FormMD fmd = mainFormPane.getFormMetadata().getLookupsArr().get(lookupCode);
-		lookupDataSource = new LookupDataSource(lookupCode, lookupDisplValFld);
+		final ComboBoxDataSource lookupDataSource = new ComboBoxDataSource(lookupCode, lookupDisplValFld);
 		MainFormPane mfp = new MainFormPane();
 		mfp.setFormCode(lookupCode);
 		mfp.setFormMetadata(fmd);
@@ -207,8 +180,10 @@ public class GridComboBoxItem extends ComboBoxItem {
 		}
 		lookupDataSource.setValueFieldNum(valueFieldNum);
 		lookupDataSource.setFields(mfp.getFormColumns().createDSFields());
-		GridComboBoxItem.this.setOptionDataSource(lookupDataSource);
+		setOptionDataSource(lookupDataSource);
+		// TODO Вынести в классы FormTreeGridField и FormRowEditorTab.createItem
 		if (null == formTreeGridField) {
+			this.setFetchMissingValues(true);
 			if (null != columnMD.getLookupDisplayValue()) {
 				this.setEditorValueFormatter(new FormItemValueFormatter() {
 
@@ -216,14 +191,14 @@ public class GridComboBoxItem extends ComboBoxItem {
 					public String formatValue(Object value, Record record, DynamicForm form, FormItem i) {
 						String result = (String) value;
 						try {
-							int currRow = mainFormPane.getCurrentGridRowSelected();
-							ListGrid grig = mainFormPane.getMainForm().getTreeGrid();
+							int currRow = GridComboBoxItem.this.mainFormPane.getSelectedRow();
+							ListGrid grig = GridComboBoxItem.this.mainFormPane.getMainForm().getTreeGrid();
 							ListGridRecord rec = grig.getRecord(currRow);
-							String colName = columnMD.getName();
-							System.out.println("##$@@" + result);
+							String colName = GridComboBoxItem.this.columnMD.getName();
+							// System.out.println("##$@@" + result);
 							if (null != value) {
-								result = value.equals(rec.getAttribute(colName)) ? rec.getAttribute(columnMD.getLookupDisplayValue())
-										: result;
+								result = value.equals(rec.getAttribute(colName)) ? rec.getAttribute(GridComboBoxItem.this.columnMD
+										.getLookupDisplayValue()) : result;
 							} else {
 								result = null;
 							}
@@ -236,30 +211,38 @@ public class GridComboBoxItem extends ComboBoxItem {
 				});
 			}
 		} else {
+			this.setFetchMissingValues(null == lookupDisplValFld);
 			formTreeGridField.setEditorType(GridComboBoxItem.this);
 			formTreeGridField.setGridComboBoxItem(this);
-			formTreeGridField.setCellFormatter(new CellFormatter() {
-				@Override
-				public String format(Object value, ListGridRecord record, int rowNum, int colNum) {
-					// TODO Поле для отображения
-					String result = null;
-					if (null != value) {
-						if (null != lookupDisplValFld) {
-							result = record.getAttribute(lookupDisplValFld);
-						} else {
-							result = lookupDataSource.values.containsKey(value) ? lookupDataSource.values.get(value).getAttribute(
-									displayFieldName) : value + "";
+			if (null == lookupDisplValFld) {
+				lookupDataSource.fetchData();
+			}
+			// TODO Сломалось редактирование в строках с лукапами по кнопке или контекстному меню.
+			// TODO Иконки - лукап
+			if (1 == 2 && "ICONS".equals(columnMD.getLookupCode())) {
+				// this.setValueIcons(ConstructorApp.menus.getIcons());
+				// this.setValueIcons(values);
+				Map<String, String> m = new HashMap<String, String>();
+				m.put("29", "/ConstructorApp/resources/icons/database_gear.png");
+				this.setValueIcons(m);
+			} else {
+				formTreeGridField.setCellFormatter(new CellFormatter() {
+					@Override
+					public String format(Object value, ListGridRecord record, int rowNum, int colNum) {
+						String result = null;
+						if (null != value) {
+							if (null != lookupDisplValFld) {
+								result = record.getAttribute(lookupDisplValFld);
+							} else {
+								// System.out.println(lookupCode + " >>>" + value + " <<>>" + value.getClass());
+								value = (value instanceof Integer) ? ((Integer) value).doubleValue() : value;
+								result = values.containsKey(value) ? values.get(value).getAttribute(displayFieldName) : value + "$";
+							}
 						}
+						return result;
 					}
-					return result;
-				}
-			});
+				});
+			}
 		}
-
-	}
-
-	public void initialFetch() {
-		if (null == lookupDisplValFld)
-			lookupDataSource.initialFetch();
 	}
 }

@@ -2,18 +2,13 @@ package com.abssoft.constructor.client.form;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.KeyIdentifier;
-import com.abssoft.constructor.client.data.FormDataSourceField;
 import com.abssoft.constructor.client.data.Utils;
-import com.abssoft.constructor.client.form.MainFormPane.FormValuesManager;
 import com.abssoft.constructor.client.metadata.FormActionMD;
 import com.abssoft.constructor.client.metadata.FormActionsArr;
 import com.abssoft.constructor.client.metadata.FormColumnsArr;
-import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.types.Visibility;
 import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
@@ -101,7 +96,7 @@ public class FormToolbar extends DynamicForm {
 		public void setActionStatus() throws Exception {
 			String actionType = formActionMD.getType();
 			ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
-			int currRow = mainFormPane.getCurrentGridRowSelected();
+			int currRow = mainFormPane.getSelectedRow();
 			// System.out.println("^^currRow:" + currRow);
 			// System.out.println("^^grid.getEditRow()" + grid.getEditRow());
 			if ("1".equals(actionType)) {
@@ -205,7 +200,7 @@ public class FormToolbar extends DynamicForm {
 	public void doAction(final FormActionMD m) {
 		final ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		mainFormPane.setCurrentActionCode(m.getCode());
-		// int selRow = mainFormPane.getCurrentGridRowSelected();
+		// TODO Проблема при сохранении записи из контекстного меню в случае, если фокус не на данной форме.
 		if ("2".equals(m.getType())) {
 			// TODO Проблема с DynamicForm.ItemChangedHandler в хроме - приходится сохранять данные RichTextItem не по событию, а по кнопке
 			// сохранения
@@ -214,45 +209,17 @@ public class FormToolbar extends DynamicForm {
 					System.out.println("form: " + form);
 					for (FormItem formItem : form.getFields()) {
 						if (form.getItem(formItem.getName()) instanceof RichTextItem) {
-							System.out.println(formItem.getValue());
-							System.out.println("-------------------");
-							System.out.println();
+							// System.out.println(formItem.getValue());
+							// System.out.println("-------------------");
+							// System.out.println();
 						}
 					}
 				}
 			}
 			grid.saveAllEdits();
 		} else if ("1".equals(m.getType())) {
-			Map<String, Object> defVals = new LinkedHashMap<String, Object>();
-			for (FormDataSourceField dsf : mainFormPane.getDataSource().getFormDSFields()) {
-
-				String defVal = dsf.getColumnMD().getDefaultValue();
-				String dataType = dsf.getColumnMD().getDataType();
-				if (null != defVal) {
-					if (null != mainFormPane.getParentFormPane()) {
-						Criteria cc = mainFormPane.getParentFormPane().getInitialFilter();
-						for (String s : cc.getAttributes()) {
-							String attrVal = cc.getAttribute(s);
-							attrVal = (null == attrVal) ? "" : attrVal;
-							try {
-								defVal = defVal.replaceAll("&" + s.toLowerCase() + "&", attrVal);
-							} catch (Exception e) {
-								e.printStackTrace();
-								Utils.debug("Err: >>>>>>>>>>>" + e.getMessage());
-							}
-						}
-					}
-					Utils.debug("$$5>> Default Value: After Bind variables replaced: " + dsf.getName() + " => " + defVal);
-					System.out.println("$$$$$$$$ DataType:" + dsf.getColumnMD().getDataType());
-					if ("B".equals(dataType)) {
-						defVals.put(dsf.getName(), "1".equals(defVal) || "Y".equals(defVal));
-					} else {
-						defVals.put(dsf.getName(), defVal);
-					}
-				}
-			}
-			grid.startEditingNew(defVals);
-			((FormValuesManager) mainFormPane.getValuesManager()).editRecord2();
+			grid.deselectAllRecords();
+			grid.startEditingNew();
 		} else if ("3".equals(m.getType())) {
 			try {
 				grid.removeSelectedData();
@@ -288,7 +255,7 @@ public class FormToolbar extends DynamicForm {
 			grid.updateData(grid.getRecord(currRecSelected));
 			System.out.println("Custom PL/SQL - end execution...");
 		} else if ("8".equals(m.getType())) {
-			grid.startEditing(mainFormPane.getCurrentGridRowSelected(), 0, false);
+			grid.startEditing(mainFormPane.getSelectedRow(), 0, false);
 		} else if ("9".equals(m.getType())) {
 			grid.setShowFilterEditor(!grid.getShowFilterEditor());
 		}

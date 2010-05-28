@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import com.abssoft.constructor.client.app.ConnectWindow;
 import com.abssoft.constructor.client.app.SkinSelectorMenu;
-import com.abssoft.constructor.client.common.Constants;
 import com.abssoft.constructor.client.common.KeyIdentifier;
 import com.abssoft.constructor.client.common.TabSet;
 import com.abssoft.constructor.client.common.ToolBar;
@@ -113,7 +112,7 @@ public class ConstructorApp implements EntryPoint {
 		tabSet.setAccessKey("Q");
 		// -----------
 		MenuItem connMI = new MenuItem("Connect");
-		connMI.setIcon(Constants.clientIconURL + "database_connect.png");
+		connMI.setIcon("[ISOMORPHIC]/resources/icons/database_connect.png");
 		connMI.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -127,7 +126,7 @@ public class ConstructorApp implements EntryPoint {
 		});
 		//
 		final MenuItem debugMI = new MenuItem("Debug");
-		debugMI.setIcon(Constants.clientIconURL + "bug.png");
+		debugMI.setIcon("[ISOMORPHIC]/resources/icons/" + "bug.png");
 		debugMI.setCheckIfCondition(new MenuItemIfFunction() {
 			public boolean execute(Canvas target, Menu menu, MenuItem item) {
 				return ConstructorApp.debugEnabled;

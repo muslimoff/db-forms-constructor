@@ -28,7 +28,7 @@ public interface QueryServiceAsync {
 
 	public void sessionClose(int sessionId, AsyncCallback<Void> callback);
 
-	public void closeForm(int sessionId, String formCode, int gridHashCode, AsyncCallback<Void> callback);
+	public void closeForm(int sessionId, String formCode, int gridHashCode, FormMD formState, AsyncCallback<Void> callback);
 
 	public void getStaticLookupsArr(int sessionId, AsyncCallback<StaticLookupsArr> callback);
 

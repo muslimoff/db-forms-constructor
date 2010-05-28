@@ -48,7 +48,10 @@
 	<target name="build" depends="gwtc" description="Build this project" />
 
 	<target name="war" depends="build" description="Create a war file">
-		<zip destfile="ConstructorApp.war" basedir="war" />
+		<copy todir="war/constructorapp/sc/resources">
+			<fileset dir="resources" excludes="**/.svn" />
+		</copy>
+		<zip destfile="ConstructorApp.war" basedir="war" excludes="**/.svn" />
 	</target>
 
 	<!--

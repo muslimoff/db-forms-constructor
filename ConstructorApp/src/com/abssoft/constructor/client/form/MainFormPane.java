@@ -22,7 +22,6 @@ import com.smartgwt.client.widgets.form.ValuesManager;
 import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.HeaderItem;
 import com.smartgwt.client.widgets.grid.ListGrid;
-import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
@@ -101,13 +100,13 @@ public class MainFormPane extends Canvas {
 	private boolean isMasterForm;
 	private MainFormContainer mainFormContainer;
 	private FormToolbar buttonsToolBar;
-	private int currentGridRowSelected = -999;
+	private int selectedRow = -999;
 
 	private boolean forceFetch = false;
 
 	Canvas tabPane;
 
-	private ValuesManager valuesManager = new FormValuesManager();
+	private FormValuesManager valuesManager = new FormValuesManager();
 	private FormDataSource dataSource;
 	private String currentActionCode = "";
 
@@ -148,13 +147,6 @@ public class MainFormPane extends Canvas {
 					System.out.println(formCode + " 2isLookup:" + isLookup);
 					grid.setFields(formColumns.createGridFields());
 					System.out.println(formCode + " 3isLookup:" + isLookup);
-					if (!isLookup) {
-						for (FormTreeGridField gf : formColumns.getGridFields()) {
-							if (null != gf.getGridComboBoxItem()) {
-								gf.getGridComboBoxItem().initialFetch();
-							}
-						}
-					}
 					filterData();
 					buttonsToolBar.createButtons();
 					createDetailForms();
@@ -205,46 +197,43 @@ public class MainFormPane extends Canvas {
 		if (null != mainForm) {
 			mainForm.doBeforeClose();
 		}
+		Utils.debug("MainFormPane. Form " + formCode + " closed...");
 	}
 
 	public void filterData() {
 		setForceFetch(true);
 		System.out.println(this.formCode + " @@@@@@@@@ " + this.getMainForm());
 		if (null != this.getMainForm()) {
-			ListGrid g = this.getMainForm().getTreeGrid();
+			ListGrid grid = this.getMainForm().getTreeGrid();
 			// Отличие TreeGrid от ListGrid в том, что при TreeGrid.invalidateCache выполняется запрос к БД
-			if (!(g instanceof TreeGrid)) {
-				g.invalidateCache();
+			if (!(grid instanceof TreeGrid)) {
+				grid.invalidateCache();
 			}
 			Criteria criteria = new Criteria();
 			Utils.debug("isMasterForm() => " + isMasterForm());
 			if (isMasterForm()) {
-
 			} else {
 				if (null != getParentFormPane())
 					criteria = getParentFormPane().getInitialFilter();
 			}
-			g.filterData(criteria);
+			grid.filterData(criteria);
 		}
 		setForceFetch(false);
+
 	}
 
-	/**
-	 * @param record
-	 */
-	public void filterDetailData(ListGridRecord record, ListGrid treeGrid, int selectedRecordIndex, boolean filterDynamicMultiDetails,
+	public void filterDetailData(Record record, ListGrid treeGrid, int selectedRecordIndex, boolean filterDynamicMultiDetails,
 			boolean filterDynamicSingleDetails, boolean filterStaticDetails) {
 		Utils.debug("filterDetailData.... record:" + record);
-		setCurrentGridRowSelected(selectedRecordIndex);
-		setInitialFilter(Utils.getCriteriaFromListGridRecord(record, this.getFormCode()));
+		setSelectedRow(selectedRecordIndex);
+		setInitialFilter(Utils.getxCriteriaFromListGridRecord(this, record, this.getFormCode()));
 		getBottomDetailFormsContainer().filterData(filterDynamicMultiDetails, filterDynamicSingleDetails, filterStaticDetails);
 		getSideDetailFormsContainer().filterData(filterDynamicMultiDetails, filterDynamicSingleDetails, filterStaticDetails);
-		// setCurrentGridRowSelected(selectedRecordIndex);
-		((FormValuesManager) valuesManager).editRecord2();
+		valuesManager.editRecord2();
 		buttonsToolBar.setActionsStatuses();
 	}
 
-	public void filterDetailData(ListGridRecord record, ListGrid treeGrid, int selectedRecordIndex) {
+	public void filterDetailData(Record record, ListGrid treeGrid, int selectedRecordIndex) {
 		filterDetailData(record, treeGrid, selectedRecordIndex, true, true, true);
 	}
 
@@ -272,9 +261,9 @@ public class MainFormPane extends Canvas {
 	/**
 	 * @return the currentGridRowSelected
 	 */
-	public int getCurrentGridRowSelected() {
-		System.out.println("currentGridRowSelected:  " + currentGridRowSelected);
-		return currentGridRowSelected;
+	public int getSelectedRow() {
+		System.out.println("currentGridRowSelected:  " + selectedRow);
+		return selectedRow;
 	}
 
 	/**
@@ -349,7 +338,8 @@ public class MainFormPane extends Canvas {
 		return sideDetailFormsContainer;
 	}
 
-	public ValuesManager getValuesManager() {
+	@Override
+	public FormValuesManager getValuesManager() {
 		return valuesManager;
 	}
 
@@ -405,12 +395,12 @@ public class MainFormPane extends Canvas {
 	}
 
 	/**
-	 * @param currentGridRowSelected
-	 *            the currentGridRowSelected to set
+	 * @param selectedRow
+	 *            the selectedRow to set
 	 */
-	public void setCurrentGridRowSelected(int currentGridRowSelected) {
-		this.currentGridRowSelected = currentGridRowSelected;
-		System.out.println("currentGridRowSelected set to " + currentGridRowSelected);
+	public void setSelectedRow(int selectedRow) {
+		this.selectedRow = selectedRow;
+		System.out.println("selectedRow set to " + selectedRow);
 	}
 
 	/**
@@ -514,7 +504,39 @@ public class MainFormPane extends Canvas {
 	/**
 	 * @param valuesManager
 	 */
-	public void setValuesManager(ValuesManager valuesManager) {
+	public void setValuesManager(FormValuesManager valuesManager) {
 		this.valuesManager = valuesManager;
+	}
+
+	public FormMD getFormState() {
+		// Сохранение параметров формы.
+		System.out.println("**************FORM: " + formCode + "*************************");
+		FormMD form = new FormMD();
+		form.setFormCode(formCode);
+		Integer formWidth = mainForm.getWidth();
+		Integer formHeight = mainForm.getHeight();
+		Integer paneWidth = getWidth();
+		Integer paneHeight = getHeight();
+		System.out.println("Border:" + this.getBorder());
+		System.out.println("FormWidth. new:" + formWidth + "; old:" + this.getFormMetadata().getWidth());
+		System.out.println("FormHeight. new:" + formHeight + "; old:" + this.getFormMetadata().getHeight());
+		System.out.println("TotalWidth. new:" + paneWidth);
+		System.out.println("TotalHeight. new:" + paneHeight);
+		String formWidthStr = "" + (Math.round(formWidth.doubleValue() / paneWidth.doubleValue() * 20.0) * 5);
+		String formHeightStr = "" + (Math.round(formHeight.doubleValue() / paneHeight.doubleValue() * 20.0) * 5);
+		formWidthStr = (0 == this.getSideDetailFormsContainer().getTabCounter()) ? this.getFormMetadata().getWidth() : formWidthStr;
+		formHeightStr = (0 == this.getBottomDetailFormsContainer().getTabCounter()) ? this.getFormMetadata().getHeight() : formHeightStr;
+		System.out.println("W%" + formWidthStr + "; H%" + formHeightStr);
+
+		// Сохранение параметров (ширины и порядка) столбцов.
+		System.out.println("Columns before....");
+		for (FormTreeGridField f : this.getFormColumns().getGridFields()) {
+			if (!f.getColumnMD().getDisplaySize().equals(f.getWidth())) {
+				System.out.println(f.getName() + " Old width" + f.getColumnMD().getDisplaySize() + "New width:" + f.getWidth()
+						+ "; getSortDirection:" + f.getSortDirection());
+			}
+		}
+		System.out.println("**************************************************");
+		return form;
 	}
 }

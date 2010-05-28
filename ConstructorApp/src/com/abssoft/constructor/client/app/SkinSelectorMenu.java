@@ -3,7 +3,6 @@ package com.abssoft.constructor.client.app;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
-import com.abssoft.constructor.client.common.Constants;
 import com.google.gwt.user.client.Cookies;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.menu.Menu;
@@ -65,7 +64,7 @@ public class SkinSelectorMenu extends MenuItem {
 		skinsSM.setItems(menuItems);
 		this.setSubmenu(skinsSM);
 		this.setTitle("Skins");
-		this.setIcon(Constants.clientIconURL + "layers.png");
+		this.setIcon("[ISOMORPHIC]/resources/icons/" + "layers.png");
 	}
 
 }

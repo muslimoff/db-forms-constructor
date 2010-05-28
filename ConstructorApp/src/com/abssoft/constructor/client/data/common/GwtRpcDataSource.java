@@ -44,6 +44,8 @@ public abstract class GwtRpcDataSource extends DataSource {
 		setDataFormat(DSDataFormat.CUSTOM);
 		setClientOnly(false);
 		setAttribute("dataProtocol", "clientCustom", false);
+		// TODO Загрузка файлов так: // this.downloadFile; //или так: this.viewFile(data)
+
 	}
 
 	/**

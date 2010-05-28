@@ -21,7 +21,7 @@ public class MainFormContainer extends FormTab {
 	}
 
 	public void updateTab(String formCode, MainFormPane parentFormPane) {
-		// TODO Иконка и заголовок табика
+		// TODO Иконка и заголовок табика. не помню, в чем проблема.
 		MainFormPane mfp;
 		if (detailTabsArr.containsKey(formCode)) {
 			mfp = detailTabsArr.get(formCode);
