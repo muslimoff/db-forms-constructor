@@ -29,7 +29,7 @@ public class MainFormContainer extends FormTab {
 				mfp.filterData();
 			}
 		} else {
-			mfp = (null == formCode) ? defaultFormPane : new MainFormPane(formCode, false, false, parentFormPane);
+			mfp = (null == formCode) ? defaultFormPane : new MainFormPane(formCode, false, false, parentFormPane, false);
 			detailTabsArr.put(formCode, mfp);
 		}
 
@@ -52,14 +52,14 @@ public class MainFormContainer extends FormTab {
 
 	public MainFormContainer(FormTab.TabType tabType, TabSet parentTabSet, String formCode, boolean isMasterForm, boolean canClose,
 			boolean selectAfterCreation, MainFormPane parentFormPane) {
-		this(tabType, parentTabSet, new MainFormPane(formCode, isMasterForm, false, parentFormPane), formCode, isMasterForm, canClose,
-				selectAfterCreation, parentFormPane, null, 0);
+		this(tabType, parentTabSet, new MainFormPane(formCode, isMasterForm, false, parentFormPane, false), formCode, isMasterForm,
+				canClose, selectAfterCreation, parentFormPane, null, 0);
 	}
 
 	public MainFormContainer(FormTab.TabType tabType, TabSet parentTabSet, String formCode, boolean isMasterForm, boolean canClose,
-			boolean selectAfterCreation, MainFormPane parentFormPane, String title, int iconId) {
-		this(tabType, parentTabSet, new MainFormPane(formCode, isMasterForm, false, parentFormPane), formCode, isMasterForm, canClose,
-				selectAfterCreation, parentFormPane, title, iconId);
+			boolean selectAfterCreation, MainFormPane parentFormPane, String title, int iconId, Boolean isDrillDownForm) {
+		this(tabType, parentTabSet, new MainFormPane(formCode, isMasterForm, false, parentFormPane, isDrillDownForm), formCode,
+				isMasterForm, canClose, selectAfterCreation, parentFormPane, title, iconId);
 	}
 
 	public MainFormContainer(FormTab.TabType tabType, TabSet parentTabSet, MainFormPane mainFormPane, String formCode,
@@ -82,6 +82,8 @@ public class MainFormContainer extends FormTab {
 			parentTabSet.addTab(MainFormContainer.this);
 			if (selectAfterCreation)
 				parentTabSet.selectTab(MainFormContainer.this);
+		} else {
+			// TODO Открытие не в табсете а в окне.
 		}
 	}
 

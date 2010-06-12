@@ -103,6 +103,7 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 		this.setHeight(150);
 		this.setTitle("Connect");
 		this.setShowMinimizeButton(false);
+		this.setShowModalMask(true);
 		this.setIsModal(true);
 		this.centerInPage();
 

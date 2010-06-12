@@ -3,6 +3,7 @@ package com.abssoft.constructor.server;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Wrapper;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
@@ -30,12 +31,39 @@ public class Utils {
 		row.getStatus().setStatusMessage(currMsg + "\n" + text);
 	}
 
-	public static void setStringParameterValue(OraclePreparedStatement statement, String name, String value) {
+	// public static void setStringParameterValue(OraclePreparedStatement statement, String name, String value) {
+	// try {
+	// statement.setStringAtName(name, value);
+	// Utils.debug(name + " => '" + value + "'");
+	// } catch (java.sql.SQLException e) {
+	// }
+	// }
+
+	public static void setParameterValue(OraclePreparedStatement statement, String name, Object value) {
+		Utils.debug("setParameterValue. name=" + name + "=>" + (null != value ? value.getClass() : "null"));
 		try {
-			statement.setStringAtName(name, value);
-			Utils.debug(name + " => '" + value + "'");
+			if (null != value) {
+				if (value instanceof Boolean) {
+					statement.setStringAtName(name, (Boolean) value ? "Y" : "N");
+				} else if (value instanceof Double) {
+					statement.setDoubleAtName(name, (Double) value);
+				} else if (value instanceof Date) {
+					statement.setDateAtName(name, new java.sql.Date(((java.util.Date) value).getTime()));
+				} else {
+					statement.setStringAtName(name, value + "");
+				}
+			} else {
+				statement.setStringAtName(name, null);
+			}
 		} catch (java.sql.SQLException e) {
+			Utils.debug("*****setParameterValue: " + e.getMessage());
 		}
+	}
+
+	public static void setFormMDParams(OraclePreparedStatement statement, String formCode, String parentFormCode, Boolean isDrillDownForm) {
+		Utils.setParameterValue(statement, "p_form_code", formCode);
+		Utils.setParameterValue(statement, "p_master_form_code", parentFormCode);
+		Utils.setParameterValue(statement, "p_drilldown_flag", isDrillDownForm ? "Y" : "N");
 	}
 
 	public static void setFilterValues(OraclePreparedStatement statement, Map<?, ?> filterValues) {
@@ -56,17 +84,8 @@ public class Utils {
 		Iterator<?> it = filterValues.keySet().iterator();
 		while (it.hasNext()) {
 			String mapKey = (String) it.next();
-			String value;
 			Object valueObj = filterValues.get(mapKey);
-			try {
-				value = (String) valueObj;
-				Utils.debug("filterValues: " + mapKey + "=" + value + "; class: " + valueObj.getClass());
-			} catch (Exception e) {
-				value = valueObj + "";
-				Utils.debug("setFilterValues. Error on filterValues.get(mapKey): " + e.getMessage());
-			}
-			Utils.setStringParameterValue(statement, mapKey.toLowerCase(), value);
-			Utils.debug("filterValues: " + mapKey + "=" + value);
+			Utils.setParameterValue(statement, mapKey.toLowerCase(), valueObj);
 		}
 	}
 

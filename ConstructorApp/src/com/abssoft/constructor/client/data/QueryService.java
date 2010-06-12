@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.abssoft.constructor.client.data.common.ClientActionType;
 import com.abssoft.constructor.client.data.common.ConnectionInfo;
+import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.MenusArr;
 import com.abssoft.constructor.client.metadata.Row;
@@ -33,7 +34,7 @@ public interface QueryService extends RemoteService {
 	 * @param formCode
 	 * @return <code>ArrayList<ColumnMetaData></code> метаданные...
 	 */
-	public FormMD getFormMetaData(int sessionId, String formCode);
+	public FormMD getFormMetaData(FormInstanceIdentifier formIdentifier);
 
 	/**
 	 * Получение данных о доступных формах (Название, горячая клавиша вызова...)
@@ -54,7 +55,7 @@ public interface QueryService extends RemoteService {
 	 * @param endRow
 	 * @return <code>RowsArr</code>
 	 */
-	public RowsArr fetch(int sessionId, String formCode, int gridHashCode, String sortBy, int startRow, int endRow, Map<?, ?> criteria,
+	public RowsArr fetch(FormInstanceIdentifier formIdentifier, String sortBy, int startRow, int endRow, Map<?, ?> criteria,
 			boolean forceFetch);
 
 	/**
@@ -66,7 +67,7 @@ public interface QueryService extends RemoteService {
 	 * @return Возвращает измененные на сервере данные;
 	 */
 
-	public Row executeDML(int sessionId, String formCode, int gridHashCode, Row oldRow, Row newRow, String actionCode,
+	public Row executeDML(FormInstanceIdentifier formIdentifier, Row oldRow, Row newRow, String actionCode,
 			ClientActionType clientActionType);
 
 	/**
@@ -83,7 +84,7 @@ public interface QueryService extends RemoteService {
 	 * @param formCode
 	 * @param gridHashCode
 	 */
-	public void closeForm(int sessionId, String formCode, int gridHashCode, FormMD formState);
+	public void closeForm(FormInstanceIdentifier formIdentifier, FormMD formState);
 
 	public StaticLookupsArr getStaticLookupsArr(int sessionId);
 

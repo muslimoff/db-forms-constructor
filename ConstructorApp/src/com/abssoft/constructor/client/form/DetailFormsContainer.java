@@ -153,7 +153,7 @@ public class DetailFormsContainer extends TabSet {
 			if (orientation == (m.getTabPosition().equals("B") ? Orientation.VERTICAL : Orientation.HORIZONTAL)) {
 				if (null != m.getChildFormCode() && FormTab.TabType.DETAIL.getValue().equals(tabTypeMD)) {
 					new MainFormContainer(FormTab.TabType.DETAIL, this, m.getChildFormCode(), false, false, false, mainFormPane, m
-							.getTabName(), m.getIconId());
+							.getTabName(), m.getIconId(), false);
 					tabCounter++;
 				} else if (FormTab.TabType.EDITOR.getValue().equals(tabTypeMD)) {
 					FormRowEditorTab t = new FormRowEditorTab(m, mainFormPane);
@@ -249,10 +249,13 @@ public class DetailFormsContainer extends TabSet {
 	public void createDynamicMultiDetails(DynamicDetailTab dynamicDetailTab, String detFormCode) {
 		dynMultiDetailTabsArr = dynamicDetailTab.getDynSingleDetailTabsArr();
 		if (dynMultiDetailTabsArr.containsKey(detFormCode)) {
+			// TODO - Как-то разрулить - не всегда необходимо переводить фокус на уже существующий детейл.
+			// Например свойством в FORM_TABS для динамических детейлов (автофокус при выборе, по умолчанию "Да")
+			// Т.к. в форме приказов переключается навязчиво
 			this.selectTab(dynMultiDetailTabsArr.get(detFormCode));
 		} else {
 			if (null != detFormCode) {
-				MainFormPane mfp = new MainFormPane(detFormCode, false, false, mainFormPane);
+				MainFormPane mfp = new MainFormPane(detFormCode, false, false, mainFormPane, false);
 				dynMultiDetailTabsArr.put(detFormCode, mfp);
 				new MainFormContainer(FormTab.TabType.DYNAMIC_DETAIL_MULTI, this, mfp, detFormCode, false, true, true, mainFormPane,
 						dynamicDetailTab.getTitle(), dynamicDetailTab.getIconId());
@@ -273,7 +276,8 @@ public class DetailFormsContainer extends TabSet {
 			}
 		}
 	}
-//@@@@ Не доделал 
+
+	// @@@@ Не доделал
 	public void filterData(boolean filterDynamicMultiDetails, boolean filterDynamicSingleDetails, boolean filterStaticDetails) {
 		Utils.debug("tabCounter:" + tabCounter);
 		if (0 != tabCounter) {

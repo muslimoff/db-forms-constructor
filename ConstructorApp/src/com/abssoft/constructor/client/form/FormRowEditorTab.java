@@ -13,7 +13,6 @@ import com.abssoft.constructor.client.metadata.FormTabMD;
 import com.abssoft.constructor.client.widgets.FormPickTreeItem;
 import com.abssoft.constructor.client.widgets.GridComboBoxItem;
 import com.abssoft.constructor.client.widgets.HTMLPaneItem;
-import com.smartgwt.client.types.DateDisplayFormat;
 import com.smartgwt.client.types.TitleOrientation;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.form.DynamicForm;
@@ -84,7 +83,7 @@ public class FormRowEditorTab extends FormTab {
 			if ("D".equals(c.getDataType())) {
 				item = new DateItem();
 				((DateItem) item).setUseTextField(true);
-				((DateItem) item).setDisplayFormat(DateDisplayFormat.TOEUROPEANSHORTDATE);
+				// ((DateItem) item).setDisplayFormat(DateDisplayFormat.TOEUROPEANSHORTDATE);
 			} else if ("B".equals(c.getDataType())) {
 				item = new BooleanItem();
 			} else if ("N".equals(c.getDataType())) {
@@ -170,7 +169,6 @@ public class FormRowEditorTab extends FormTab {
 		form.setItemTitleHoverFormatter(new FormItemHoverFormatter() {
 			@Override
 			public String getHoverHTML(FormItem item, DynamicForm form) {
-				// TODO цикл - возможно медленно, а что делать... Нужно добавить еще HashMap<ColumnName, ColIndex> и по нему искать
 				String s = item.getName();
 				for (int i = 0; i < columnsCount; i++) {
 					FormColumnMD c = columns.get(i);
@@ -258,7 +256,7 @@ public class FormRowEditorTab extends FormTab {
 	/**
 	 * @return the parentGridSelectedRow
 	 */
-	public int getParentGridSelectedRow() {
+	public int getxParentGridSelectedRow() {
 		Utils.debug("parentGridSelectedRow get: " + parentGridSelectedRow);
 		return parentGridSelectedRow;
 	}

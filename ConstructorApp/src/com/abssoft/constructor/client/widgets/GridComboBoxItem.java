@@ -15,6 +15,7 @@ import com.abssoft.constructor.client.data.common.GwtRpcDataSource;
 import com.abssoft.constructor.client.form.FormColumns;
 import com.abssoft.constructor.client.form.MainFormPane;
 import com.abssoft.constructor.client.metadata.FormColumnMD;
+import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.Row;
 import com.abssoft.constructor.client.metadata.RowsArr;
@@ -33,7 +34,12 @@ import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.tree.TreeNode;
 
+//TODO Выести ширину лукапа как отдельную настройку формы (вместо FORM_WIDTH нужно LOOKUP_FORM_WIDTH)
+//TODO - Отображать при выборке записи до текущей... остальные фетчить по требованию
+//TODO - Завязать на Debug показку "Прочие" меню
 public class GridComboBoxItem extends ComboBoxItem {
+	private FormInstanceIdentifier instanceIdentifier;
+
 	public class ComboBoxDataSource extends GwtRpcDataSource {
 		private String lookupCode;
 		private FormDataSourceField[] dsFields;
@@ -41,20 +47,7 @@ public class GridComboBoxItem extends ComboBoxItem {
 		private int valueFieldNum = 0;
 		private String lookupDisplValFld;
 
-		public int getValueFieldNum() {
-			return valueFieldNum;
-		}
-
-		public void setValueFieldNum(int valueFieldNum) {
-			this.valueFieldNum = valueFieldNum;
-		}
-
-		public void setFields(FormDataSourceField[] dsFields) {
-			this.dsFields = dsFields;
-			super.setFields(dsFields);
-		}
-
-		public ComboBoxDataSource(final String lookupCode, String lookupDisplValFld) {
+		public ComboBoxDataSource(String lookupCode, String lookupDisplValFld) {
 			this.lookupCode = lookupCode;
 			this.lookupDisplValFld = lookupDisplValFld;
 		}
@@ -79,32 +72,45 @@ public class GridComboBoxItem extends ComboBoxItem {
 			System.out.println("startRow:" + startRow + "; endRow:" + endRow);
 			QueryServiceAsync service = GWT.create(QueryService.class);
 			// TODO вынести в XML параметров endRow - фактически размер лова.
-			service.fetch(ConstructorApp.sessionId, lookupCode, -999, sortBy, startRow, endRow, cr.getValues(), false,
-					new DSAsyncCallback<RowsArr>(requestId, response, this) {
-						public void onSuccess(RowsArr result) {
-							records = new TreeNode[result.size()];
-							values.clear();
-							Utils.debug("LookupDataSource.fetch. valueFieldNum:" + valueFieldNum + "; result.size:" + result.size());
-							for (int r = 0; r < result.size(); r++) {
-								try {
-									Row row = result.get(r);
-									records[r] = Utils.getTreeNodeFromRow(dsFields, row);
-									Object key = row.get(valueFieldNum).getAttributeAsObject();
-									values.put(key, records[r]);
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-							}
-							response.setTotalRows(result.getTotalRows());
-							response.setData(records);
-							try {
-								processResponse(requestId, response);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-							Utils.debug("LookupDataSource.fetch. ended...");
+			service.fetch(instanceIdentifier, sortBy, startRow, endRow, cr.getValues(), false, new DSAsyncCallback<RowsArr>(requestId,
+					response, this) {
+				public void onSuccess(RowsArr result) {
+					records = new TreeNode[result.size()];
+					values.clear();
+					Utils.debug("LookupDataSource.fetch. valueFieldNum:" + valueFieldNum + "; result.size:" + result.size());
+					for (int r = 0; r < result.size(); r++) {
+						try {
+							Row row = result.get(r);
+							records[r] = Utils.getTreeNodeFromRow(dsFields, row);
+							Object key = row.get(valueFieldNum).getAttributeAsObject();
+							values.put(key, records[r]);
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
-					});
+					}
+					response.setTotalRows(result.getTotalRows());
+					response.setData(records);
+					try {
+						processResponse(requestId, response);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					Utils.debug("LookupDataSource.fetch. ended...");
+				}
+			});
+		}
+
+		public int getValueFieldNum() {
+			return valueFieldNum;
+		}
+
+		public void setFields(FormDataSourceField[] dsFields) {
+			this.dsFields = dsFields;
+			super.setFields(dsFields);
+		}
+
+		public void setValueFieldNum(int valueFieldNum) {
+			this.valueFieldNum = valueFieldNum;
 		}
 	}
 
@@ -119,21 +125,16 @@ public class GridComboBoxItem extends ComboBoxItem {
 		this(columnMD, mainFormPane, null);
 	}
 
-	public Criteria getMainFormCriteria() {
-		Utils.debug("FilterCriteriaFunction");
-		Record record = Utils.getEditedRow(GridComboBoxItem.this.mainFormPane);
-		Criteria criteria = Utils.getxCriteriaFromListGridRecord(GridComboBoxItem.this.mainFormPane, record, "GridComboBoxItem:"
-				+ GridComboBoxItem.this.getName());
-		return criteria;
-	}
-
 	public GridComboBoxItem(FormColumnMD columnMD, MainFormPane mainFormPane, FormTreeGridField formTreeGridField) {
 
 		this.columnMD = columnMD;
 		this.mainFormPane = mainFormPane;
+		final String lookupCode = columnMD.getLookupCode();
+		int gridHashCode = 10000 + GridComboBoxItem.this.columnMD.getDisplayNum();
+		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, lookupCode, null, gridHashCode);
+
 		// this.formTreeGridField = formTreeGridField;
 
-		final String lookupCode = columnMD.getLookupCode();
 		lookupDisplValFld = columnMD.getLookupDisplayValue();
 		GridComboBoxItem.this.setShowOptionsFromDataSource(true);
 		this.setPickListFilterCriteriaFunction(new FilterCriteriaFunction() {
@@ -149,7 +150,9 @@ public class GridComboBoxItem extends ComboBoxItem {
 		mfp.setFormMetadata(fmd);
 		mfp.setFormColumns(new FormColumns(mfp));
 		FormTreeGridField[] gridFields = mfp.getFormColumns().createGridFields();
+		// TODO Пока всегда отображаем шапку у лукапа
 		boolean showPickListHeader = false;
+		// boolean showPickListHeader = true;
 		valueFieldName = gridFields[0].getName();
 		int valueFieldNum = 0;
 		for (FormTreeGridField f : gridFields) {
@@ -173,7 +176,9 @@ public class GridComboBoxItem extends ComboBoxItem {
 		GridComboBoxItem.this.setDisplayField(displayFieldName);
 		if (showPickListHeader) {
 			try {
-				GridComboBoxItem.this.setPickListWidth(Integer.decode(fmd.getWidth()));
+				String lookupWidth = fmd.getLookupWidth();
+				lookupWidth = (null == lookupWidth || "".equals(lookupWidth)) ? fmd.getWidth() : lookupWidth;
+				GridComboBoxItem.this.setPickListWidth(Integer.decode(lookupWidth));
 			} catch (Exception e) {
 			}
 			GridComboBoxItem.this.setPickListFields(gridFields);
@@ -244,5 +249,13 @@ public class GridComboBoxItem extends ComboBoxItem {
 				});
 			}
 		}
+	}
+
+	public Criteria getMainFormCriteria() {
+		Utils.debug("FilterCriteriaFunction");
+		Record record = Utils.getEditedRow(GridComboBoxItem.this.mainFormPane);
+		Criteria criteria = Utils.getCriteriaFromListGridRecord(GridComboBoxItem.this.mainFormPane, record, "GridComboBoxItem:"
+				+ GridComboBoxItem.this.getName());
+		return criteria;
 	}
 }

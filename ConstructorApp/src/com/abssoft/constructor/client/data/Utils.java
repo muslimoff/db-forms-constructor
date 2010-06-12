@@ -168,6 +168,25 @@ public class Utils {
 				Utils.debug("Default Value: After Bind variables replaced: " + dsf.getName() + " => " + defVal);
 				if ("B".equals(dataType)) {
 					result.put(dsf.getName(), "1".equals(defVal) || "Y".equals(defVal));
+				} else if ("N".equals(dataType)) {
+					Double v = null;
+					try {
+						v = "".equals(defVal) ? null : Double.valueOf(defVal);
+					} catch (Exception e) {
+						Utils.debug("Number transform Error: " + e.getMessage());
+						e.printStackTrace();
+					}
+					result.put(dsf.getName(), v);
+				} else if ("D".equals(dataType)) {
+					Date v = null;
+					try {
+						// TODO Date и Double - косяк. Для Double предварительно решил
+						// v = "".equals(defVal) ? null : Double.valueOf(defVal);
+					} catch (Exception e) {
+						Utils.debug("Date transform Error: " + e.getMessage());
+						e.printStackTrace();
+					}
+					result.put(dsf.getName(), v);
 				} else {
 					result.put(dsf.getName(), defVal);
 				}
@@ -176,26 +195,38 @@ public class Utils {
 		return result;
 	}
 
-	public static Criteria getCriteriaFromListGridRecord(MainFormPane mainFormPane, Record record) {
+	public static Criteria getCriteriaFromListGridRecord(FormDataSourceField[] dsFields, Record record) {
 		Criteria criteria = new Criteria();
 		if (null != record) {
-			for (String s : record.getAttributes()) {
-				criteria.addCriteria(new Criteria(s, record.getAttribute(s)));
-				Utils.debug("getCriteriaFromListGridRecord: " + s + " => " + record.getAttribute(s));
-			}
+			// for (String s : record.getAttributes()) {
+			// criteria.addCriteria(s, record.getAttribute(s));
+			// Utils.debug("getCriteriaFromListGridRecord: " + s + " => " + record.getAttribute(s));
+			// }
 			// TODO getCriteriaFromListGridRecord из getRowFromRecord
 			/***********************/
-			// Row row = getRowFromRecord(mainFormPane.getDataSource().getFormDSFields(), record);
-			// for (int i = 0; i < row.size(); i++) {
-			// }
+			Row row = getRowFromRecord(dsFields, record);
+			for (int i = 0; i < row.size(); i++) {
+				Attribute attr = row.get(i);
+				Object obj = attr.getAttributeAsObject();
+				String dsFieldName = dsFields[i].getName();
+				if (obj instanceof Boolean) {
+					criteria.addCriteria(dsFieldName, attr.getAttributeAsBoolean());
+				} else if (obj instanceof Double) {
+					JSOHelper.setAttribute(criteria.getJsObj(), dsFieldName, attr.getAttributeAsDouble());
+				} else if (obj instanceof Date) {
+					criteria.addCriteria(dsFieldName, attr.getAttributeAsDate());
+				} else {
+					criteria.addCriteria(dsFieldName, attr.getAttribute());
+				}
+			}
 			/***********************/
 		}
 		return criteria;
 
 	}
 
-	public static Criteria getxCriteriaFromListGridRecord(MainFormPane mainFormPane, Record record, String masterFormCode) {
-		Criteria criteria = getCriteriaFromListGridRecord(mainFormPane, record);
+	public static Criteria getCriteriaFromListGridRecord(MainFormPane mainFormPane, Record record, String masterFormCode) {
+		Criteria criteria = getCriteriaFromListGridRecord(mainFormPane.getDataSource().getFormDSFields(), record);
 		criteria.addCriteria(new Criteria("P_$MASTER_FORM_CODE", masterFormCode));
 		Utils.debug(masterFormCode + " getCriteriaFromListGridRecord executed..");
 		return criteria;
