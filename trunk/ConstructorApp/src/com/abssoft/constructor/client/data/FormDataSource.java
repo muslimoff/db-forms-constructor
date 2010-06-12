@@ -2,7 +2,6 @@ package com.abssoft.constructor.client.data;
 
 import java.util.Map;
 
-import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.common.ClientActionType;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.data.common.GwtRpcDataSource;
@@ -29,7 +28,6 @@ public class FormDataSource extends GwtRpcDataSource {
 	private FormDataSourceField[] dsFields;
 	private String formCode;
 	private int gridHashCode;
-	// Canvas c;
 
 	private MainFormPane mainFormPane;
 
@@ -46,6 +44,7 @@ public class FormDataSource extends GwtRpcDataSource {
 		this.mainFormPane = mainFormPane;
 		this.dsFields = mainFormPane.getFormColumns().createDSFields();
 		this.formCode = mainFormPane.getFormCode();
+		this.gridHashCode = mainFormPane.getInstanceIdentifier().getGridHashCode();
 		System.out.println("setMainFormPane:" + formCode + "; ID:" + this.getID());
 		setFields(dsFields);
 	}
@@ -55,16 +54,6 @@ public class FormDataSource extends GwtRpcDataSource {
 	 */
 	public int getGridHashCode() {
 		return gridHashCode;
-	}
-
-	/**
-	 * @param gridHashCode
-	 *            the gridHashCode to set
-	 */
-	public void setGridHashCode(int gridHashCode) {
-		this.gridHashCode = gridHashCode;
-		// setID(formCode + "_" + gridHashCode);
-		// Utils.debug("Datasource ID: " + getID());
 	}
 
 	@Override
@@ -85,7 +74,7 @@ public class FormDataSource extends GwtRpcDataSource {
 			if (!mainFormPane.isForceFetch()) {
 				int gridEventRow = (0 != grid.getTotalRows()) ? grid.getEventRow() : -2;
 				if (-2 != gridEventRow) {
-					treeCriteria = Utils.getxCriteriaFromListGridRecord(mainFormPane, grid.getRecord(grid.getEventRow()), formCode);
+					treeCriteria = Utils.getCriteriaFromListGridRecord(mainFormPane, grid.getRecord(grid.getEventRow()), formCode);
 				}
 			}
 			cr = request.getCriteria();
@@ -108,8 +97,8 @@ public class FormDataSource extends GwtRpcDataSource {
 		// }
 		String sortBy = request.getAttribute("sortBy");
 		QueryServiceAsync service = GWT.create(QueryService.class);
-		service.fetch(ConstructorApp.sessionId, formCode, gridHashCode, sortBy, startRow, endRow, filterValues,
-				mainFormPane.isForceFetch(), new DSAsyncCallback<RowsArr>(requestId, response, this) {
+		service.fetch(mainFormPane.getInstanceIdentifier(), sortBy, startRow, endRow, filterValues, mainFormPane.isForceFetch(),
+				new DSAsyncCallback<RowsArr>(requestId, response, this) {
 					public void onSuccess(RowsArr result) {
 						Utils.debug(formCode + "...............DataSource: " + FormDataSource.this.getID()
 								+ " - before fetch...............");
@@ -134,7 +123,7 @@ public class FormDataSource extends GwtRpcDataSource {
 						int dynFormsCount = vm.getMembers().length;
 						if (0 != rowsCount) {
 							if (0 == startRow) {
-								mainFormPane.setInitialFilter(Utils.getxCriteriaFromListGridRecord(mainFormPane, records[0], formCode));
+								mainFormPane.setInitialFilter(Utils.getCriteriaFromListGridRecord(mainFormPane, records[0], formCode));
 								if (mainFormPane.isMasterForm()) {
 									grid.focus();
 								}
@@ -167,8 +156,8 @@ public class FormDataSource extends GwtRpcDataSource {
 		Row newRow = Utils.getRowFromRecord(dsFields, listGridRec);
 		Row oldRow = null;
 		QueryServiceAsync service = GWT.create(QueryService.class);
-		service.executeDML(ConstructorApp.sessionId, formCode, gridHashCode, oldRow, newRow, mainFormPane.getCurrentActionCode(),
-				ClientActionType.ADD, new DSAsyncCallback<Row>(requestId, response, this) {
+		service.executeDML(mainFormPane.getInstanceIdentifier(), oldRow, newRow, mainFormPane.getCurrentActionCode(), ClientActionType.ADD,
+				new DSAsyncCallback<Row>(requestId, response, this) {
 					public void onSuccess(Row result) {
 						ActionStatus.showActionStatus(result.getStatus());
 						if (!ActionStatus.StatusType.ERROR.equals(result.getStatus().getStatusType())) {
@@ -187,8 +176,8 @@ public class FormDataSource extends GwtRpcDataSource {
 		// Retrieve record which should be removed.
 		Row oldRow = Utils.getRowFromRecord(dsFields, new Record(request.getData()));
 		QueryServiceAsync service = GWT.create(QueryService.class);
-		service.executeDML(ConstructorApp.sessionId, formCode, gridHashCode, oldRow, null, mainFormPane.getCurrentActionCode(),
-				ClientActionType.DEL, new DSAsyncCallback<Row>(requestId, response, this) {
+		service.executeDML(mainFormPane.getInstanceIdentifier(), oldRow, null, mainFormPane.getCurrentActionCode(), ClientActionType.DEL,
+				new DSAsyncCallback<Row>(requestId, response, this) {
 					public void onSuccess(Row result) {
 						ActionStatus.showActionStatus(result.getStatus());
 						// We do not receive removed record from server. Return record from request.
@@ -217,8 +206,8 @@ public class FormDataSource extends GwtRpcDataSource {
 		}
 		newRow = Utils.getRowFromRecord(dsFields, listGridRec);
 		QueryServiceAsync service = GWT.create(QueryService.class);
-		service.executeDML(ConstructorApp.sessionId, formCode, gridHashCode, oldRow, newRow, mainFormPane.getCurrentActionCode(),
-				ClientActionType.UPD, new DSAsyncCallback<Row>(requestId, response, this) {
+		service.executeDML(mainFormPane.getInstanceIdentifier(), oldRow, newRow, mainFormPane.getCurrentActionCode(), ClientActionType.UPD,
+				new DSAsyncCallback<Row>(requestId, response, this) {
 					public void onSuccess(Row result) {
 						ActionStatus.showActionStatus(result.getStatus());
 						if (!ActionStatus.StatusType.ERROR.equals(result.getStatus().getStatusType())) {

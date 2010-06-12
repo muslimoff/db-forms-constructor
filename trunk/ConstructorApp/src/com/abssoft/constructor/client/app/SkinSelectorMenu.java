@@ -23,7 +23,6 @@ public class SkinSelectorMenu extends MenuItem {
 		valueMap.put("fleet", "Fleet");
 		valueMap.put("Cupertino", "Cupertino");
 		valueMap.put("standard", "Standard");
-		valueMap.put("ToolSkin", "ToolSkin");
 		final Menu skinsSM = new Menu();
 		String currentSkin = Cookies.getCookie("skin");
 		if (currentSkin == null) {

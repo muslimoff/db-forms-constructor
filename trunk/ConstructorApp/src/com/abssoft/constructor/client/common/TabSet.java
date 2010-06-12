@@ -12,10 +12,14 @@ import com.smartgwt.client.widgets.tab.events.TabSelectedHandler;
 
 public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 	public TabSet() {
-		super();
+		this.setAttribute("paneMargin", 0, false);
 		addCloseClickHandler(new CloseClickHandler() {
 			public void onCloseClick(TabCloseClickEvent event) {
-				removeMainFormContainerTab(event.getTab());
+				try {
+					removeMainFormContainerTab(event.getTab());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		});
 		addTabSelectedHandler(new TabSelectedHandler() {
@@ -45,7 +49,13 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 			MainFormContainer t = (MainFormContainer) tab;
 			Utils.debug("OnClose Tab: " + t.getFormCode());
 			t.getMainFormPane().doBeforeClose();
-			this.removeTab(tab);
+			// this.removeTab(tab.getID());
+			try {
+				// tab.getPane().destroy();
+				this.removeTab(tab);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			ConstructorApp.mainToolBar.clear();
 		}
 	}

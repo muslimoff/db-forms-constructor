@@ -10,6 +10,7 @@ import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 
 import com.abssoft.constructor.client.data.common.ClientActionType;
+import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.IconsArr;
 import com.abssoft.constructor.client.metadata.MenuMD;
@@ -36,27 +37,28 @@ public class Session {
 		getStaticLookupsArr();
 	}
 
-	public void closeForm(String formCode, int gridHashCode, FormMD formState) {
-		Utils.debug("Server:session form " + formCode + " - gridHashCode:" + gridHashCode + " before close...");
-		formDataHashMap.get(formCode).closeForm(gridHashCode, formState);
+	public void closeForm(FormInstanceIdentifier fi, FormMD formState) {
+		// formIdentifier
+		Utils.debug("Server:session form " + fi.getInfo() + " before close...");
+		formDataHashMap.get(fi.getKey()).closeForm(fi.getGridHashCode(), formState);
 		// TODO Было закомментировано: Во избежание повторной вычитки настроек формы. Но тогда возникают проблемы при изменении формы на
 		// лету. Приходится делать реконнект. Раскомментировал. Предусмотреть режимы работы debug и рабочий. Или забить - пусть так будет.
 		// А еще лучше - при старте сессии вычитывать настройки всех форм, а потом только перечитывать при изменении OVN.
-		int instCount = formDataHashMap.get(formCode).getInstancesCount();
-		System.out.println("Form " + formCode + " instances: " + instCount);
+		int instCount = formDataHashMap.get(fi.getKey()).getInstancesCount();
+		System.out.println("Form " + fi.getFormCode() + " instances: " + instCount);
 		if (0 == instCount) {
-			formDataHashMap.remove(formCode);
+			formDataHashMap.remove(fi.getKey());
 		}
-		Utils.debug("Server:session form " + formCode + " - gridHashCode:" + gridHashCode + " closed...");
+		Utils.debug("Server:session form " + fi.getInfo() + " closed...");
 	}
 
-	public Row executeDML(String formCode, int gridHashCode, Row oldRow, Row newRow, String actionCode, ClientActionType clientActionType)
-			throws SQLException {
-		return formDataHashMap.get(formCode).executeDML(gridHashCode, oldRow, newRow, actionCode, clientActionType);
+	public Row executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow, String actionCode, ClientActionType clientActionType)
+			throws SQLException, Exception {
+		return formDataHashMap.get(fi.getKey()).executeDML(fi.getGridHashCode(), oldRow, newRow, actionCode, clientActionType);
 	}
 
-	public RowsArr fetch(String formCode, int gridHashCode, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch) {
-		return formDataHashMap.get(formCode).fetch(gridHashCode, sortBy, startRow, endRow, criteria, forceFetch);
+	public RowsArr fetch(FormInstanceIdentifier fi, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch) {
+		return formDataHashMap.get(fi.getKey()).fetch(fi.getGridHashCode(), sortBy, startRow, endRow, criteria, forceFetch);
 	}
 
 	public OracleConnection getConnection() {
@@ -67,17 +69,18 @@ public class Session {
 		return fcSchemaOwner;
 	}
 
-	public FormMD getFormMetaData(String formCode) {
-		return getFormMetaData(formCode, true);
+	public FormMD getFormMetaData(FormInstanceIdentifier formIdentifier) {
+		return getFormMetaData(formIdentifier, true);
 	}
 
-	public FormMD getFormMetaData(String formCode, boolean isNonLookupForm) {
-		if (!formDataHashMap.containsKey(formCode)) {
-			Form form = new Form(connection, formCode, this);
+	public FormMD getFormMetaData(FormInstanceIdentifier fi, boolean isNonLookupForm) {
+		// String formMapKey = (null == parentFormCode) ? formCode : formCode + "." + parentFormCode;
+		if (!formDataHashMap.containsKey(fi.getKey())) {
+			Form form = new Form(connection, fi.getFormCode(), fi.getParentFormCode(), fi.getIsDrillDownForm(), this);
 			form.setFcSchemaOwner(fcSchemaOwner);
-			formDataHashMap.put(formCode, form);
+			formDataHashMap.put(fi.getKey(), form);
 		}
-		return formDataHashMap.get(formCode).getFormMetaData();
+		return formDataHashMap.get(fi.getKey()).getFormMetaData();
 	}
 
 	public MenusArr getMenusArrOld() {

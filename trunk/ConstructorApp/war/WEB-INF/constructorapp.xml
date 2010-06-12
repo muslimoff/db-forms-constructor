@@ -91,7 +91,7 @@
 				default="false" 
 				fcSchemaOwner="FC" 
 				dbusername="FC">
-			OEBSDBALA:1521:CRP2</server>
+			oebsdbala.air-astana.net:1521:CRP2</server>
 
 		<server display="KO Ins" 
 				dbusername="INS"
@@ -116,23 +116,57 @@
 			)
 			]]>
 		</server>
+		<server display="EPM_N-Конструктор"
+				allowuserchange="false"
+				fcSchemaOwner="FC"
+				dbusername="FC"
+				debug="true"
+				title="EPM - Forms Constructor">
+			hypo:1521:epmn
+		</server> 
+		<server display="EPM_EXT_N-Конструктор"
+				allowuserchange="false"
+				fcSchemaOwner="FC"
+				dbusername="FC"
+				default="true"
+				debug="true"
+				title="EPM Ext - Forms Constructor">
+			hypo:8521:epmn
+		</server> 
+		<server display="EPM_RATES_N-Тарифы N"
+				dbusername="APP_RATES"
+				default="true"
+				dbpassword=""
+				allowuserchange="false"
+				debug="false"
+				fcSchemaOwner="FC"
+				title="N - Формирование тарифов на медицинские услуги">
+			hypo:1521:epmn
+		</server> 
+		<server display="EPM_RATES_EXT_N-Тарифы N"
+				dbusername="APP_RATES"
+				fcSchemaOwner="FC"
+				dbpassword="A"
+				allowuserchange="false"
+				debug="true"
+				title="N - Формирование тарифов на медицинские услуги">
+			hypo:8521:epmn
+		</server> 
 	</dbConnections>
 	
 	<metadataQuery>
 		<!--formSQL-->
 		<sqlStatement name="formSQL">
 			<![CDATA[
-				Select *
-				  From forms_v a
-				 Where a.form_code = :p_form_code
+                 Select *
+                   From Table (forms_pkg.get_form_md (:p_form_code, :p_master_form_code, :p_drilldown_flag)) a				 
 			]]>
 		</sqlStatement>
 		<!--extendedFormSQL-->
 		<sqlStatement name="extendedFormSQL">
 			<![CDATA[
-				Select form_utils.get_extended_sql_text (a.sql_text)
-				  From forms_v a
-				 Where a.form_code = :p_form_code
+				 Select form_utils.get_extended_sql_text (a.sql_text)
+                   From Table (forms_pkg.get_form_md (:p_form_code, :p_master_form_code, :p_drilldown_flag)) a
 			]]>
 		</sqlStatement>
 		<!--ColumnsMetaDataSQL-->
@@ -144,7 +178,7 @@
 						,lookup_code, hover_column_code, editor_height, lookup_field_type, help_text, text_mask
 						,validation_regexp, default_orderby_number, default_value, editor_title_orientation, editor_end_row_flag
        					,editor_cols_span, lookup_display_value
-				  From Table (form_utils.describe_form_columns_pl (:p_form_code))
+				  From Table (form_utils.describe_form_columns_pl (:p_form_code, :p_master_form_code))
 			  Order By form_code, column_display_number, column_code
 			]]>
 		</sqlStatement>
@@ -174,9 +208,7 @@
 		<sqlStatement name="detailFormSQL">
 			<![CDATA[
 				Select   *
-				  From form_tabs_v a
-				 Where a.form_code = :p_form_code
-			  Order By tab_display_number, tab_name, tab_code
+  				  From Table (form_utils.get_form_tabs (:p_form_code, :p_master_form_code))
 			]]>
 		</sqlStatement>
 		<!--statLookupsSQL-->
@@ -185,6 +217,8 @@
 				Select l.lookup_code, lv.lookup_value_code, lv.lookup_display_value
 				  From lookups l, lookup_values lv
 				 Where l.lookup_code = lv.lookup_code
+				   --
+				   And l.lookup_code Not Like 'INS%'
 			  Order By l.lookup_code, lv.lookup_value_code
 			]]>
 		</sqlStatement>

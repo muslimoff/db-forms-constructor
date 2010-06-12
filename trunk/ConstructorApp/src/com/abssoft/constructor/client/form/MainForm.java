@@ -8,6 +8,7 @@ import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.EditCompletionEvent;
 import com.smartgwt.client.types.ListGridEditEvent;
@@ -23,6 +24,8 @@ import com.smartgwt.client.widgets.grid.events.EditorExitEvent;
 import com.smartgwt.client.widgets.grid.events.EditorExitHandler;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
+import com.smartgwt.client.widgets.grid.events.RecordDoubleClickEvent;
+import com.smartgwt.client.widgets.grid.events.RecordDoubleClickHandler;
 import com.smartgwt.client.widgets.grid.events.RowContextClickEvent;
 import com.smartgwt.client.widgets.grid.events.RowContextClickHandler;
 import com.smartgwt.client.widgets.grid.events.RowEditorEnterEvent;
@@ -88,8 +91,10 @@ class MainForm extends Canvas {
 			if (null == r) {
 				r = ((ListGrid) event.getSource()).getEditedRecord(event.getRecordNum());
 			}
-			treeGrid.deselectAllRecords();
-			treeGrid.selectRecord(event.getRecordNum());
+			if (treeGrid instanceof TreeGrid) {
+				treeGrid.deselectAllRecords();
+				treeGrid.selectRecord(event.getRecordNum());
+			}
 			mainFormPane.filterDetailData((ListGridRecord) r, treeGrid, event.getRecordNum());
 		}
 	}
@@ -113,6 +118,7 @@ class MainForm extends Canvas {
 
 	MainForm(final MainFormPane mainFormPane, final boolean showResizeBar) {
 		Utils.debug("Constructor MainForm");
+		this.setMargin(0);
 		this.mainFormPane = mainFormPane;
 		FormMD formMetadata = mainFormPane.getFormMetadata();
 		String formWidth = formMetadata.getWidth();
@@ -156,7 +162,22 @@ class MainForm extends Canvas {
 		{// Редактирование в гриде.
 			treeGrid.setCanEdit(true);
 			// treeGrid.setModalEditing(true);
-			treeGrid.setEditEvent(ListGridEditEvent.DOUBLECLICK);
+			if (null != mainFormPane.getFormMetadata().getDoubleClickActionCode()) {
+				treeGrid.setEditEvent(ListGridEditEvent.NONE);
+				treeGrid.addRecordDoubleClickHandler(new RecordDoubleClickHandler() {
+					@Override
+					public void onRecordDoubleClick(RecordDoubleClickEvent event) {
+						try {
+							mainFormPane.getButtonsToolBar().getDoubleClickActItem().doActionWithConfirm();
+						} catch (Exception e) {
+							e.printStackTrace();
+							Window.alert("treeGrid.addRecordDoubleClickHandler: " + e.getMessage());
+						}
+					}
+				});
+			} else {
+				treeGrid.setEditEvent(ListGridEditEvent.DOUBLECLICK);
+			}
 			treeGrid.setListEndEditAction(RowEndEditAction.NEXT);
 			treeGrid.setAutoSaveEdits(false);
 		}
@@ -187,6 +208,7 @@ class MainForm extends Canvas {
 					int nextRecord = (0 == rowNum && null != grid.getRecord(rowNum + 1)) ? rowNum + 1 : rowNum - 1;
 					System.out.println("rowNum:" + rowNum + "; nextRecord:" + nextRecord);
 					// mainFormPane.getValuesManager().clearValues();
+					grid.deselectAllRecords();
 					grid.selectRecord(nextRecord);
 					mainFormPane.setSelectedRow(nextRecord);
 					mainFormPane.filterDetailData(grid.getRecord(nextRecord), treeGrid, nextRecord);
@@ -262,7 +284,7 @@ class MainForm extends Canvas {
 		Utils.debug(formCode + ": mainForm.doBeforeClose(). sessionId = " + ConstructorApp.sessionId + "; gridHashCode = " + gridHashCode);
 		FormMD formState = mainFormPane.getFormState();
 		System.out.println("mainFormPane.FormState: " + formState);
-		queryService.closeForm(ConstructorApp.sessionId, formCode, gridHashCode, formState, new DSAsyncCallback<Void>() {
+		queryService.closeForm(mainFormPane.getInstanceIdentifier(), formState, new DSAsyncCallback<Void>() {
 			@Override
 			public void onSuccess(Void result) {
 				Utils.debug("MainForm. Form " + formCode + "(" + gridHashCode + ")" + " closed...");

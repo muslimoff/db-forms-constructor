@@ -28,6 +28,7 @@ import com.abssoft.constructor.client.data.QueryService;
 import com.abssoft.constructor.client.data.common.ClientActionType;
 import com.abssoft.constructor.client.data.common.ConnectionInfo;
 import com.abssoft.constructor.client.metadata.ActionStatus;
+import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.MenusArr;
 import com.abssoft.constructor.client.metadata.Row;
@@ -192,8 +193,8 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 						+ ".users_pkg.validate_login (:p_username, :p_password) isValid From DUAL";
 				OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(validateLoginSQL);
 				Utils.debug("Parameters: ");
-				Utils.setStringParameterValue(statement, "p_username", user);
-				Utils.setStringParameterValue(statement, "p_password", password);
+				Utils.setParameterValue(statement, "p_username", user);
+				Utils.setParameterValue(statement, "p_password", password);
 				ResultSet loginRS = statement.executeQuery();
 				loginRS.next();
 				Boolean isLoginValid = "Y".equals(loginRS.getString("isValid"));
@@ -234,24 +235,30 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 		return sessionData.get(sessionId).getStaticLookupsArr();
 	}
 
-	public FormMD getFormMetaData(int sessionId, String formCode) {
-		return sessionData.get(sessionId).getFormMetaData(formCode);
+	public FormMD getFormMetaData(FormInstanceIdentifier fi) {
+		return sessionData.get(fi.getSessionId()).getFormMetaData(fi);
 	}
 
-	public RowsArr fetch(int sessionId, String formCode, int gridHashCode, String sortBy, int startRow, int endRow, Map<?, ?> criteria,
-			boolean forceFetch) {
-		return sessionData.get(sessionId).fetch(formCode, gridHashCode, sortBy, startRow, endRow, criteria, forceFetch);
+	public RowsArr fetch(FormInstanceIdentifier fi, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch) {
+		return sessionData.get(fi.getSessionId()).fetch(fi, sortBy, startRow, endRow, criteria, forceFetch);
 	}
 
-	public Row executeDML(int sessionId, String formCode, int gridHashCode, Row oldRow, Row newRow, String actionCode,
+	public Row executeDML(FormInstanceIdentifier formIdentifier, Row oldRow, Row newRow, String actionCode,
 			ClientActionType clientActionType) {
 		try {
-			return sessionData.get(sessionId).executeDML(formCode, gridHashCode, oldRow, newRow, actionCode, clientActionType);
+			return sessionData.get(formIdentifier.getSessionId()).executeDML(formIdentifier, oldRow, newRow, actionCode, clientActionType);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("QueryServiceImpl.executeDML... oldRow:" + oldRow + "; newRow:" + newRow);
-			newRow.setStatus(new ActionStatus(e.getMessage(), ActionStatus.StatusType.ERROR));
-			return newRow;
+			Row r;
+			if (!ClientActionType.DEL.equals(clientActionType)) {
+				newRow.setStatus(new ActionStatus(e.getMessage(), ActionStatus.StatusType.ERROR));
+				r = newRow;
+			} else {
+				oldRow.setStatus(new ActionStatus(e.getMessage(), ActionStatus.StatusType.ERROR));
+				r = oldRow;
+			}
+			return r;
 		}
 	}
 
@@ -266,9 +273,9 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 		sessionData.remove(sessionId);
 	}
 
-	public void closeForm(int sessionId, String formCode, int gridHashCode, FormMD formState) {
-		Utils.debug("Server:service form " + formCode + " - gridHashCode:" + gridHashCode + " before close...");
-		sessionData.get(sessionId).closeForm(formCode, gridHashCode, formState);
-		Utils.debug("Server:service form " + formCode + " - gridHashCode:" + gridHashCode + " closed...");
+	public void closeForm(FormInstanceIdentifier fi, FormMD formState) {
+		Utils.debug("Server:service " + fi.getInfo() + " before close...");
+		sessionData.get(fi.getSessionId()).closeForm(fi, formState);
+		Utils.debug("Server:service form " + fi.getInfo() + " closed...");
 	}
 }

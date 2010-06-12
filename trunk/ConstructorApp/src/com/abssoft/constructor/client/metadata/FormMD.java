@@ -21,6 +21,8 @@ public class FormMD implements IsSerializable {
 	private String bottomTabsPosition;
 	private String sideTabsPosition;
 	private boolean showBottomToolBar;
+	private String doubleClickActionCode;
+	private String lookupWidth;
 	private FormColumnsArr columns;
 	private FormTabsArr tabs;
 	private FormActionsArr actions;
@@ -54,6 +56,10 @@ public class FormMD implements IsSerializable {
 		return columns;
 	}
 
+	public String getDoubleClickActionCode() {
+		return doubleClickActionCode;
+	}
+
 	public String getFormCode() {
 		return formCode;
 	}
@@ -83,6 +89,10 @@ public class FormMD implements IsSerializable {
 
 	public FormsArr getLookupsArr() {
 		return lookupsArr;
+	}
+
+	public String getLookupWidth() {
+		return lookupWidth;
 	}
 
 	/**
@@ -148,6 +158,10 @@ public class FormMD implements IsSerializable {
 		this.columns = columns;
 	}
 
+	public void setDoubleClickActionCode(String doubleClickActionCode) {
+		this.doubleClickActionCode = doubleClickActionCode;
+	}
+
 	/**
 	 * @param formCode
 	 *            the formCode to set
@@ -197,6 +211,10 @@ public class FormMD implements IsSerializable {
 
 	public void setLookupsArr(FormsArr lookupsArr) {
 		this.lookupsArr = lookupsArr;
+	}
+
+	public void setLookupWidth(String lookupWidth) {
+		this.lookupWidth = lookupWidth;
 	}
 
 	/**

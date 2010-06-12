@@ -4,6 +4,7 @@ import com.abssoft.constructor.client.form.MainFormPane;
 import com.abssoft.constructor.client.metadata.FormColumnMD;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.smartgwt.client.types.FieldType;
+import com.smartgwt.client.widgets.form.validator.RegExpValidator;
 import com.smartgwt.client.widgets.tree.TreeGrid;
 
 public class FormDataSourceField extends com.smartgwt.client.data.DataSourceField {
@@ -52,6 +53,16 @@ public class FormDataSourceField extends com.smartgwt.client.data.DataSourceFiel
 		this.setTitle(columnMD.getDisplayName());
 		this.setType(type);
 		this.setRequired(false);
+		// Validation RegExp
+		if (null != columnMD.getValidationRegexp()) {
+			RegExpValidator regExpValidator = new RegExpValidator();
+			//TODO Вынести текст сообщения в настройку поля.
+			regExpValidator.setErrorMessage("Regexp Validation failed");
+			regExpValidator.setExpression(columnMD.getValidationRegexp());
+			this.setValidators(regExpValidator);
+		}
+		// this.setRequired(true);
+		// this.setCanEdit(false);
 	}
 
 	/**

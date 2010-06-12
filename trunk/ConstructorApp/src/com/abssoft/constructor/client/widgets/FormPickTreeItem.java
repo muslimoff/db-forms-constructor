@@ -11,6 +11,7 @@ import com.abssoft.constructor.client.data.common.GwtRpcDataSource;
 import com.abssoft.constructor.client.form.FormColumns;
 import com.abssoft.constructor.client.form.MainFormPane;
 import com.abssoft.constructor.client.metadata.FormColumnMD;
+import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.Row;
 import com.abssoft.constructor.client.metadata.RowsArr;
@@ -22,18 +23,11 @@ import com.smartgwt.client.widgets.form.fields.IPickTreeItem;
 import com.smartgwt.client.widgets.tree.TreeNode;
 
 public class FormPickTreeItem extends IPickTreeItem {
-	String lookupCode;
-	TreeNode[] records;
-	private int valueFieldNum = 0;
+	private FormInstanceIdentifier instanceIdentifier;
 
 	class PickDataSource extends GwtRpcDataSource {
 
 		FormDataSourceField[] dsFields;
-
-		public void setFields(FormDataSourceField[] dsFields) {
-			this.dsFields = dsFields;
-			super.setFields(dsFields);
-		}
 
 		@Override
 		protected void executeFetch(final String requestId, DSRequest request, final DSResponse response) {
@@ -48,31 +42,42 @@ public class FormPickTreeItem extends IPickTreeItem {
 			int endRow = 10000;
 			String sortBy = request.getAttribute("sortBy");
 			QueryServiceAsync service = GWT.create(QueryService.class);
-			service.fetch(ConstructorApp.sessionId, lookupCode, -999, sortBy, startRow, endRow, cr.getValues(), false,
-					new DSAsyncCallback<RowsArr>(requestId, response, this) {
-						public void onSuccess(RowsArr result) {
-							records = new TreeNode[result.size()];
-							Utils.debug("PickDataSource. valueFieldNum:" + valueFieldNum + "; result.size:" + result.size());
-							for (int r = 0; r < result.size(); r++) {
-								try {
-									Row row = result.get(r);
-									records[r] = Utils.getTreeNodeFromRow(dsFields, row);
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-							}
-							response.setTotalRows(result.getTotalRows());
-							response.setData(records);
-							try {
-								processResponse(requestId, response);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-							Utils.debug("PickDataSource.fetch. ended...");
+			service.fetch(instanceIdentifier, sortBy, startRow, endRow, cr.getValues(), false, new DSAsyncCallback<RowsArr>(requestId,
+					response, this) {
+				public void onSuccess(RowsArr result) {
+					records = new TreeNode[result.size()];
+					Utils.debug("PickDataSource. valueFieldNum:" + valueFieldNum + "; result.size:" + result.size());
+					for (int r = 0; r < result.size(); r++) {
+						try {
+							Row row = result.get(r);
+							records[r] = Utils.getTreeNodeFromRow(dsFields, row);
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
-					});
+					}
+					response.setTotalRows(result.getTotalRows());
+					response.setData(records);
+					try {
+						processResponse(requestId, response);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					Utils.debug("PickDataSource.fetch. ended...");
+				}
+			});
+		}
+
+		public void setFields(FormDataSourceField[] dsFields) {
+			this.dsFields = dsFields;
+			super.setFields(dsFields);
 		}
 	}
+
+	String lookupCode;
+	TreeNode[] records;
+	private int valueFieldNum = 0;
+
+	private FormColumnMD columnMD;
 
 	public FormPickTreeItem(FormColumnMD columnMD, final MainFormPane mainFormPane) {
 		this(columnMD, mainFormPane, null);
@@ -80,6 +85,9 @@ public class FormPickTreeItem extends IPickTreeItem {
 
 	public FormPickTreeItem(FormColumnMD columnMD, final MainFormPane mainFormPane, final FormTreeGridField formTreeGridField) {
 		this.lookupCode = columnMD.getLookupCode();
+		this.columnMD = columnMD;
+		int gridHashCode = 10000 + FormPickTreeItem.this.columnMD.getDisplayNum();
+		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, lookupCode, null, gridHashCode);
 		FormMD fmd = mainFormPane.getFormMetadata().getLookupsArr().get(lookupCode);
 		Utils.debug("PickDataSource ******** " + fmd.getFormName());
 		final MainFormPane mfp = new MainFormPane();

@@ -1,5 +1,6 @@
 package com.abssoft.constructor.client;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import com.abssoft.constructor.client.app.ConnectWindow;
@@ -19,8 +20,12 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.smartgwt.client.types.Side;
+import com.smartgwt.client.util.DateDisplayFormatter;
+import com.smartgwt.client.util.DateInputFormatter;
+import com.smartgwt.client.util.DateUtil;
 import com.smartgwt.client.util.KeyCallback;
 import com.smartgwt.client.util.Page;
 import com.smartgwt.client.util.SC;
@@ -95,6 +100,25 @@ public class ConstructorApp implements EntryPoint {
 	}
 
 	public void onModuleLoad() {
+		DateUtil.setShortDateDisplayFormatter(new DateDisplayFormatter() {
+			@Override
+			public String format(Date date) {
+				if (date == null)
+					return null;
+
+				DateTimeFormat dateFormatter = DateTimeFormat.getFormat("dd.MM.yyyy");
+				String format = dateFormatter.format(date);
+				return format;
+			}
+		});
+		DateUtil.setDateInputFormatter(new DateInputFormatter() {
+			@Override
+			public Date parse(String dateString) {
+				final DateTimeFormat dateFormatter = DateTimeFormat.getFormat("dd.MM.yyyy");
+				Date date = dateFormatter.parse(dateString);
+				return date;
+			}
+		});
 		Window.addCloseHandler(new CloseHandler<Window>() {
 			public void onClose(CloseEvent<Window> event) {
 				doBeforeClose("onClose");
@@ -163,9 +187,11 @@ public class ConstructorApp implements EntryPoint {
 				tabSet.removeMainFormContainerTab(tabSet.getSelectedTab());
 			}
 		});
+		MenuItem downloadMI = new MenuItem("Download");
+		downloadMI.addClickHandler(new TestDownloadFileClickHandler());
 		// /////////////
 		Menu smm = new Menu();
-		smm.setData(closeFormMI, testMI);
+		smm.setData(closeFormMI, testMI, downloadMI);
 		serviceMenuBtn.setMenu(smm);
 		// -----connect();
 		menuBar.addMembers(fileMenuBtn, serviceMenuBtn);

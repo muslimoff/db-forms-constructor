@@ -6,7 +6,6 @@ import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.form.MainFormPane;
 import com.abssoft.constructor.client.metadata.FormColumnMD;
 import com.abssoft.constructor.client.widgets.GridComboBoxItem;
-import com.smartgwt.client.types.DateDisplayFormat;
 import com.smartgwt.client.types.ListGridFieldType;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.TextAreaItem;
@@ -77,7 +76,7 @@ public class FormTreeGridField extends TreeGridField {
 		}
 		if ("D".equals(c.getDataType())) {
 			this.setType(ListGridFieldType.DATE);
-			this.setDateFormatter(DateDisplayFormat.TOEUROPEANSHORTDATE);
+			// this.setDateFormatter(DateDisplayFormat.TOEUROPEANSHORTDATE);
 		}
 
 		if ("3".equals(c.getFieldType())) {

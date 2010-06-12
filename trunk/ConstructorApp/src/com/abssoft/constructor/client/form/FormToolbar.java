@@ -4,15 +4,23 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.abssoft.constructor.client.ConstructorApp;
+import com.abssoft.constructor.client.common.FormTab;
 import com.abssoft.constructor.client.common.KeyIdentifier;
+import com.abssoft.constructor.client.common.TabSet;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.metadata.FormActionMD;
 import com.abssoft.constructor.client.metadata.FormActionsArr;
 import com.abssoft.constructor.client.metadata.FormColumnsArr;
+import com.smartgwt.client.types.Side;
 import com.smartgwt.client.types.Visibility;
 import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
+import com.smartgwt.client.widgets.Window;
+import com.smartgwt.client.widgets.events.ClickEvent;
+import com.smartgwt.client.widgets.events.CloseClickHandler;
+import com.smartgwt.client.widgets.events.CloseClientEvent;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.RichTextItem;
@@ -21,38 +29,15 @@ import com.smartgwt.client.widgets.form.fields.ToolbarItem;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
+import com.smartgwt.client.widgets.menu.MenuItemIfFunction;
 import com.smartgwt.client.widgets.menu.MenuItemSeparator;
+import com.smartgwt.client.widgets.menu.MenuItemStringFunction;
 import com.smartgwt.client.widgets.menu.events.ClickHandler;
 import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
+import com.smartgwt.client.widgets.tab.Tab;
 
 public class FormToolbar extends DynamicForm {
 	class ActionItem extends MenuItem {
-		class ActionButtonClickHandler implements com.smartgwt.client.widgets.events.ClickHandler {
-			private FormActionMD m;
-
-			ActionButtonClickHandler(final FormActionMD m) {
-				this.m = m;
-			}
-
-			@Override
-			public void onClick(com.smartgwt.client.widgets.events.ClickEvent event) {
-				doActionWithConfirm(m);
-			}
-		}
-
-		class ActionCtxMenuClickHandler implements ClickHandler {
-			private FormActionMD m;
-
-			ActionCtxMenuClickHandler(final FormActionMD m) {
-				this.m = m;
-			}
-
-			@Override
-			public void onClick(MenuItemClickEvent event) {
-				doActionWithConfirm(m);
-			}
-		}
-
 		private FormActionMD formActionMD;
 		private IButton button = null;
 
@@ -71,18 +56,69 @@ public class FormToolbar extends DynamicForm {
 				// Подсказка хоткея для кнопки
 				displayName = displayName + " (" + hotKey + ")";
 			}
-			this.addClickHandler(new ActionCtxMenuClickHandler(formActionMD));
+			this.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(MenuItemClickEvent event) {
+					doActionWithConfirm();
+				}
+			});
 			if (formActionMD.getDisplayOnToolbar()) {
 				button = new IButton(formActionMD.getDisplayName());
 				button.setShowDisabledIcon(false);
 				button.setPrompt(displayName);
 				button.setIcon(iconPath);
-				button.addClickHandler(new ActionButtonClickHandler(formActionMD));
+				button.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
+					@Override
+					public void onClick(ClickEvent event) {
+						doActionWithConfirm();
+					}
+				});
 				//
 				// button.setWidth(button.getHeight());
 				// button.setTitle("");
 			}
+			this.setDynamicTitleFunction(new MenuItemStringFunction() {
+				@Override
+				public String execute(Canvas target, Menu menu, MenuItem item) {
+					String title = ActionItem.this.getFormActionMD().getDisplayName();
+					try {
+						title = xxx(title);
 
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					return title;
+				}
+			});
+
+			this.setEnableIfCondition(new MenuItemIfFunction() {
+
+				@Override
+				public boolean execute(Canvas target, Menu menu, MenuItem item) {
+					Boolean result = true;
+					try {
+						String actionType = ActionItem.this.formActionMD.getType();
+						ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
+						int currRow = grid.getRecordIndex(grid.getSelectedRecord());
+						if ("2".equals(actionType)) {
+							result = currRow == grid.getEditRow() || 0 != grid.getAllEditRows().length;
+						}
+						if ("5".equals(actionType)) {
+							result = 0 != currRow;
+						}
+						if ("6".equals(actionType)) {
+							result = (1 + currRow) != grid.getTotalRows();
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					return result;
+				}
+			});
+		}
+
+		public void doActionWithConfirm() {
+			FormToolbar.this.doActionWithConfirm(getFormActionMD(), this);
 		}
 
 		public IButton getButton() {
@@ -97,19 +133,14 @@ public class FormToolbar extends DynamicForm {
 			String actionType = formActionMD.getType();
 			ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 			int currRow = mainFormPane.getSelectedRow();
-			// System.out.println("^^currRow:" + currRow);
-			// System.out.println("^^grid.getEditRow()" + grid.getEditRow());
 			if ("1".equals(actionType)) {
 			} else if ("2".equals(actionType)) {
 				// TODO ошибка в редакторе - невозможно сохранить строку
 				// this.setEnabled(currRow == grid.getEditRow() || 0 != grid.getAllEditRows().length);
-			} else if ("3".equals(actionType)) {
-			} else if ("4".equals(actionType)) {
 			} else if ("5".equals(actionType)) {
 				this.setEnabled(0 != currRow);
 			} else if ("6".equals(actionType)) {
 				this.setEnabled((1 + currRow) != grid.getTotalRows());
-			} else if ("7".equals(actionType)) {
 			}
 		}
 
@@ -118,7 +149,7 @@ public class FormToolbar extends DynamicForm {
 		}
 
 		public void setEnabled(boolean enabled) {
-			super.setEnabled(enabled);
+			// super.setEnabled(enabled);
 			if (null != button) {
 				button.setDisabled(!enabled);
 			}
@@ -136,6 +167,7 @@ public class FormToolbar extends DynamicForm {
 	private Menu ctxMenu;
 	private ToolbarItem btnToolbar = new ToolbarItem();
 	private IButton[] btns;
+	private ActionItem doubleClickActItem;
 
 	public FormToolbar(MainFormPane mainFormPane) {
 		this.mainFormPane = mainFormPane;
@@ -169,6 +201,9 @@ public class FormToolbar extends DynamicForm {
 			if (null != actionItem.getButton()) {
 				actionButtonsArr.add(actionItem.getButton());
 			}
+			if (formActionMD.getCode().equals(mainFormPane.getFormMetadata().getDoubleClickActionCode())) {
+				doubleClickActItem = actionItem;
+			}
 		}
 		/*****************/
 		ctxMenu = new Menu();
@@ -197,9 +232,17 @@ public class FormToolbar extends DynamicForm {
 		setItems(formNameItem, btnToolbar);
 	}
 
-	public void doAction(final FormActionMD m) {
+	public void doAction(final FormActionMD m, ActionItem item) {
 		final ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		mainFormPane.setCurrentActionCode(m.getCode());
+		String title = item.getFormActionMD().getDisplayName();
+		try {
+			title = xxx(title);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		title = mainFormPane.getFormMetadata().getFormName() + " - " + title;
 		// TODO Проблема при сохранении записи из контекстного меню в случае, если фокус не на данной форме.
 		if ("2".equals(m.getType())) {
 			// TODO Проблема с DynamicForm.ItemChangedHandler в хроме - приходится сохранять данные RichTextItem не по событию, а по кнопке
@@ -227,71 +270,112 @@ public class FormToolbar extends DynamicForm {
 				e.printStackTrace();
 			}
 			mainFormPane.getValuesManager().clearValues();
-		}
-		// Refresh
+		}// Refresh
 		else if ("4".equals(m.getType())) {
 			mainFormPane.filterData();
-		}
-		// prev record
+		} // prev record
 		else if ("5".equals(m.getType())) {
 			int currRecSelected = grid.getRecordIndex(grid.getSelectedRecord());
 			if (currRecSelected > 0) {
 				grid.selectSingleRecord(--currRecSelected);
 				mainFormPane.filterDetailData(grid.getRecord(currRecSelected), grid, currRecSelected);
 			}
-		}
-		// next record
+		} // next record
 		else if ("6".equals(m.getType())) {
 			int currRecSelected = grid.getRecordIndex(grid.getSelectedRecord());
 			if (currRecSelected + 1 < grid.getTotalRows()) {
 				grid.selectSingleRecord(++currRecSelected);
 				mainFormPane.filterDetailData(grid.getRecord(currRecSelected), grid, currRecSelected);
 			}
-		}
-		// Custom PL/SQL
+		} // Custom PL/SQL
 		else if ("7".equals(m.getType())) {
 			System.out.println("Custom PL/SQL - start execution...");
 			int currRecSelected = grid.getRecordIndex(grid.getSelectedRecord());
 			grid.updateData(grid.getRecord(currRecSelected));
 			System.out.println("Custom PL/SQL - end execution...");
-		} else if ("8".equals(m.getType())) {
+		} // New Record
+		else if ("8".equals(m.getType())) {
 			grid.startEditing(mainFormPane.getSelectedRow(), 0, false);
-		} else if ("9".equals(m.getType())) {
-			grid.setShowFilterEditor(!grid.getShowFilterEditor());
-		}
 
+		} // Filter
+		else if ("9".equals(m.getType())) {
+			grid.setShowFilterEditor(!grid.getShowFilterEditor());
+		} // Form in new AppTabSet
+		else if ("10".equals(m.getType())) {
+			TabSet t = mainFormPane.getMainFormContainer().getParentTabSet();
+			new MainFormContainer(FormTab.TabType.MAIN, t, m.getChildFormCode(), false, true, true, mainFormPane, title, mainFormPane
+					.getFormMetadata().getIconId(), true);
+		}// Form in new Window
+		else if ("11".equals(m.getType())) {
+			{
+				final TabSet t = new TabSet();
+				t.setTabBarPosition(Side.BOTTOM);
+				new MainFormContainer(FormTab.TabType.MAIN, t, m.getChildFormCode(), false, false, true, mainFormPane, title, mainFormPane
+						.getFormMetadata().getIconId(), true);
+				final Window w = new Window();
+				w.setWidth("80%");
+				w.setHeight("80%");
+				w.setTitle(title);
+				w.setShowMinimizeButton(false);
+				w.setShowMaximizeButton(true);
+				w.setIsModal(true);
+				w.setShowModalMask(true);
+				w.setCanDragResize(true);
+				w.centerInPage();
+				w.addItem(t);
+
+				w.addCloseClickHandler(new CloseClickHandler() {
+					@Override
+					public void onCloseClick(CloseClientEvent event) {
+						try {
+							for (Tab tab : t.getTabs()) {
+								t.removeMainFormContainerTab(tab);
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						w.destroy();
+					}
+				});
+				w.show();
+			}
+		}
 	}
 
-	public void doActionWithConfirm(final FormActionMD m) {
+	public String xxx(String str) {
+		String result = str;
+		try {
+			FormColumnsArr fca = mainFormPane.getFormMetadata().getColumns();
+			if (null != str && str.contains("&")) {
+				Iterator<Integer> itr = fca.keySet().iterator();
+				while (itr.hasNext()) {
+					String columnName = fca.get(itr.next()).getName();
+					// String columnValue = mainFormPane.getMainForm().getTreeGrid().getSelectedRecord().getAttribute(columnName);
+					ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
+					String columnValue = grid.getSelectedRecord().getAttribute(columnName);
+					result = result.replaceAll("&" + columnName.toLowerCase() + "&", columnValue);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public void doActionWithConfirm(final FormActionMD m, final ActionItem item) {
 		if (!Visibility.HIDDEN.equals(mainFormPane.getVisibility())) {
 			String confirmText = m.getConfirmText();
 			if (null != confirmText) {
-				{
-					Utils.debug("ActionButtonClickHandler. Replace: " + confirmText);
-					FormColumnsArr fca = mainFormPane.getFormMetadata().getColumns();
-					Iterator<Integer> itr = fca.keySet().iterator();
-					while (itr.hasNext()) {
-						String columnName = fca.get(itr.next()).getName();
-						try {
-							String columnValue = mainFormPane.getMainForm().getTreeGrid().getSelectedRecord().getAttribute(columnName);
-							confirmText = confirmText.replaceAll("&" + columnName.toLowerCase() + "&", columnValue);
-							Utils.debug(columnName + " => " + columnValue);
-						} catch (Exception e) {
-							e.printStackTrace();
-							Utils.debug("Err: >>>>>>>>>>>" + e.getMessage());
-						}
-					}
-				}
-				Utils.debug("ActionButtonClickHandler. Replace completed...");
-				SC.confirm("Подтверждение", confirmText, new BooleanCallback() {
+				Utils.debug("ActionButtonClickHandler. Replace: " + confirmText);
+				SC.confirm("Подтверждение", xxx(m.getConfirmText()), new BooleanCallback() {
 					public void execute(Boolean value) {
 						if (null != value && value) {
-							doAction(m);
+							doAction(m, item);
 						}
 					}
 				});
 			} else {
-				doAction(m);
+				doAction(m, item);
 			}
 		}
 	}
@@ -307,8 +391,13 @@ public class FormToolbar extends DynamicForm {
 				}
 			}
 		}
-		// TODO не отображается изменение состояния действия Disabled/Enabled
-		// ctxMenu.markForRedraw();
-		ctxMenu.redraw();
+	}
+
+	public void setDoubleClickActItem(ActionItem doubleClickActItem) {
+		this.doubleClickActItem = doubleClickActItem;
+	}
+
+	public ActionItem getDoubleClickActItem() {
+		return doubleClickActItem;
 	}
 }

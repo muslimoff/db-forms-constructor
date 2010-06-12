@@ -66,31 +66,31 @@ public class TestWindow extends Window {
 
 			@Override
 			public void onClick(ClickEvent event) {
-/**********ServerSide***********/
-// http://forums.smartclient.com/showthread.php?t=3314&highlight=download+file				
-//				//if returning an image
-//				response.setContentType("image/jpeg");
-//				OutputStream out = response.getOutputStream();
-//				byte[] image = readImageData(....)
-//				out.write(image);
-//				out.flush();
-//				out.close();
-//				//if returning csv-data
-//				response.setContentType("text/csv");
-//				response.setHeader("Content-Disposition", "attachment; filename=\"example-data.csv\"");
-//				OutputStream out = response.getOutputStream();
-//				byte[] data = readCsvData(....);
-//				out.write(data);
-//				out.flush();
-//				out.close();				
+				/********** ServerSide ***********/
+				// http://forums.smartclient.com/showthread.php?t=3314&highlight=download+file
+				// //if returning an image
+				// response.setContentType("image/jpeg");
+				// OutputStream out = response.getOutputStream();
+				// byte[] image = readImageData(....)
+				// out.write(image);
+				// out.flush();
+				// out.close();
+				// //if returning csv-data
+				// response.setContentType("text/csv");
+				// response.setHeader("Content-Disposition", "attachment; filename=\"example-data.csv\"");
+				// OutputStream out = response.getOutputStream();
+				// byte[] data = readCsvData(....);
+				// out.write(data);
+				// out.flush();
+				// out.close();
 
 				// com.google.gwt.core.client.GWT.getModuleBaseURL() + "constructorapp.xml",
 				com.google.gwt.user.client.Window.open(com.google.gwt.core.client.GWT.getHostPageBaseURL() + "resources/loading.gif",
 						"loading.gif", "menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=150,height=150,navigation=no");
 
-				
 			}
 		});
+
 		this.addItem(b);
 		this.addItem(vLayout);
 		this.show();
