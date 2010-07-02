@@ -5,8 +5,10 @@
 	<inherits name="com.google.gwt.user.History" />
 	<!--
 		< i nherits name="com.google.gwt.app.App" /> < i nherits
-		name="com.google.gwt.requestfactory.RequestFactory" />
+		name="com.google.gwt.requestfactory.RequestFactory" /> < i nherits
+		name="com.smartgwt.ofcchart.OFCChart4SGWT" />
 	-->
+	<inherits name="com.rednels.ofcgwt.OFCGWT" />
 	<inherits name="com.smartgwt.SmartGwtNoScript" />
 
 	<inherits name="com.smartclient.theme.enterprise.EnterpriseResources" />
@@ -22,6 +24,7 @@
 	<inherits name="com.smartclient.theme.standart.standartResources" />
 
 	<inherits name="com.smartgwt.tools.SmartGwtTools" />
+
 	<entry-point class="com.abssoft.constructor.client.ConstructorApp" />
 	<servlet class="com.abssoft.constructor.server.QueryServiceImpl"
 		path="/query" />

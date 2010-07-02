@@ -47,7 +47,11 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 	private static final long serialVersionUID = 9137729400867519828L;
 	public static final HashMap<String, String> queryMap = new HashMap<String, String>();
 	private ServerInfoArr serverInfoArr = new ServerInfoArr();
-	private HashMap<Integer, Session> sessionData = new HashMap<Integer, Session>();
+	private static final HashMap<Integer, Session> sessionData = new HashMap<Integer, Session>();
+
+	public static Session getSessionData(Integer sessionID) {
+		return sessionData.get(sessionID);
+	}
 
 	// public static String SERVER_WEB_INF;
 
@@ -168,7 +172,6 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 	public ConnectionInfo connect(int ServerIdx, String user, String password, boolean isScript) {
 		String errMsg = "";
 		int sessionId = -1;
-
 		try {
 			Utils.debug("Server. Before connect...");
 			Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -209,6 +212,9 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 			session.setScript(isScript);
 			session.setFcSchemaOwner(serverInfoMD.getFcSchemaOwner());
 			sessionData.put(sessionId, session);
+			// TODO wertyuiouytrewrtyui
+			this.getThreadLocalRequest().getSession(true).setAttribute(Utils.sessionIdentifier, sessionId);
+
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			errMsg = e.toString();
@@ -277,5 +283,10 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 		Utils.debug("Server:service " + fi.getInfo() + " before close...");
 		sessionData.get(fi.getSessionId()).closeForm(fi, formState);
 		Utils.debug("Server:service form " + fi.getInfo() + " closed...");
+	}
+
+	// TODO DownloadFileTest
+	public String getFile() {
+		return "DownloadFileTest@";
 	}
 }

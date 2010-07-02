@@ -56,7 +56,10 @@ public class FormRowEditorTab extends FormTab {
 			item = new TextAreaItem(); // new AutoFitTextAreaItem();
 		} else if ("5".equals(c.getFieldType())) {
 			showHint = false;
+			// TODO RichTextItem: Resize и все глюки.. Нужно свой класс MyRichTextItem
+			//
 			item = new RichTextItem();
+			// item = new MyRichTextItem();
 			item.setShowTitle(true);
 		} else if ("6".equals(c.getFieldType())) {
 			showHint = false;

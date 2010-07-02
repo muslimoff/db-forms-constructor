@@ -12,6 +12,7 @@ import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.MenuMD;
 import com.abssoft.constructor.client.widgets.HTMLPaneItem;
+import com.abssoft.constructor.client.widgets.MyRichTextItem;
 import com.google.gwt.core.client.GWT;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.Record;
@@ -54,6 +55,9 @@ public class MainFormPane extends Canvas {
 						// HeaderItem
 						if (ff instanceof HeaderItem) {
 							((HeaderItem) ff).setValue(fieldValue);
+						}
+						if (ff instanceof MyRichTextItem) {
+							((MyRichTextItem) ff).setValue(fieldValue);
 						}
 					}
 				}

@@ -1,5 +1,7 @@
 package com.abssoft.constructor.client.form;
 
+import java.util.ArrayList;
+
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.TabSet;
 import com.abssoft.constructor.client.data.QueryService;
@@ -10,15 +12,21 @@ import com.abssoft.constructor.client.metadata.FormMD;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.smartgwt.client.data.Record;
+import com.smartgwt.client.data.ResultSet;
+import com.smartgwt.client.data.events.DataArrivedEvent;
+import com.smartgwt.client.data.events.DataArrivedHandler;
 import com.smartgwt.client.types.EditCompletionEvent;
 import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.types.RowEndEditAction;
+import com.smartgwt.client.util.BooleanCallback;
+import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.events.ResizedEvent;
 import com.smartgwt.client.widgets.events.ResizedHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
+import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.grid.events.EditorExitEvent;
 import com.smartgwt.client.widgets.grid.events.EditorExitHandler;
@@ -233,6 +241,7 @@ class MainForm extends Canvas {
 				}
 			}
 		});
+
 		// TODO Полезные методы - использовать
 		// this.addResizedHandler(new MainFormResizedHandler());
 		// treeGrid.setCanRemoveRecords(true);
@@ -319,5 +328,96 @@ class MainForm extends Canvas {
 			}
 		}
 
+	}
+
+	class ExpField {
+		private String name;
+		private String title;
+
+		ExpField() {
+		}
+
+		ExpField(String name, String title) {
+			this.name = name;
+			setTitle(name, title);
+		}
+
+		public void setTitle(String name, String title) {
+			this.title = null != title ? title : name;
+			this.title = "&nbsp;".equals(title) ? "_" : title;
+		}
+
+		public String getTitle() {
+			return title;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+	}
+
+	public String getCSVData(ArrayList<ExpField> flds, ResultSet rs, String header, String spr, int dataLen) {
+		String rowsData = header;
+		// Вывод значений полей
+		try {
+			for (Record r : rs.getRange(0, dataLen)) {
+				for (int i = 0; i < flds.size(); i++) {
+					ExpField f = flds.get(i);
+					rowsData = rowsData + r.getAttribute(f.getName()) + spr;
+				}
+				rowsData = rowsData + "\n";
+			}
+			Utils.debug("@@@@@@@@@@@@@@@@@");
+			System.out.println(rowsData);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		com.google.gwt.user.client.Window.open("data:application/vnd.ms-excel;charset=utf-8, " + rowsData, "_blank",
+				"menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=250,height=150,navigation=no");
+		return rowsData;
+	}
+
+	public void exportGrid() {
+		final String spr = ";";
+		// Получаем список экспортируемых полей
+		final ArrayList<ExpField> flds = new ArrayList<ExpField>();
+		for (ListGridField f : treeGrid.getAllFields()) {
+			// System.out.println("@@@ " + f.getName() + "; " + f.getAttribute("showIf") + "; " + f.getTitle());
+			// baseStyle; specialCol -- canExport; false
+			if (!"false".equals(f.getAttribute("showIf")) && !"false".equals(f.getAttribute("canExport"))) {
+				flds.add(new ExpField(f.getName(), f.getTitle()));
+			}
+		}
+		// Вывод заголовков полей
+		String result = "";
+		for (int i = 0; i < flds.size(); i++) {
+			ExpField f = flds.get(i);
+			result = result + f.getTitle() + spr;
+		}
+		result = result + "\n";
+
+		final ResultSet rs = treeGrid.getResultSet();
+		// TODO least(100, dataLen)
+		final int dataLen = rs.getLength(); // 100;
+		final String header = result;
+		if (!rs.rangeIsLoaded(0, dataLen)) {
+			rs.getRange(0, dataLen);
+
+			rs.addDataArrivedHandler(new DataArrivedHandler() {
+				@Override
+				public void onDataArrived(DataArrivedEvent event) {
+					Utils.debug("@@@@@@@@@@@@@@@@@@@@@@@ onDataArrived start@@@@@@@@@@@@");
+					getCSVData(flds, rs, header, spr, dataLen);
+					Utils.debug("@@@@@@@@@@@@@@@@@@@@@@@ onDataArrived end @@@@@@@@@@@@");
+				}
+			});
+		} else {
+			getCSVData(flds, rs, header, spr, dataLen);
+		}
 	}
 }

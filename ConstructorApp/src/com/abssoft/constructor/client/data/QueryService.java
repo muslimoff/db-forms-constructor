@@ -89,4 +89,6 @@ public interface QueryService extends RemoteService {
 	public StaticLookupsArr getStaticLookupsArr(int sessionId);
 
 	public ServerInfoArr getServerInfoArr();
+
+	public String getFile();
 }

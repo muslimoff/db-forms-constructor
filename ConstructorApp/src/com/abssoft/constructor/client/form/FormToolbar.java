@@ -339,6 +339,8 @@ public class FormToolbar extends DynamicForm {
 				});
 				w.show();
 			}
+		} else if ("12".equals(m.getType())) {
+			mainFormPane.getMainForm().exportGrid();
 		}
 	}
 

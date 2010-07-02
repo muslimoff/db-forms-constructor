@@ -11,8 +11,16 @@
 		<servlet-name>queryServiceImpl</servlet-name>
 		<servlet-class>com.abssoft.constructor.server.QueryServiceImpl</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>XMLPublisherServlet</servlet-name>
+		<servlet-class>com.abssoft.constructor.server.XMLPublisherServlet</servlet-class>
+	</servlet>	
 	<servlet-mapping>
 		<servlet-name>queryServiceImpl</servlet-name>
 		<url-pattern>/constructorapp/query</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>XMLPublisherServlet</servlet-name>
+		<url-pattern>/constructorapp/xmlp</url-pattern>
+	</servlet-mapping>	
 </web-app>
