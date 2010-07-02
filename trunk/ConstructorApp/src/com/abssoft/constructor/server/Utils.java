@@ -20,6 +20,8 @@ import com.abssoft.constructor.client.metadata.Attribute;
 import com.abssoft.constructor.client.metadata.Row;
 
 public class Utils {
+	public static final String sessionIdentifier = "ConstructorSession";
+
 	public static void debug(String text) {
 		// Timer t = new Timer();
 		System.out.println(text);

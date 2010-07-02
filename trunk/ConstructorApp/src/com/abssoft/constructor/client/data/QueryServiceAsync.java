@@ -34,4 +34,6 @@ public interface QueryServiceAsync {
 	public void getStaticLookupsArr(int sessionId, AsyncCallback<StaticLookupsArr> callback);
 
 	public void getServerInfoArr(AsyncCallback<ServerInfoArr> callback);
+
+	public void getFile(AsyncCallback<String> callback);
 }
