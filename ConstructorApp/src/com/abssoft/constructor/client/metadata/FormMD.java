@@ -28,6 +28,8 @@ public class FormMD implements IsSerializable {
 	private FormActionsArr actions;
 	private Integer objectVersionNumber;
 	private FormsArr lookupsArr = new FormsArr();
+	// TODO вынести в интерфейс
+	private ActionStatus status = new ActionStatus();
 
 	/**
 	 * 
@@ -262,5 +264,13 @@ public class FormMD implements IsSerializable {
 	 */
 	public void setWidth(String width) {
 		this.width = width;
+	}
+
+	public void setStatus(ActionStatus status) {
+		this.status = status;
+	}
+
+	public ActionStatus getStatus() {
+		return status;
 	}
 }

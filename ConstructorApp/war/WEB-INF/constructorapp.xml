@@ -150,7 +150,7 @@
 				allowuserchange="false"
 				debug="true"
 				title="N - Формирование тарифов на медицинские услуги">
-			hypo:8521:epmn
+			hypo:1521:epmn
 		</server> 
 	</dbConnections>
 	
@@ -240,5 +240,10 @@
 				Select * From icons i
 			]]>
 		</sqlStatement>
+		<sqlStatement name="reportTemplatesSQL">
+			<![CDATA[
+				Select a.clob_content From report_templates a Where a.report_type_code = :p_report_code
+			]]>
+		</sqlStatement>		
 	</metadataQuery>
 </root>

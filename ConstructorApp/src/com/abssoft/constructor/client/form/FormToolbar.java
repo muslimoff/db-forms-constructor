@@ -11,6 +11,7 @@ import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.metadata.FormActionMD;
 import com.abssoft.constructor.client.metadata.FormActionsArr;
 import com.abssoft.constructor.client.metadata.FormColumnsArr;
+import com.google.gwt.core.client.GWT;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.types.Visibility;
 import com.smartgwt.client.util.BooleanCallback;
@@ -27,6 +28,7 @@ import com.smartgwt.client.widgets.form.fields.RichTextItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.ToolbarItem;
 import com.smartgwt.client.widgets.grid.ListGrid;
+import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.menu.MenuItemIfFunction;
@@ -99,7 +101,13 @@ public class FormToolbar extends DynamicForm {
 					try {
 						String actionType = ActionItem.this.formActionMD.getType();
 						ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
-						int currRow = grid.getRecordIndex(grid.getSelectedRecord());
+						int currRow = 0;
+						try {
+							ListGridRecord r = grid.getSelectedRecord();
+							currRow = grid.getRecordIndex(r);
+						} catch (Exception e) {
+							// e.printStackTrace();
+						}
 						if ("2".equals(actionType)) {
 							result = currRow == grid.getEditRow() || 0 != grid.getAllEditRows().length;
 						}
@@ -233,16 +241,23 @@ public class FormToolbar extends DynamicForm {
 	}
 
 	public void doAction(final FormActionMD m, ActionItem item) {
+		System.out.println("doAction-1");
 		final ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
+		System.out.println("doAction-2");
 		mainFormPane.setCurrentActionCode(m.getCode());
+		System.out.println("doAction-3");
 		String title = item.getFormActionMD().getDisplayName();
+		System.out.println("doAction-4");
 		try {
 			title = xxx(title);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		System.out.println("doAction-5");
+		// String xmlpUrl = GWT.getModuleBaseURL() + title;
 		title = mainFormPane.getFormMetadata().getFormName() + " - " + title;
+		System.out.println("doAction-6:" + m.getType());
 		// TODO Проблема при сохранении записи из контекстного меню в случае, если фокус не на данной форме.
 		if ("2".equals(m.getType())) {
 			// TODO Проблема с DynamicForm.ItemChangedHandler в хроме - приходится сохранять данные RichTextItem не по событию, а по кнопке
@@ -260,10 +275,17 @@ public class FormToolbar extends DynamicForm {
 				}
 			}
 			grid.saveAllEdits();
-		} else if ("1".equals(m.getType())) {
+		}
+		// New Record
+		else if ("1".equals(m.getType())) {
+			System.out.println("doAction-7:1.1");
 			grid.deselectAllRecords();
+			System.out.println("doAction-7:1.2");
 			grid.startEditingNew();
-		} else if ("3".equals(m.getType())) {
+			System.out.println("doAction-7:1.3");
+		}
+		// Remove records
+		else if ("3".equals(m.getType())) {
 			try {
 				grid.removeSelectedData();
 			} catch (Exception e) {
@@ -295,8 +317,9 @@ public class FormToolbar extends DynamicForm {
 			System.out.println("Custom PL/SQL - end execution...");
 		} // New Record
 		else if ("8".equals(m.getType())) {
+			System.out.println("New Record - start execution...");
 			grid.startEditing(mainFormPane.getSelectedRow(), 0, false);
-
+			System.out.println("New Record - end execution...");
 		} // Filter
 		else if ("9".equals(m.getType())) {
 			grid.setShowFilterEditor(!grid.getShowFilterEditor());
@@ -341,24 +364,44 @@ public class FormToolbar extends DynamicForm {
 			}
 		} else if ("12".equals(m.getType())) {
 			mainFormPane.getMainForm().exportGrid();
+		} else if ("15".equals(m.getType())) {
+			try {
+				String xmlpUrl = GWT.getModuleBaseURL() + xxx(m.getSqlProcedureName(), ":");
+				System.out.println(xmlpUrl);
+				// com.google.gwt.user.client.Window.open(xmlpUrl, "_new",
+				// "menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=250,height=150,navigation=no");
+				com.google.gwt.user.client.Window.open(xmlpUrl, "", "");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
 	public String xxx(String str) {
+		return xxx(str, "&");
+	}
+
+	public String xxx(String str, String chr) {
 		String result = str;
 		try {
 			FormColumnsArr fca = mainFormPane.getFormMetadata().getColumns();
-			if (null != str && str.contains("&")) {
+			if (null != str && str.contains(chr)) {
 				Iterator<Integer> itr = fca.keySet().iterator();
 				while (itr.hasNext()) {
 					String columnName = fca.get(itr.next()).getName();
 					// String columnValue = mainFormPane.getMainForm().getTreeGrid().getSelectedRecord().getAttribute(columnName);
 					ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
-					String columnValue = grid.getSelectedRecord().getAttribute(columnName);
-					result = result.replaceAll("&" + columnName.toLowerCase() + "&", columnValue);
+					try {
+						String columnValue = grid.getSelectedRecord().getAttribute(columnName);
+						result = result.replaceAll(chr + columnName.toLowerCase() + chr, columnValue);
+						Utils.debug("columnName:" + columnName + "; columnValue:" + columnValue + "; result:" + result);
+					} catch (Exception e) {
+						Utils.debug("xxx1. Error:" + e.getMessage());
+					}
 				}
 			}
 		} catch (Exception e) {
+			Utils.debug("xxx. Error:" + e.getMessage());
 			e.printStackTrace();
 		}
 		return result;

@@ -18,8 +18,6 @@ import com.smartgwt.client.data.events.DataArrivedHandler;
 import com.smartgwt.client.types.EditCompletionEvent;
 import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.types.RowEndEditAction;
-import com.smartgwt.client.util.BooleanCallback;
-import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
@@ -73,7 +71,16 @@ class MainForm extends Canvas {
 					Tree t = FormTreeGrid.this.getTree();
 					TreeNode n = event.getNode();
 					TreeNode[] parentNodes = t.getParents(n);
-					String titlePath = t.getTitle(n);
+					String titlePath = "-";
+					// Error Something other than a Java object was returned from JSNI method
+					// '@com.smartgwt.client.widgets.tree.Tree::getTitle(Lcom/smartgwt/client/widgets/tree/TreeNode;)':JS value of type int,
+					// expected java.lang.Object
+					try {
+						titlePath = t.getTitle(n);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
 					for (TreeNode nn : parentNodes) {
 						if (!t.getTitle(nn).equals("root"))
 							titlePath = t.getTitle(nn) + "/" + titlePath;
@@ -205,11 +212,12 @@ class MainForm extends Canvas {
 			bottomToolBar.hide();
 		this.addChild(mainLayout);
 		this.setHeight100();
+
 		treeGrid.addEditorExitHandler(new EditorExitHandler() {
 			@Override
 			public void onEditorExit(EditorExitEvent event) {
 				System.out.println("onEditorExit..");
-				ListGrid grid = ((FormListGrid) event.getSource());
+				ListGrid grid = ((ListGrid) event.getSource());
 				int rowNum = event.getRowNum();
 				// Обработка выхода по клавише ESCAPE
 				if (null == event.getRecord() && EditCompletionEvent.ESCAPE.equals(event.getEditCompletionEvent())) {
@@ -226,10 +234,15 @@ class MainForm extends Canvas {
 		treeGrid.addRowEditorEnterHandler(new RowEditorEnterHandler() {
 			@Override
 			public void onRowEditorEnter(RowEditorEnterEvent event) {
-				ListGrid grid = ((FormListGrid) event.getSource());
+				System.out.println("RowEditorEnterHandler.getEditedRecord: 1");
+				ListGrid grid = ((ListGrid) event.getSource());
+				System.out.println("RowEditorEnterHandler.getEditedRecord: 2");
 				int rowNum = event.getRowNum();
+				System.out.println("RowEditorEnterHandler.getEditedRecord: 3");
 				Record record = event.getRecord();
+				System.out.println("RowEditorEnterHandler.getEditedRecord: 4");
 				Record newRec = grid.getEditedRecord(rowNum);
+				System.out.println("RowEditorEnterHandler.getEditedRecord: 5");
 				System.out.println("RowEditorEnterHandler.getEditedRecord: " + newRec);
 				System.out.println("RowEditorEnterHandler.getRowNum: " + rowNum);
 

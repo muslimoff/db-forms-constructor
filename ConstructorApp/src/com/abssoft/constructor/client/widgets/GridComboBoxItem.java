@@ -24,6 +24,7 @@ import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.Record;
+import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.FormItemValueFormatter;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
@@ -72,32 +73,32 @@ public class GridComboBoxItem extends ComboBoxItem {
 			System.out.println("startRow:" + startRow + "; endRow:" + endRow);
 			QueryServiceAsync service = GWT.create(QueryService.class);
 			// TODO вынести в XML параметров endRow - фактически размер лова.
-			service.fetch(instanceIdentifier, sortBy, startRow, endRow, cr.getValues(), false, new DSAsyncCallback<RowsArr>(requestId,
-					response, this) {
-				public void onSuccess(RowsArr result) {
-					records = new TreeNode[result.size()];
-					values.clear();
-					Utils.debug("LookupDataSource.fetch. valueFieldNum:" + valueFieldNum + "; result.size:" + result.size());
-					for (int r = 0; r < result.size(); r++) {
-						try {
-							Row row = result.get(r);
-							records[r] = Utils.getTreeNodeFromRow(dsFields, row);
-							Object key = row.get(valueFieldNum).getAttributeAsObject();
-							values.put(key, records[r]);
-						} catch (Exception e) {
-							e.printStackTrace();
+			service.fetch(instanceIdentifier, sortBy, startRow, endRow, Utils.getHashMapFromCriteria(cr), false,
+					new DSAsyncCallback<RowsArr>(requestId, response, this) {
+						public void onSuccess(RowsArr result) {
+							records = new TreeNode[result.size()];
+							values.clear();
+							Utils.debug("LookupDataSource.fetch. valueFieldNum:" + valueFieldNum + "; result.size:" + result.size());
+							for (int r = 0; r < result.size(); r++) {
+								try {
+									Row row = result.get(r);
+									records[r] = Utils.getTreeNodeFromRow(dsFields, row);
+									Object key = row.get(valueFieldNum).getAttributeAsObject();
+									values.put(key, records[r]);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+							response.setTotalRows(result.getTotalRows());
+							response.setData(records);
+							try {
+								processResponse(requestId, response);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							Utils.debug("LookupDataSource.fetch. ended...");
 						}
-					}
-					response.setTotalRows(result.getTotalRows());
-					response.setData(records);
-					try {
-						processResponse(requestId, response);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					Utils.debug("LookupDataSource.fetch. ended...");
-				}
-			});
+					});
 		}
 
 		public int getValueFieldNum() {
@@ -219,6 +220,7 @@ public class GridComboBoxItem extends ComboBoxItem {
 			this.setFetchMissingValues(null == lookupDisplValFld);
 			formTreeGridField.setEditorType(GridComboBoxItem.this);
 			formTreeGridField.setGridComboBoxItem(this);
+			formTreeGridField.setAlign(Alignment.LEFT);
 			if (null == lookupDisplValFld) {
 				lookupDataSource.fetchData();
 			}

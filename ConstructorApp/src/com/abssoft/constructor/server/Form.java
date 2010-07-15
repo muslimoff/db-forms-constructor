@@ -33,6 +33,15 @@ import com.abssoft.constructor.client.metadata.RowsArr;
  */
 public class Form {
 	private HashMap<Integer, FormInstance> formInstance = new HashMap<Integer, FormInstance>();
+
+	public HashMap<Integer, FormInstance> getFormInstance() {
+		return formInstance;
+	}
+
+	public void setFormInstance(HashMap<Integer, FormInstance> formInstance) {
+		this.formInstance = formInstance;
+	}
+
 	private OracleConnection connection;
 	private String fcSchemaOwner;
 	private String formSQLText;
@@ -45,7 +54,7 @@ public class Form {
 	private Boolean isDrillDownForm;
 
 	public Form(OracleConnection connection, String formCode, String parentFormCode, Boolean isDrillDownForm, Session session) {
-		this.connection = connection;
+		this.setConnection(connection);
 		this.formCode = formCode;
 		this.parentFormCode = parentFormCode;
 		this.setIsDrillDownForm(isDrillDownForm);
@@ -81,7 +90,7 @@ public class Form {
 		{
 			String dmlProcText = fActMD.getDmlProcText();
 			if (null != dmlProcText) {
-				OracleCallableStatement stmnt = (OracleCallableStatement) connection.prepareCall(dmlProcText);
+				OracleCallableStatement stmnt = (OracleCallableStatement) getConnection().prepareCall(dmlProcText);
 				Utils.debug(dmlProcText, resultRow);
 				// ----------------------------------
 				HashMap<String, Attribute> rowValues = new HashMap<String, Attribute>();
@@ -153,7 +162,7 @@ public class Form {
 					}
 				}
 				stmnt.close();
-				connection.commit();
+				getConnection().commit();
 				// ----------------------------------
 
 			}
@@ -161,9 +170,10 @@ public class Form {
 		return resultRow;
 	}
 
-	public RowsArr fetch(int gridHashCode, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch) {
+	public RowsArr fetch(int gridHashCode, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch)
+			throws SQLException {
 		if (!formInstance.containsKey(gridHashCode)) {
-			formInstance.put(gridHashCode, new FormInstance(connection, formSQLText, formMetaData));
+			formInstance.put(gridHashCode, new FormInstance(this));
 		}
 		return formInstance.get(gridHashCode).fetch(sortBy, startRow, endRow, criteria, forceFetch);
 	}
@@ -172,11 +182,9 @@ public class Form {
 		try {
 			Utils.debug("Parse Query: ");
 			Utils.debug(QueryServiceImpl.queryMap.get("ColumnsMetaDataSQL"));
-			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(QueryServiceImpl.queryMap
-					.get("ColumnsMetaDataSQL"));
+			OraclePreparedStatement statement = (OraclePreparedStatement) getConnection().prepareStatement(
+					QueryServiceImpl.queryMap.get("ColumnsMetaDataSQL"));
 			Utils.debug("Parameters: ");
-			// TODO Utils.setStringParameterValue(statement, "p_form_code", formCode);
-			// TODO Utils.setStringParameterValue(statement, "p_master_form_code", parentFormCode);
 			Utils.setFormMDParams(statement, formCode, parentFormCode, isDrillDownForm);
 			ResultSet rs = statement.executeQuery();
 			int colNum = -1;
@@ -220,10 +228,10 @@ public class Form {
 			// помощью Java (statement.getMetaData).
 			if (-1 == colNum) {
 				Utils.debug("колонки из statement.getMetaData");
-				Utils.debug("formSQLText = \n" + formSQLText);
+				Utils.debug("formSQLText = \n" + getFormSQLText());
 
 				try {
-					statement = (OraclePreparedStatement) connection.prepareStatement(formSQLText);
+					statement = (OraclePreparedStatement) getConnection().prepareStatement(getFormSQLText());
 					// statement.setEscapeProcessing(false);
 					Utils.setFilterValues(statement, null);
 					rs = statement.executeQuery();
@@ -268,8 +276,8 @@ public class Form {
 
 	private String getDMLProcText(FormActionMD actionData) throws java.sql.SQLException {
 		String dmlProcText = "begin " + actionData.getSqlProcedureName() + "(";
-		OraclePreparedStatement actProcStmnt = (OraclePreparedStatement) connection.prepareStatement(QueryServiceImpl.queryMap
-				.get("argsSQLText"));
+		OraclePreparedStatement actProcStmnt = (OraclePreparedStatement) getConnection().prepareStatement(
+				QueryServiceImpl.queryMap.get("argsSQLText"));
 		Utils.setParameterValue(actProcStmnt, "p_procedure_name", actionData.getSqlProcedureName());
 		Utils.setParameterValue(actProcStmnt, "p_fc_schema_owner", getFcSchemaOwner());
 		// Utils.setFormMDParams(actProcStmnt, formCode, parentFormCode);
@@ -305,8 +313,8 @@ public class Form {
 		boolean deleteAllowed = false;
 		FormActionsArr result = new FormActionsArr();
 		try {
-			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(QueryServiceImpl.queryMap
-					.get("formActionsSQL"));
+			OraclePreparedStatement statement = (OraclePreparedStatement) getConnection().prepareStatement(
+					QueryServiceImpl.queryMap.get("formActionsSQL"));
 			// Utils.setStringParameterValue(statement, "p_form_code", formCode);
 			Utils.setFormMDParams(statement, formCode, parentFormCode, isDrillDownForm);
 			ResultSet actRs = statement.executeQuery();
@@ -315,7 +323,8 @@ public class Form {
 				actionData.setCode(actRs.getString("action_code"));
 				actionData.setIconId(actRs.getInt("icon_id"));
 				actionData.setType(actRs.getString("action_type"));
-				actionData.setSqlProcedureName(actRs.getString("procedure_name"));
+				// actionData.setSqlProcedureName(actRs.getString("procedure_name"));
+				actionData.setSqlProcedureName(Utils.bindVarsToLowerCase(actRs.getString("procedure_name"), "(?i):[\\w]+", ":", ":"));
 				actionData.setConfirmText(Utils.bindVarsToLowerCase(actRs.getString("confirm_text"), "(?i):[\\w]+", "&", "&"));
 				actionData.setDisplayName(Utils.bindVarsToLowerCase(actRs.getString("action_display_name"), "(?i):[\\w]+", "&", "&"));
 				// actionData.setDisplayName(actRs.getString("action_display_name"));
@@ -344,57 +353,55 @@ public class Form {
 		return result;
 	}
 
-	public FormMD getFormMetaData() {
+	public FormMD getFormMetaData() throws SQLException {
 		return getFormMetaData(true);
 	}
 
-	public FormMD getFormMetaData(boolean isNonLookupForm) {
-		try {
-			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(QueryServiceImpl.queryMap
-					.get("formSQL"));
-			// Utils.setStringParameterValue(statement, "p_form_code", formCode);
-			Utils.setFormMDParams(statement, formCode, parentFormCode, isDrillDownForm);
-			ResultSet rs = statement.executeQuery();
-			while (rs.next()) {
-				Integer ovn = rs.getInt("object_version_number");
-				if (null != formMetaData && null != formMetaData.getColumns() && 0 != formMetaData.getColumns().size()
-						&& formMetaData.getObjectVersionNumber() == ovn) {
-					Utils.debug(formCode + " FormMetadata exists. Exiting...");
-					rs.close();
-					statement.close();
-					return formMetaData;
-				}
-				formMetaData = new FormMD();
-				Utils.debug("Reading Metadata for " + formCode);
-				formMetaData.setFormCode(formCode);
-				formMetaData.setHotKey(rs.getString("hot_key"));
-				formMetaData.setFormName(rs.getString("form_name"));
-				formMetaData.setFormType(rs.getString("form_type"));
-				formMetaData.setShowTreeRootNode(rs.getString("show_tree_root_node"));
-				formMetaData.setIconId(rs.getInt("icon_id"));
-				formMetaData.setWidth(rs.getString("form_width"));
-				formMetaData.setHeight(rs.getString("form_height"));
-				formMetaData.setBottomTabsPosition(rs.getString("bottom_tabs_orientation"));
-				formMetaData.setSideTabsPosition(rs.getString("side_tabs_orientation"));
-				formMetaData.setShowBottomToolBar(rs.getString("show_bottom_toolbar").equals("Y") ? true : false);
-				formMetaData.setDoubleClickActionCode(rs.getString("double_click_action_code"));
-				formMetaData.setLookupWidth(rs.getString("lookup_width"));
-				formMetaData.setColumns(getColumns());
-				formMetaData.setObjectVersionNumber(ovn);
-				if (isNonLookupForm) {
-					formMetaData.setTabs(getFormTabsArr());
-					formMetaData.setActions(getFormActionsArr());
-				}
+	public FormMD getFormMetaData(boolean isNonLookupForm) throws SQLException {
 
+		OraclePreparedStatement statement = (OraclePreparedStatement) getConnection().prepareStatement(
+				QueryServiceImpl.queryMap.get("formSQL"));
+		// Utils.setStringParameterValue(statement, "p_form_code", formCode);
+		Utils.setFormMDParams(statement, formCode, parentFormCode, isDrillDownForm);
+		ResultSet rs = statement.executeQuery();
+		while (rs.next()) {
+			Integer ovn = rs.getInt("object_version_number");
+			if (null != formMetaData && null != formMetaData.getColumns() && 0 != formMetaData.getColumns().size()
+					&& formMetaData.getObjectVersionNumber() == ovn) {
+				Utils.debug(formCode + " FormMetadata exists. Exiting...");
+				rs.close();
+				statement.close();
+				return formMetaData;
 			}
-			rs.close();
-			statement.close();
-		} catch (java.sql.SQLException e) {
-			e.printStackTrace();
+			formMetaData = new FormMD();
+			Utils.debug("Reading Metadata for " + formCode);
+			formMetaData.setFormCode(formCode);
+			formMetaData.setHotKey(rs.getString("hot_key"));
+			formMetaData.setFormName(rs.getString("form_name"));
+			formMetaData.setFormType(rs.getString("form_type"));
+			formMetaData.setShowTreeRootNode(rs.getString("show_tree_root_node"));
+			formMetaData.setIconId(rs.getInt("icon_id"));
+			formMetaData.setWidth(rs.getString("form_width"));
+			formMetaData.setHeight(rs.getString("form_height"));
+			formMetaData.setBottomTabsPosition(rs.getString("bottom_tabs_orientation"));
+			formMetaData.setSideTabsPosition(rs.getString("side_tabs_orientation"));
+			formMetaData.setShowBottomToolBar(rs.getString("show_bottom_toolbar").equals("Y") ? true : false);
+			formMetaData.setDoubleClickActionCode(rs.getString("double_click_action_code"));
+			formMetaData.setLookupWidth(rs.getString("lookup_width"));
+			formMetaData.setColumns(getColumns());
+			formMetaData.setObjectVersionNumber(ovn);
+			if (isNonLookupForm) {
+				formMetaData.setTabs(getFormTabsArr());
+				formMetaData.setActions(getFormActionsArr());
+			}
+
 		}
+		rs.close();
+		statement.close();
+
 		// Принудительно приводим все bind variables к lowerCase
-		formSQLText = Utils.bindVarsToLowerCase(formSQLText, "(?i):[\\w\\$]+");
-		Utils.debug("Form: Lookups Metadata...");
+		setFormSQLText(Utils.bindVarsToLowerCase(getFormSQLText(), "(?i):[\\w\\$]+"));
+		Utils.debug("Form: Lookups Metadata...\n" + getFormSQLText());
 		for (int i = 0; i < formLookupsIdx.size(); i++) {
 			FormColumnMD cmd = formMetaData.getColumns().get(formLookupsIdx.get(i));
 			String formLookupCode = cmd.getLookupCode();
@@ -402,8 +409,10 @@ public class Form {
 				FormInstanceIdentifier fi = new FormInstanceIdentifier();
 				fi.setFormCode(formLookupCode);
 				FormMD fmd = session.getFormMetaData(fi, false);
-				formMetaData.getLookupsArr().put(formLookupCode, fmd);
-				Utils.debug("***: " + formMetaData.getLookupsArr().get(formLookupCode).getFormCode());
+				if (null != fmd) {
+					formMetaData.getLookupsArr().put(formLookupCode, fmd);
+					Utils.debug("***: " + formMetaData.getLookupsArr().get(formLookupCode).getFormCode());
+				}
 			}
 			if ("8".equals(cmd.getFieldType())) {
 				// TODO Static Lookups - вычитывать для формы
@@ -417,8 +426,8 @@ public class Form {
 	private FormTabsArr getFormTabsArr() {
 		FormTabsArr result = new FormTabsArr();
 		try {
-			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(QueryServiceImpl.queryMap
-					.get("detailFormSQL"));
+			OraclePreparedStatement statement = (OraclePreparedStatement) getConnection().prepareStatement(
+					QueryServiceImpl.queryMap.get("detailFormSQL"));
 			// TODO Utils.setStringParameterValue(statement, "p_form_code", formCode);
 			// TODO Utils.setStringParameterValue(statement, "p_master_form_code", parentFormCode);
 			Utils.setFormMDParams(statement, formCode, parentFormCode, isDrillDownForm);
@@ -453,8 +462,8 @@ public class Form {
 	private void setFormSQLText() {
 
 		try {
-			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(QueryServiceImpl.queryMap
-					.get("extendedFormSQL"));
+			OraclePreparedStatement statement = (OraclePreparedStatement) getConnection().prepareStatement(
+					QueryServiceImpl.queryMap.get("extendedFormSQL"));
 			Utils.setFormMDParams(statement, formCode, parentFormCode, isDrillDownForm);
 			ResultSet rs = statement.executeQuery();
 			rs.next();
@@ -472,5 +481,21 @@ public class Form {
 
 	public Boolean getIsDrillDownForm() {
 		return isDrillDownForm;
+	}
+
+	public void setFormSQLText(String formSQLText) {
+		this.formSQLText = formSQLText;
+	}
+
+	public String getFormSQLText() {
+		return formSQLText;
+	}
+
+	public void setConnection(OracleConnection connection) {
+		this.connection = connection;
+	}
+
+	public OracleConnection getConnection() {
+		return connection;
 	}
 }

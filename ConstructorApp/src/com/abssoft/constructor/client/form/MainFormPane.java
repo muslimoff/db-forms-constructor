@@ -123,6 +123,7 @@ public class MainFormPane extends Canvas {
 		instanceIdentifier.setIsDrillDownForm(isDrillDownForm);
 		service.getFormMetaData(instanceIdentifier, new DSAsyncCallback<FormMD>() {
 			public void onSuccess(FormMD result) {
+				result.getStatus().showActionStatus();
 				setFormMetadata(result);
 				setFormColumns(new FormColumns(MainFormPane.this));
 				if (!isLookup) {
