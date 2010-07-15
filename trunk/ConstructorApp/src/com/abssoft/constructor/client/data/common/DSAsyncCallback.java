@@ -1,16 +1,17 @@
 package com.abssoft.constructor.client.data.common;
 
 import com.abssoft.constructor.client.data.Utils;
+import com.abssoft.constructor.client.widgets.ActionStatusWindow;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.rpc.RPCResponse;
 import com.smartgwt.client.util.SC;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
- * Реализация интерфейса <code>AsyncCallback<T></code> с реализованным методом
- * <code>onFailure</code> и абстрактным методом <code>onSuccess</code>
+ * Реализация интерфейса <code>AsyncCallback<T></code> с реализованным методом <code>onFailure</code> и абстрактным методом
+ * <code>onSuccess</code>
  * 
  * @author User
  * 
@@ -27,6 +28,8 @@ public abstract class DSAsyncCallback<T> implements AsyncCallback<T> {
 	 */
 	public DSAsyncCallback() {
 		Utils.debug("DSAsyncCallback.CreateInstance");
+		// SC.clearPrompt();
+		// SC.showPrompt("Server Connecting");
 	}
 
 	/**
@@ -36,21 +39,23 @@ public abstract class DSAsyncCallback<T> implements AsyncCallback<T> {
 	 * @param response
 	 * @param dataSource
 	 */
-	public DSAsyncCallback(String requestId, DSResponse response,
-			DataSource dataSource) {
-		super();
+	public DSAsyncCallback(String requestId, DSResponse response, DataSource dataSource) {
+		this();
 		this.requestId = requestId;
 		this.response = response;
 		this.dataSource = dataSource;
 	}
 
 	public void onFailure(Throwable caught) {
+		SC.clearPrompt();
 		String details = caught.getMessage();
-		Window.alert("Ашипка: " + details);
-		SC.logWarn("Ашипка2: " + details);
+		String errCode = "Internal Error[GWT600]!";
+		try {
+			ActionStatusWindow.createActionStatusWindow(errCode, caught.toString(), Utils.getExceptionStack(caught));
+		} catch (Exception e) {
+			Window.alert(errCode + details);
+		}
 		caught.printStackTrace();
-		SC.logWarn("Ашипка3: " + caught.toString());
-		// for (String s : caught.getStackTrace())
 		if (null != dataSource) {
 			response.setStatus(RPCResponse.STATUS_FAILURE);
 			dataSource.processResponse(requestId, response);

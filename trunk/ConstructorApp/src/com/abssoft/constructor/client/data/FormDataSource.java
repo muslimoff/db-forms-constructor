@@ -1,7 +1,5 @@
 package com.abssoft.constructor.client.data;
 
-import java.util.Map;
-
 import com.abssoft.constructor.client.data.common.ClientActionType;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.data.common.GwtRpcDataSource;
@@ -17,6 +15,7 @@ import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.ResultSet;
 import com.smartgwt.client.util.JSOHelper;
+import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.form.ValuesManager;
 import com.smartgwt.client.widgets.grid.ListGrid;
@@ -60,13 +59,22 @@ public class FormDataSource extends GwtRpcDataSource {
 	protected void executeFetch(final String requestId, final DSRequest request, final DSResponse response) {
 		// TODO Посмотреть класс RPCManager
 		// com.smartgwt.client.rpc.RPCManager.setShowPrompt(true);
-
 		Utils.debug("........DS Fetch:" + formCode + "; ID: " + this.getID());
 		final Integer startRow = (null == request.getStartRow()) ? 0 : request.getStartRow();
 		final Integer endRow = (null == request.getEndRow()) ? 1000 : request.getEndRow();
-		Map<?, ?> filterValues;
 		final ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		Utils.debug("ListGrid: " + grid);
+		// TODO request.getSortBy() не работает так, как описано. отписался в форуме.
+		// Ошибка:
+		// java.lang.ClassCastException: java.lang.String cannot be cast to com.google.gwt.core.client.JavaScriptObject
+		// try {
+		// for (SortSpecifier ssp : request.getSortBy()) {
+		// System.out.println(ssp.getField() + ssp.getSortDirection());
+		// }
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
+
 		Criteria cr;
 		// TODO Фильтры - передача на сервер так же строк вида "&field_name"="and field_name like 'Val%'"
 		if (grid instanceof com.smartgwt.client.widgets.tree.TreeGrid) {
@@ -79,73 +87,62 @@ public class FormDataSource extends GwtRpcDataSource {
 			}
 			cr = request.getCriteria();
 			treeCriteria.addCriteria(cr);
-			filterValues = treeCriteria.getValues();
+			cr = treeCriteria;
 		} else {
 			cr = request.getCriteria();
-			filterValues = cr.getValues();
 		}
-
-		// TODO request.getSortBy() не работает так, как описано. отписался в форуме.
-		// Ошибка:
-		// java.lang.ClassCastException: java.lang.String cannot be cast to com.google.gwt.core.client.JavaScriptObject
-		// try {
-		// for (SortSpecifier ssp : request.getSortBy()) {
-		// System.out.println(ssp.getField() + ssp.getSortDirection());
-		// }
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// }
 		String sortBy = request.getAttribute("sortBy");
 		QueryServiceAsync service = GWT.create(QueryService.class);
-		service.fetch(mainFormPane.getInstanceIdentifier(), sortBy, startRow, endRow, filterValues, mainFormPane.isForceFetch(),
-				new DSAsyncCallback<RowsArr>(requestId, response, this) {
-					public void onSuccess(RowsArr result) {
-						Utils.debug(formCode + "...............DataSource: " + FormDataSource.this.getID()
-								+ " - before fetch...............");
-						ActionStatus.showActionStatus(result.getStatus());
-						int rowsCount = result.size();
-						ListGridRecord[] records = new ListGridRecord[rowsCount];
-						Utils.debug("service.fetch. rowsCount: " + rowsCount);
-						for (int r = 0; r < rowsCount; r++) {
-							try {
-								Row row = result.get(r);
-								records[r] = Utils.getTreeNodeFromRow(dsFields, row);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
-						totalRows = result.getTotalRows();
-						response.setTotalRows(totalRows);
-						response.setData(records);
-						processResponse(requestId, response);
-						mainFormPane.getMainForm().getBottomToolBar().setRowsCount(totalRows + "");
-						ValuesManager vm = mainFormPane.getValuesManager();
-						int dynFormsCount = vm.getMembers().length;
-						if (0 != rowsCount) {
-							if (0 == startRow) {
-								mainFormPane.setInitialFilter(Utils.getCriteriaFromListGridRecord(mainFormPane, records[0], formCode));
-								if (mainFormPane.isMasterForm()) {
-									grid.focus();
-								}
-								grid.selectRecord(0);
-								mainFormPane.setSelectedRow(0);
-								// Refresh только для static detail
-								mainFormPane.filterDetailData(grid.getSelectedRecord(), grid, 0, false, true, true);
-								Utils.debug("vm.getMembers().length=" + dynFormsCount);
-								if (0 != dynFormsCount) {
-									vm.editRecord(records[0]);
-								}
-							}
-						} else {
-							mainFormPane.filterDetailData(null, grid, -1);
-							if (0 != dynFormsCount) {
-								vm.editNewRecord();
-							}
-						}
-
-						Utils.debug("...............DataSource: " + FormDataSource.this.getID() + " - after fetch...............");
+		service.fetch(mainFormPane.getInstanceIdentifier(), sortBy, startRow, endRow, Utils.getHashMapFromCriteria(cr), mainFormPane
+				.isForceFetch(), new DSAsyncCallback<RowsArr>(requestId, response, this) {
+			@Override
+			public void onSuccess(RowsArr result) {
+				SC.clearPrompt();
+				Utils.debug(formCode + "...............DataSource: " + FormDataSource.this.getID() + " - before fetch...............");
+				result.getStatus().showActionStatus();
+				int rowsCount = result.size();
+				ListGridRecord[] records = new ListGridRecord[rowsCount];
+				Utils.debug("service.fetch. rowsCount: " + rowsCount);
+				for (int r = 0; r < rowsCount; r++) {
+					try {
+						Row row = result.get(r);
+						records[r] = Utils.getTreeNodeFromRow(dsFields, row);
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-				});
+				}
+				totalRows = result.getTotalRows();
+				response.setTotalRows(totalRows);
+				response.setData(records);
+				processResponse(requestId, response);
+				mainFormPane.getMainForm().getBottomToolBar().setRowsCount(totalRows + "");
+				ValuesManager vm = mainFormPane.getValuesManager();
+				int dynFormsCount = vm.getMembers().length;
+				if (0 != rowsCount) {
+					if (0 == startRow) {
+						mainFormPane.setInitialFilter(Utils.getCriteriaFromListGridRecord(mainFormPane, records[0], formCode));
+						if (mainFormPane.isMasterForm()) {
+							grid.focus();
+						}
+						grid.selectRecord(0);
+						mainFormPane.setSelectedRow(0);
+						// Refresh только для static detail
+						mainFormPane.filterDetailData(grid.getSelectedRecord(), grid, 0, false, true, true);
+						Utils.debug("vm.getMembers().length=" + dynFormsCount);
+						if (0 != dynFormsCount) {
+							vm.editRecord(records[0]);
+						}
+					}
+				} else {
+					mainFormPane.filterDetailData(null, grid, -1);
+					if (0 != dynFormsCount) {
+						vm.editNewRecord();
+					}
+				}
+
+				Utils.debug("...............DataSource: " + FormDataSource.this.getID() + " - after fetch...............");
+			}
+		});
 	}
 
 	@Override
@@ -158,8 +155,10 @@ public class FormDataSource extends GwtRpcDataSource {
 		QueryServiceAsync service = GWT.create(QueryService.class);
 		service.executeDML(mainFormPane.getInstanceIdentifier(), oldRow, newRow, mainFormPane.getCurrentActionCode(), ClientActionType.ADD,
 				new DSAsyncCallback<Row>(requestId, response, this) {
+					@Override
 					public void onSuccess(Row result) {
-						ActionStatus.showActionStatus(result.getStatus());
+						SC.clearPrompt();
+						result.getStatus().showActionStatus();
 						if (!ActionStatus.StatusType.ERROR.equals(result.getStatus().getStatusType())) {
 							TreeNode[] list = new TreeNode[1];
 							list[0] = Utils.getTreeNodeFromRow(dsFields, result);
@@ -178,8 +177,10 @@ public class FormDataSource extends GwtRpcDataSource {
 		QueryServiceAsync service = GWT.create(QueryService.class);
 		service.executeDML(mainFormPane.getInstanceIdentifier(), oldRow, null, mainFormPane.getCurrentActionCode(), ClientActionType.DEL,
 				new DSAsyncCallback<Row>(requestId, response, this) {
+					@Override
 					public void onSuccess(Row result) {
-						ActionStatus.showActionStatus(result.getStatus());
+						SC.clearPrompt();
+						result.getStatus().showActionStatus();
 						// We do not receive removed record from server. Return record from request.
 						if (!ActionStatus.StatusType.ERROR.equals(result.getStatus().getStatusType())) {
 							response.setData(new ListGridRecord[] { new ListGridRecord(request.getData()) });
@@ -206,10 +207,13 @@ public class FormDataSource extends GwtRpcDataSource {
 		}
 		newRow = Utils.getRowFromRecord(dsFields, listGridRec);
 		QueryServiceAsync service = GWT.create(QueryService.class);
+		SC.showPrompt("Server Connecting");
 		service.executeDML(mainFormPane.getInstanceIdentifier(), oldRow, newRow, mainFormPane.getCurrentActionCode(), ClientActionType.UPD,
 				new DSAsyncCallback<Row>(requestId, response, this) {
+					@Override
 					public void onSuccess(Row result) {
-						ActionStatus.showActionStatus(result.getStatus());
+						SC.clearPrompt();
+						result.getStatus().showActionStatus();
 						if (!ActionStatus.StatusType.ERROR.equals(result.getStatus().getStatusType())) {
 							response.setData(new ListGridRecord[] { Utils.getTreeNodeFromRow(dsFields, result) });
 							ListGrid lGrid = mainFormPane.getMainForm().getTreeGrid();

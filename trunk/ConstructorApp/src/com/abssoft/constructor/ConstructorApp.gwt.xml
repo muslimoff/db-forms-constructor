@@ -3,11 +3,6 @@
 	<inherits name='com.google.gwt.user.User' />
 	<inherits name="com.google.gwt.core.Core" />
 	<inherits name="com.google.gwt.user.History" />
-	<!--
-		< i nherits name="com.google.gwt.app.App" /> < i nherits
-		name="com.google.gwt.requestfactory.RequestFactory" /> < i nherits
-		name="com.smartgwt.ofcchart.OFCChart4SGWT" />
-	-->
 	<inherits name="com.rednels.ofcgwt.OFCGWT" />
 	<inherits name="com.smartgwt.SmartGwtNoScript" />
 

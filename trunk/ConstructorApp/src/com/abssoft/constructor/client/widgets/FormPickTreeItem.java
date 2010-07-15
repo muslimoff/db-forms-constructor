@@ -42,29 +42,29 @@ public class FormPickTreeItem extends IPickTreeItem {
 			int endRow = 10000;
 			String sortBy = request.getAttribute("sortBy");
 			QueryServiceAsync service = GWT.create(QueryService.class);
-			service.fetch(instanceIdentifier, sortBy, startRow, endRow, cr.getValues(), false, new DSAsyncCallback<RowsArr>(requestId,
-					response, this) {
-				public void onSuccess(RowsArr result) {
-					records = new TreeNode[result.size()];
-					Utils.debug("PickDataSource. valueFieldNum:" + valueFieldNum + "; result.size:" + result.size());
-					for (int r = 0; r < result.size(); r++) {
-						try {
-							Row row = result.get(r);
-							records[r] = Utils.getTreeNodeFromRow(dsFields, row);
-						} catch (Exception e) {
-							e.printStackTrace();
+			service.fetch(instanceIdentifier, sortBy, startRow, endRow, Utils.getHashMapFromCriteria(cr), false,
+					new DSAsyncCallback<RowsArr>(requestId, response, this) {
+						public void onSuccess(RowsArr result) {
+							records = new TreeNode[result.size()];
+							Utils.debug("PickDataSource. valueFieldNum:" + valueFieldNum + "; result.size:" + result.size());
+							for (int r = 0; r < result.size(); r++) {
+								try {
+									Row row = result.get(r);
+									records[r] = Utils.getTreeNodeFromRow(dsFields, row);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+							response.setTotalRows(result.getTotalRows());
+							response.setData(records);
+							try {
+								processResponse(requestId, response);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							Utils.debug("PickDataSource.fetch. ended...");
 						}
-					}
-					response.setTotalRows(result.getTotalRows());
-					response.setData(records);
-					try {
-						processResponse(requestId, response);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					Utils.debug("PickDataSource.fetch. ended...");
-				}
-			});
+					});
 		}
 
 		public void setFields(FormDataSourceField[] dsFields) {

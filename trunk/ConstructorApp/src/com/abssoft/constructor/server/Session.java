@@ -30,6 +30,15 @@ public class Session {
 	private OracleConnection connection;
 	private boolean isScript;
 	private HashMap<String, Form> formDataHashMap = new HashMap<String, Form>();
+
+	public HashMap<String, Form> getFormDataHashMap() {
+		return formDataHashMap;
+	}
+
+	public void setFormDataHashMap(HashMap<String, Form> formDataHashMap) {
+		this.formDataHashMap = formDataHashMap;
+	}
+
 	private String fcSchemaOwner;
 
 	public Session(Connection connection) {
@@ -57,7 +66,8 @@ public class Session {
 		return formDataHashMap.get(fi.getKey()).executeDML(fi.getGridHashCode(), oldRow, newRow, actionCode, clientActionType);
 	}
 
-	public RowsArr fetch(FormInstanceIdentifier fi, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch) {
+	public RowsArr fetch(FormInstanceIdentifier fi, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch)
+			throws SQLException {
 		return formDataHashMap.get(fi.getKey()).fetch(fi.getGridHashCode(), sortBy, startRow, endRow, criteria, forceFetch);
 	}
 
@@ -69,11 +79,11 @@ public class Session {
 		return fcSchemaOwner;
 	}
 
-	public FormMD getFormMetaData(FormInstanceIdentifier formIdentifier) {
+	public FormMD getFormMetaData(FormInstanceIdentifier formIdentifier) throws SQLException {
 		return getFormMetaData(formIdentifier, true);
 	}
 
-	public FormMD getFormMetaData(FormInstanceIdentifier fi, boolean isNonLookupForm) {
+	public FormMD getFormMetaData(FormInstanceIdentifier fi, boolean isNonLookupForm) throws SQLException {
 		// String formMapKey = (null == parentFormCode) ? formCode : formCode + "." + parentFormCode;
 		if (!formDataHashMap.containsKey(fi.getKey())) {
 			Form form = new Form(connection, fi.getFormCode(), fi.getParentFormCode(), fi.getIsDrillDownForm(), this);
@@ -121,7 +131,7 @@ public class Session {
 			rs.close();
 			statement.close();
 			metadata.setIcons(icons);
-		} catch (java.sql.SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		System.out.println("Server:session - MenusArr.size=" + metadata.size());

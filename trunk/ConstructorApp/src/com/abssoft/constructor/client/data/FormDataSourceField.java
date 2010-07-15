@@ -48,6 +48,9 @@ public class FormDataSourceField extends com.smartgwt.client.data.DataSourceFiel
 				((TreeGrid) mainFormContainer.getMainForm().getTreeGrid()).setCustomIconProperty(colName);
 			}
 		}
+		if ("11".equals(columnMD.getFieldType())) {
+			type = FieldType.LINK;
+		}
 		this.setPrimaryKey(columnMD.isPrimaryKey());
 		this.setName(colName);
 		this.setTitle(columnMD.getDisplayName());
@@ -56,7 +59,7 @@ public class FormDataSourceField extends com.smartgwt.client.data.DataSourceFiel
 		// Validation RegExp
 		if (null != columnMD.getValidationRegexp()) {
 			RegExpValidator regExpValidator = new RegExpValidator();
-			//TODO Вынести текст сообщения в настройку поля.
+			// TODO Вынести текст сообщения в настройку поля.
 			regExpValidator.setErrorMessage("Regexp Validation failed");
 			regExpValidator.setExpression(columnMD.getValidationRegexp());
 			this.setValidators(regExpValidator);

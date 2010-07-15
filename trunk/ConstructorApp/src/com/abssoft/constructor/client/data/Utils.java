@@ -188,7 +188,10 @@ public class Utils {
 					}
 					result.put(dsf.getName(), v);
 				} else {
+					// if (null != defVal && !"".equals(defVal)) {
 					result.put(dsf.getName(), defVal);
+					// com.smartgwt.client.widgets.grid.ListGrid.getRecordIndex();
+					// }
 				}
 			}
 		}
@@ -209,6 +212,8 @@ public class Utils {
 				Attribute attr = row.get(i);
 				Object obj = attr.getAttributeAsObject();
 				String dsFieldName = dsFields[i].getName();
+				Utils.debug("getCriteriaFromListGridRecord: " + dsFieldName + " => "
+						+ ((null != obj) ? (obj.toString() + " -> " + obj.getClass()) : "null"));
 				if (obj instanceof Boolean) {
 					criteria.addCriteria(dsFieldName, attr.getAttributeAsBoolean());
 				} else if (obj instanceof Double) {
@@ -325,5 +330,34 @@ public class Utils {
 		// }
 		// }
 		return record;
+	}
+
+	public static String getExceptionStack(Throwable caught) {
+		String result = "";
+		StackTraceElement[] elements = caught.getStackTrace();
+		for (StackTraceElement e : elements) {
+			result = result + e.toString() + "\n";
+		}
+		return result;
+	}
+
+	// Error При передаче Double почему-то передается Float и летим/ Поэтому - явно преобразовываем...
+	@SuppressWarnings("unchecked")
+	public static LinkedHashMap<String, Object> getHashMapFromCriteria(Criteria cr) {
+		Map<String, Object> filterValues = cr.getValues();
+		LinkedHashMap<String, Object> filterValues2 = new LinkedHashMap<String, Object>();
+		{
+			Iterator<String> it = filterValues.keySet().iterator();
+			while (it.hasNext()) {
+				String key = it.next();
+				Object val = filterValues.get(key);
+				Utils.debug(key + ":=>" + val + "; class:" + ((null != val) ? val.getClass() : null));
+				if (val instanceof Float && null != val) {
+					val = Double.valueOf(val.toString());
+				}
+				filterValues2.put(key, val);
+			}
+		}
+		return filterValues2;
 	}
 }

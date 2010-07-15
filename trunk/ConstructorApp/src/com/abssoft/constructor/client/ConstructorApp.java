@@ -16,6 +16,7 @@ import com.abssoft.constructor.client.form.ApplicationToolBar;
 import com.abssoft.constructor.client.metadata.MenusArr;
 import com.abssoft.constructor.client.metadata.ServerInfoArr;
 import com.abssoft.constructor.client.metadata.StaticLookupsArr;
+import com.abssoft.constructor.client.widgets.ActionStatusWindow;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -187,8 +188,14 @@ public class ConstructorApp implements EntryPoint {
 				tabSet.removeMainFormContainerTab(tabSet.getSelectedTab());
 			}
 		});
-		MenuItem downloadMI = new MenuItem("Download");
-		downloadMI.addClickHandler(new TestDownloadFileClickHandler());
+		MenuItem downloadMI = new MenuItem("TestActWnd");
+		downloadMI.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(MenuItemClickEvent event) {
+				ActionStatusWindow.createActionStatusWindow("wwwwwwww", this.getClass().getName(), this.toString());
+				//new RestfulDataSourceSample();
+			}
+		});
 		// /////////////
 		Menu smm = new Menu();
 		smm.setData(closeFormMI, testMI, downloadMI);

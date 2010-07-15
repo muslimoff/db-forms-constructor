@@ -158,8 +158,8 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 				String user = null;
 				String password = null;
 				// if (ConstructorApp.serverInfoArr.get(serverIdx).isTransferPassToClient()) {
-				user = userNameItem.getValue().toString();
-				password = passItem.getValue().toString();
+				user = (String) userNameItem.getValue();
+				password = (String) passItem.getValue();
 				// }
 				Utils.debug("ConnId:" + serverSelectItem.getValue() + "; user:" + user + "; password:" + password);
 				сonstructorApp.clearMenus();

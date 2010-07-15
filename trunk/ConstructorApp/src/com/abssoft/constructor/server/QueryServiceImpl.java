@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -60,7 +61,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 		super.init();
 		String filename = getServletContext().getRealPath("/WEB-INF") + "/" + "constructorapp.xml";
 		System.out.println("filename: " + filename);
-		Utils.debug("Middle tier service 'QueryServiceImpl' started...");
+		Utils.debug("Middle tier service '" + this.getClass() + "' started...");
 		File f = new File(".");
 		for (String s : f.list()) {
 			System.out.println(s);
@@ -104,7 +105,8 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 				NamedNodeMap attributes = node.getAttributes();
 
 				ServerInfoMD si = new ServerInfoMD();
-				si.setDbUrl(node.getTextContent());
+				// si.setDbUrl(node.getTextContent());
+				si.setDbUrl(Utils.getCharacterDataFromElement(node));
 				si.setDefault("true".equals(Utils.getTextFromAttr(attributes, "default")));
 				si.setDisplayName(Utils.getTextFromAttr(attributes, "display"));
 				si.setDbUsername(Utils.getTextFromAttr(attributes, "dbusername"));
@@ -141,7 +143,8 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 			for (int i = 0; i < queryList.getLength(); i++) {
 				Node node = queryList.item(i);
 				NamedNodeMap attributes = node.getAttributes();
-				queryMap.put(Utils.getTextFromAttr(attributes, "name"), node.getTextContent());
+				// queryMap.put(Utils.getTextFromAttr(attributes, "name"), node.getTextContent());
+				queryMap.put(Utils.getTextFromAttr(attributes, "name"), Utils.getCharacterDataFromElement(node));
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -215,19 +218,20 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 			// TODO wertyuiouytrewrtyui
 			this.getThreadLocalRequest().getSession(true).setAttribute(Utils.sessionIdentifier, sessionId);
 
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			errMsg = e.toString();
-			sessionId = -1;
-		} catch (java.sql.SQLException e) {
-			e.printStackTrace();
-			errMsg = e.getMessage();
-			sessionId = -1;
+			// } catch (ClassNotFoundException e) {
+			// e.printStackTrace();
+			// errMsg = e.toString();
+			// sessionId = -1;
+			// } catch (java.sql.SQLException e) {
+			// e.printStackTrace();
+			// errMsg = e.getMessage();
+			// sessionId = -1;
 		} catch (Exception e) {
 			e.printStackTrace();
 			errMsg = e.toString();
 			sessionId = -1;
 		}
+		Utils.debug("Server.sessionId:" + sessionId);
 		ConnectionInfo c = new ConnectionInfo(errMsg, sessionId);
 		Utils.debug("Server:sessionId: " + sessionId + "; " + errMsg);
 		return c;
@@ -242,11 +246,25 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 	}
 
 	public FormMD getFormMetaData(FormInstanceIdentifier fi) {
-		return sessionData.get(fi.getSessionId()).getFormMetaData(fi);
+		FormMD result = new FormMD();
+		try {
+			result = sessionData.get(fi.getSessionId()).getFormMetaData(fi);
+		} catch (Exception e) {
+			String errMsg = Utils.getExceptionStackIntoString(e);
+			errMsg = "FormCode:" + fi.getFormCode() + "\n" + errMsg;
+			result.setStatus(new ActionStatus(errMsg, ActionStatus.StatusType.ERROR));
+		}
+		return result;
 	}
 
 	public RowsArr fetch(FormInstanceIdentifier fi, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch) {
-		return sessionData.get(fi.getSessionId()).fetch(fi, sortBy, startRow, endRow, criteria, forceFetch);
+		RowsArr result = new RowsArr();
+		try {
+			result = sessionData.get(fi.getSessionId()).fetch(fi, sortBy, startRow, endRow, criteria, forceFetch);
+		} catch (SQLException e) {
+			result.setStatus(new ActionStatus(Utils.getExceptionStackIntoString(e), ActionStatus.StatusType.ERROR));
+		}
+		return result;
 	}
 
 	public Row executeDML(FormInstanceIdentifier formIdentifier, Row oldRow, Row newRow, String actionCode,
@@ -269,14 +287,16 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 	}
 
 	public void sessionClose(int sessionId) {
-		try {
-			Connection connection = sessionData.get(sessionId).getConnection();
-			Utils.debug("Close connection:" + connection);
-			connection.close();
-		} catch (java.sql.SQLException e) {
-			e.printStackTrace();
+		if (sessionData.containsKey(sessionId)) {
+			try {
+				Connection connection = sessionData.get(sessionId).getConnection();
+				Utils.debug("Close connection:" + connection);
+				connection.close();
+			} catch (java.sql.SQLException e) {
+				e.printStackTrace();
+			}
+			sessionData.remove(sessionId);
 		}
-		sessionData.remove(sessionId);
 	}
 
 	public void closeForm(FormInstanceIdentifier fi, FormMD formState) {

@@ -1,9 +1,8 @@
 package com.abssoft.constructor.client.metadata;
 
 import com.abssoft.constructor.client.ConstructorApp;
-import com.abssoft.constructor.client.data.Utils;
+import com.abssoft.constructor.client.widgets.ActionStatusWindow;
 import com.google.gwt.user.client.rpc.IsSerializable;
-import com.smartgwt.client.util.SC;
 
 public class ActionStatus implements IsSerializable {
 
@@ -52,24 +51,22 @@ public class ActionStatus implements IsSerializable {
 		return statusType;
 	}
 
-	public static void showActionStatus(ActionStatus status) {
+	public void showActionStatus() {
+		ActionStatus status = this;
 		if (null != status) {
 			String msg = status.getStatusMessage();
-			// <pre></pre>
-			String fullMsg = status.getStatusType().name() + ": Message from server: " + msg + "";
+			String statusName = status.getStatusType().name();
+			String fullMsg = ": Message from server:\n" + msg;
 			if (StatusType.SUCCESS.equals(status.getStatusType())) {
 				if (!"".equals(msg)) {
-					Utils.debug(fullMsg);
 					if (ConstructorApp.debugEnabled) {
-						SC.say(fullMsg);
+						ActionStatusWindow.createActionStatusWindow(statusName, fullMsg.substring(0, 100), fullMsg);
 					}
-
 				}
 			} else {
-				Utils.debug(fullMsg);
-				SC.warn(fullMsg);
+				ActionStatusWindow.createActionStatusWindow(statusName, fullMsg.substring(0, 100), fullMsg);
 			}
-
 		}
+
 	}
 }
