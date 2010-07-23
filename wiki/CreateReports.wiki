@@ -8,11 +8,13 @@ Add your content here.
 = Details =
 В действиях создать новое действие типа "Открыть URL в окне"
 
+В поле *"PL/SQL процедура"* ввести:
 xmlp?type=xmlp&ContentType=application/vnd.ms-excel&template=INS_COMPANY_REP&dataClobId=:REP_DATA&filename=rep1
 
-Где INS_COMPANY_REP - шаблон из таблицы REPORT_TEMPLATES
-(выполняется запрос 
-Select a.clob_content From report_templates a Where a.report_type_code = 'INS_COMPANY_REP')
+Где *INS_COMPANY_REP* - шаблон из таблицы *REPORT_TEMPLATES*
+_(выполняется запрос 
+Select a.clob_content From report_templates a Where a.report_type_code = 'INS_COMPANY_REP'
+)_
 
 
 
