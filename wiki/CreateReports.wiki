@@ -19,3 +19,6 @@ Select a.clob_content From report_templates a Where a.report_type_code = 'INS_CO
 
 
  REP_DATA имя столбца из запроса формы (скрыт), который содержит CLOB
+
+
+Все остальное в пакете *INS_COMPANY_REP_PKG* и форме *"Отчет по компании"*
