@@ -11,8 +11,8 @@
   * app.serverID - код сервера из элемента dbConnections/server@id файла constructorapp.xml
   * app.userName - имя пользователя. Перекрывает настройки constructorapp.xml. Работает при заданном непустом serverID
   * app.pwd - пароль. Используется преимущественно для кастомной авторизации из других приложений
-  * app.form - форма, открываемая при запуске
+  * app.form - форма, открываемая при запуске. Разрешается множественное перечисление
   * param=value - все остальные параметры передаются в открываемые формы и в дальнейшем обрабатываются как их параметры
 
 Пример:
-http://127.0.0.1:8888/ConstructorApp.html?serverID=14&userName=FC22&pwd=fc&form=MENUS&formParams=zzz:1;ddd:2;www:444
+http://127.0.0.1:8888/ConstructorApp.html?app.serverID=14&app.userName=FC22&app.pwd=fc&app.form=MENUS&app.form=FORMS&form_code=LOOKUPS_LIST
