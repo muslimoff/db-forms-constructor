@@ -8,7 +8,7 @@
 = Details =
 
 Возможые параметры
-  * serverID - код сервера из элемента dbConnections/server@id
+  * serverID - код сервера из элемента dbConnections/server@id файла constructorapp.xml
   * userName - имя пользователя. Перекрывает настройки constructorapp.xml. Работает при заданном непустом serverID
   * pwd - пароль. Используется преимущественно для кастомной авторизации из других приложений
   * form - форма, открываемая при запуске
