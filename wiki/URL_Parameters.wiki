@@ -8,11 +8,11 @@
 = Details =
 
 Возможые параметры
-  * serverID - код сервера из элемента dbConnections/server@id файла constructorapp.xml
-  * userName - имя пользователя. Перекрывает настройки constructorapp.xml. Работает при заданном непустом serverID
-  * pwd - пароль. Используется преимущественно для кастомной авторизации из других приложений
-  * form - форма, открываемая при запуске
-  * formParams - список параметров вида param:value через точку с запятой
+  * app.serverID - код сервера из элемента dbConnections/server@id файла constructorapp.xml
+  * app.userName - имя пользователя. Перекрывает настройки constructorapp.xml. Работает при заданном непустом serverID
+  * app.pwd - пароль. Используется преимущественно для кастомной авторизации из других приложений
+  * app.form - форма, открываемая при запуске
+  * param=value - все остальные параметры передаются в открываемые формы и в дальнейшем обрабатываются как их параметры
 
 Пример:
 http://127.0.0.1:8888/ConstructorApp.html?serverID=14&userName=FC22&pwd=fc&form=MENUS&formParams=zzz:1;ddd:2;www:444
