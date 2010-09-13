@@ -1,9 +1,9 @@
-instance (default VM_XE): kc_crp2
-FC Username (default FC22): FC
+instance (default VM_XE): BAS_AMAZON_VM_XE
+FC Username (default FC22): fc22
 Press Enter to start
 
 Connected.
-Create FC Objects
+Create fc22 Objects
 
 Sequence created.
 

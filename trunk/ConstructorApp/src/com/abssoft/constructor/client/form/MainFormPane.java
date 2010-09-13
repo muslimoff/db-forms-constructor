@@ -95,6 +95,7 @@ public class MainFormPane extends Canvas {
 	private FormDataSource dataSource;
 	private String currentActionCode = "";
 	private FormInstanceIdentifier instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId);
+	private boolean fromUrl = false;
 
 	public MainFormPane() {
 	}
@@ -567,5 +568,13 @@ public class MainFormPane extends Canvas {
 	 */
 	public void setValuesManager(FormValuesManager valuesManager) {
 		this.valuesManager = valuesManager;
+	}
+
+	public void setFromUrl(boolean fromUrl) {
+		this.fromUrl = fromUrl;
+	}
+
+	public boolean isFromUrl() {
+		return fromUrl;
 	}
 }

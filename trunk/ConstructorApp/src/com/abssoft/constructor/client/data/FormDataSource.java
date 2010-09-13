@@ -1,5 +1,6 @@
 package com.abssoft.constructor.client.data;
 
+import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.common.ClientActionType;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.data.common.GwtRpcDataSource;
@@ -90,6 +91,10 @@ public class FormDataSource extends GwtRpcDataSource {
 			cr = treeCriteria;
 		} else {
 			cr = request.getCriteria();
+		}
+		// TODO только для фром из урл
+		if (mainFormPane.isMasterForm() && mainFormPane.isFromUrl()) {
+			cr.addCriteria(ConstructorApp.urlParamsCriteria);
 		}
 		String sortBy = request.getAttribute("sortBy");
 		QueryServiceAsync service = GWT.create(QueryService.class);

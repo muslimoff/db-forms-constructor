@@ -71,6 +71,7 @@ public class FormInstance {
 		}
 
 		// ////////////////////////
+		String sqlText = null;
 		try {
 			// Первый вызов DataSource или изменение сортировки, фильтров, а также принудительно
 			if (forceFetch || -1 == currentEndRow || currentSortBy != sortBy || !currentFilterValues.equals(filterValues)) {
@@ -79,7 +80,7 @@ public class FormInstance {
 				currentEndRow = -1;
 				resultData = new RowsArr();
 				ClobHM.clear();
-				String sqlText = form.getFormSQLText() + ((sortBy != null) ? sortBy : "");
+				sqlText = form.getFormSQLText() + ((sortBy != null) ? sortBy : "");
 				{
 					String totalRowsSqlText = "select count(*) cnt from (" + sqlText + "\n)";
 					OraclePreparedStatement rowCntStmnt = (OraclePreparedStatement) connection.prepareStatement(totalRowsSqlText); // statement
@@ -109,6 +110,8 @@ public class FormInstance {
 					// System.out.println("isAfterLast(): " + rs.isAfterLast());
 					if (!rs.next() // !rs.isAfterLast() //!rs.isClosed() &&
 					) {
+						// TODO Обработка признака больших табличек - не выполнять запрос с TotalRows
+						Utils.debug("FormInstance. ResultSet ended. rowNum:" + rowNum);
 						rs.close();
 						statement.close();
 						break;
@@ -148,7 +151,9 @@ public class FormInstance {
 			}
 			currentData.setTotalRows(resultData.getTotalRows());
 		} catch (Exception e) {
-			String errText = Utils.getExceptionStackIntoString(e);
+			String errText = Utils.getExceptionStackIntoString(e) + "\n";
+			errText = errText + "Form:" + form.getFormCode() + "\n";
+			errText = errText + "SQL:" + sqlText + "\n";
 			Utils.debug(errText);
 			currentData.setStatus(new ActionStatus(errText, ActionStatus.StatusType.ERROR));
 		}

@@ -57,6 +57,9 @@ class MainForm extends Canvas {
 	public class FormListGrid extends ListGrid {
 		public FormListGrid() {
 			this.setShowRowNumbers(true);
+			// TODO Высота строки..
+			// 
+			this.setCellHeight(16);
 		}
 
 	}
@@ -198,7 +201,6 @@ class MainForm extends Canvas {
 		}
 		treeGrid.setHoverWidth(300);
 
-		treeGrid.setCellHeight(16);
 		treeGrid.setInitialSort(mainFormPane.getFormColumns().getDefaultSort());
 		VLayout mainLayout = new VLayout();
 		mainLayout.setWidth100();
@@ -382,19 +384,20 @@ class MainForm extends Canvas {
 					ExpField f = flds.get(i);
 					rowsData = rowsData + r.getAttribute(f.getName()) + spr;
 				}
-				rowsData = rowsData + "\n";
+				rowsData = rowsData + "%0D%0A"; // "\n";
 			}
 			Utils.debug("@@@@@@@@@@@@@@@@@");
 			System.out.println(rowsData);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		com.google.gwt.user.client.Window.open("data:application/vnd.ms-excel;charset=utf-8, " + rowsData, "_blank",
-				"menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=250,height=150,navigation=no");
+		// application/vnd.ms-excel
+		com.google.gwt.user.client.Window.open("data:text/plain;charset=utf-8, " + rowsData, "", "");
 		return rowsData;
 	}
 
+	// TODO http://software.hixie.ch/utilities/cgi/data/data
+	// data:text/html;charset=utf-8,1%0D%0A2%0D%0A3%0D%0A
 	public void exportGrid() {
 		final String spr = ";";
 		// Получаем список экспортируемых полей
@@ -412,7 +415,7 @@ class MainForm extends Canvas {
 			ExpField f = flds.get(i);
 			result = result + f.getTitle() + spr;
 		}
-		result = result + "\n";
+		result = result + "%0D%0A"; // "\n";
 
 		final ResultSet rs = treeGrid.getResultSet();
 		// TODO least(100, dataLen)

@@ -2,6 +2,9 @@ package com.abssoft.constructor.client;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import com.abssoft.constructor.client.app.ConnectWindow;
 import com.abssoft.constructor.client.app.SkinSelectorMenu;
@@ -23,6 +26,7 @@ import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
+import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.util.DateDisplayFormatter;
 import com.smartgwt.client.util.DateInputFormatter;
@@ -57,12 +61,14 @@ public class ConstructorApp implements EntryPoint {
 	public static HashMap<String, String> formNameArr = new HashMap<String, String>();
 	public static StaticLookupsArr staticLookupsArr;
 	public static ApplicationToolBar mainToolBar = new ApplicationToolBar();
-	public static boolean debugEnabled = false;
+	public static boolean debugEnabled = true;
 	public static ServerInfoArr serverInfoArr;
 	public static String defaultTitle = "Forms Constructor";
 	public static ToolBar menuBar = new ToolBar(20);
 	private static MenuButton serviceMenuBtn = new MenuButton("Сервис");
 	private static MenuButton fileMenuBtn = new MenuButton("Файл");
+	public static Map<String, List<String>> urlParams;
+	public static Criteria urlParamsCriteria = new Criteria();
 
 	ConnectWindow connectWindow;
 
@@ -193,7 +199,7 @@ public class ConstructorApp implements EntryPoint {
 			@Override
 			public void onClick(MenuItemClickEvent event) {
 				ActionStatusWindow.createActionStatusWindow("wwwwwwww", this.getClass().getName(), this.toString());
-				//new RestfulDataSourceSample();
+				// new RestfulDataSourceSample();
 			}
 		});
 		// /////////////
@@ -210,12 +216,31 @@ public class ConstructorApp implements EntryPoint {
 		vStack.setHeight100();
 		canvas.addChild(vStack);
 		canvas.draw();
+		urlParams = com.google.gwt.user.client.Window.Location.getParameterMap();
+		{
+			Map<String, List<String>> urlParams = com.google.gwt.user.client.Window.Location.getParameterMap();
+			Iterator<String> i = urlParams.keySet().iterator();
+			Utils.debug("%%%%%%%%%%%%%%%%%%%PARAMETERS%%%%%%%%%%%%%%%%%");
+			while (i.hasNext()) {
+				String pKey = i.next();
+				Utils.debug(pKey + ": " + urlParams.get(pKey));
+				List<String> vals = urlParams.get(pKey);
+				for (String val : vals) {
+					if (!val.matches("app\\.")) {
+						urlParamsCriteria.addCriteria(pKey, val);
+						// Utils.debug("parameter: " + pKey + "=\"" + val + "\"");
+					}
+				}
+			}
+
+		}
+		Utils.debug("QueryString:" + com.google.gwt.user.client.Window.Location.getQueryString());
 		connectWindow = new ConnectWindow(ConstructorApp.this);
 	}
 
 	public void add_debug_console() {
 		if (!GWT.isScript() || 1 == 1) {
-			Page.registerKey(new KeyIdentifier("Ctrl+D"), new KeyCallback() {
+			Page.registerKey(new KeyIdentifier("Ctrl+Alt+Shift+D"), new KeyCallback() {
 				public void execute(String keyName) {
 					SC.showConsole();
 				}

@@ -1,3 +1,5 @@
+http://localhost/ConstructorApp/?app.serverID=14&app.userName=FC22&app.pwd=fc&app.form=FORMS2&code=MENUS&entity_type=FORM
+
  1. Форма-матрица или Cube. Для Минздрава и для табеля. Selection  - по ячейке. При выборе - передавать пересечение.
 ---------------------------- Глюки ------------------------
  +1. setFrozen = false в дереве - exception...

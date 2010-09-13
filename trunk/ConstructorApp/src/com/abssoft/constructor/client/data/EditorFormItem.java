@@ -25,6 +25,8 @@ import com.smartgwt.client.widgets.form.fields.events.FocusEvent;
 import com.smartgwt.client.widgets.form.fields.events.FocusHandler;
 import com.smartgwt.client.widgets.form.fields.events.IconClickEvent;
 import com.smartgwt.client.widgets.form.fields.events.IconClickHandler;
+import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
+import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 
 public class EditorFormItem extends FormItem {
 	public static FormItem createItem(final FormColumnMD c, final MainFormPane mainFormPane) {
@@ -119,7 +121,18 @@ public class EditorFormItem extends FormItem {
 				ConstructorApp.mainToolBar.setForm(mainFormPane);
 			}
 		});
+		// !!!!!!!!
+		if (null != c.getEditorOnEnterKeyAction()) {
+			item.addKeyPressHandler(new KeyPressHandler() {
 
+				@Override
+				public void onKeyPress(KeyPressEvent event) {
+					if ("Enter".equals(event.getKeyName())) {
+						mainFormPane.getButtonsToolBar().actionItemsMap.get(c.getEditorOnEnterKeyAction()).doActionWithConfirm();
+					}
+				}
+			});
+		}
 		return item;
 	}
 

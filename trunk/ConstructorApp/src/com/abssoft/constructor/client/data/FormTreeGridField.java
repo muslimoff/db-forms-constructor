@@ -94,6 +94,7 @@ public class FormTreeGridField extends TreeGridField {
 			final LinkedHashMap<String, String> lhm = Utils.createStrSortedLinkedHashMap(ConstructorApp.staticLookupsArr.get(lookupCode),
 					!"8".equals(c.getFieldType()));
 			s.setValueMap(lhm);
+			// s.setPickListFields(pickListFields);
 			this.setCellFormatter(new CellFormatter() {
 				@Override
 				public String format(Object value, ListGridRecord record, int rowNum, int colNum) {

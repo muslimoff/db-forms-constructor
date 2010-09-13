@@ -14,6 +14,8 @@ public class ServerInfoMD implements IsSerializable, Cloneable {
 	private String dbPassword;
 	private String dbUrl;
 	private String fcSchemaOwner;
+	private String serverID;
+	private String validationFN;
 
 	public ServerInfoMD() {
 	}
@@ -30,6 +32,7 @@ public class ServerInfoMD implements IsSerializable, Cloneable {
 		result.setDbPassword(this.getDbPassword());
 		result.setDbUrl(this.getDbUrl());
 		result.setFcSchemaOwner(this.getFcSchemaOwner());
+		result.setServerID(this.getServerID());
 		return result;
 	}
 
@@ -45,8 +48,28 @@ public class ServerInfoMD implements IsSerializable, Cloneable {
 		return dbUsername;
 	}
 
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public String getFcSchemaOwner() {
+		return fcSchemaOwner;
+	}
+
+	public String getServerID() {
+		return serverID;
+	}
+
 	public String getTitle() {
 		return title;
+	}
+
+	public String getValidationFN() {
+		return validationFN;
+	}
+
+	public boolean isAllowUserChange() {
+		return allowUserChange;
 	}
 
 	public boolean isDebug() {
@@ -55,6 +78,14 @@ public class ServerInfoMD implements IsSerializable, Cloneable {
 
 	public boolean isDefault() {
 		return isDefault;
+	}
+
+	public boolean isTransferPassToClient() {
+		return transferPassToClient;
+	}
+
+	public void setAllowUserChange(boolean allowUserChange) {
+		this.allowUserChange = allowUserChange;
 	}
 
 	public void setDbPassword(String dbPassword) {
@@ -77,39 +108,27 @@ public class ServerInfoMD implements IsSerializable, Cloneable {
 		this.isDefault = isDefault;
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
-	}
-
-	public String getDisplayName() {
-		return displayName;
-	}
-
-	public void setAllowUserChange(boolean allowUserChange) {
-		this.allowUserChange = allowUserChange;
-	}
-
-	public boolean isAllowUserChange() {
-		return allowUserChange;
-	}
-
-	public void setTransferPassToClient(boolean transferPassToClient) {
-		this.transferPassToClient = transferPassToClient;
-	}
-
-	public boolean isTransferPassToClient() {
-		return transferPassToClient;
 	}
 
 	public void setFcSchemaOwner(String fcSchemaOwner) {
 		this.fcSchemaOwner = fcSchemaOwner;
 	}
 
-	public String getFcSchemaOwner() {
-		return fcSchemaOwner;
+	public void setServerID(String serverID) {
+		this.serverID = serverID;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public void setTransferPassToClient(boolean transferPassToClient) {
+		this.transferPassToClient = transferPassToClient;
+	}
+
+	public void setValidationFN(String validationFN) {
+		this.validationFN = validationFN;
 	}
 }

@@ -13,4 +13,16 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class FormColumnsArr extends HashMap<Integer, FormColumnMD> implements IsSerializable {
 
 	private static final long serialVersionUID = 8363157651461720532L;
+	private HashMap<String, Integer> columnsByName = new HashMap<String, Integer>();
+
+	@Override
+	public FormColumnMD put(Integer key, FormColumnMD value) {
+		super.put(key, value);
+		columnsByName.put(value.getName(), key);
+		return value;
+	}
+
+	public FormColumnMD get(String colName) {
+		return this.get(columnsByName.get(colName));
+	}
 }

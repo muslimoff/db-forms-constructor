@@ -46,7 +46,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 	 * 
 	 */
 	private static final long serialVersionUID = 9137729400867519828L;
-	public static final HashMap<String, String> queryMap = new HashMap<String, String>();
+	public static final HashMap<String, String> queryMap1 = new HashMap<String, String>();
 	private ServerInfoArr serverInfoArr = new ServerInfoArr();
 	private static final HashMap<Integer, Session> sessionData = new HashMap<Integer, Session>();
 
@@ -80,6 +80,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 		String defaultTitle = "";
 		String defaultDebugValue = "";
 		String defaultfcSchemaOwner = "";
+		String defaultValidationFN = "";
 
 		try {
 			XPathExpression findDefalutServerSettings = xPath.compile("//dbConnections/defaultValues");
@@ -96,6 +97,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 				defaultTitle = Utils.getTextFromAttr(attributes, "title");
 				defaultDebugValue = Utils.getTextFromAttr(attributes, "debug");
 				defaultfcSchemaOwner = Utils.getTextFromAttr(attributes, "fcSchemaOwner");
+				defaultValidationFN = Utils.getTextFromAttr(attributes, "validationFN");
 			}
 
 			InputSource serversIS = new InputSource(new FileInputStream(xmlDocument));
@@ -118,6 +120,9 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 				si.setAllowUserChange(!"false".equals(Utils.getTextFromAttr(attributes, "allowuserchange")));
 				// Если пароль и пользователь БД заданы - не передаем на клиента и воспринимаем логин/пароль как паользователя приложения
 				si.setTransferPassToClient(si.isAllowUserChange() || null == si.getDbPassword() || null == si.getDbUsername());
+				si.setServerID(Utils.getTextFromAttr(attributes, "id"));
+				si.setValidationFN(Utils.getTextFromAttr(attributes, "validationFN"));
+				System.out.println("getServerID>>" + si.getServerID());
 				System.out.println("getDisplayName>>" + si.getDisplayName());
 				System.out.println("isAllowUserChange>>" + si.isAllowUserChange());
 				System.out.println("getDbUsername>>" + si.getDbUsername());
@@ -135,6 +140,9 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 				if (null == si.getFcSchemaOwner()) {
 					si.setFcSchemaOwner(defaultfcSchemaOwner);
 				}
+				if (null == si.getValidationFN()) {
+					si.setValidationFN(defaultValidationFN);
+				}
 
 				serverInfoArr.add(si);
 			}
@@ -144,7 +152,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 				Node node = queryList.item(i);
 				NamedNodeMap attributes = node.getAttributes();
 				// queryMap.put(Utils.getTextFromAttr(attributes, "name"), node.getTextContent());
-				queryMap.put(Utils.getTextFromAttr(attributes, "name"), Utils.getCharacterDataFromElement(node));
+				queryMap1.put(Utils.getTextFromAttr(attributes, "name"), Utils.getCharacterDataFromElement(node));
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -172,14 +180,15 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 		return result;
 	}
 
-	public ConnectionInfo connect(int ServerIdx, String user, String password, boolean isScript) {
+	public ConnectionInfo connect(int ServerIdx, String user, String password, boolean isScript, String urlParams) {
+		Utils.debug("Server. urlParams:" + urlParams);
 		String errMsg = "";
 		int sessionId = -1;
 		try {
 			Utils.debug("Server. Before connect...");
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			ServerInfoMD serverInfoMD = serverInfoArr.get(ServerIdx);
-			System.out.println("serverInfoMD:" + serverInfoMD);
+			Utils.debug("serverInfoMD:" + serverInfoMD);
 			String userName = serverInfoMD.isTransferPassToClient() ? user : serverInfoMD.getDbUsername();
 			String userPass = serverInfoMD.isTransferPassToClient() ? password : serverInfoMD.getDbPassword();
 			Locale.setDefault(Locale.ENGLISH);
@@ -195,12 +204,13 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 			if (!serverInfoMD.isTransferPassToClient()) {
 				Utils.debug("Server. Custom Login.");
 				System.out.println("user:" + user + "; password:" + password + "; userName:" + userName + "; userPass:" + userPass);
-				String validateLoginSQL = "Select " + serverInfoMD.getFcSchemaOwner()
-						+ ".users_pkg.validate_login (:p_username, :p_password) isValid From DUAL";
+				String validateLoginSQL = Utils.getSQLQueryFromXML("customLoginValidationSQL", serverInfoMD);
+				System.out.println("@@@validateLoginSQL:\n" + validateLoginSQL);
 				OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(validateLoginSQL);
 				Utils.debug("Parameters: ");
 				Utils.setParameterValue(statement, "p_username", user);
 				Utils.setParameterValue(statement, "p_password", password);
+				Utils.setParameterValue(statement, "p_url_params", urlParams);
 				ResultSet loginRS = statement.executeQuery();
 				loginRS.next();
 				Boolean isLoginValid = "Y".equals(loginRS.getString("isValid"));
@@ -211,7 +221,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 					throw new Exception("Пароль не тот...");
 				}
 			}
-			Session session = new Session(connection);
+			Session session = new Session(connection, serverInfoMD);
 			session.setScript(isScript);
 			session.setFcSchemaOwner(serverInfoMD.getFcSchemaOwner());
 			sessionData.put(sessionId, session);

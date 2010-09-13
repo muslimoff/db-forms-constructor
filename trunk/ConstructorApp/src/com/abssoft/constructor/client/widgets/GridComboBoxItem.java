@@ -1,6 +1,7 @@
 package com.abssoft.constructor.client.widgets;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -172,9 +173,18 @@ public class GridComboBoxItem extends ComboBoxItem {
 			} else {
 				f.setHidden(true);
 			}
+
+			// Initial sort
+			if ("1".equals(colMD.getDefaultOrderByNumber())) {
+				GridComboBoxItem.this.setSortField(fieldName);
+			}
 		}
 		GridComboBoxItem.this.setValueField(valueFieldName);
 		GridComboBoxItem.this.setDisplayField(displayFieldName);
+		{
+			// TODO Всегда показывать заголовок для возможности пользовательской сортировки
+			showPickListHeader = true;
+		}
 		if (showPickListHeader) {
 			try {
 				String lookupWidth = fmd.getLookupWidth();
@@ -258,6 +268,13 @@ public class GridComboBoxItem extends ComboBoxItem {
 		Record record = Utils.getEditedRow(GridComboBoxItem.this.mainFormPane);
 		Criteria criteria = Utils.getCriteriaFromListGridRecord(GridComboBoxItem.this.mainFormPane, record, "GridComboBoxItem:"
 				+ GridComboBoxItem.this.getName());
+		HashMap<String, String> lookupAttributes = columnMD.getLookupAttributes();
+		Iterator<String> attrs = lookupAttributes.keySet().iterator();
+		while (attrs.hasNext()) {
+			String attrName = attrs.next();
+			criteria.addCriteria(attrName, lookupAttributes.get(attrName));
+		}
+		// System.out.println("############## lookupAttributes: " + lookupAttributes);
 		return criteria;
 	}
 }
