@@ -1,45 +1,75 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <root attribute1="x" attribute2="y">
+<!-- variables: validationFN, fc_schema_owner, db_username -->
 	<dbConnections>
 		<defaultValues
 			dbusername="FORMS_CONSTRUCTOR"
 			fcSchemaOwner="FORMS_CONSTRUCTOR"
 			debug="true"
+			validationFN="&amp;fc_schema_owner..users_pkg.validate_login"
 			title="Forms Constructor" />
 
-		<server	display="NBAPPLPR">
+		<server id="1"
+				display="AppAdmin (FC22)" 
+				default="true" 
+				fcSchemaOwner="FC22" 
+				dbusername="FC22">
+			ap.bas.kz:1521:XE
+		</server>
+
+		<server id="2"
+				display="Bas UserLogin" 
+				dbusername="INS"
+				dbpassword="INS" 
+				allowuserchange="false"
+				debug="true"
+				title="Ins KO"
+				default="false"
+				fcSchemaOwner="FC22">
+			ap.bas.kz:1521:XE
+		</server>
+		
+		<server	id="3"
+				display="NBAPPLPR">
 			10.0.14.10:1521:APPLPR
 		</server>
 		
-		<server display="DemoLocal">
+		<server id="4"
+				display="DemoLocal">
 			apps.abssoft.kz:1522:DEMO12i
 		</server>
 
-		<server display="BAS_11">
+		<server id="5"
+				display="BAS_11">
 			apps.ba-solutions.kz:1522:DEMO
 		</server>
 		
-		<server display="VM_XE" 
+		<server id="6"
+				display="VM_XE" 
 			default="true">
 			VM_XE:1521:XE
 		</server>
 		
-		<server display="VIS12">
+		<server id="7"
+				display="VIS12">
 			rdbms.abssoft.kz:1524:VIS12
 		</server>
 		
-		<server display="VIS12_IP">
+		<server id="8"
+				display="VIS12_IP">
 			192.168.110.3:1524:VIS12
 		</server>
 		
-		<server display="EPM-Конструктор" 
+		<server id="9"
+				display="EPM-Конструктор" 
 				allowuserchange="false"
 				debug="true" 
 				title="EPM - Forms Constructor">
 			hypo:1521:epm
 		</server>
 		
-		<server display="EPM_EXT-Конструктор" 
+		<server id="10"
+				display="EPM_EXT-Конструктор" 
 				allowuserchange="false"
 				default="true" 
 				debug="true" 
@@ -47,7 +77,8 @@
 			hypo:8521:epm
 		</server>
 		
-		<server display="EPM_RATES-Тарифы" 
+		<server id="11"
+				display="EPM_RATES-Тарифы" 
 				dbusername="APP_RATES"
 				default="true" 
 				dbpassword="" 
@@ -57,7 +88,8 @@
 			hypo:1521:epm
 		</server>
 
-		<server display="EPM_RATES_EXT-Тарифы" 
+		<server id="12"
+				display="EPM_RATES_EXT-Тарифы" 
 				dbusername="APP_RATES"
 				dbpassword="A" 
 				allowuserchange="false" 
@@ -66,34 +98,42 @@
 			hypo:8521:epm
 		</server>
 		
-		<server display="FC VM_XE" 
+		<server id="13"
+				display="FC VM_XE" 
 				default="true" 
 				fcSchemaOwner="FC" 
 				dbusername="FC">
 			VM_XE:1521:XE
 		</server>
 		
-		<server display="FC22 VM_XE" 
+		<server id="14"
+				display="FC22 VM_XE" 
 				default="true" 
 				fcSchemaOwner="FC22" 
 				dbusername="FC22">
 			VM_XE:1521:XE
 		</server>
 
-        <server display="FC BAS_XE" 
+        <server id="15"
+				display="FC BAS_XE" 
 				default="false" 
 				fcSchemaOwner="FC" 
 				dbusername="FC">
 			my.bas.kz:1521:XE
 		</server>
 
-		<server display="KC FC" 
+		<server id="16"
+				display="KC FC" 
 				default="false" 
-				fcSchemaOwner="FC" 
-				dbusername="FC">
-			oebsdbala.air-astana.net:1521:CRP2</server>
+				fcSchemaOwner="FC22" 
+				dbusername="APPS"
+				dbpassword="APPS"
+				allowuserchange="false"
+				validationFN="xxfnd_apps_utils_pkg.validate_ebs_login">
+			crp3dbala.air-astana.net:1521:CRP3</server>
 
-		<server display="KO Ins" 
+		<server id="17"
+				display="KO Ins" 
 				dbusername="INS"
 				dbpassword="INS" 
 				allowuserchange="false"
@@ -104,7 +144,8 @@
 			VM_XE:1521:XE
 		</server>
 		
-		<server display="VIS12_full">
+		<server id="18"
+				display="VIS12_full">
 			<![CDATA[
 			(DESCRIPTION =
 				(ADDRESS_LIST=
@@ -116,7 +157,8 @@
 			)
 			]]>
 		</server>
-		<server display="EPM_N-Конструктор"
+		<server id="19"
+				display="EPM_N-Конструктор"
 				allowuserchange="false"
 				fcSchemaOwner="FC"
 				dbusername="FC"
@@ -124,7 +166,8 @@
 				title="EPM - Forms Constructor">
 			hypo:1521:epmn
 		</server> 
-		<server display="EPM_EXT_N-Конструктор"
+		<server id="20"
+				display="EPM_EXT_N-Конструктор"
 				allowuserchange="false"
 				fcSchemaOwner="FC"
 				dbusername="FC"
@@ -133,7 +176,8 @@
 				title="EPM Ext - Forms Constructor">
 			hypo:8521:epmn
 		</server> 
-		<server display="EPM_RATES_N-Тарифы N"
+		<server id="21"
+				display="EPM_RATES_N-Тарифы N"
 				dbusername="APP_RATES"
 				default="true"
 				dbpassword=""
@@ -143,7 +187,8 @@
 				title="N - Формирование тарифов на медицинские услуги">
 			hypo:1521:epmn
 		</server> 
-		<server display="EPM_RATES_EXT_N-Тарифы N"
+		<server id="22"
+				display="EPM_RATES_EXT_N-Тарифы N"
 				dbusername="APP_RATES"
 				fcSchemaOwner="FC"
 				dbpassword="A"
@@ -151,7 +196,17 @@
 				debug="true"
 				title="N - Формирование тарифов на медицинские услуги">
 			hypo:1521:epmn
+		</server>
+		<server id="23"
+				display="EPMLN"
+				allowuserchange="false"
+				fcSchemaOwner="FC"
+				dbusername="FC"
+				debug="true"
+				title="EPMLN">
+			ob:1521:epmln
 		</server> 
+
 	</dbConnections>
 	
 	<metadataQuery>
@@ -159,26 +214,21 @@
 		<sqlStatement name="formSQL">
 			<![CDATA[
                  Select *
-                   From Table (forms_pkg.get_form_md (:p_form_code, :p_master_form_code, :p_drilldown_flag)) a				 
+                   From Table (&fc_schema_owner..forms_pkg.get_form_md (:p_form_code, :p_master_form_code, :p_drilldown_flag)) a				 
 			]]>
 		</sqlStatement>
 		<!--extendedFormSQL-->
 		<sqlStatement name="extendedFormSQL">
 			<![CDATA[
-				 Select form_utils.get_extended_sql_text (a.sql_text)
-                   From Table (forms_pkg.get_form_md (:p_form_code, :p_master_form_code, :p_drilldown_flag)) a
+				 Select &fc_schema_owner..form_utils.get_extended_sql_text (a.sql_text)
+                   From Table (&fc_schema_owner..forms_pkg.get_form_md (:p_form_code, :p_master_form_code, :p_drilldown_flag)) a
 			]]>
 		</sqlStatement>
 		<!--ColumnsMetaDataSQL-->
 		<sqlStatement name="ColumnsMetaDataSQL">
 			<![CDATA[
-				Select   column_display_number, form_code, column_code, column_data_type, column_user_name, column_display_size
-						,pimary_key_flag, show_on_grid, tree_initialization_value, tree_field_type, editor_tab_code, field_type
-						,column_description, is_frozen_flag, show_hover_flag, exists_in_metadata_flag, exists_in_query_flag
-						,lookup_code, hover_column_code, editor_height, lookup_field_type, help_text, text_mask
-						,validation_regexp, default_orderby_number, default_value, editor_title_orientation, editor_end_row_flag
-       					,editor_cols_span, lookup_display_value
-				  From Table (form_utils.describe_form_columns_pl (:p_form_code, :p_master_form_code))
+				Select *
+				  From Table (&fc_schema_owner..form_utils.describe_form_columns_pl (:p_form_code, :p_master_form_code))
 			  Order By form_code, column_display_number, column_code
 			]]>
 		</sqlStatement>
@@ -186,7 +236,7 @@
 		<sqlStatement name="formActionsSQL">
 			<![CDATA[
 				Select   *
-				 From form_actions a
+				 From &fc_schema_owner..form_actions a
 				Where a.form_code = :p_form_code
 			 Order By form_code, display_number, action_code 
 			]]>
@@ -194,55 +244,59 @@
 		<!--argsSQLText-->
 		<sqlStatement name="argsSQLText">
 			<![CDATA[
-				Select   a.Position, a.argument_name, DECODE (a.in_out, 'IN/OUT', 'Y', 'IN', 'Y') in_flag
-						,DECODE (a.in_out, 'IN/OUT', 'Y', 'OUT', 'Y') out_flag
-				  From all_arguments a
-				 Where a.package_name || '.' || a.object_name = UPPER (:p_procedure_name)
-				   And (a.owner = User or a.owner =:p_fc_schema_owner)
-				   And a.Position != 0
-				   And a.argument_name Is Not Null
-			  Order By a.Position, a.Sequence
+				Select *
+				  From Table (&fc_schema_owner..form_auth_cur_user_utlis_pkg.get_proc_args (:p_procedure_name))
 			]]>
 		</sqlStatement>
 		<!--detailFormSQL-->
 		<sqlStatement name="detailFormSQL">
 			<![CDATA[
 				Select   *
-  				  From Table (form_utils.get_form_tabs (:p_form_code, :p_master_form_code))
+  				  From Table (&fc_schema_owner..form_utils.get_form_tabs (:p_form_code, :p_master_form_code))
 			]]>
 		</sqlStatement>
 		<!--statLookupsSQL-->
 		<sqlStatement name="statLookupsSQL">
 			<![CDATA[
 				Select l.lookup_code, lv.lookup_value_code, lv.lookup_display_value
-				  From lookups l, lookup_values lv
+				  From &fc_schema_owner..lookups l, &fc_schema_owner..lookup_values lv
 				 Where l.lookup_code = lv.lookup_code
 				   --
-				   And l.lookup_code Not Like 'INS%'
+				   				   And l.lookup_code Not Like 'MZ%'
 			  Order By l.lookup_code, lv.lookup_value_code
 			]]>
 		</sqlStatement>
 		<!--menusSQLOld-->
 		<sqlStatement name="menusSQLOld">
 			<![CDATA[
-				Select * From forms_v a Order By a.form_name
+				Select * From &fc_schema_owner..forms_v a Order By a.form_name
 			]]>
 		</sqlStatement>
 		<!--menusSQL-->
 		<sqlStatement name="menusSQL">
 			<![CDATA[
-				Select * From Table (apps_role_menus_pkg.get_menu_list ())
+				Select * From Table (&fc_schema_owner..apps_role_menus_pkg.get_menu_list ())
 			]]>
 		</sqlStatement>
 		<!--iconsSQL-->
 		<sqlStatement name="iconsSQL">
 			<![CDATA[
-				Select * From icons i
+				Select * From &fc_schema_owner..icons i
 			]]>
 		</sqlStatement>
 		<sqlStatement name="reportTemplatesSQL">
 			<![CDATA[
-				Select a.clob_content From report_templates a Where a.report_type_code = :p_report_code
+				Select a.clob_content From &fc_schema_owner..report_templates a Where a.report_type_code = :p_report_code
+			]]>
+		</sqlStatement>
+		<sqlStatement name="columnAttributesSQL">
+			<![CDATA[
+				Select a.column_code, a.attribute_code, a.attribute_value From &fc_schema_owner..form_column_attr_vals a Where a.form_code = :p_form_code
+			]]>
+		</sqlStatement>	
+		<sqlStatement name="customLoginValidationSQL">
+			<![CDATA[
+				Select &validationFN (:p_username, :p_password, :p_url_params) isValid From DUAL
 			]]>
 		</sqlStatement>		
 	</metadataQuery>

@@ -1,5 +1,8 @@
 package com.abssoft.constructor.server;
 
+//TODO Google Authentification: 
+//http://code.google.com/intl/ru-RU/apis/accounts/
+//https://www.google.com/accounts/AuthSubRequest?next=http%3A%2F%2Feu.bas.kz%3A8000%2FConstructorApp%2F&&scope=http%3A%2F%2Fwww.google.com%2Fcalendar%2Ffeeds%2F
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,6 +20,7 @@ import com.abssoft.constructor.client.metadata.MenuMD;
 import com.abssoft.constructor.client.metadata.MenusArr;
 import com.abssoft.constructor.client.metadata.Row;
 import com.abssoft.constructor.client.metadata.RowsArr;
+import com.abssoft.constructor.client.metadata.ServerInfoMD;
 import com.abssoft.constructor.client.metadata.StaticLookup;
 import com.abssoft.constructor.client.metadata.StaticLookupsArr;
 
@@ -40,9 +44,11 @@ public class Session {
 	}
 
 	private String fcSchemaOwner;
+	private ServerInfoMD serverInfoMD;
 
-	public Session(Connection connection) {
+	public Session(Connection connection, ServerInfoMD serverInfoMD) {
 		this.connection = (OracleConnection) connection;
+		this.setServerInfoMD(serverInfoMD);
 		getStaticLookupsArr();
 	}
 
@@ -97,7 +103,8 @@ public class Session {
 		MenusArr metadata = new MenusArr();
 		try {
 			OraclePreparedStatement statement = //
-			(OraclePreparedStatement) connection.prepareStatement(QueryServiceImpl.queryMap.get("menusSQL"));
+			(OraclePreparedStatement) connection.prepareStatement(Utils.getSQLQueryFromXML("menusSQL", serverInfoMD));
+
 			ResultSet rs = statement.executeQuery();
 			while (rs.next()) {
 				String formCode = rs.getString("form_code");
@@ -122,7 +129,8 @@ public class Session {
 			}
 			rs.close();
 			// icons
-			statement = (OraclePreparedStatement) connection.prepareStatement(QueryServiceImpl.queryMap.get("iconsSQL"));
+			statement = (OraclePreparedStatement) connection.prepareStatement(Utils.getSQLQueryFromXML("iconsSQL", serverInfoMD));
+
 			rs = statement.executeQuery();
 			IconsArr icons = new IconsArr();
 			while (rs.next()) {
@@ -142,8 +150,9 @@ public class Session {
 		StaticLookupsArr lookupsArr = new StaticLookupsArr();
 		String currentLookupCode = "-9999";
 		try {
-			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(QueryServiceImpl.queryMap
-					.get("statLookupsSQL"));
+			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(Utils.getSQLQueryFromXML(
+					"statLookupsSQL", serverInfoMD));
+
 			ResultSet rs = statement.executeQuery();
 			StaticLookup l = new StaticLookup();
 			while (rs.next()) {
@@ -179,6 +188,14 @@ public class Session {
 
 	public void setScript(boolean isScript) {
 		this.isScript = isScript;
+	}
+
+	public void setServerInfoMD(ServerInfoMD serverInfoMD) {
+		this.serverInfoMD = serverInfoMD;
+	}
+
+	public ServerInfoMD getServerInfoMD() {
+		return serverInfoMD;
 	}
 
 }

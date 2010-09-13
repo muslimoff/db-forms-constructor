@@ -15,7 +15,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface QueryServiceAsync {
 
-	public void connect(int ServerIdx, String user, String password, boolean isScript, AsyncCallback<ConnectionInfo> callback);
+	public void connect(int ServerIdx, String user, String password, boolean isScript, String urlParams,
+			AsyncCallback<ConnectionInfo> callback);
 
 	public void fetch(FormInstanceIdentifier formIdentifier, String sortBy, int startRow, int endRow, Map<?, ?> criteria,
 			boolean forceFetch, AsyncCallback<RowsArr> callback);

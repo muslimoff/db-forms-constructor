@@ -1,5 +1,7 @@
 package com.abssoft.constructor.client.metadata;
 
+import java.util.HashMap;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -36,6 +38,8 @@ public class FormColumnMD implements IsSerializable {
 	private boolean editorEndRow;
 	private String editorColsSpan;
 	private String lookupDisplayValue;
+	private String editorOnEnterKeyAction;
+	private HashMap<String, String> lookupAttributes = new HashMap<String, String>();
 
 	public FormColumnMD() {
 	}
@@ -92,6 +96,10 @@ public class FormColumnMD implements IsSerializable {
 	 */
 	public String getEditorHeight() {
 		return editorHeight;
+	}
+
+	public String getEditorOnEnterKeyAction() {
+		return editorOnEnterKeyAction;
 	}
 
 	/**
@@ -269,6 +277,10 @@ public class FormColumnMD implements IsSerializable {
 		this.editorHeight = editorHeight;
 	}
 
+	public void setEditorOnEnterKeyAction(String editorOnEnterKeyAction) {
+		this.editorOnEnterKeyAction = editorOnEnterKeyAction;
+	}
+
 	/**
 	 * @param editorTabCode
 	 *            the editorTabCode to set
@@ -387,5 +399,13 @@ public class FormColumnMD implements IsSerializable {
 
 	public void setValidationRegexp(String validationRegexp) {
 		this.validationRegexp = validationRegexp;
+	}
+
+	public void setLookupAttributes(HashMap<String, String> lookupAttributes) {
+		this.lookupAttributes = lookupAttributes;
+	}
+
+	public HashMap<String, String> getLookupAttributes() {
+		return lookupAttributes;
 	}
 }

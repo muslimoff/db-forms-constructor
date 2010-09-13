@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="ConstructorApp" default="build" basedir=".">
 	<!-- Configure path to GWT SDK -->
-	<property name="gwt.sdk" location="C:/GWT/lib/gwt-2.0.3" />
+	<property name="gwt.sdk" location="C:/GWT/lib/gwt-2.0.4" />
 	<property name="smartgwt" location="C:/GWT/lib/smartgwt-2.1" />
 	<property name="ofcgwt" location="C:/GWT/lib/ofcgwt.2.0.1.b" />
 	<property name="xmlp"  location="C:/GWT/lib/xmlp" />
@@ -59,11 +59,6 @@
 		<zip destfile="ConstructorApp.war" basedir="war" excludes="**/.svn" />
 	</target>
 
-	<!--
-	<target name="StopTomcat" depends="war" description="Stop Tomcat">
-		<exec command="net stop Tomcat6" />
-	</target>
--->
 	<target name="StopTomcat" depends="war" description="Stop Tomcat">
 		<exec executable="net">
 			<arg value="stop" />

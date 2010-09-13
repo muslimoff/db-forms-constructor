@@ -77,6 +77,7 @@ public class XMLPublisherServlet extends HttpServlet {
 			Integer dataClobId = -1;
 			String template = null;
 			String filename = "файл";
+
 			System.out.println("getParameterMap>> " + req.getParameterMap() + "; filename:"
 					+ ((String[]) req.getParameterMap().get("filename"))[0]);
 			//
@@ -94,10 +95,10 @@ public class XMLPublisherServlet extends HttpServlet {
 				System.out.println("y:" + i + ": " + xx[i]);
 			}
 
-//			byte[] yy = (byte[]) req.getParameterMap().get("filename");
-//			for (int i = 0; i < yy.length; i++) {
-//				System.out.println("z:" + i + ": " + yy[i]);
-//			}
+			// byte[] yy = (byte[]) req.getParameterMap().get("filename");
+			// for (int i = 0; i < yy.length; i++) {
+			// System.out.println("z:" + i + ": " + yy[i]);
+			// }
 			System.out.println();
 			//
 
@@ -133,6 +134,7 @@ public class XMLPublisherServlet extends HttpServlet {
 				if ("filename".equals(paramName) && !"".equals(paramValue)) {
 					filename = paramValue;
 				}
+
 			}
 			if ("file".equals(type)) {
 				getFile(req, resp, session, contentDisposition, ContentType);
@@ -194,9 +196,8 @@ public class XMLPublisherServlet extends HttpServlet {
 	}
 
 	public static CLOB findCLOB(Session session, String reportCode) throws SQLException {
-		// "Select a.clob_content From reports a Where a.report_type_code = '" + ReportCode + "'";
 		OracleConnection connection = session.getConnection();
-		String sqlText = QueryServiceImpl.queryMap.get("reportTemplatesSQL");
+		String sqlText = Utils.getSQLQueryFromXML("reportTemplatesSQL", session.getServerInfoMD());
 		OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(sqlText);
 		Utils.setParameterValue(statement, "p_report_code", reportCode);
 		ResultSet rs = statement.executeQuery();
@@ -246,6 +247,12 @@ public class XMLPublisherServlet extends HttpServlet {
 			String ContentType, String template, Integer dataClobId, String filename) throws IOException {
 		System.out.println("XMLPublisherServlet.processXMLP");
 		ServletOutputStream respOS = resp.getOutputStream();
+		byte format = FOProcessor.FORMAT_RTF;
+		String extention = "rtf";
+		if ("application/vnd.ms-excel".equals(ContentType)) {
+			format = FOProcessor.FORMAT_EXCEL;
+			extention = "xls";
+		}
 		try {
 			ByteArrayOutputStream rtfOS = new ByteArrayOutputStream();
 			CLOB rtfTemplClob = findCLOB(session, template);
@@ -262,8 +269,9 @@ public class XMLPublisherServlet extends HttpServlet {
 			processor.setData(xmlDataClob.characterStreamValue());
 
 			resp.setContentType(ContentType);
-			resp.addHeader("Content-Disposition", contentDisposition + "; " + getEncodedFileName(req, filename + ".rtf"));
-			processor.setOutputFormat(FOProcessor.FORMAT_RTF);
+			resp.addHeader("Content-Disposition", contentDisposition + "; " + getEncodedFileName(req, filename + "." + extention));
+
+			processor.setOutputFormat(format);
 			processor.setOutput(respOS);
 			processor.generate();
 			foIS.close();

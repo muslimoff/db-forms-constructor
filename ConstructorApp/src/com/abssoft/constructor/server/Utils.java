@@ -23,6 +23,7 @@ import org.w3c.dom.NodeList;
 
 import com.abssoft.constructor.client.metadata.Attribute;
 import com.abssoft.constructor.client.metadata.Row;
+import com.abssoft.constructor.client.metadata.ServerInfoMD;
 
 public class Utils {
 	public static final String sessionIdentifier = "ConstructorSession";
@@ -71,7 +72,8 @@ public class Utils {
 
 	/******************************/
 	// TODO getAttribute - одинаковый код. Как быть?
-	public static Attribute getAttribute(Integer column, String formColDataType, OracleCallableStatement rs) throws SQLException {
+	public static Attribute getAttribute(Integer column, String formColDataType, OracleCallableStatement rs, FormInstance formInstance)
+			throws SQLException {
 		Attribute attr;
 		String val;
 		if ("N".equals(formColDataType)) {
@@ -83,6 +85,11 @@ public class Utils {
 		} else if ("B".equals(formColDataType)) {
 			val = rs.getString(column);
 			attr = new Attribute("1".equals(val) || "Y".equals(val));
+		} else if ("CLOB".equals(formColDataType)) {
+			CLOB cval = (CLOB) rs.getClob(column);
+			Integer clobHashCode = (null != cval) ? cval.hashCode() : null;
+			attr = new Attribute((Double) ((null != clobHashCode) ? Double.valueOf(clobHashCode) : null));
+			formInstance.getClobHM().put(clobHashCode, cval);
 		} else {
 			val = rs.getString(column);
 			// Необходимо убирать символы chr #00, которые может возвращать БД - иначе grid вылетает..
@@ -229,5 +236,26 @@ public class Utils {
 		PrintWriter printWriter = new PrintWriter(writer);
 		e.printStackTrace(printWriter);
 		return writer.toString();
+	}
+
+	public static String getSQLwUserVarsReplaced(String sqlText, ServerInfoMD serverInfoMD) {
+		String query = sqlText;
+		query = query.replaceAll("(?i)&validationFN", serverInfoMD.getValidationFN());
+		query = query.replaceAll("(?i)&fc_schema_owner\\.", serverInfoMD.getFcSchemaOwner());
+		query = query.replaceAll("(?i)&fc_schema_owner", serverInfoMD.getFcSchemaOwner());
+		query = query.replaceAll("(?i)&db_username\\.", serverInfoMD.getDbUsername());
+		query = query.replaceAll("(?i)&db_username", serverInfoMD.getDbUsername());
+		return query;
+	}
+
+	public static String getSQLQueryFromXML(String queryCode, ServerInfoMD serverInfoMD) {
+		String query = QueryServiceImpl.queryMap1.get(queryCode);
+		query = getSQLwUserVarsReplaced(query, serverInfoMD);
+		// query = query.replaceAll("(?i)&validationFN", serverInfoMD.getValidationFN());
+		// query = query.replaceAll("(?i)&fc_schema_owner\\.", serverInfoMD.getFcSchemaOwner());
+		// query = query.replaceAll("(?i)&fc_schema_owner", serverInfoMD.getFcSchemaOwner());
+		// query = query.replaceAll("(?i)&db_username\\.", serverInfoMD.getDbUsername());
+		// query = query.replaceAll("(?i)&db_username", serverInfoMD.getDbUsername());
+		return query;
 	}
 }

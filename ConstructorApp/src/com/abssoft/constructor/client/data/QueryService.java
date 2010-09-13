@@ -25,7 +25,7 @@ public interface QueryService extends RemoteService {
 	 * @param password
 	 * @return <code>ConnectionInfo</code> Результаты подключения
 	 */
-	public ConnectionInfo connect(int ServerIdx, String user, String password, boolean isScript);
+	public ConnectionInfo connect(int ServerIdx, String user, String password, boolean isScript, String urlParams);
 
 	/**
 	 * Получение метаданных формы (наименований столбцов и их типов и характеристик)
