@@ -17,26 +17,31 @@ Insert Into FORMS
             ,"OBJECT_VERSION_NUMBER", "DEFAULT_COLUMN_WIDTH", "DESCRIPTION", "DOUBLE_CLICK_ACTION_CODE", "LOOKUP_WIDTH")
      Values ('FORM_COLUMNS', ''
             ,'SELECT   t.*, NVL ( (SELECT   NVL (f.form_name, form_code)
-                       FROM   forms f
+                       FROM   &fc_schema_owner..forms f
                       WHERE   f.form_code = t.lookup_code AND t.field_type IN (''9'', ''11'')),
               (SELECT   l.lookup_name
-                 FROM   lookups l
+                 FROM   &fc_schema_owner..lookups l
                 WHERE   t.lookup_code = l.lookup_code AND t.field_type IN (''8'', ''10'')))
                  lookup_name
-  FROM   Table (form_utils.describe_form_columns_pl (DECODE (
+  FROM   Table (&fc_schema_owner..form_utils.describe_form_columns_pl (DECODE (
                                                         :p_$master_form_code,
                                                         ''FORMS2'', :form_code_for_filter,
                                                         ''MENUS'', :form_code_for_filter,
                                                         :form_code
                                                      ))) t
 /*************/'
-            ,'Детальная Колонки', 'G', 'Y', '4', '35%', '*', '', 'B', 'Y', '335', '*', '', '', '');
+            ,'Детальная Колонки', 'G', 'Y', '4', '35%', '*', '', 'B', 'Y', '338', '*', '', '', '');
 /*  Form: FORM_COLUMNS. Entity: FORM_TABS.  */
 
 Insert Into FORM_TABS
             ("FORM_CODE", "TAB_CODE", "CHILD_FORM_CODE", "TAB_POSITION", "TAB_NAME", "NUMBER_OF_COLUMNS", "ICON_ID"
             ,"TAB_TYPE", "TAB_DISPLAY_NUMBER")
      Values ('FORM_COLUMNS', 'ADD', 'LOOKUPS', 'R', 'Дополнительные', '4', '28', '1', '2');
+
+Insert Into FORM_TABS
+            ("FORM_CODE", "TAB_CODE", "CHILD_FORM_CODE", "TAB_POSITION", "TAB_NAME", "NUMBER_OF_COLUMNS", "ICON_ID"
+            ,"TAB_TYPE", "TAB_DISPLAY_NUMBER")
+     Values ('FORM_COLUMNS', 'COL_ATTRS', 'FORM_COLUMN_ATTR_VALS', 'R', 'Атрибуты', '', '12', '2', '');
 
 Insert Into FORM_TABS
             ("FORM_CODE", "TAB_CODE", "CHILD_FORM_CODE", "TAB_POSITION", "TAB_NAME", "NUMBER_OF_COLUMNS", "ICON_ID"
@@ -53,7 +58,7 @@ Insert Into FORM_ACTIONS
             ("FORM_CODE", "ACTION_CODE", "PROCEDURE_NAME", "ACTION_DISPLAY_NAME", "ICON_ID", "DEFAULT_PARAM_PREFIX"
             ,"DEFAULT_OLD_PARAM_PREFIX", "ACTION_TYPE", "DISPLAY_NUMBER", "CONFIRM_TEXT", "HOT_KEY"
             ,"SHOW_SEPARATOR_BELOW", "DISPLAY_ON_TOOLBAR", "CHILD_FORM_CODE")
-     Values ('FORM_COLUMNS', 'DEL', 'FORM_COLUMNS_PKG.P_DELETE', 'Удалить', '48', '', '', '3', '130'
+     Values ('FORM_COLUMNS', 'DEL', '&fc_schema_owner..FORM_COLUMNS_PKG.P_DELETE', 'Удалить', '48', '', '', '3', '130'
             ,'Вы уверенны что хотите удалить запись?', '', 'N', 'Y', '');
 
 Insert Into FORM_ACTIONS
@@ -72,8 +77,8 @@ Insert Into FORM_ACTIONS
             ("FORM_CODE", "ACTION_CODE", "PROCEDURE_NAME", "ACTION_DISPLAY_NAME", "ICON_ID", "DEFAULT_PARAM_PREFIX"
             ,"DEFAULT_OLD_PARAM_PREFIX", "ACTION_TYPE", "DISPLAY_NUMBER", "CONFIRM_TEXT", "HOT_KEY"
             ,"SHOW_SEPARATOR_BELOW", "DISPLAY_ON_TOOLBAR", "CHILD_FORM_CODE")
-     Values ('FORM_COLUMNS', 'UPD', 'FORM_COLUMNS_PKG.P_INS_UPD', 'Сохранить', '46', '', '', '2', '120', 'Вы уверенны?'
-            ,'', 'N', 'Y', '');
+     Values ('FORM_COLUMNS', 'UPD', '&fc_schema_owner..FORM_COLUMNS_PKG.P_INS_UPD', 'Сохранить', '46', '', '', '2'
+            ,'120', 'Вы уверенны?', '', 'N', 'Y', '');
 /*  Form: FORM_COLUMNS. Entity: FORM_COLUMNS$.  */
 
 Insert Into FORM_COLUMNS$
@@ -619,50 +624,6 @@ End;
 
 Declare
    l_clob   Clob
-      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Поле.</b></font></span><div>Описание настройки.</div>';
-Begin
-   Update FORM_COLUMNS
-      Set help_text = l_clob
-    Where form_code = 'FORM_COLUMNS'
-      And column_code = 'EXISTS_IN_METADATA_FLAG';
-End;
-/
-
-Declare
-   l_clob   Clob
-      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Поле.</b></font></span><div>Описание настройки.</div>';
-Begin
-   Update FORM_COLUMNS
-      Set help_text = l_clob
-    Where form_code = 'FORM_COLUMNS'
-      And column_code = 'LOOKUP_CODE';
-End;
-/
-
-Declare
-   l_clob   Clob
-      := '<span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-family: ''Times New Roman''; font-size: medium; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="font-family: arial,sans-serif; font-size: 13px;"><h2 style="font-size: large;"><span class="Apple-style-span" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; color: rgb(51, 51, 51); "><span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Форма.</b></font></span><div>Ссылка на форму-владелец данного поля.</div></span></h2></span></span>';
-Begin
-   Update FORM_COLUMNS
-      Set help_text = l_clob
-    Where form_code = 'FORM_COLUMNS'
-      And column_code = 'FORM_CODE';
-End;
-/
-
-Declare
-   l_clob   Clob
-      := '<span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-family: ''Times New Roman''; font-size: medium; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="color: rgb(51, 51, 51); font-family: Verdana,sans-serif; font-size: 11px;"><p>TextItems support a masked entry to restrict and format entry.</p><p>Overview of available mask characters</p><p><table class="normal" style="font-family: Verdana,sans-serif; font-size: 11px; color: rgb(51, 51, 51);"><tbody><tr><th>Character</th><th>Description</th></tr><tr><td>0</td><td>Digit (0 through 9) or plus [+] or minus [-] signs</td></tr><tr><td>9</td><td>Digit or space</td></tr><tr><td>#</td><td>Digit</td></tr><tr><td>L</td><td>Letter (A through Z)</td></tr><tr><td>?</td><td>Letter (A through Z) or space</td></tr><tr><td>A</td><td>Letter or digit</td></tr><tr><td>a</td><td>Letter or digit</td></tr><tr><td>C</td><td>Any character or space</td></tr><tr><td>&nbsp;</td></tr><tr><td>&lt;</td><td>Causes all characters that follow to be converted to lowercase</td></tr><tr><td>&gt;</td><td>Causes all characters that follow to be converted to uppercase</td></tr></tbody></table></p><p>Any character not matching one of the above mask characters or that is escaped with a backslash (\) is considered to be a literal.</p><p>Custom mask characters can be defined by standard regular expression character set or range. For example, a hexadecimal color code mask could be:</p><ul><li>Color: \#&gt;[0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F]</li></ul></span></span>';
-Begin
-   Update FORM_COLUMNS
-      Set help_text = l_clob
-    Where form_code = 'FORM_COLUMNS'
-      And column_code = 'TEXT_MASK';
-End;
-/
-
-Declare
-   l_clob   Clob
       := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Код поля.</b></font></span><div>Внутренний идентификатор столбца запроса - уникален в пределах формы.</div>';
 Begin
    Update FORM_COLUMNS
@@ -674,78 +635,12 @@ End;
 
 Declare
    l_clob   Clob
-      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Поле.</b></font></span><div>Описание настройки.</div>';
+      := '<font class="Apple-style-span" face="''times new roman'', times, serif"><span class="Apple-style-span" style="font-size: medium;"><b>Тип данных.</b></span></font><div>Пока не используется. Автоматически подставляется БД при разборе запроса.</div>';
 Begin
    Update FORM_COLUMNS
       Set help_text = l_clob
     Where form_code = 'FORM_COLUMNS'
-      And column_code = 'EDITOR_HEIGHT';
-End;
-/
-
-Declare
-   l_clob   Clob
-      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Поле.</b></font></span><div>Описание настройки.</div>';
-Begin
-   Update FORM_COLUMNS
-      Set help_text = l_clob
-    Where form_code = 'FORM_COLUMNS'
-      And column_code = 'EXISTS_IN_QUERY_FLAG';
-End;
-/
-
-Declare
-   l_clob   Clob
-      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Поле.</b></font></span><div>Описание настройки.</div>';
-Begin
-   Update FORM_COLUMNS
-      Set help_text = l_clob
-    Where form_code = 'FORM_COLUMNS'
-      And column_code = 'HELP_TEXT';
-End;
-/
-
-Declare
-   l_clob   Clob
-      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Поле.</b></font></span><div>Описание настройки.</div>';
-Begin
-   Update FORM_COLUMNS
-      Set help_text = l_clob
-    Where form_code = 'FORM_COLUMNS'
-      And column_code = 'HOVER_COLUMN_CODE';
-End;
-/
-
-Declare
-   l_clob   Clob
-      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Поле.</b></font></span><div>Описание настройки.</div>';
-Begin
-   Update FORM_COLUMNS
-      Set help_text = l_clob
-    Where form_code = 'FORM_COLUMNS'
-      And column_code = 'LOOKUP_FIELD_TYPE';
-End;
-/
-
-Declare
-   l_clob   Clob
-      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Поле.</b></font></span><div>Описание настройки.</div>';
-Begin
-   Update FORM_COLUMNS
-      Set help_text = l_clob
-    Where form_code = 'FORM_COLUMNS'
-      And column_code = 'SHOW_ON_GRID';
-End;
-/
-
-Declare
-   l_clob   Clob
-      := '<div><b>Например</b>, проверка правильности e-mail:</div><div>^([a-zA-Z0-9_.\-+])+@(([a-zA-Z0-9\-])+\.)+[a-zA-Z0-9]{2,4}$</div>';
-Begin
-   Update FORM_COLUMNS
-      Set help_text = l_clob
-    Where form_code = 'FORM_COLUMNS'
-      And column_code = 'VALIDATION_REGEXP';
+      And column_code = 'COLUMN_DATA_TYPE';
 End;
 /
 
@@ -762,12 +657,12 @@ End;
 
 Declare
    l_clob   Clob
-      := '<span class="Apple-style-span" style="white-space: pre; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b><span class="Apple-style-span" style="font-size: medium;">Польз. имя.</span></b></font></span><div><span class="Apple-style-span" style="white-space: pre;"><font class="Apple-style-span" face="''times new roman'', times, serif"><span class="Apple-style-span" style="font-size: small;">Имя столбца, отображаемое пользователю. Если не указано - отображается значение поля <i>COLUMN_CODE</i>.</span></font></span></div><div><font class="Apple-style-span" face="''times new roman'', times, serif"><span class="Apple-style-span" style="font-size: small; white-space: pre;"><br></span></font></div>';
+      := '<span class="Apple-style-span" style="font-size: medium;"><font class="Apple-style-span" face="''times new roman'', times, serif"><b>№</b></font></span><div>Отвечает за порядок отображения столбца в таблице и в форме редактирования.</div>';
 Begin
    Update FORM_COLUMNS
       Set help_text = l_clob
     Where form_code = 'FORM_COLUMNS'
-      And column_code = 'COLUMN_USER_NAME';
+      And column_code = 'COLUMN_DISPLAY_NUMBER';
 End;
 /
 
@@ -784,12 +679,78 @@ End;
 
 Declare
    l_clob   Clob
-      := '<span class="Apple-style-span" style="white-space: pre; "><font class="Apple-style-span" face="''times new roman'', times, serif"><span class="Apple-style-span" style="font-size: medium;"><b>Тип для дерева.</b></span></font></span><div><span class="Apple-style-span" style="white-space: pre;">Для форм с типом "T" ("Дерево") определяет тип столбца, например - идентификатор записи,</span></div><div><span class="Apple-style-span" style="white-space: pre;">ссылка на родителя, количество дочерних узлов, является ли узлом или конечным элементом, иконка и др.</span></div>';
+      := '<span class="Apple-style-span" style="white-space: pre; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b><span class="Apple-style-span" style="font-size: medium;">Польз. имя.</span></b></font></span><div><span class="Apple-style-span" style="white-space: pre;"><font class="Apple-style-span" face="''times new roman'', times, serif"><span class="Apple-style-span" style="font-size: small;">Имя столбца, отображаемое пользователю. Если не указано - отображается значение поля <i>COLUMN_CODE</i>.</span></font></span></div><div><font class="Apple-style-span" face="''times new roman'', times, serif"><span class="Apple-style-span" style="font-size: small; white-space: pre;"><br></span></font></div>';
 Begin
    Update FORM_COLUMNS
       Set help_text = l_clob
     Where form_code = 'FORM_COLUMNS'
-      And column_code = 'TREE_FIELD_TYPE';
+      And column_code = 'COLUMN_USER_NAME';
+End;
+/
+
+Declare
+   l_clob   Clob
+      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>№ сортировки.</b></font></span><div>Описание настройки.</div>';
+Begin
+   Update FORM_COLUMNS
+      Set help_text = l_clob
+    Where form_code = 'FORM_COLUMNS'
+      And column_code = 'DEFAULT_ORDERBY_NUMBER';
+End;
+/
+
+Declare
+   l_clob   Clob
+      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>По умолчанию.</b></font></span><div>Описание настройки.</div>';
+Begin
+   Update FORM_COLUMNS
+      Set help_text = l_clob
+    Where form_code = 'FORM_COLUMNS'
+      And column_code = 'DEFAULT_VALUE';
+End;
+/
+
+Declare
+   l_clob   Clob
+      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Редактор - кол-во колонок.</b></font></span><div>Описание настройки.</div>';
+Begin
+   Update FORM_COLUMNS
+      Set help_text = l_clob
+    Where form_code = 'FORM_COLUMNS'
+      And column_code = 'EDITOR_COLS_SPAN';
+End;
+/
+
+Declare
+   l_clob   Clob
+      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Редактор - с конца строки.</b></font></span><div>Описание настройки.</div>';
+Begin
+   Update FORM_COLUMNS
+      Set help_text = l_clob
+    Where form_code = 'FORM_COLUMNS'
+      And column_code = 'EDITOR_END_ROW_FLAG';
+End;
+/
+
+Declare
+   l_clob   Clob
+      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Высота поля.</b></font></span><div>Описание настройки.</div>';
+Begin
+   Update FORM_COLUMNS
+      Set help_text = l_clob
+    Where form_code = 'FORM_COLUMNS'
+      And column_code = 'EDITOR_HEIGHT';
+End;
+/
+
+Declare
+   l_clob   Clob
+      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Действие по нажатию Enter.</b></font></span><div>Описание настройки.</div>';
+Begin
+   Update FORM_COLUMNS
+      Set help_text = l_clob
+    Where form_code = 'FORM_COLUMNS'
+      And column_code = 'EDITOR_ON_ENTER_KEY_ACTION';
 End;
 /
 
@@ -806,23 +767,34 @@ End;
 
 Declare
    l_clob   Clob
-      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Поле.</b></font></span><div>Описание настройки.</div>';
+      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>TitleOrientation.</b></font></span><div>Описание настройки.</div>';
 Begin
    Update FORM_COLUMNS
       Set help_text = l_clob
     Where form_code = 'FORM_COLUMNS'
-      And column_code = 'PIMARY_KEY_FLAG';
+      And column_code = 'EDITOR_TITLE_ORIENTATION';
 End;
 /
 
 Declare
    l_clob   Clob
-      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Поле.</b></font></span><div>Описание настройки.</div>';
+      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>В настройках?.</b></font></span><div>Описание настройки.</div>';
 Begin
    Update FORM_COLUMNS
       Set help_text = l_clob
     Where form_code = 'FORM_COLUMNS'
-      And column_code = 'IS_FROZEN_FLAG';
+      And column_code = 'EXISTS_IN_METADATA_FLAG';
+End;
+/
+
+Declare
+   l_clob   Clob
+      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>В запросе?.</b></font></span><div>Описание настройки.</div>';
+Begin
+   Update FORM_COLUMNS
+      Set help_text = l_clob
+    Where form_code = 'FORM_COLUMNS'
+      And column_code = 'EXISTS_IN_QUERY_FLAG';
 End;
 /
 
@@ -847,7 +819,95 @@ End;
 
 Declare
    l_clob   Clob
-      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Поле.</b></font></span><div>Описание настройки.</div>';
+      := '<span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-family: ''Times New Roman''; font-size: medium; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="font-family: arial,sans-serif; font-size: 13px;"><h2 style="font-size: large;"><span class="Apple-style-span" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; color: rgb(51, 51, 51); "><span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Форма.</b></font></span><div>Ссылка на форму-владелец данного поля.</div></span></h2></span></span>';
+Begin
+   Update FORM_COLUMNS
+      Set help_text = l_clob
+    Where form_code = 'FORM_COLUMNS'
+      And column_code = 'FORM_CODE';
+End;
+/
+
+Declare
+   l_clob   Clob
+      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Will become item help..</b></font></span><div>Описание настройки.</div>';
+Begin
+   Update FORM_COLUMNS
+      Set help_text = l_clob
+    Where form_code = 'FORM_COLUMNS'
+      And column_code = 'HELP_TEXT';
+End;
+/
+
+Declare
+   l_clob   Clob
+      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Поле подсказки.</b></font></span><div>Описание настройки.</div>';
+Begin
+   Update FORM_COLUMNS
+      Set help_text = l_clob
+    Where form_code = 'FORM_COLUMNS'
+      And column_code = 'HOVER_COLUMN_CODE';
+End;
+/
+
+Declare
+   l_clob   Clob
+      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Заморозить.</b></font></span><div>Описание настройки.</div>';
+Begin
+   Update FORM_COLUMNS
+      Set help_text = l_clob
+    Where form_code = 'FORM_COLUMNS'
+      And column_code = 'IS_FROZEN_FLAG';
+End;
+/
+
+Declare
+   l_clob   Clob
+      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Список.</b></font></span><div>Описание настройки.</div>';
+Begin
+   Update FORM_COLUMNS
+      Set help_text = l_clob
+    Where form_code = 'FORM_COLUMNS'
+      And column_code = 'LOOKUP_CODE';
+End;
+/
+
+Declare
+   l_clob   Clob
+      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Списки: отображаемое поле.</b></font></span><div>Описание настройки.</div>';
+Begin
+   Update FORM_COLUMNS
+      Set help_text = l_clob
+    Where form_code = 'FORM_COLUMNS'
+      And column_code = 'LOOKUP_DISPLAY_VALUE';
+End;
+/
+
+Declare
+   l_clob   Clob
+      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Тип поля в списке.</b></font></span><div>Описание настройки.</div>';
+Begin
+   Update FORM_COLUMNS
+      Set help_text = l_clob
+    Where form_code = 'FORM_COLUMNS'
+      And column_code = 'LOOKUP_FIELD_TYPE';
+End;
+/
+
+Declare
+   l_clob   Clob
+      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Первичн. ключ.</b></font></span><div>Описание настройки.</div>';
+Begin
+   Update FORM_COLUMNS
+      Set help_text = l_clob
+    Where form_code = 'FORM_COLUMNS'
+      And column_code = 'PIMARY_KEY_FLAG';
+End;
+/
+
+Declare
+   l_clob   Clob
+      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Подсказка.</b></font></span><div>Описание настройки.</div>';
 Begin
    Update FORM_COLUMNS
       Set help_text = l_clob
@@ -858,34 +918,56 @@ End;
 
 Declare
    l_clob   Clob
-      := '<span class="Apple-style-span" style="font-size: medium;"><font class="Apple-style-span" face="''times new roman'', times, serif"><b>№</b></font></span><div>Отвечает за порядок отображения столбца в таблице и в форме редактирования.</div>';
+      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Отображать в таблице.</b></font></span><div>Описание настройки.</div>';
 Begin
    Update FORM_COLUMNS
       Set help_text = l_clob
     Where form_code = 'FORM_COLUMNS'
-      And column_code = 'COLUMN_DISPLAY_NUMBER';
+      And column_code = 'SHOW_ON_GRID';
 End;
 /
 
 Declare
    l_clob   Clob
-      := '<font class="Apple-style-span" face="''times new roman'', times, serif"><span class="Apple-style-span" style="font-size: medium;"><b>Тип данных.</b></span></font><div>Пока не используется. Автоматически подставляется БД при разборе запроса.</div>';
+      := '<span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-family: ''Times New Roman''; font-size: medium; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="color: rgb(51, 51, 51); font-family: Verdana,sans-serif; font-size: 11px;"><p>TextItems support a masked entry to restrict and format entry.</p><p>Overview of available mask characters</p><p><table class="normal" style="font-family: Verdana,sans-serif; font-size: 11px; color: rgb(51, 51, 51);"><tbody><tr><th>Character</th><th>Description</th></tr><tr><td>0</td><td>Digit (0 through 9) or plus [+] or minus [-] signs</td></tr><tr><td>9</td><td>Digit or space</td></tr><tr><td>#</td><td>Digit</td></tr><tr><td>L</td><td>Letter (A through Z)</td></tr><tr><td>?</td><td>Letter (A through Z) or space</td></tr><tr><td>A</td><td>Letter or digit</td></tr><tr><td>a</td><td>Letter or digit</td></tr><tr><td>C</td><td>Any character or space</td></tr><tr><td>&nbsp;</td></tr><tr><td>&lt;</td><td>Causes all characters that follow to be converted to lowercase</td></tr><tr><td>&gt;</td><td>Causes all characters that follow to be converted to uppercase</td></tr></tbody></table></p><p>Any character not matching one of the above mask characters or that is escaped with a backslash (\) is considered to be a literal.</p><p>Custom mask characters can be defined by standard regular expression character set or range. For example, a hexadecimal color code mask could be:</p><ul><li>Color: \#&gt;[0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F]</li></ul></span></span>';
 Begin
    Update FORM_COLUMNS
       Set help_text = l_clob
     Where form_code = 'FORM_COLUMNS'
-      And column_code = 'COLUMN_DATA_TYPE';
+      And column_code = 'TEXT_MASK';
 End;
 /
 
 Declare
    l_clob   Clob
-      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Поле.</b></font></span><div>Описание настройки.</div>';
+      := '<span class="Apple-style-span" style="white-space: pre; "><font class="Apple-style-span" face="''times new roman'', times, serif"><span class="Apple-style-span" style="font-size: medium;"><b>Тип для дерева.</b></span></font></span><div><span class="Apple-style-span" style="white-space: pre;">Для форм с типом "T" ("Дерево") определяет тип столбца, например - идентификатор записи,</span></div><div><span class="Apple-style-span" style="white-space: pre;">ссылка на родителя, количество дочерних узлов, является ли узлом или конечным элементом, иконка и др.</span></div>';
+Begin
+   Update FORM_COLUMNS
+      Set help_text = l_clob
+    Where form_code = 'FORM_COLUMNS'
+      And column_code = 'TREE_FIELD_TYPE';
+End;
+/
+
+Declare
+   l_clob   Clob
+      := '<span class="Apple-style-span" style="font-size: medium; "><font class="Apple-style-span" face="''times new roman'', times, serif"><b>Иниц. дерева.</b></font></span><div>Описание настройки.</div>';
 Begin
    Update FORM_COLUMNS
       Set help_text = l_clob
     Where form_code = 'FORM_COLUMNS'
       And column_code = 'TREE_INITIALIZATION_VALUE';
+End;
+/
+
+Declare
+   l_clob   Clob
+      := '<div><b>Например</b>, проверка правильности e-mail:</div><div>^([a-zA-Z0-9_.\-+])+@(([a-zA-Z0-9\-])+\.)+[a-zA-Z0-9]{2,4}$</div>';
+Begin
+   Update FORM_COLUMNS
+      Set help_text = l_clob
+    Where form_code = 'FORM_COLUMNS'
+      And column_code = 'VALIDATION_REGEXP';
 End;
 /
 
