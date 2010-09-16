@@ -57,8 +57,7 @@ class MainForm extends Canvas {
 	public class FormListGrid extends ListGrid {
 		public FormListGrid() {
 			this.setShowRowNumbers(true);
-			// TODO Высота строки..
-			// 
+			// TODO Высота строки..			// 
 			this.setCellHeight(16);
 		}
 

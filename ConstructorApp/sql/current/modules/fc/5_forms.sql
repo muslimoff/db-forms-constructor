@@ -1,6 +1,12 @@
+
 /*****************COLUMNS_LIST*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'COLUMNS_LIST';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'COLUMNS_LIST';
 Delete From FORM_COLUMNS
       Where form_code = 'COLUMNS_LIST';
 Delete From FORM_COLUMNS$
@@ -59,12 +65,22 @@ Insert Into FORM_COLUMNS
             ,"EDITOR_COLS_SPAN", "LOOKUP_DISPLAY_VALUE", "EDITOR_ON_ENTER_KEY_ACTION")
      Values ('COLUMNS_LIST', 'COLUMN_USER_NAME', '', '*', 'S', '1002', 'N', 'Y', '', '', '', ''
             ,'*Пользовательское имя поля', 'N', 'N', '', '', '', '2', '', '', '', '', '', '', 'Y', '*', '', '');
+/*  Form: COLUMNS_LIST. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: COLUMNS_LIST. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
+
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************DBLCLICK_FORM_ACT_LIST*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'DBLCLICK_FORM_ACT_LIST';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'DBLCLICK_FORM_ACT_LIST';
 Delete From FORM_COLUMNS
       Where form_code = 'DBLCLICK_FORM_ACT_LIST';
 Delete From FORM_COLUMNS$
@@ -137,12 +153,22 @@ Insert Into FORM_COLUMNS
             ,"EDITOR_COLS_SPAN", "LOOKUP_DISPLAY_VALUE", "EDITOR_ON_ENTER_KEY_ACTION")
      Values ('DBLCLICK_FORM_ACT_LIST', 'ACTION_DISPLAY_NAME', 'Наименование', '*', 'S', '1002', 'N', 'Y', '', '', ''
             ,'', '**ACTION_DISPLAY_NAME', 'N', 'N', '', '', '', '2', '', '', '', '', '', 'L', 'Y', '*', '', '');
+/*  Form: DBLCLICK_FORM_ACT_LIST. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: DBLCLICK_FORM_ACT_LIST. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
+
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************FORMS_LIST*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'FORMS_LIST';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'FORMS_LIST';
 Delete From FORM_COLUMNS
       Where form_code = 'FORMS_LIST';
 Delete From FORM_COLUMNS$
@@ -230,12 +256,22 @@ Insert Into FORM_COLUMNS
             ,"EDITOR_COLS_SPAN", "LOOKUP_DISPLAY_VALUE", "EDITOR_ON_ENTER_KEY_ACTION")
      Values ('FORMS_LIST', 'ICON_ID', 'Icon', '20%', 'N', '5', 'N', 'Y', '', '', '', '3', '**ICON_ID', 'N', 'N', '', ''
             ,'', '3', '', '', '', '', '', '', 'Y', '*', '', '');
+/*  Form: FORMS_LIST. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: FORMS_LIST. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
+
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************FORM_TABS*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'FORM_TABS';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'FORM_TABS';
 Delete From FORM_COLUMNS
       Where form_code = 'FORM_TABS';
 Delete From FORM_COLUMNS$
@@ -260,6 +296,11 @@ Insert Into FORMS
 '
             ,'Детальная Вкладки', 'G', 'Y', '4', '*', '*', '', '', 'Y', '70', '*', '', '', '', 'FC', '10');
 /*  Form: FORM_TABS. Entity: FORM_TABS.  */
+
+Insert Into FORM_TABS
+            ("FORM_CODE", "TAB_CODE", "CHILD_FORM_CODE", "TAB_POSITION", "TAB_NAME", "NUMBER_OF_COLUMNS", "ICON_ID"
+            ,"TAB_TYPE", "TAB_DISPLAY_NUMBER")
+     Values ('FORM_TABS', 'EXCL', 'FORM_TAB_PARENT_EXCLNS', 'B', 'Исключение вкладок', '', '13', '2', '');
 /*  Form: FORM_TABS. Entity: FORM_ACTIONS.  */
 
 Insert Into FORM_ACTIONS
@@ -425,6 +466,9 @@ Insert Into FORM_COLUMNS
             ,"EDITOR_COLS_SPAN", "LOOKUP_DISPLAY_VALUE", "EDITOR_ON_ENTER_KEY_ACTION")
      Values ('FORM_TABS', 'TAB_TYPE', 'Тип закладки', '*', 'S', '1008', 'N', 'Y', '', '', '', '8', '**TAB_TYPE', 'N'
             ,'N', 'FORM_TABS.TAB_TYPE', '', '', '', '', '', '', '', '', '', 'Y', '*', '', '');
+/*  Form: FORM_TABS. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: FORM_TABS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
 
 Declare
    l_clob   Clob
@@ -505,9 +549,15 @@ End;
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************FORM_TABS_LIST*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'FORM_TABS_LIST';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'FORM_TABS_LIST';
 Delete From FORM_COLUMNS
       Where form_code = 'FORM_TABS_LIST';
 Delete From FORM_COLUMNS$
@@ -599,12 +649,22 @@ Insert Into FORM_COLUMNS
             ,"EDITOR_COLS_SPAN", "LOOKUP_DISPLAY_VALUE", "EDITOR_ON_ENTER_KEY_ACTION")
      Values ('FORM_TABS_LIST', 'TAB_TYPE', 'Тип', '*', 'S', '1004', 'N', 'Y', '', '', '', '8', '**TAB_TYPE', 'N', 'N'
             ,'FORM_TABS.TAB_TYPE', '', '', '', '', '', '', '', '', '', 'Y', '*', '', '');
+/*  Form: FORM_TABS_LIST. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: FORM_TABS_LIST. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
+
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************ICONS*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'ICONS';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'ICONS';
 Delete From FORM_COLUMNS
       Where form_code = 'ICONS';
 Delete From FORM_COLUMNS$
@@ -743,12 +803,22 @@ Insert Into FORM_COLUMNS
             ,"EDITOR_COLS_SPAN", "LOOKUP_DISPLAY_VALUE", "EDITOR_ON_ENTER_KEY_ACTION")
      Values ('ICONS', 'ICON_PATH', '', '*', 'S', '1004', 'N', 'Y', '', '', '', '', '**ICON_PATH', 'N', 'N', '', '', ''
             ,'3', '', '', '', '', '', '', 'Y', '*', '', '');
+/*  Form: ICONS. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: ICONS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
+
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************LOOKUPS_LIST*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'LOOKUPS_LIST';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'LOOKUPS_LIST';
 Delete From FORM_COLUMNS
       Where form_code = 'LOOKUPS_LIST';
 Delete From FORM_COLUMNS$
@@ -843,12 +913,22 @@ Insert Into FORM_COLUMNS
      Values ('LOOKUPS_LIST', 'LOOKUP_TYPE', 'Тип', '*', 'S', '1001', 'N', 'N', '', '', '', '8'
             ,'*Тип - простой без редактирования, простой с добавлением на лету, SQL, SQL с добавлением', 'N', 'N'
             ,'FORM_COLUMNS.FIELD_TYPE', '', '', '', '', '', '', '', '', 'L', 'Y', '*', '', '');
+/*  Form: LOOKUPS_LIST. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: LOOKUPS_LIST. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
+
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************REPORTS*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'REPORTS';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'REPORTS';
 Delete From FORM_COLUMNS
       Where form_code = 'REPORTS';
 Delete From FORM_COLUMNS$
@@ -971,12 +1051,22 @@ Insert Into FORM_COLUMNS
             ,'', '', '', '', '', '', '', ''
             ,'/constructorapp/xmlp?type=xmlp&ContentType=application/rtf&template=MET&dataClobId=:CLOB_CONTENT', 'L'
             ,'Y', '*', '', '');
+/*  Form: REPORTS. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: REPORTS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
+
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************USERS*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'USERS';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'USERS';
 Delete From FORM_COLUMNS
       Where form_code = 'USERS';
 Delete From FORM_COLUMNS$
@@ -1115,12 +1205,22 @@ Insert Into FORM_COLUMNS
             ,"EDITOR_COLS_SPAN", "LOOKUP_DISPLAY_VALUE", "EDITOR_ON_ENTER_KEY_ACTION")
      Values ('USERS', 'USER_ID', 'Database user id.', '*', 'N', '1001', 'Y', 'N', '', '', '', '', '*Database user id.'
             ,'N', 'N', '', '', '', '1', '', '', '', '', '', 'L', 'Y', '*', '', '');
+/*  Form: USERS. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: USERS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
+
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************LOOKUP_ATTRIBUTE_VALUES*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'LOOKUP_ATTRIBUTE_VALUES';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'LOOKUP_ATTRIBUTE_VALUES';
 Delete From FORM_COLUMNS
       Where form_code = 'LOOKUP_ATTRIBUTE_VALUES';
 Delete From FORM_COLUMNS$
@@ -1249,12 +1349,22 @@ Insert Into FORM_COLUMNS
      Values ('LOOKUP_ATTRIBUTE_VALUES', 'LOOKUP_VALUE_CODE', '', '*', 'S', '1002', 'N', 'N', '', '', '', ''
             ,'**LOOKUP_VALUE_CODE', 'N', 'N', '', '', '', '', '', '', '', '', ':lookup_value_code', 'L', 'Y', '*', ''
             ,'');
+/*  Form: LOOKUP_ATTRIBUTE_VALUES. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: LOOKUP_ATTRIBUTE_VALUES. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
+
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************LOOKUP_ATTRIBUTES*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'LOOKUP_ATTRIBUTES';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'LOOKUP_ATTRIBUTES';
 Delete From FORM_COLUMNS
       Where form_code = 'LOOKUP_ATTRIBUTES';
 Delete From FORM_COLUMNS$
@@ -1376,12 +1486,22 @@ Insert Into FORM_COLUMNS
      Values ('LOOKUP_ATTRIBUTES', 'LOOKUP_CODE', 'Ссылка на лукап - формау или простой', '*', 'S', '1001', 'N', 'N', ''
             ,'', '', '', '*Ссылка на лукап - формау или простой', 'N', 'N', '', '', '', '3', '', '', '', ''
             ,':lookup_code', 'L', 'Y', '*', '', '');
+/*  Form: LOOKUP_ATTRIBUTES. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: LOOKUP_ATTRIBUTES. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
+
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************LOOKUP_VALUES*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'LOOKUP_VALUES';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'LOOKUP_VALUES';
 Delete From FORM_COLUMNS
       Where form_code = 'LOOKUP_VALUES';
 Delete From FORM_COLUMNS$
@@ -1400,7 +1520,7 @@ Insert Into FORMS
             ,"OBJECT_VERSION_NUMBER", "DEFAULT_COLUMN_WIDTH", "DESCRIPTION", "DOUBLE_CLICK_ACTION_CODE", "LOOKUP_WIDTH"
             ,"APPS_CODE", "EXPORT_ORDER")
      Values ('LOOKUP_VALUES', '', 'SELECT * FROM &fc_schema_owner..lookup_values a where a.lookup_code=:lookup_code'
-            ,'Детальная Значения списков', 'G', 'Y', '4', '*', '45%', '', '', 'Y', '40', '*', '', '', '', 'FC', '40');
+            ,'Детальная Значения списков', 'G', 'Y', '4', '*', '45%', '', '', 'Y', '41', '*', '', '', '', 'FC', '40');
 /*  Form: LOOKUP_VALUES. Entity: FORM_TABS.  */
 
 Insert Into FORM_TABS
@@ -1521,11 +1641,31 @@ Insert Into FORM_COLUMNS
      Values ('LOOKUP_VALUES', 'LOOKUP_VALUE_CODE', 'Код', '20%', 'S', '1002', 'Y', 'Y', '', '', '', '9'
             ,'**LOOKUP_VALUE_CODE', 'N', 'N', '', '', '', '', '', '', '', '1', '', '', 'Y', '*', '', '');
 
+Insert Into FORM_COLUMNS
+            ("FORM_CODE", "COLUMN_CODE", "COLUMN_USER_NAME", "COLUMN_DISPLAY_SIZE", "COLUMN_DATA_TYPE"
+            ,"COLUMN_DISPLAY_NUMBER", "PIMARY_KEY_FLAG", "SHOW_ON_GRID", "TREE_INITIALIZATION_VALUE", "TREE_FIELD_TYPE"
+            ,"EDITOR_TAB_CODE", "FIELD_TYPE", "COLUMN_DESCRIPTION", "IS_FROZEN_FLAG", "SHOW_HOVER_FLAG", "LOOKUP_CODE"
+            ,"HOVER_COLUMN_CODE", "EDITOR_HEIGHT", "LOOKUP_FIELD_TYPE", "HELP_TEXT", "TEXT_MASK", "VALIDATION_REGEXP"
+            ,"DEFAULT_ORDERBY_NUMBER", "DEFAULT_VALUE", "EDITOR_TITLE_ORIENTATION", "EDITOR_END_ROW_FLAG"
+            ,"EDITOR_COLS_SPAN", "LOOKUP_DISPLAY_VALUE", "EDITOR_ON_ENTER_KEY_ACTION")
+     Values ('LOOKUP_VALUES', 'LOOKUP_VALUE_ID', '', '*', 'N', '1004', 'Y', 'N', '', '1', '', '', '**LOOKUP_VALUE_ID'
+            ,'N', 'N', '', '', '', '1', '', '', '', '', '', 'L', 'Y', '*', '', '');
+/*  Form: LOOKUP_VALUES. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: LOOKUP_VALUES. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
+
+
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************LOOKUPS*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'LOOKUPS';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'LOOKUPS';
 Delete From FORM_COLUMNS
       Where form_code = 'LOOKUPS';
 Delete From FORM_COLUMNS$
@@ -1648,12 +1788,22 @@ Insert Into FORM_COLUMNS
             ,"EDITOR_COLS_SPAN", "LOOKUP_DISPLAY_VALUE", "EDITOR_ON_ENTER_KEY_ACTION")
      Values ('LOOKUPS', 'LOOKUP_NAME', 'Наименование', '*', 'S', '1002', 'N', 'Y', '', '', '', ''
             ,'*Пользовательское имя', 'N', 'N', '', '', '', '', '', '', '', '', '', '', 'Y', '*', '', '');
+/*  Form: LOOKUPS. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: LOOKUPS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
+
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************FORM_ACTIONS*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'FORM_ACTIONS';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'FORM_ACTIONS';
 Delete From FORM_COLUMNS
       Where form_code = 'FORM_ACTIONS';
 Delete From FORM_COLUMNS$
@@ -1926,6 +2076,9 @@ Insert Into FORM_COLUMNS
             ,"EDITOR_COLS_SPAN", "LOOKUP_DISPLAY_VALUE", "EDITOR_ON_ENTER_KEY_ACTION")
      Values ('FORM_ACTIONS', 'SHOW_SEPARATOR_BELOW', '', '*', 'B', '1012', 'N', 'Y', '', '', '', ''
             ,'**SHOW_SEPARATOR_BELOW', 'N', 'N', '', '', '', '', '', '', '', '', '', 'L', 'Y', '*', '', '');
+/*  Form: FORM_ACTIONS. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: FORM_ACTIONS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
 
 Declare
    l_clob   Clob
@@ -2061,9 +2214,15 @@ End;
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************FORMS*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'FORMS';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'FORMS';
 Delete From FORM_COLUMNS
       Where form_code = 'FORMS';
 Delete From FORM_COLUMNS$
@@ -2463,6 +2622,9 @@ Insert Into FORM_COLUMNS
      Values ('FORMS', 'SQL_TEXT', 'Текст запроса', '4000', 'S', '6', 'N', 'N', '', '', 'SQL_TEXT', '4'
             ,'*Order by во внешнем запросе не используйте, иначе при сортировке лететь будет..', 'N', 'N', '', ''
             ,'200', '', '', '', '', '', '', 'T', 'Y', '*', '', '');
+/*  Form: FORMS. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: FORMS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
 
 Declare
    l_clob   Clob := 'zxrtyr';
@@ -2673,9 +2835,15 @@ End;
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************FORM_COLUMNS*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'FORM_COLUMNS';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'FORM_COLUMNS';
 Delete From FORM_COLUMNS
       Where form_code = 'FORM_COLUMNS';
 Delete From FORM_COLUMNS$
@@ -3290,6 +3458,9 @@ Insert Into FORM_COLUMNS
      Values ('FORM_COLUMNS', 'VALIDATION_REGEXP', 'Валидация', '*', 'S', '1024', 'N', 'N', '', '', 'ADD', ''
             ,'*Регулярное выражение для клиентской валидации', 'N', 'N', '', '', '', '', '', '', '', '', '', 'L', 'Y'
             ,'*', '', '');
+/*  Form: FORM_COLUMNS. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: FORM_COLUMNS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
 
 Declare
    l_clob   Clob := '<br>';
@@ -3651,9 +3822,15 @@ End;
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************FORM_COLUMN_ATTR_VALS*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'FORM_COLUMN_ATTR_VALS';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'FORM_COLUMN_ATTR_VALS';
 Delete From FORM_COLUMNS
       Where form_code = 'FORM_COLUMN_ATTR_VALS';
 Delete From FORM_COLUMNS$
@@ -3776,12 +3953,22 @@ Insert Into FORM_COLUMNS
             ,"EDITOR_COLS_SPAN", "LOOKUP_DISPLAY_VALUE", "EDITOR_ON_ENTER_KEY_ACTION")
      Values ('FORM_COLUMN_ATTR_VALS', 'FORM_COLUMN_ATTR_VAL_ID', 'Id', '*', 'N', '1001', 'Y', 'N', '', '', '', ''
             ,'*Id', 'N', 'N', '', '', '', '', '', '', '', '', '', 'L', 'Y', '*', '', '');
+/*  Form: FORM_COLUMN_ATTR_VALS. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: FORM_COLUMN_ATTR_VALS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
+
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************APPS_ROLE_MENUS*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'APPS_ROLE_MENUS';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'APPS_ROLE_MENUS';
 Delete From FORM_COLUMNS
       Where form_code = 'APPS_ROLE_MENUS';
 Delete From FORM_COLUMNS$
@@ -3975,12 +4162,22 @@ Insert Into FORM_COLUMNS
      Values ('APPS_ROLE_MENUS', 'POSITION', 'Позиция', '*', 'S', '1004', 'N', 'Y', '', '', '', ''
             ,'*9 - Относительная позиция в ветви дерева', 'N', 'N', '', '', '', '', '', '', '', '', '', 'L', 'Y', '*'
             ,'', '');
+/*  Form: APPS_ROLE_MENUS. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: APPS_ROLE_MENUS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
+
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************APPS_ROLE_USERS*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'APPS_ROLE_USERS';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'APPS_ROLE_USERS';
 Delete From FORM_COLUMNS
       Where form_code = 'APPS_ROLE_USERS';
 Delete From FORM_COLUMNS$
@@ -4093,12 +4290,22 @@ Insert Into FORM_COLUMNS
             ,"EDITOR_COLS_SPAN", "LOOKUP_DISPLAY_VALUE", "EDITOR_ON_ENTER_KEY_ACTION")
      Values ('APPS_ROLE_USERS', 'USER_ID', 'Database user id.', '*', 'N', '1004', 'N', 'Y', '', '', '', '9'
             ,'*Database user id.', 'N', 'N', 'USERS', '', '', '', '', '', '', '', '', 'L', 'Y', '*', '', '');
+/*  Form: APPS_ROLE_USERS. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: APPS_ROLE_USERS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
+
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************APPS_ROLES*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'APPS_ROLES';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'APPS_ROLES';
 Delete From FORM_COLUMNS
       Where form_code = 'APPS_ROLES';
 Delete From FORM_COLUMNS$
@@ -4240,12 +4447,22 @@ Insert Into FORM_COLUMNS
             ,"EDITOR_COLS_SPAN", "LOOKUP_DISPLAY_VALUE", "EDITOR_ON_ENTER_KEY_ACTION")
      Values ('APPS_ROLES', 'ROOT_MENU_CODE', '', '*', 'S', '1005', 'N', 'Y', '', '', '', '', '**ROOT_MENU_CODE', 'N'
             ,'N', '', '', '', '3', '', '', '', '', '', 'L', 'Y', '*', '', '');
+/*  Form: APPS_ROLES. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: APPS_ROLES. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
+
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************FORMS2*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'FORMS2';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'FORMS2';
 Delete From FORM_COLUMNS
       Where form_code = 'FORMS2';
 Delete From FORM_COLUMNS$
@@ -4523,12 +4740,22 @@ Insert Into FORM_COLUMNS
      Values ('FORMS2', 'USER_NAME', 'Список форм', '*', 'S', '1', 'N', 'Y', '', '', '', '6'
             ,'** Для всех пользователей', 'N', 'Y', '', 'DESCRIPTION', '', '', '', '', '', '1', '', '', 'Y', '*', ''
             ,'');
+/*  Form: FORMS2. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: FORMS2. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
+
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
+
 /*****************MENUS*********************/
+
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'MENUS';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'MENUS';
 Delete From FORM_COLUMNS
       Where form_code = 'MENUS';
 Delete From FORM_COLUMNS$
@@ -4825,6 +5052,10 @@ Insert Into FORM_COLUMNS
             ,"EDITOR_COLS_SPAN", "LOOKUP_DISPLAY_VALUE", "EDITOR_ON_ENTER_KEY_ACTION")
      Values ('MENUS', 'SHOW_IN_NAVIGATOR', 'Показывать в навигаторе', '150', 'B', '7', 'N', 'Y', '', '', '', ''
             ,'*Показывать в навигаторе', 'N', 'N', '', '', '', '', '', '', '', '', '', '', 'Y', '*', '', '');
+/*  Form: MENUS. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: MENUS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+
+
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;

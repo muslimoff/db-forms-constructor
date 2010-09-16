@@ -205,7 +205,27 @@
 				debug="true"
 				title="EPMLN">
 			ob:1521:epmln
-		</server> 
+		</server>
+		
+		<server id="24"
+			display="Admin KO" 
+			default="false" 
+			fcSchemaOwner="FC22" 
+			dbusername="FC22">
+			ko:1521:XE
+		</server>
+
+		<server id="25"
+			display="SOS Ins" 
+			dbusername="INS"
+			dbpassword="INS" 
+			allowuserchange="false"
+			debug="true"
+			title="Ins KO"
+			default="true"
+			fcSchemaOwner="FC22">
+			ko:1521:XE
+		</server>
 
 	</dbConnections>
 	
