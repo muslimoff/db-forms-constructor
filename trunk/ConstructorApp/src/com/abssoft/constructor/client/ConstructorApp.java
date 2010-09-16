@@ -215,7 +215,6 @@ public class ConstructorApp implements EntryPoint {
 		vStack.setWidth100();
 		vStack.setHeight100();
 		canvas.addChild(vStack);
-		canvas.draw();
 		urlParams = com.google.gwt.user.client.Window.Location.getParameterMap();
 		{
 			Map<String, List<String>> urlParams = com.google.gwt.user.client.Window.Location.getParameterMap();
@@ -235,6 +234,7 @@ public class ConstructorApp implements EntryPoint {
 
 		}
 		Utils.debug("QueryString:" + com.google.gwt.user.client.Window.Location.getQueryString());
+		canvas.draw();
 		connectWindow = new ConnectWindow(ConstructorApp.this);
 	}
 

@@ -1,4 +1,5 @@
-Create Or Replace Package applications_pkg As
+Create Or Replace 
+PACKAGE applications_pkg As
    --Пока не работает - нужно полностью переделывать доступ
    Procedure create_new_application (p_schema_name In Varchar2, p_tablespace_name In Varchar2 Default 'FC');
 
@@ -7,10 +8,11 @@ Create Or Replace Package applications_pkg As
 End applications_pkg;
 /
 
-Grant Execute On applications_pkg To fc_admin
+Grant Execute On applications_pkg To fc22_admin
 /
 
-Create Or Replace Package Body applications_pkg As
+Create Or Replace 
+PACKAGE BODY applications_pkg As
    g_fc_schema   Varchar2 (30);
 
    Function get_fc_schema
@@ -47,7 +49,8 @@ Begin
 End applications_pkg;
 /
 
-Create Or Replace Package apps_role_menus_pkg As
+Create Or Replace 
+PACKAGE apps_role_menus_pkg As
    Type menu_r Is Record (
       lvl                 Number
      ,menu_code           Varchar2 (255)
@@ -90,10 +93,11 @@ Grant Execute On apps_role_menus_pkg To aahr_orders
 /
 Grant Execute On apps_role_menus_pkg To bf
 /
-Grant Execute On apps_role_menus_pkg To fc_admin
+Grant Execute On apps_role_menus_pkg To fc22_admin
 /
 
-Create Or Replace Package Body apps_role_menus_pkg As
+Create Or Replace 
+PACKAGE BODY apps_role_menus_pkg As
    Procedure p_ins_upd (
       p_app_menu_id        In Out   Number
      ,p_menu_code          In Out   Varchar2
@@ -208,7 +212,8 @@ Create Or Replace Package Body apps_role_menus_pkg As
 End apps_role_menus_pkg;
 /
 
-Create Or Replace Package apps_role_users_pkg As
+Create Or Replace 
+PACKAGE apps_role_users_pkg As
    Procedure p_ins_upd (
       p_app_role_user_id   In Out   Number
      ,p_role_code          In Out   Varchar2
@@ -220,7 +225,9 @@ Create Or Replace Package apps_role_users_pkg As
 End apps_role_users_pkg;
 /
 
-Create Or Replace Package Body apps_role_users_pkg As
+
+Create Or Replace 
+PACKAGE BODY apps_role_users_pkg As
    Procedure p_ins_upd (
       p_app_role_user_id   In Out   Number
      ,p_role_code          In Out   Varchar2
@@ -253,7 +260,8 @@ Create Or Replace Package Body apps_role_users_pkg As
 End apps_role_users_pkg;
 /
 
-Create Or Replace Package apps_roles_pkg As
+Create Or Replace 
+PACKAGE apps_roles_pkg As
    Procedure p_ins_upd (
       p_apps_role_id     In Out   Number
      ,p_role_code        In Out   Varchar2
@@ -266,7 +274,9 @@ Create Or Replace Package apps_roles_pkg As
 End apps_roles_pkg;
 /
 
-Create Or Replace Package Body apps_roles_pkg As
+
+Create Or Replace 
+PACKAGE BODY apps_roles_pkg As
    Procedure p_ins_upd (
       p_apps_role_id     In Out   Number
      ,p_role_code        In Out   Varchar2
@@ -301,7 +311,8 @@ Create Or Replace Package Body apps_roles_pkg As
 End apps_roles_pkg;
 /
 
-Create Or Replace Package form_actions_pkg Is
+Create Or Replace 
+PACKAGE form_actions_pkg Is
    -- Author  : V.SAFRONOV
    -- Created : 23.12.2009 11:05:23
    -- Purpose :
@@ -336,10 +347,11 @@ Grant Execute On form_actions_pkg To aahr_orders
 /
 Grant Execute On form_actions_pkg To bf
 /
-Grant Execute On form_actions_pkg To fc_admin
+Grant Execute On form_actions_pkg To fc22_admin
 /
 
-Create Or Replace Package Body form_actions_pkg Is
+Create Or Replace 
+PACKAGE BODY form_actions_pkg Is
    Procedure p_ins_upd (
       p_form_code                  form_actions.form_code%Type
      ,p_action_code                form_actions.action_code%Type
@@ -407,10 +419,11 @@ Create Or Replace Package Body form_actions_pkg Is
 End FORM_ACTIONS_PKG;
 /
 
-Create Or Replace Package form_auth_cur_user_utlis_pkg Authid Current_user As
+Create Or Replace 
+PACKAGE form_auth_cur_user_utlis_pkg Authid Current_user As
    Type arguments_r Is Record (
       Position        all_arguments.Position%Type
-     ,argument_name   all_arguments.argument_name%Type
+     ,argument_name   Varchar2 (2000)
      ,in_flag         Varchar2 (1)
      ,out_flag        Varchar2 (1)
    );
@@ -425,24 +438,25 @@ Create Or Replace Package form_auth_cur_user_utlis_pkg Authid Current_user As
 End form_auth_cur_user_utlis_pkg;
 /
 
-Grant Execute On form_auth_cur_user_utlis_pkg To fc_admin
+Grant Execute On form_auth_cur_user_utlis_pkg To fc22_admin
 /
 
-Create Or Replace Package Body form_auth_cur_user_utlis_pkg As
+Create Or Replace 
+PACKAGE BODY form_auth_cur_user_utlis_pkg As
    Function get_proc_args (p_procedure_name Varchar2)
       Return arguments_t Pipelined Is
-      l_procedure_name   Varchar2 (2000)                   := p_procedure_name;
-      l_owner            all_arguments.owner%Type;
-      l_package_name     all_arguments.package_name%Type;
-      l_object_name      all_arguments.object_name%Type;
+      l_procedure_name   Varchar2 (2000) := p_procedure_name;
+      l_owner            Varchar2 (2000);
+      l_package_name     Varchar2 (2000);
+      l_object_name      Varchar2 (2000);
       l_res              arguments_r;
    Begin
       DBMS_OUTPUT.put_line (SUBSTR ('Value of l_procedure_name=' || l_procedure_name, 1, 255));
       l_procedure_name    := form_utils.replace_user_variables (l_procedure_name);
       DBMS_OUTPUT.put_line (SUBSTR ('Value of l_procedure_name=' || l_procedure_name, 1, 255));
-      l_owner             := UPPER (aahr_orders.text_utils_pkg.word (l_procedure_name, -3, 1, '.'));
-      l_package_name      := UPPER (aahr_orders.text_utils_pkg.word (l_procedure_name, -2, 1, '.'));
-      l_object_name       := UPPER (aahr_orders.text_utils_pkg.word (l_procedure_name, -1, 1, '.'));
+      l_owner             := UPPER (text_utils_pkg.word (l_procedure_name, -3, 1, '.'));
+      l_package_name      := UPPER (text_utils_pkg.word (l_procedure_name, -2, 1, '.'));
+      l_object_name       := UPPER (text_utils_pkg.word (l_procedure_name, -1, 1, '.'));
       l_owner             := NVL (l_owner, User);
       DBMS_OUTPUT.put_line (SUBSTR ('Value of l_owner=' || l_owner, 1, 255));
       DBMS_OUTPUT.put_line (SUBSTR ('Value of l_package_name=' || l_package_name, 1, 255));
@@ -507,7 +521,8 @@ Create Or Replace Package Body form_auth_cur_user_utlis_pkg As
 End form_auth_cur_user_utlis_pkg;
 /
 
-Create Or Replace Package form_column_attr_vals_pkg As
+Create Or Replace 
+PACKAGE form_column_attr_vals_pkg As
    Procedure p_ins_upd (
       p_form_column_attr_val_id   In Out   Number
      ,p_form_code                 In Out   Varchar2
@@ -526,7 +541,11 @@ Create Or Replace Package form_column_attr_vals_pkg As
 End FORM_COLUMN_ATTR_VALS_PKG;
 /
 
-Create Or Replace Package Body form_column_attr_vals_pkg As
+Grant Execute On form_column_attr_vals_pkg To fc22_admin
+/
+
+Create Or Replace 
+PACKAGE BODY form_column_attr_vals_pkg As
    Procedure p_ins_upd (
       p_form_column_attr_val_id   In Out   Number
      ,p_form_code                 In Out   Varchar2
@@ -567,7 +586,8 @@ Create Or Replace Package Body form_column_attr_vals_pkg As
 End FORM_COLUMN_ATTR_VALS_PKG;
 /
 
-Create Or Replace Package form_columns_pkg As
+Create Or Replace 
+PACKAGE form_columns_pkg As
    Procedure p_delete (p_form_code form_columns.form_code%Type, p_column_code form_columns.column_code%Type);
 
    Procedure p_ins_upd (
@@ -612,10 +632,11 @@ Grant Execute On form_columns_pkg To aahr_orders
 /
 Grant Execute On form_columns_pkg To bf
 /
-Grant Execute On form_columns_pkg To fc_admin
+Grant Execute On form_columns_pkg To fc22_admin
 /
 
-Create Or Replace Package Body form_columns_pkg As
+Create Or Replace 
+PACKAGE BODY form_columns_pkg As
    /*
    SELECT a.form_code, a.column_code, a.column_user_name,
           a.column_display_size, a.column_data_type,
@@ -727,7 +748,8 @@ Create Or Replace Package Body form_columns_pkg As
 End;
 /
 
-Create Or Replace Package form_dml_utils Is
+Create Or Replace 
+PACKAGE form_dml_utils Is
    Type parameter_value_rec Is Record (
       parameter_name         Varchar2 (255)
      ,parameter_char_value   Varchar2 (4000)
@@ -745,7 +767,9 @@ Create Or Replace Package form_dml_utils Is
 End FORM_DML_UTILS;
 /
 
-Create Or Replace Package Body form_dml_utils Is
+
+Create Or Replace 
+PACKAGE BODY form_dml_utils Is
 /*
 Не используется. Оставил как пример работы с коллекциями, индексированными по varchar*/
    g_parameter_values   parameter_values_tbl;
@@ -862,26 +886,79 @@ Begin
 End form_dml_utils;
 /
 
-Create Or Replace Package form_tabs_pkg Is
-   -- Author  : V.SAFRONOV
-   -- Created : 23.12.2009 11:05:23
-   -- Purpose :
+Create Or Replace 
+PACKAGE form_tab_parent_exclns_pkg As
+   Procedure p_delete (p_excln_id In Out Number);
 
-   -- Public type declarations
    Procedure p_ins_upd (
-      p_form_code            form_tabs.form_code%Type
-     ,p_tab_code             form_tabs.tab_code%Type
-     ,p_child_form_code      form_tabs.child_form_code%Type
-     ,p_tab_position         form_tabs.tab_position%Type
-     ,p_tab_name             form_tabs.tab_name%Type
-     ,p_number_of_columns    form_tabs.number_of_columns%Type
-     ,p_icon_id              form_tabs.icon_id%Type
-     ,p_tab_type             form_tabs.tab_type%Type
-     ,p_tab_display_number   form_tabs.tab_display_number%Type
+      p_form_code          In Out   Varchar2
+     ,p_tab_code           In Out   Varchar2
+     ,p_parent_form_code   In Out   Varchar2
+     ,p_included_flag      In Out   Varchar2
+     ,p_excln_id           In Out   Number
    );
+End form_tab_parent_exclns_pkg;
+/
 
-   Procedure p_delete (p_form_code form_tabs.form_code%Type, p_tab_code form_tabs.tab_code%Type);
-End FORM_TABS_PKG;
+
+Create Or Replace 
+PACKAGE BODY form_tab_parent_exclns_pkg As
+   Procedure p_ins_upd (
+      p_form_code          In Out   Varchar2
+     ,p_tab_code           In Out   Varchar2
+     ,p_parent_form_code   In Out   Varchar2
+     ,p_included_flag      In Out   Varchar2
+     ,p_excln_id           In Out   Number
+   ) Is
+   Begin
+      Update form_tab_parent_exclns
+         Set form_code = p_form_code
+            ,tab_code = p_tab_code
+            ,parent_form_code = p_parent_form_code
+            ,included_flag = p_included_flag
+       Where excln_id = p_excln_id;
+
+      If Sql%Rowcount = 0 Then
+         Select main_sq.Nextval
+           Into p_excln_id
+           From DUAL;
+
+         Insert Into form_tab_parent_exclns
+                     (form_code, tab_code, parent_form_code, included_flag, excln_id)
+              Values (p_form_code, p_tab_code, p_parent_form_code, p_included_flag, p_excln_id);
+      End If;
+   End p_ins_upd;
+
+   Procedure p_delete (p_excln_id In Out Number) Is
+   Begin
+      Delete From form_tab_parent_exclns
+            Where excln_id = p_excln_id;
+   End p_delete;
+End form_tab_parent_exclns_pkg;
+/
+
+Create Or Replace 
+package form_tabs_pkg is
+
+  -- Author  : V.SAFRONOV
+  -- Created : 23.12.2009 11:05:23
+  -- Purpose :
+
+  -- Public type declarations
+  Procedure p_ins_upd(p_form_code          form_tabs.form_code%type,
+                      p_tab_code           form_tabs.tab_code%type,
+                      p_child_form_code    form_tabs.child_form_code%type,
+                      p_tab_position       form_tabs.tab_position%type,
+                      p_tab_name           form_tabs.tab_name%type,
+                      p_number_of_columns  form_tabs.number_of_columns%type,
+                      p_icon_id            form_tabs.icon_id%type,
+                      p_tab_type           form_tabs.tab_type%type,
+                      p_tab_display_number form_tabs.tab_display_number%type);
+
+  Procedure p_delete(p_form_code form_tabs.form_code%type,
+                     p_tab_code  form_tabs.tab_code%type);
+
+end FORM_TABS_PKG;
 /
 
 Grant Execute On form_tabs_pkg To tc
@@ -892,66 +969,82 @@ Grant Execute On form_tabs_pkg To aahr_orders
 /
 Grant Execute On form_tabs_pkg To bf
 /
-Grant Execute On form_tabs_pkg To fc_admin
+Grant Execute On form_tabs_pkg To fc22_admin
 /
 
-Create Or Replace Package Body form_tabs_pkg Is
-   Procedure p_ins_upd (
-      p_form_code            form_tabs.form_code%Type
-     ,p_tab_code             form_tabs.tab_code%Type
-     ,p_child_form_code      form_tabs.child_form_code%Type
-     ,p_tab_position         form_tabs.tab_position%Type
-     ,p_tab_name             form_tabs.tab_name%Type
-     ,p_number_of_columns    form_tabs.number_of_columns%Type
-     ,p_icon_id              form_tabs.icon_id%Type
-     ,p_tab_type             form_tabs.tab_type%Type
-     ,p_tab_display_number   form_tabs.tab_display_number%Type
-   ) As
-   Begin
-      form_utils.check_nulls (args_t (p_form_code, p_tab_code)
-                             ,args_t ('Не указан код формы', 'Не указан код закладки')
-                             );
+Create Or Replace 
+package body form_tabs_pkg is
 
-      Update form_tabs fao
-         Set form_code = p_form_code
-            ,tab_code = p_tab_code
-            ,child_form_code = p_child_form_code
-            ,tab_position = p_tab_position
-            ,tab_name = p_tab_name
-            ,number_of_columns = p_number_of_columns
-            ,icon_id = p_icon_id
-            ,tab_type = p_tab_type
-            ,tab_display_number = p_tab_display_number
-       Where fao.form_code = p_form_code
-         And fao.tab_code = p_tab_code;
+  Procedure p_ins_upd(p_form_code          form_tabs.form_code%type,
+                      p_tab_code           form_tabs.tab_code%type,
+                      p_child_form_code    form_tabs.child_form_code%type,
+                      p_tab_position       form_tabs.tab_position%type,
+                      p_tab_name           form_tabs.tab_name%type,
+                      p_number_of_columns  form_tabs.number_of_columns%type,
+                      p_icon_id            form_tabs.icon_id%type,
+                      p_tab_type           form_tabs.tab_type%type,
+                      p_tab_display_number form_tabs.tab_display_number%type) as
+  begin
+    form_utils.check_nulls(args_t(p_form_code, p_tab_code),
+                           args_t('Не указан код формы',
+                                  'Не указан код закладки'));
+    Update form_tabs fao
+       Set form_code          = p_form_code,
+           tab_code           = p_tab_code,
+           child_form_code    = p_child_form_code,
+           tab_position       = p_tab_position,
+           tab_name           = p_tab_name,
+           number_of_columns  = p_number_of_columns,
+           icon_id            = p_icon_id,
+           tab_type           = p_tab_type,
+           tab_display_number = p_tab_display_number
+     Where fao.form_code = p_form_code
+       And fao.tab_code = p_tab_code;
 
-      If Sql%Rowcount = 0 Then
-         Insert Into form_tabs fao
-                     (form_code, tab_code, child_form_code, tab_position, tab_name, number_of_columns, icon_id
-                     ,tab_type, tab_display_number)
-              Values (p_form_code, p_tab_code, p_child_form_code, p_tab_position, p_tab_name, p_number_of_columns
-                     ,p_icon_id, p_tab_type, p_tab_display_number);
-      End If;
+    If Sql%Rowcount = 0 Then
+      Insert Into form_tabs fao
+        (form_code,
+         tab_code,
+         child_form_code,
+         tab_position,
+         tab_name,
+         number_of_columns,
+         icon_id,
+         tab_type,
+         tab_display_number)
+      Values
+        (p_form_code,
+         p_tab_code,
+         p_child_form_code,
+         p_tab_position,
+         p_tab_name,
+         p_number_of_columns,
+         p_icon_id,
+         p_tab_type,
+         p_tab_display_number);
+    End If;
+    Update forms f
+       Set f.object_version_number = f.object_version_number + 1
+     Where f.form_code = p_form_code;
 
-      Update forms f
-         Set f.object_version_number = f.object_version_number + 1
-       Where f.form_code = p_form_code;
-   End p_ins_upd;
+  end p_ins_upd;
 
-   Procedure p_delete (p_form_code form_tabs.form_code%Type, p_tab_code form_tabs.tab_code%Type) As
-   Begin
-      Delete From form_tabs ft
-            Where ft.form_code = p_form_code
-              And ft.tab_code = p_tab_code;
+  Procedure p_delete(p_form_code form_tabs.form_code%type,
+                     p_tab_code  form_tabs.tab_code%type) as
+  begin
+    delete from form_tabs ft
+     where ft.form_code = p_form_code
+       and ft.tab_code = p_tab_code;
+    Update forms f
+       Set f.object_version_number = f.object_version_number + 1
+     Where f.form_code = p_form_code;
+  end p_delete;
 
-      Update forms f
-         Set f.object_version_number = f.object_version_number + 1
-       Where f.form_code = p_form_code;
-   End p_delete;
-End FORM_TABS_PKG;
+end FORM_TABS_PKG;
 /
 
-Create Or Replace Package form_utils
+Create Or Replace 
+PACKAGE form_utils
 --Authid Current_user
 As
    Type pkg_text_r Is Record (
@@ -1142,10 +1235,11 @@ Grant Execute On form_utils To aahr_orders
 /
 Grant Execute On form_utils To bf
 /
-Grant Execute On form_utils To fc_admin
+Grant Execute On form_utils To fc22_admin
 /
 
-Create Or Replace Package Body form_utils As
+Create Or Replace 
+PACKAGE BODY form_utils As
    g_bind_variables   bind_variables_idx_t;
 
    Cursor forms_cur (c_form_code Varchar2) Is
@@ -1715,63 +1809,41 @@ Create Or Replace Package Body form_utils As
 
    Function get_inserts (p_form_code Varchar2)
       Return Clob Is
-      l_res   Clob;
+      Type t Is Table Of Varchar2 (2000);
+
+      l_tables_list   t
+         := t ('FORMS'
+              ,'FORM_TABS'
+              ,'FORM_ACTIONS'
+              ,'FORM_COLUMNS$'
+              ,'FORM_COLUMNS'
+              ,'FORM_COLUMN_ATTR_VALS'
+              ,'FORM_TAB_PARENT_EXCLNS'
+              );
+      l_res           Clob;
    Begin
+      For i In Reverse l_tables_list.First .. l_tables_list.Last Loop
+         l_res    :=
+             l_res || 'delete from ' || l_tables_list (i) || ' where form_code = ''' || p_form_code || ''';'
+             || CHR (10);
+      End Loop;
+
+      For i In l_tables_list.First .. l_tables_list.Last Loop
+         l_res    := l_res || form_utils.get_entity_insetrs (l_tables_list (i), p_form_code) || CHR (10);
+      End Loop;
+
       l_res    :=
-            l_res
-         || 'delete from '
-         || 'FORM_COLUMNS'
-         || ' where form_code = '''
-         || p_form_code
-         || ''';'
-         || CHR (10)
-         || 'delete from '
-         || 'FORM_COLUMNS$'
-         || ' where form_code = '''
-         || p_form_code
-         || ''';'
-         || CHR (10)
-         || 'delete from '
-         || 'FORM_ACTIONS'
-         || ' where form_code = '''
-         || p_form_code
-         || ''';'
-         || CHR (10)
-         || 'delete from '
-         || 'FORM_TABS'
-         || ' where form_code = '''
-         || p_form_code
-         || ''';'
-         || CHR (10)
-         || 'delete from '
-         || 'FORMS'
-         || ' where form_code = '''
-         || p_form_code
-         || ''';'
-         || CHR (10);
-      l_res    :=
-            l_res
-         || form_utils.get_entity_insetrs ('FORMS', p_form_code)
-         || CHR (10)
-         || form_utils.get_entity_insetrs ('FORM_TABS', p_form_code)
-         || CHR (10)
-         || form_utils.get_entity_insetrs ('FORM_ACTIONS', p_form_code)
-         || CHR (10)
-         || form_utils.get_entity_insetrs ('FORM_COLUMNS$', p_form_code)
-         || CHR (10)
-         || form_utils.get_entity_insetrs ('FORM_COLUMNS', p_form_code);
-      l_res    :=
-            'Alter Table FORMS Disable All Triggers;'
-         || CHR (10)
-         || 'Alter Table forms Disable Constraint forms_form_actions_fk;'
+            '
+Alter Table FORMS Disable All Triggers;
+Alter Table forms Disable Constraint forms_form_actions_fk;'
          || CHR (10)
          || l_res
          || CHR (10)
          || get_clob_upd (p_form_code)
          || CHR (10)
-         || 'Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;'
-         || CHR (10)
-         || 'Alter Table FORMS Enable All Triggers;';
+         || '
+Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
+Alter Table FORMS Enable All Triggers;';
       Return l_res;
    End get_inserts;
 
@@ -1875,7 +1947,8 @@ Create Or Replace Package Body form_utils As
 End FORM_UTILS;
 /
 
-Create Or Replace Package form_utils_customization As
+Create Or Replace 
+PACKAGE form_utils_customization As
    Procedure customize_column_metadata (
       p_column_number               Number
      ,p_column_data        In Out   form_utils.column_rec
@@ -1884,7 +1957,9 @@ Create Or Replace Package form_utils_customization As
 End form_utils_customization;
 /
 
-Create Or Replace Package Body form_utils_customization As
+
+Create Or Replace 
+PACKAGE BODY form_utils_customization As
    Procedure customize_column_metadata (
       p_column_number               Number
      ,p_column_data        In Out   form_utils.column_rec
@@ -1915,7 +1990,8 @@ Create Or Replace Package Body form_utils_customization As
 End form_utils_customization;
 /
 
-Create Or Replace Package forms_pkg /*Authid Current_user*/ As
+Create Or Replace 
+PACKAGE forms_pkg /*Authid Current_user*/ As
    Type form_md_r Is Record (
       form_code                  Varchar2 (255)
      ,hot_key                    Varchar2 (100)
@@ -1983,10 +2059,11 @@ Grant Execute On forms_pkg To aahr_orders
 /
 Grant Execute On forms_pkg To bf
 /
-Grant Execute On forms_pkg To fc_admin
+Grant Execute On forms_pkg To fc22_admin
 /
 
-Create Or Replace Package Body forms_pkg As
+Create Or Replace 
+PACKAGE BODY forms_pkg As
    Procedure p_insert_update (
       p_old_form_code                       forms.form_code%Type
      ,p_form_code                           forms.form_code%Type
@@ -2135,17 +2212,21 @@ Create Or Replace Package Body forms_pkg As
 End FORMS_PKG;
 /
 
-Create Or Replace Package forms2_pkg As
-   Procedure p_delete (p_code Varchar2);
+Create Or Replace 
+PACKAGE forms2_pkg As
+  Procedure p_delete(p_code Varchar2);
 
-   Procedure p_insert (p_user_name In Out Varchar2, p_code Out Varchar2, p_is_folder Out Varchar2);
+  Procedure p_insert(p_user_name In Out Varchar2,
+                     p_code      Out Varchar2,
+                     p_is_folder Out Varchar2);
 End;
 /
 
 Grant Execute On forms2_pkg To aahr_orders
 /
 
-Create Or Replace Package Body forms2_pkg As
+Create Or Replace 
+PACKAGE BODY forms2_pkg As
    Procedure p_insert (p_user_name In Out Varchar2, p_code Out Varchar2, p_is_folder Out Varchar2) Is
       l_app_code               APPLICATIONS.apps_code%Type;
       l_default_table_prefix   APPLICATIONS.default_table_prefix%Type;
@@ -2229,14 +2310,16 @@ Create Or Replace Package Body forms2_pkg As
 End;
 /
 
-Create Or Replace Package icons_pkg
+Create Or Replace 
+PACKAGE icons_pkg
 /**
  * The header comment describes the goal of the package.
- *
+ * 
  * @author t. lorbeer
  * @since 1.0
  */
 Is
+
    /**
     * This is the description for the first procedure in this package.
     *
@@ -2258,7 +2341,9 @@ Is
 End ICONS_PKG;
 /
 
-Create Or Replace Package Body icons_pkg Is
+
+Create Or Replace 
+PACKAGE BODY icons_pkg Is
    Procedure p_ins_upd (
       p_icon_id          icons.icon_id%Type
      ,p_icon_file_name   icons.icon_file_name%Type
@@ -2290,7 +2375,8 @@ Create Or Replace Package Body icons_pkg Is
 End ICONS_PKG;
 /
 
-Create Or Replace Package lookup_attribute_values_pkg As
+Create Or Replace 
+PACKAGE lookup_attribute_values_pkg As
    Procedure p_ins_upd (
       p_lookup_code              In Out   Varchar2
      ,p_lookup_value_code        In Out   Varchar2
@@ -2306,10 +2392,11 @@ End LOOKUP_ATTRIBUTE_VALUES_PKG;
 
 Grant Execute On lookup_attribute_values_pkg To ins
 /
-Grant Execute On lookup_attribute_values_pkg To fc_admin
+Grant Execute On lookup_attribute_values_pkg To fc22_admin
 /
 
-Create Or Replace Package Body lookup_attribute_values_pkg As
+Create Or Replace 
+PACKAGE BODY lookup_attribute_values_pkg As
    Procedure p_delete (p_lookup_code In Out Varchar2, p_lookup_value_code In Varchar2, p_attribute_code In Varchar2) Is
    Begin
       Delete From lookup_attribute_values
@@ -2357,7 +2444,8 @@ Create Or Replace Package Body lookup_attribute_values_pkg As
 End lookup_attribute_values_pkg;
 /
 
-Create Or Replace Package lookup_attributes_pkg As
+Create Or Replace 
+Package lookup_attributes_pkg As
    Procedure p_delete (
       p_lookup_code      In Out   Varchar2
      ,p_attribute_code   In Out   Varchar2
@@ -2374,7 +2462,9 @@ Create Or Replace Package lookup_attributes_pkg As
 End LOOKUP_ATTRIBUTES_PKG;
 /
 
-Create Or Replace Package Body lookup_attributes_pkg As
+
+Create Or Replace 
+Package Body lookup_attributes_pkg As
    Procedure p_delete (
       p_lookup_code      In Out   Varchar2
      ,p_attribute_code   In Out   Varchar2
@@ -2417,93 +2507,98 @@ Create Or Replace Package Body lookup_attributes_pkg As
 End LOOKUP_ATTRIBUTES_PKG;
 /
 
-Create Or Replace Package lookup_values_pkg As
-   Procedure p_ins_upd (p_lookup_code Varchar2, p_lookup_value_code Varchar2, p_lookup_display_value Varchar2);
+Create Or Replace 
+PACKAGE lookup_values_pkg As
+  Procedure p_ins_upd(p_lookup_code          Varchar2,
+                      p_lookup_value_code    Varchar2,
+                      p_lookup_display_value Varchar2);
 
-   Procedure p_delete (p_lookup_code Varchar2, p_lookup_value_code Varchar2);
+  Procedure p_delete(p_lookup_code Varchar2, p_lookup_value_code Varchar2);
 End lookup_values_pkg;
 /
 
 Grant Execute On lookup_values_pkg To aahr_orders
 /
-Grant Execute On lookup_values_pkg To fc_admin
+Grant Execute On lookup_values_pkg To fc22_admin
 /
 
-Create Or Replace Package Body lookup_values_pkg As
-   /*
-   SELECT a.lookup_code, a.lookup_value_code, a.lookup_display_value
-     FROM lookup_values a
-   */
-   Procedure p_ins_upd (p_lookup_code Varchar2, p_lookup_value_code Varchar2, p_lookup_display_value Varchar2) Is
-   Begin
-      form_utils.check_nulls (args_t (p_lookup_code, p_lookup_value_code)
-                             ,args_t ('Не указан код списка', 'Не указано значение списка')
-                             );
+Create Or Replace 
+PACKAGE BODY lookup_values_pkg As
+  /*
+  SELECT a.lookup_code, a.lookup_value_code, a.lookup_display_value
+    FROM lookup_values a
+  */
+  Procedure p_ins_upd(p_lookup_code          Varchar2,
+                      p_lookup_value_code    Varchar2,
+                      p_lookup_display_value Varchar2) Is
+  Begin
+    form_utils.check_nulls(args_t(p_lookup_code, p_lookup_value_code),
+                           args_t('Не указан код списка',
+                                  'Не указано значение списка'));
+    Update lookup_values lv
+       Set lookup_display_value = p_lookup_display_value
+     Where lv.lookup_code = p_lookup_code
+       And lv.lookup_value_code = p_lookup_value_code;
 
-      Update lookup_values lv
-         Set lookup_display_value = p_lookup_display_value
-       Where lv.lookup_code = p_lookup_code
-         And lv.lookup_value_code = p_lookup_value_code;
+    If Sql%Rowcount = 0 And p_lookup_code Is Not Null And
+       p_lookup_value_code Is Not Null Then
+      Insert Into lookup_values
+        (lookup_code, lookup_value_code, lookup_display_value)
+      Values
+        (p_lookup_code, p_lookup_value_code, p_lookup_display_value);
+    End If;
+  End p_ins_upd;
 
-      If     Sql%Rowcount = 0
-         And p_lookup_code Is Not Null
-         And p_lookup_value_code Is Not Null Then
-         Insert Into lookup_values
-                     (lookup_code, lookup_value_code, lookup_display_value)
-              Values (p_lookup_code, p_lookup_value_code, p_lookup_display_value);
-      End If;
-   End p_ins_upd;
-
-   Procedure p_delete (p_lookup_code Varchar2, p_lookup_value_code Varchar2) Is
-   Begin
-      Delete From lookup_values lv
-            Where lv.lookup_code = p_lookup_code
-              And lv.lookup_value_code = p_lookup_value_code;
-   End p_delete;
+  Procedure p_delete(p_lookup_code Varchar2, p_lookup_value_code Varchar2) Is
+  Begin
+    delete from lookup_values lv
+     where lv.lookup_code = p_lookup_code
+       and lv.lookup_value_code = p_lookup_value_code;
+  End p_delete;
 End lookup_values_pkg;
 /
 
-Create Or Replace Package lookups_pkg As
-   Procedure p_ins_upd (p_lookup_code In Out Varchar2, p_lookup_name Varchar2);
-
-   Procedure p_delete (p_lookup_code Varchar2);
+Create Or Replace 
+PACKAGE lookups_pkg As
+  Procedure p_ins_upd(p_lookup_code In Out Varchar2,
+                      p_lookup_name Varchar2);
+  Procedure p_delete(p_lookup_code Varchar2);
 End;
 /
 
 Grant Execute On lookups_pkg To aahr_orders
 /
 
-Create Or Replace Package Body lookups_pkg As
-   Procedure p_ins_upd (p_lookup_code In Out Varchar2, p_lookup_name Varchar2) Is
-   Begin
-      form_utils.check_nulls (args_t (p_lookup_code), args_t ('Не указан код списка'));
+Create Or Replace 
+PACKAGE BODY lookups_pkg As
+  Procedure p_ins_upd(p_lookup_code In Out Varchar2,
+                      p_lookup_name Varchar2) Is
+  Begin
+    form_utils.check_nulls(args_t(p_lookup_code),
+                           args_t('Не указан код списка'));
+    Update lookups l
+       Set lookup_name = p_lookup_name
+     Where l.lookup_code = p_lookup_code;
 
-      Update lookups l
-         Set lookup_name = p_lookup_name
-       Where l.lookup_code = p_lookup_code;
+    If Sql%Rowcount = 0 And p_lookup_code || p_lookup_name Is Not Null Then
+      p_lookup_code := NVL(p_lookup_code, UPPER(p_lookup_name));
 
-      If     Sql%Rowcount = 0
-         And p_lookup_code || p_lookup_name Is Not Null Then
-         p_lookup_code    := NVL (p_lookup_code, UPPER (p_lookup_name));
-
-         Insert Into lookups
-                     (lookup_code, lookup_name)
-              Values (p_lookup_code, p_lookup_name);
-      End If;
-   End;
-
-   Procedure p_delete (p_lookup_code Varchar2) As
-   Begin
-      Delete From LOOKUP_VALUES
-            Where lookup_code = p_lookup_code;
-
-      Delete From LOOKUPS
-            Where lookup_code = p_lookup_code;
-   End;
+      Insert Into lookups
+        (lookup_code, lookup_name)
+      Values
+        (p_lookup_code, p_lookup_name);
+    End If;
+  End;
+  Procedure p_delete(p_lookup_code Varchar2) as
+  begin
+    delete from LOOKUP_VALUES where lookup_code = p_lookup_code;
+    delete from LOOKUPS where lookup_code = p_lookup_code;
+  end;
 End;
 /
 
-Create Or Replace Package matrix_rep_demo_pkg As
+Create Or Replace 
+PACKAGE matrix_rep_demo_pkg As
    Type dim_rec Is Record (
       rn                Binary_integer
      ,dimension_name    Varchar2 (200)
@@ -2557,7 +2652,9 @@ Create Or Replace Package matrix_rep_demo_pkg As
 End matrix_rep_demo_pkg;
 /
 
-Create Or Replace Package Body matrix_rep_demo_pkg As
+
+Create Or Replace 
+PACKAGE BODY matrix_rep_demo_pkg As
    Type cur_type Is Ref Cursor;
 
    g_dim_t        dim_t;
@@ -2690,45 +2787,44 @@ Order By v_rn
 End matrix_rep_demo_pkg;
 /
 
-Create Or Replace Package menus_pkg As
-   Procedure p_ins_chld (p_menu_code Varchar2, p_element_type Varchar2);
+Create Or Replace 
+PACKAGE menus_pkg As
 
-   Procedure p_ins_sibl (p_menu_code Varchar2, p_element_type Varchar2);
+  Procedure p_ins_chld(p_menu_code Varchar2, p_element_type varchar2);
+  Procedure p_ins_sibl(p_menu_code Varchar2, p_element_type varchar2);
+  procedure p_update(p_menu_code         menus.menu_code%type,
+                     p_menu_name         menus.menu_name%type,
+                     p_parent_display    menus.parent_menu_code%type,
+                     p_menu_form_code    menus.menu_form_code%type,
+                     p_menu_position     menus.menu_position%type,
+                     p_element_type      varchar2,
+                     p_show_in_navigator varchar2);
 
-   Procedure p_update (
-      p_menu_code           menus.menu_code%Type
-     ,p_menu_name           menus.menu_name%Type
-     ,p_parent_display      menus.parent_menu_code%Type
-     ,p_menu_form_code      menus.menu_form_code%Type
-     ,p_menu_position       menus.menu_position%Type
-     ,p_element_type        Varchar2
-     ,p_show_in_navigator   Varchar2
-   );
+  Procedure p_delete_menu(p_menu_code Varchar2, p_element_type varchar2);
+  Procedure p_delete_form(p_menu_code Varchar2, p_element_type varchar2);
 
-   Procedure p_delete_menu (p_menu_code Varchar2, p_element_type Varchar2);
+  Type menu_tree_record Is Record(
+    menu_code            menus.menu_code%type,
+    menu_name            menus.menu_name%type,
+    parent_menu_code     menus.parent_menu_code%type,
+    parent_display       menus.parent_menu_code%type,
+    menu_form_code       menus.menu_form_code%type,
+    form_display         menus.menu_form_code%type,
+    form_display_stat    menus.menu_form_code%type,
+    menu_position        menus.menu_position%type,
+    icon_id              icons.icon_id%type,
+    is_folder            number,
+    element_type         varchar2(100),
+    form_code_for_filter menus.menu_form_code%type,
+    show_in_navigator    menus.show_in_navigator%type);
 
-   Procedure p_delete_form (p_menu_code Varchar2, p_element_type Varchar2);
+  Type menu_tree_table Is Table Of menu_tree_record;
 
-   Type menu_tree_record Is Record (
-      menu_code              menus.menu_code%Type
-     ,menu_name              menus.menu_name%Type
-     ,parent_menu_code       menus.parent_menu_code%Type
-     ,parent_display         menus.parent_menu_code%Type
-     ,menu_form_code         menus.menu_form_code%Type
-     ,form_display           menus.menu_form_code%Type
-     ,form_display_stat      menus.menu_form_code%Type
-     ,menu_position          menus.menu_position%Type
-     ,icon_id                icons.icon_id%Type
-     ,is_folder              Number
-     ,element_type           Varchar2 (100)
-     ,form_code_for_filter   menus.menu_form_code%Type
-     ,show_in_navigator      menus.show_in_navigator%Type
-   );
+  Function p_get_menu_tree(p_menu_code    varchar2,
+                           p_element_type varchar2,
+                           p_form_display varchar2) Return menu_tree_table
+    Pipelined;
 
-   Type menu_tree_table Is Table Of menu_tree_record;
-
-   Function p_get_menu_tree (p_menu_code Varchar2, p_element_type Varchar2, p_form_display Varchar2)
-      Return menu_tree_table Pipelined;
 End;
 /
 
@@ -2740,226 +2836,296 @@ Grant Execute On menus_pkg To aahr_orders
 /
 Grant Execute On menus_pkg To bf
 /
-Grant Execute On menus_pkg To fc_admin
+Grant Execute On menus_pkg To fc22_admin
 /
 
-Create Or Replace Package Body menus_pkg As
-   Procedure p_ins_chld (p_menu_code Varchar2, p_element_type Varchar2) As
-      l_menu_name   Varchar2 (32000);
-   Begin
-      If p_element_type In ('FORM', 'FOLDER') Then
-         Select p_menu_code || '_' || menu_sq.Nextval
-           Into l_menu_name
-           From DUAL;
+Create Or Replace 
+PACKAGE BODY menus_pkg As
+  Procedure p_ins_chld(p_menu_code Varchar2, p_element_type varchar2) As
+    l_menu_name Varchar2(32000);
+  Begin
+    if p_element_type in ('FORM', 'FOLDER') then
+      Select p_menu_code || '_' || menu_sq.Nextval
+        Into l_menu_name
+        From DUAL;
 
-         form_utils.check_nulls (args_t (p_menu_code), args_t ('Не указан код меню'));
+      form_utils.check_nulls(args_t(p_menu_code),
+                             args_t('Не указан код меню'));
 
-         Insert Into menus
-                     (parent_menu_code, menu_code, menu_name)
-              Values (p_menu_code, l_menu_name, l_menu_name);
-      Else
-         form_utils.err_message ('Вы не можете системным элементам добавлять дочерние элементы');
-      End If;
-   End p_ins_chld;
+      Insert Into menus
+        (parent_menu_code, menu_code, menu_name)
+      Values
+        (p_menu_code, l_menu_name, l_menu_name);
+    else
+      form_utils.err_message('Вы не можете системным элементам добавлять дочерние элементы');
+    end if;
 
-   Procedure p_ins_sibl (p_menu_code Varchar2, p_element_type Varchar2) As
-      l_menu_name          Varchar2 (32000);
-      l_parent_menu_code   Varchar2 (32000);
-   Begin
-      If p_element_type In ('FORM', 'FOLDER') Then
-         Select parent_menu_code
-           Into l_parent_menu_code
-           From menus
-          Where menu_code = p_menu_code;
+  End p_ins_chld;
 
-         Select DECODE (l_parent_menu_code, Null, '', l_parent_menu_code || '_') || menu_sq.Nextval
-           Into l_menu_name
-           From DUAL;
+  Procedure p_ins_sibl(p_menu_code Varchar2, p_element_type varchar2) As
+    l_menu_name        Varchar2(32000);
+    l_parent_menu_code Varchar2(32000);
+  Begin
+    if p_element_type in ('FORM', 'FOLDER') then
+      Select parent_menu_code
+        Into l_parent_menu_code
+        From menus
+       Where menu_code = p_menu_code;
 
-         Insert Into menus
-                     (parent_menu_code, menu_code, menu_name)
-              Values (l_parent_menu_code, l_menu_name, l_menu_name);
-      Else
-         form_utils.err_message ('Вы не можете системным элементам добавлять дочерние элементы');
-      End If;
-   End p_ins_sibl;
+      Select decode(l_parent_menu_code, null, '', l_parent_menu_code || '_') ||
+             menu_sq.Nextval
+        Into l_menu_name
+        From DUAL;
 
-   Procedure p_update (
-      p_menu_code           menus.menu_code%Type
-     ,p_menu_name           menus.menu_name%Type
-     ,p_parent_display      menus.parent_menu_code%Type
-     ,p_menu_form_code      menus.menu_form_code%Type
-     ,p_menu_position       menus.menu_Position%Type
-     ,p_element_type        Varchar2
-     ,p_show_in_navigator   Varchar2
-   ) As
-      l_menu_code         menus.menu_code%Type   := p_menu_code;
-      l_cnt               Number;
-      l_is_folder         Varchar2 (100);
-      l_menu_form_code    forms.form_code%Type   := p_menu_form_code;
-      l_menu_form_code2   forms.form_code%Type   := p_menu_form_code;
-   Begin
-      If    p_element_type In ('FORM', 'FOLDER')
-         Or p_element_type Is Null Then
-         form_utils.check_nulls (args_t (p_menu_name), args_t ('Не указано наименование'));
+      Insert Into menus
+        (parent_menu_code, menu_code, menu_name)
+      Values
+        (l_parent_menu_code, l_menu_name, l_menu_name);
+    else
+      form_utils.err_message('Вы не можете системным элементам добавлять дочерние элементы');
+    end if;
+  End p_ins_sibl;
 
-         If l_menu_code Is Null Then
-            Select menu_sq.Nextval
-              Into l_menu_code
-              From DUAL;
-         End If;
+  Procedure p_update(p_menu_code         menus.menu_code%Type,
+                     p_menu_name         menus.menu_name%Type,
+                     p_parent_display    menus.parent_menu_code%Type,
+                     p_menu_form_code    menus.menu_form_code%Type,
+                     p_menu_position     menus.menu_Position%Type,
+                     p_element_type      varchar2,
+                     p_show_in_navigator varchar2) As
+    l_menu_code       menus.menu_code%type := p_menu_code;
+    l_cnt             number;
+    l_is_folder       varchar2(100);
+    l_menu_form_code  forms.form_code%type := p_menu_form_code;
+    l_menu_form_code2 forms.form_code%type := p_menu_form_code;
+  Begin
 
-         If p_menu_form_code Is Not Null Then
-            Select Count (*)
-              Into l_cnt
-              From forms f
-             Where f.form_code = p_menu_form_code;
+    if p_element_type in ('FORM', 'FOLDER') or p_element_type is null then
+      form_utils.check_nulls(args_t(p_menu_name),
+                             args_t('Не указано наименование'));
+      if l_menu_code is null then
+        Select menu_sq.Nextval Into l_menu_code From DUAL;
+      end if;
 
-            If l_cnt = 0 Then
-               forms2_pkg.p_insert (l_menu_form_code2, l_menu_form_code, l_is_folder);
-            End If;
-         End If;
+      if p_menu_form_code is not null then
+        select count(*)
+          into l_cnt
+          from forms f
+         where f.form_code = p_menu_form_code;
+        if l_cnt = 0 then
+          forms2_pkg.p_insert(l_menu_form_code2,
+                              l_menu_form_code,
+                              l_is_folder);
+        end if;
+      end if;
+      Update menus m
+         Set menu_code         = l_menu_code,
+             menu_name         = p_menu_name,
+             parent_menu_code  = p_parent_display,
+             menu_form_code    = l_menu_form_code,
+             menu_Position     = p_menu_position,
+             show_in_navigator = p_show_in_navigator
+       Where m.menu_code = p_menu_code;
+      If Sql%Rowcount = 0 then
+        insert into menus m
+          (menu_code,
+           menu_name,
+           parent_menu_code,
+           menu_form_code,
+           menu_Position,
+           show_in_navigator)
+        values
+          (l_menu_code,
+           p_menu_name,
+           p_parent_display,
+           l_menu_form_code,
+           p_menu_position,
+           p_show_in_navigator);
+      end if;
+    else
+      form_utils.err_message('Вы не можете изменять системные элементы = ' ||
+                             p_element_type);
+    end if;
 
-         Update menus m
-            Set menu_code = l_menu_code
-               ,menu_name = p_menu_name
-               ,parent_menu_code = p_parent_display
-               ,menu_form_code = l_menu_form_code
-               ,menu_Position = p_menu_position
-               ,show_in_navigator = p_show_in_navigator
-          Where m.menu_code = p_menu_code;
+  End p_update;
 
-         If Sql%Rowcount = 0 Then
-            Insert Into menus m
-                        (menu_code, menu_name, parent_menu_code, menu_form_code, menu_Position, show_in_navigator)
-                 Values (l_menu_code, p_menu_name, p_parent_display, l_menu_form_code, p_menu_position
-                        ,p_show_in_navigator);
-         End If;
-      Else
-         form_utils.err_message ('Вы не можете изменять системные элементы = ' || p_element_type);
-      End If;
-   End p_update;
+  Procedure p_delete_menu(p_menu_code Varchar2, p_element_type varchar2) As
+    l_cnt Number;
+  Begin
+    if p_element_type in ('FOLDER', 'FORM') then
+      Select Count(*)
+        Into l_cnt
+        From menus
+       Where parent_menu_code = p_menu_code
+         And ROWNUM < 2;
 
-   Procedure p_delete_menu (p_menu_code Varchar2, p_element_type Varchar2) As
-      l_cnt   Number;
-   Begin
-      If p_element_type In ('FOLDER', 'FORM') Then
-         Select Count (*)
-           Into l_cnt
-           From menus
-          Where parent_menu_code = p_menu_code
-            And ROWNUM < 2;
-
-         If l_cnt > 0 Then
-            form_utils.err_message ('Удалите все дочерние элементы');
-         End If;
-
-         Delete From menus m
-               Where m.menu_code = p_menu_code;
-      Else
-         form_utils.err_message ('Вы не можете удалить системные элементы');
-      End If;
-   End p_delete_menu;
-
-   Procedure p_delete_form (p_menu_code Varchar2, p_element_type Varchar2) As
-      l_menu_form_code   forms.form_code%Type;
-   Begin
-      If p_element_type In ('FORM') Then
-         Select menu_form_code
-           Into l_menu_form_code
-           From menus
-          Where menu_code = p_menu_code;
-
-         FORMS2_PKG.p_delete (l_menu_form_code);
-
-         Update menus
-            Set menu_form_code = Null
-          Where menu_form_code = l_menu_form_code;
-      Else
-         form_utils.err_message ('Вы не можете удалить системные элементы');
-      End If;
-   End p_delete_form;
-
-   Function p_get_menu_tree (p_menu_code Varchar2, p_element_type Varchar2, p_form_display Varchar2)
-      Return menu_tree_table Pipelined As
-   Begin
-      If (p_element_type = 'FORM') Then
-         For rec In (Select 'TABS' menu_code, 'Вкладки' menu_name, p_menu_code parent_menu_code
-                           ,p_menu_code parent_display, 'FORM_TABS' menu_form_code, Null form_display
-                           ,'FORM_TABS' form_display_stat, 1 menu_position, 12 icon_id, 0 is_folder
-                           ,'TABS' element_type, p_form_display form_code_for_filter, 'Y' show_in_navigator
-                       From DUAL
-                     Union All
-                     Select 'ACTIONS' menu_code, 'Действия' menu_name, p_menu_code parent_menu_code
-                           ,p_menu_code parent_display, 'FORM_ACTIONS' menu_form_code, Null form_display
-                           ,'FORM_ACTIONS' form_display_stat, 2 menu_position, 13 icon_id, 0 is_folder
-                           ,'ACTIONS' element_type, p_form_display form_code_for_filter, 'Y' show_in_navigator
-                       From DUAL
-                     Union All
-                     Select 'COLUMNS' menu_code, 'Колонки' menu_name, p_menu_code parent_menu_code
-                           ,p_menu_code parent_display, 'FORM_COLUMNS' menu_form_code, Null form_display
-                           ,'FORM_COLUMNS' form_display_stat, 3 menu_position, 11 icon_id, 0 is_folder
-                           ,'COLUMNS' element_type, p_form_display form_code_for_filter, 'Y' show_in_navigator
-                       From DUAL
-                     Union All
-                     Select 'DATA' menu_code, 'Настройки формы' menu_name, p_menu_code parent_menu_code
-                           ,p_menu_code parent_display, 'FORMS' menu_form_code, Null form_display
-                           ,'FORMS' form_display_stat, 4 menu_position, 14 icon_id, 0 is_folder, 'DATA' element_type
-                           ,p_form_display form_code_for_filter, 'Y' show_in_navigator
-                       From DUAL) Loop
-            Pipe Row (rec);
-         End Loop;
+      If l_cnt > 0 Then
+        form_utils.err_message('Удалите все дочерние элементы');
       End If;
 
-      For rec In (Select m.menu_code, m.menu_name, m.parent_menu_code, m.parent_menu_code parent_display
-                        ,m.menu_form_code, m.menu_form_code form_display, Null form_display_stat, m.menu_position
-                        ,NVL (f.icon_id, Null) icon_id
-                        ,DECODE (m.menu_form_code
-                                ,Null, DECODE ((Select Count (*)
-                                                  From menus m2
-                                                 Where m2.parent_menu_code = m.menu_code), 0, 0, 1)
-                                ,1
-                                ) is_folder
-                        ,TO_CHAR (DECODE (m.menu_form_code, Null, 'FOLDER', 'FORM')) element_type
-                        ,Null form_code_for_filter, m.show_in_navigator
-                    From menus m Left Join forms f On f.form_code = m.menu_form_code
-                   Where NVL (m.parent_menu_code, '9999') = NVL (p_menu_code, '9999')) Loop
-         Pipe Row (rec);
-      End Loop;
+      Delete From menus m Where m.menu_code = p_menu_code;
+    else
+      form_utils.err_message('Вы не можете удалить системные элементы');
+    end if;
+  End p_delete_menu;
 
-      Return;
-   End;
+  Procedure p_delete_form(p_menu_code Varchar2, p_element_type varchar2) As
+    l_menu_form_code forms.form_code%type;
+  Begin
+    if p_element_type in ('FORM') then
+      select menu_form_code
+        into l_menu_form_code
+        from menus
+       where menu_code = p_menu_code;
+      FORMS2_PKG.p_delete(l_menu_form_code);
+      update menus
+         set menu_form_code = null
+       where menu_form_code = l_menu_form_code;
+    else
+      form_utils.err_message('Вы не можете удалить системные элементы');
+    end if;
+  End p_delete_form;
+
+  Function p_get_menu_tree(p_menu_code    varchar2,
+                           p_element_type varchar2,
+                           p_form_display varchar2) Return menu_tree_table
+    Pipelined as
+  begin
+    if (p_element_type = 'FORM') then
+
+      for rec in (Select 'TABS' menu_code,
+                         'Вкладки' menu_name,
+                         p_menu_code parent_menu_code,
+                         p_menu_code parent_display,
+                         'FORM_TABS' menu_form_code,
+                         null form_display,
+                         'FORM_TABS' form_display_stat,
+                         1 menu_position,
+                         12 icon_id,
+                         0 is_folder,
+                         'TABS' element_type,
+                         p_form_display form_code_for_filter,
+                         'Y' show_in_navigator
+                    From DUAL
+                  union all
+                  select 'ACTIONS' menu_code,
+                         'Действия' menu_name,
+                         p_menu_code parent_menu_code,
+                         p_menu_code parent_display,
+                         'FORM_ACTIONS' menu_form_code,
+                         null form_display,
+                         'FORM_ACTIONS' form_display_stat,
+                         2 menu_position,
+                         13 icon_id,
+                         0 is_folder,
+                         'ACTIONS' element_type,
+                         p_form_display form_code_for_filter,
+                         'Y' show_in_navigator
+                    From DUAL
+                  union all
+                  select 'COLUMNS' menu_code,
+                         'Колонки' menu_name,
+                         p_menu_code parent_menu_code,
+                         p_menu_code parent_display,
+                         'FORM_COLUMNS' menu_form_code,
+                         null form_display,
+                         'FORM_COLUMNS' form_display_stat,
+                         3 menu_position,
+                         11 icon_id,
+                         0 is_folder,
+                         'COLUMNS' element_type,
+                         p_form_display form_code_for_filter,
+                         'Y' show_in_navigator
+                    From DUAL
+                  union all
+                  select 'DATA' menu_code,
+                         'Настройки формы' menu_name,
+                         p_menu_code parent_menu_code,
+                         p_menu_code parent_display,
+                         'FORMS' menu_form_code,
+                         null form_display,
+                         'FORMS' form_display_stat,
+                         4 menu_position,
+                         14 icon_id,
+                         0 is_folder,
+                         'DATA' element_type,
+                         p_form_display form_code_for_filter,
+                         'Y' show_in_navigator
+                    From DUAL) loop
+        pipe row(rec);
+      end loop;
+    end if;
+    for rec in (select m.menu_code,
+                       m.menu_name,
+                       m.parent_menu_code,
+                       m.parent_menu_code parent_display,
+                       m.menu_form_code,
+                       m.menu_form_code form_display,
+                       null form_display_stat,
+                       m.menu_position,
+                       nvl(f.icon_id, null) icon_id,
+                       decode(m.menu_form_code,
+                              null,
+                              decode((select count(*)
+                                       from menus m2
+                                      where m2.parent_menu_code = m.menu_code),
+                                     0,
+                                     0,
+                                     1),
+                              1) is_folder,
+                       to_char(decode(m.menu_form_code,
+                                      null,
+                                      'FOLDER',
+                                      'FORM')) element_type,
+                       null form_code_for_filter,
+                       m.show_in_navigator
+                  from menus m
+                  left join forms f
+                    on f.form_code = m.menu_form_code
+                 where NVL(m.parent_menu_code, '9999') =
+                       NVL(p_menu_code, '9999')) loop
+      pipe row(rec);
+
+    end loop;
+    return;
+  end;
 End;
 /
 
-Create Or Replace Package text_utils Is
-   -- Author  : V.SAFRONOV
-   -- Created : 23.12.2009 14:52:14
-   -- Purpose :
+Create Or Replace 
+package text_utils is
 
-   -- Public type declarations
-   Function format (p_str Varchar2, p_args args_t Default Null)
-      Return Varchar2;
-End TEXT_UTILS;
+  -- Author  : V.SAFRONOV
+  -- Created : 23.12.2009 14:52:14
+  -- Purpose :
+
+  -- Public type declarations
+
+  function format(p_str varchar2, p_args args_t default null) return varchar2;
+
+end TEXT_UTILS;
 /
 
-Create Or Replace Package Body text_utils Is
-   Function format (p_str Varchar2, p_args args_t Default Null)
-      Return Varchar2 As
-      l_str   Varchar2 (32000) := p_str;
-   Begin
-      If p_args Is Not Null Then
-         For i In 1 .. p_args.Count Loop
-            l_str    := Replace (l_str, '%' || i, p_args (i));
-         End Loop;
-      End If;
 
-      Return l_str;
-   End;
-End TEXT_UTILS;
+Create Or Replace 
+package body text_utils is
+
+  function format(p_str varchar2, p_args args_t default null) return varchar2 as
+    l_str varchar2(32000) := p_str;
+  begin
+    if p_args is not null then
+      for i in 1 .. p_args.count loop
+        l_str := replace(l_str, '%' || i, p_args(i));
+      end loop;
+    end if;
+    return l_str;
+  end;
+
+end TEXT_UTILS;
 /
 
-Create Or Replace Package text_utils_pkg Is
+Create Or Replace 
+PACKAGE text_utils_pkg Is
    Type t_words_arr Is Table Of Varchar2 (4000);
 
    Type vchar_t Is Table Of Varchar2 (2000)
@@ -3013,10 +3179,11 @@ Create Or Replace Package text_utils_pkg Is
 End text_utils_pkg;
 /
 
-Grant Execute On text_utils_pkg To fc_admin
+Grant Execute On text_utils_pkg To fc22_admin
 /
 
-Create Or Replace Package Body text_utils_pkg Is
+Create Or Replace 
+PACKAGE BODY text_utils_pkg Is
    l_nums   vchar_t;
 
 ------------------------
@@ -3292,7 +3459,8 @@ Begin
 End text_utils_pkg;
 /
 
-Create Or Replace Package users_pkg As
+Create Or Replace 
+PACKAGE users_pkg As
 /**
 * Работа с пользователями
 * @headcom
@@ -3327,10 +3495,11 @@ Grant Execute On users_pkg To ins
 /
 Grant Execute On users_pkg To bf
 /
-Grant Execute On users_pkg To fc_admin
+Grant Execute On users_pkg To fc22_admin
 /
 
-Create Or Replace Package Body users_pkg As
+Create Or Replace 
+PACKAGE BODY users_pkg As
    g_user_id   users.user_id%Type   := -1;
 
    Function get_user_id

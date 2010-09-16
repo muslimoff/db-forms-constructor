@@ -8,7 +8,8 @@ public class ApplicationToolBar extends ToolStrip {
 	private DynamicForm form;
 
 	public ApplicationToolBar() {
-		this.setWidth100();
+		//TODO - Что-то вдруг тулбар стал вылазить за пределы окна при 100% размере
+		this.setWidth("90%");
 		this.setHeight("28");
 	}
 
