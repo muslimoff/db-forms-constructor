@@ -38,6 +38,10 @@ public class Attribute implements IsSerializable {
 		}
 	}
 
+	public void setDataType(String dataType) {
+		this.dataType = dataType;
+	}
+
 	public String getAttribute() {
 		String val = stringVal;
 		if ("B".equals(dataType)) {

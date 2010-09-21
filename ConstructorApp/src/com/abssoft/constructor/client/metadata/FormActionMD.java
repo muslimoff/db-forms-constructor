@@ -23,6 +23,7 @@ public class FormActionMD implements IsSerializable {
 	private HashMap<Integer, String> outputs = new HashMap<Integer, String>();
 
 	private HashMap<Integer, String> allArgs = new HashMap<Integer, String>();
+	private HashMap<Integer, String> allDataTypes = new HashMap<Integer, String>();
 
 	private HashMap<String, Integer> outputsByName = new HashMap<String, Integer>();
 
@@ -214,6 +215,14 @@ public class FormActionMD implements IsSerializable {
 	 */
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public void setAllDataTypes(HashMap<Integer, String> allDataTypes) {
+		this.allDataTypes = allDataTypes;
+	}
+
+	public HashMap<Integer, String> getAllDataTypes() {
+		return allDataTypes;
 	}
 
 }

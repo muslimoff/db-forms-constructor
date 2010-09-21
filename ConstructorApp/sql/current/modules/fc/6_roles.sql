@@ -5,9 +5,9 @@ Grant Execute On applications_pkg To fc_admin
 /
 Grant Execute On apps_role_menus_pkg To fc_admin
 /
-Grant Insert On forms To fc_admin
-/
 Grant Select On forms To fc_admin
+/
+Grant Insert On forms To fc_admin
 /
 Grant Update On forms To fc_admin
 /
@@ -37,17 +37,21 @@ Grant Execute On form_tabs_pkg To fc_admin
 /
 Grant Select On form_tabs_v To fc_admin
 /
+Grant Select On form_tab_parent_exclns To fc_admin
+/
+Grant Execute On form_tab_parent_exclns_pkg To fc_admin
+/
 Grant Execute On form_utils To fc_admin
 /
 Grant Select On icons To fc_admin
 /
-Grant Update On lookups To fc_admin
+Grant Delete On lookups To fc_admin
 /
 Grant Select On lookups To fc_admin
 /
-Grant Insert On lookups To fc_admin
+Grant Update On lookups To fc_admin
 /
-Grant Delete On lookups To fc_admin
+Grant Insert On lookups To fc_admin
 /
 Grant Select On lookup_attributes To fc_admin
 /

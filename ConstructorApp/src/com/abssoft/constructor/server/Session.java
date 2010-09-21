@@ -12,7 +12,7 @@ import java.util.Map;
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 
-import com.abssoft.constructor.client.data.common.ClientActionType;
+import com.abssoft.constructor.client.metadata.FormActionMD;
 import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.IconsArr;
@@ -67,9 +67,8 @@ public class Session {
 		Utils.debug("Server:session form " + fi.getInfo() + " closed...");
 	}
 
-	public Row executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow, String actionCode, ClientActionType clientActionType)
-			throws SQLException, Exception {
-		return formDataHashMap.get(fi.getKey()).executeDML(fi.getGridHashCode(), oldRow, newRow, actionCode, clientActionType);
+	public Row executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow, FormActionMD actMD) throws SQLException, Exception {
+		return formDataHashMap.get(fi.getKey()).executeDML(fi.getGridHashCode(), oldRow, newRow, actMD);
 	}
 
 	public RowsArr fetch(FormInstanceIdentifier fi, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch)

@@ -16,6 +16,7 @@ import oracle.jdbc.OracleCallableStatement;
 import oracle.jdbc.OraclePreparedStatement;
 import oracle.jdbc.driver.OracleParameterMetaData;
 import oracle.sql.CLOB;
+import oracle.sql.DATE;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -81,7 +82,10 @@ public class Utils {
 			dVal = rs.wasNull() ? null : dVal;
 			attr = new Attribute(dVal);
 		} else if ("D".equals(formColDataType)) {
-			attr = new Attribute(rs.getDate(column));
+			System.out.println("Dt:" + rs.getString(column));
+			// Date dt = rs.getDate(column);
+			DATE dt = rs.getDATE(column);
+			attr = new Attribute(dt.dateValue());
 		} else if ("B".equals(formColDataType)) {
 			val = rs.getString(column);
 			attr = new Attribute("1".equals(val) || "Y".equals(val));

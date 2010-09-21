@@ -73,6 +73,38 @@ public class Utils {
 		return result;
 	}
 
+	// TODO Причесать функции. getMapFromRow - копия getTreeNodeFromRow
+	public static Map<String, Object> getMapFromRow(FormDataSourceField[] dsFields, Row row) {
+		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		for (int c = 0; null != row && c < row.size(); c++) {
+			String dsFieldName = dsFields[c].getName();
+			Attribute attr = row.get(c);
+			String cellValue = attr.getAttribute();
+			Object obj = attr.getAttributeAsObject();
+			boolean b = "T".equals(dsFields[c].getFormMetadata().getFormType()) && "4".equals(dsFields[c].getColumnMD().getTreeFieldType());
+			if (b || null != dsFields[c].getColumnMD().getFieldType() && dsFields[c].getColumnMD().getFieldType().equals("3")
+					&& null != cellValue) {
+				try {
+					String iconFileName = ConstructorApp.menus.getIcons().get((Float.valueOf(cellValue)).intValue());
+					result.put(dsFieldName, iconFileName);
+				} catch (Exception e) {
+					Utils.debug("Icon " + cellValue + " not found: " + e);
+				}
+			} else if (obj instanceof Boolean) {
+				Boolean bVal = attr.getAttributeAsBoolean();
+				result.put(dsFieldName, bVal);
+			} else if (obj instanceof Double) {
+				result.put(dsFieldName, attr.getAttributeAsDouble());
+			} else if (obj instanceof Date) {
+				result.put(dsFieldName, attr.getAttributeAsDate());
+			} else {
+				result.put(dsFieldName, cellValue);
+			}
+		}
+
+		return result;
+	}
+
 	public static void logException(Exception e) {
 		logException(e, "Undefined");
 	}
@@ -110,39 +142,48 @@ public class Utils {
 		for (int c = 0; c < dsFields.length; c++) {
 			String colName = dsFields[c].getName();
 
-			Attribute attr;
-			if (FieldType.BOOLEAN.equals(dsFields[c].getType())) {
-				Boolean cellValue = record.getAttributeAsBoolean(colName);
-				attr = new Attribute(cellValue);
-			} else if (FieldType.FLOAT.equals(dsFields[c].getType())) {
-				Float fVal = null;
-				// Icons
-				if ("3".equals(dsFields[c].getColumnMD().getFieldType()) //
-						|| "4".equals(dsFields[c].getColumnMD().getTreeFieldType())) {
-					try {
-						IconsArr iArr = ConstructorApp.menus.getIcons();
-						fVal = ((Integer) getKeysFromValue(iArr, record.getAttribute(colName)).get(0)).floatValue();
-					} catch (Exception e) {
-						// TODO Ошипка при редактировании новой записи сразу после сохранения.
-						// e.printStackTrace();
+			Attribute attr = new Attribute();
+			try {
+				if (FieldType.BOOLEAN.equals(dsFields[c].getType())) {
+					Boolean cellValue = record.getAttributeAsBoolean(colName);
+					attr = new Attribute(cellValue);
+				} else if (FieldType.FLOAT.equals(dsFields[c].getType())) {
+					Float fVal = null;
+					// Icons
+					if ("3".equals(dsFields[c].getColumnMD().getFieldType()) //
+							|| "4".equals(dsFields[c].getColumnMD().getTreeFieldType())) {
+						try {
+							IconsArr iArr = ConstructorApp.menus.getIcons();
+							fVal = ((Integer) getKeysFromValue(iArr, record.getAttribute(colName)).get(0)).floatValue();
+						} catch (Exception e) {
+							// TODO Ошипка при редактировании новой записи сразу после сохранения.
+							// e.printStackTrace();
+						}
+					} else {
+						try {
+							fVal = record.getAttributeAsFloat(colName);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
+					Double cellValue = (null == fVal) ? null : fVal.doubleValue();
+					attr = new Attribute(cellValue);
+				} else if (FieldType.DATE.equals(dsFields[c].getType())) {
+					Date cellValue = record.getAttributeAsDate(colName);
+					attr = new Attribute((Date) cellValue);
 				} else {
-					try {
-						fVal = record.getAttributeAsFloat(colName);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					String cellValue = record.getAttribute(colName);
+					attr = new Attribute(cellValue);
 				}
-				Double cellValue = (null == fVal) ? null : fVal.doubleValue();
-				attr = new Attribute(cellValue);
-			} else if (FieldType.DATE.equals(dsFields[c].getType())) {
-				Date cellValue = record.getAttributeAsDate(colName);
-				attr = new Attribute(cellValue);
-			} else {
-				String cellValue = record.getAttribute(colName);
-				attr = new Attribute(cellValue);
+
+			} catch (Exception e) {
+				// TODO JavaScript орет тут для несохраненных записей
+				e.printStackTrace();
 			}
-			debug(colName + ":" + attr.getAttribute());
+			if (null == attr.getAttributeAsObject()) {
+				attr.setDataType(dsFields[c].getColumnMD().getDataType());
+			}
+			debug(colName + ":" + attr.getAttribute() + "; Type:" + dsFields[c].getType() + ";" + dsFields[c].getColumnMD().getDataType());
 			row.put(c, attr);
 		}
 		return row;
@@ -188,11 +229,17 @@ public class Utils {
 					}
 					result.put(dsf.getName(), v);
 				} else {
-					// if (null != defVal && !"".equals(defVal)) {
 					result.put(dsf.getName(), defVal);
-					// com.smartgwt.client.widgets.grid.ListGrid.getRecordIndex();
-					// }
 				}
+				// if ("B".equals(dataType)) {
+				// result.put(dsf.getName(), (Boolean) null);
+				// } else if ("N".equals(dataType)) {
+				// result.put(dsf.getName(), (Double) null);
+				// } else if ("D".equals(dataType)) {
+				// result.put(dsf.getName(), (Date) null);
+				// } else {
+				// result.put(dsf.getName(), (String) null);
+				// }
 			}
 		}
 		return result;

@@ -72,9 +72,6 @@ public class ActionItem extends MenuItem {
 					doActionWithConfirm();
 				}
 			});
-			//
-			// button.setWidth(button.getHeight());
-			// button.setTitle("");
 		}
 		this.setDynamicTitleFunction(new MenuItemStringFunction() {
 			@Override
@@ -82,7 +79,6 @@ public class ActionItem extends MenuItem {
 				String title = ActionItem.this.getFormActionMD().getDisplayName();
 				try {
 					title = replaceBindVariables(title);
-
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -99,12 +95,14 @@ public class ActionItem extends MenuItem {
 					String actionType = ActionItem.this.formActionMD.getType();
 					ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 					int currRow = 0;
-					// try {
-					ListGridRecord r = grid.getSelectedRecord();
-					currRow = grid.getRecordIndex(r);
-					// } catch (Exception e) {
-					// e.printStackTrace();
-					// }
+					try {
+						ListGridRecord r = grid.getSelectedRecord();
+						currRow = grid.getRecordIndex(r);
+					} catch (Exception e) {
+						System.out.println("ssss1");
+						e.printStackTrace();
+						System.out.println("ssss2");
+					}
 					if ("2".equals(actionType)) {
 						result = currRow == grid.getEditRow() || 0 != grid.getAllEditRows().length;
 					}
@@ -126,7 +124,7 @@ public class ActionItem extends MenuItem {
 		System.out.println("doAction-1");
 		final ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		System.out.println("doAction-2");
-		mainFormPane.setCurrentActionCode(formActionMD.getCode());
+		mainFormPane.setCurrentAction(formActionMD);
 		System.out.println("doAction-3");
 		String title = this.getFormActionMD().getDisplayName();
 		System.out.println("doAction-4");
