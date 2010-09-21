@@ -8,6 +8,7 @@ import com.abssoft.constructor.client.data.QueryService;
 import com.abssoft.constructor.client.data.QueryServiceAsync;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
+import com.abssoft.constructor.client.metadata.FormActionMD;
 import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.MenuMD;
@@ -93,7 +94,7 @@ public class MainFormPane extends Canvas {
 	private boolean forceFetch = false;
 	private FormValuesManager valuesManager = new FormValuesManager();
 	private FormDataSource dataSource;
-	private String currentActionCode = "";
+	private FormActionMD currentAction = new FormActionMD();
 	private FormInstanceIdentifier instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId);
 	private boolean fromUrl = false;
 
@@ -149,8 +150,6 @@ public class MainFormPane extends Canvas {
 					if (isMasterForm()) {
 						ConstructorApp.mainToolBar.setForm(MainFormPane.this);
 					}
-					Utils.debug("Actions allowed on form: Ins:" + result.getActions().isInsertAllowed() + "; Upd:"
-							+ result.getActions().isUpdateAllowed() + "; Del:" + result.getActions().isDeleteAllowed());
 				}
 				Utils.debug("MainFormPane created");
 			}
@@ -268,8 +267,8 @@ public class MainFormPane extends Canvas {
 	/**
 	 * @return the currentActionCode
 	 */
-	public String getCurrentActionCode() {
-		return currentActionCode;
+	public FormActionMD getCurrentAction() {
+		return currentAction;
 	}
 
 	/**
@@ -444,8 +443,8 @@ public class MainFormPane extends Canvas {
 	 * @param currentActionCode
 	 *            the currentActionCode to set
 	 */
-	public void setCurrentActionCode(String currentActionCode) {
-		this.currentActionCode = currentActionCode;
+	public void setCurrentAction(FormActionMD currentAction) {
+		this.currentAction = currentAction;
 	}
 
 	/**

@@ -12,7 +12,6 @@ import oracle.jdbc.OracleCallableStatement;
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 
-import com.abssoft.constructor.client.data.common.ClientActionType;
 import com.abssoft.constructor.client.metadata.Attribute;
 import com.abssoft.constructor.client.metadata.FormActionMD;
 import com.abssoft.constructor.client.metadata.FormActionsArr;
@@ -74,20 +73,11 @@ public class Form {
 		Utils.debug("Server:form " + getFormCode() + " - gridHashCode:" + gridHashCode + " closed...");
 	}
 
-	public Row executeDML(int gridHashCode, Row oldRow, Row newRow, String actionCode, ClientActionType clientActionType)
-			throws SQLException, Exception {
+	public Row executeDML(int gridHashCode, Row oldRow, Row newRow, FormActionMD actMD) throws SQLException, Exception {
 		Row resultRow = null != newRow ? newRow : oldRow;
-		Utils.debug("actionCode:" + actionCode + "; clientActionType:" + clientActionType, resultRow);
-		FormActionsArr fActArr = formMetaData.getActions();
-		FormActionMD fActMD = null;
-		for (int i = 0; i < fActArr.size(); i++) {
-			if (actionCode.equals(fActArr.get(i).getCode())) {
-				fActMD = fActArr.get(i);
-			}
-
-		}
+		Utils.debug("actionCode:" + actMD.getCode() + "; Type:" + actMD.getType(), resultRow);
 		{
-			String dmlProcText = fActMD.getDmlProcText();
+			String dmlProcText = actMD.getDmlProcText();
 			if (null != dmlProcText) {
 				OracleCallableStatement stmnt = (OracleCallableStatement) getConnection().prepareCall(dmlProcText);
 				Utils.debug(dmlProcText, resultRow);
@@ -100,74 +90,71 @@ public class Form {
 					if ("CLOB".equals(formMetaData.getColumns().get(j).getDataType())) {
 						isClobHM.put(newParamName, true);
 						isClobHM.put(oldParamName, true);
-						System.out.println("!!!!!!!newParamName");
 					}
-					// TODO Оптимизировать код
 					if (null != newRow && null != oldRow) {
 						rowValues.put(newParamName, newRow.get(j));
 						rowValues.put(oldParamName, oldRow.get(j));
 					} else if (null != newRow) {
 						rowValues.put(newParamName, newRow.get(j));
-						// rowValues.put(oldParamName, newRow.get(j));
 						rowValues.put(oldParamName, new Attribute());
 					} else if (null != oldRow) {
 						rowValues.put(newParamName, oldRow.get(j));
-						// rowValues.put(newParamName, new Attribute());
 						rowValues.put(oldParamName, oldRow.get(j));
 					}
-					// Attribute newVal = (null != newRow) ? newRow.get(j) : new Attribute();
-					// Attribute oldVal = (null != oldRow) ? oldRow.get(j) : newRow.get(j);
-					// rowValues.put(newParamName, newVal);
-					// rowValues.put(oldParamName, oldVal);
 				}
 				// Цикл по IN-параметрам перед выполнением процедуры
-				Iterator<Integer> allParamsIterator = fActMD.getAllArgs().keySet().iterator();
+				Iterator<Integer> allParamsIterator = actMD.getAllArgs().keySet().iterator();
 				while (allParamsIterator.hasNext()) {
 					int paramNum = allParamsIterator.next();
 					int outParamType = Types.VARCHAR;
 
-					String paramName = fActMD.getAllArgs().get(paramNum);
+					String paramName = actMD.getAllArgs().get(paramNum);
 					if (isClobHM.containsKey(paramName)) {
 						outParamType = Types.CLOB;
 					}
-					if (fActMD.getInputs().containsKey(paramNum)) {
+					if (actMD.getInputs().containsKey(paramNum)) {
 						Attribute attr = rowValues.get(paramName);
-						Object val = null != attr ? attr.getAttributeAsObject() : null;
-						if (null != val) {
-							if (val instanceof java.util.Date) {
-								// Converting java.util.Date to java.sql.Date
-								stmnt.setDate(paramNum, new java.sql.Date(((java.util.Date) val).getTime()));
-								outParamType = Types.DATE;
-							} else if (val instanceof Double) {
-								stmnt.setDouble(paramNum, (Double) val);
-								outParamType = Types.DOUBLE;
-							} else if (val instanceof Boolean) {
-								stmnt.setString(paramNum, ((Boolean) val) ? "Y" : "N");
+						attr = (null == attr) ? new Attribute() : attr;
+						Object val = (null != attr) ? attr.getAttributeAsObject() : null;
+						String dType = attr.getDataType();
+						if ("D".equals(dType)) {
+							outParamType = Types.DATE;
+							// Converting java.util.Date to java.sql.Date
+							java.sql.Date dt = (null != val) ? new java.sql.Date(((java.util.Date) val).getTime()) : null;
+							stmnt.setDate(paramNum, dt);
+						} else if ("N".equals(dType)) {
+							outParamType = Types.DOUBLE;
+							if (null == val) {
+								stmnt.setString(paramNum, null);
 								outParamType = Types.VARCHAR;
 							} else {
-								stmnt.setString(paramNum, (String) val);
+								stmnt.setDouble(paramNum, (Double) val);
 							}
+						} else if ("B".equals(dType)) {
+							outParamType = Types.VARCHAR;
+							stmnt.setString(paramNum, ((Boolean) val) ? "Y" : "N");
 						} else {
-							stmnt.setString(paramNum, null);
+							stmnt.setString(paramNum, (String) val);
 						}
-						Utils.debug("(" + (null != attr ? attr.getDataType() : null) + ")" + "IN:" + paramName + " => " + val + ";",
-								resultRow);
+						Utils.debug("(" + (null != attr ? attr.getDataType() : null) + ")" + "IN:" + paramName + " => " + val + "; class:"
+								+ ((null != val) ? val.getClass() : "null") + "; is null:" + (val == null), resultRow);
 					}
-					if (fActMD.getOutputs().containsKey(paramNum)) {
-						stmnt.registerOutParameter(paramNum, outParamType);
+					if (actMD.getOutputs().containsKey(paramNum)) {
+						((OracleCallableStatement) stmnt).registerOutParameter(paramNum, outParamType);
 					}
 				}
 				stmnt.execute();
 				// Цикл по OUT-параметрам. P_OLD_ параметры не обрабатываются - предполагается, что они только IN
 				for (int j = 0; j < resultRow.size(); j++) {
+					System.out.println(">>>" + resultRow.get(j).getDataType());
 					String colName = "P_" + formMetaData.getColumns().get(j).getName();
-					if (fActMD.getOutputsByName().containsKey(colName)) {
+					if (actMD.getOutputsByName().containsKey(colName)) {
 						String dataType = resultRow.get(j).getDataType();
 						if (isClobHM.containsKey(colName)) {
 							dataType = "CLOB";
 						}
 						resultRow.remove(j);
-						Integer colIdx = fActMD.getOutputsByName().get(colName);
+						Integer colIdx = actMD.getOutputsByName().get(colName);
 						Attribute attr = Utils.getAttribute(colIdx, dataType, stmnt, formInstance.get(gridHashCode));
 						Utils.debug("(" + dataType + ")" + "OUT:" + colName + " => " + attr.getAttribute() + "; is null:"
 								+ (null == attr.getAttribute()), resultRow);
@@ -280,9 +267,11 @@ public class Form {
 		while (actProcRs.next()) {
 			argNum = actProcRs.getInt("position");
 			String argName = actProcRs.getString("argument_name");
-			System.out.println("argNum: " + argNum + "; argName: " + argName);
+			String argType = actProcRs.getString("data_type");
+			System.out.println("argNum: " + argNum + "; argName: " + argName + "(" + argType + ")");
 			dmlProcText = dmlProcText + argName + " => ?,";
 			actionData.getAllArgs().put(argNum, argName);
+			actionData.getAllDataTypes().put(argNum, argType);
 			if ("Y".equals(actProcRs.getString("in_flag"))) {
 				actionData.getInputs().put(argNum, argName);
 			}
@@ -303,14 +292,10 @@ public class Form {
 	}
 
 	private FormActionsArr getFormActionsArr() {
-		boolean insertAllowed = false;
-		boolean updateAllowed = false;
-		boolean deleteAllowed = false;
 		FormActionsArr result = new FormActionsArr();
 		try {
 			String formActionsSQL = Utils.getSQLQueryFromXML("formActionsSQL", session.getServerInfoMD());
 			OraclePreparedStatement statement = (OraclePreparedStatement) getConnection().prepareStatement(formActionsSQL);
-			// Utils.setStringParameterValue(statement, "p_form_code", formCode);
 			Utils.setFormMDParams(statement, getFormCode(), parentFormCode, isDrillDownForm);
 			ResultSet actRs = statement.executeQuery();
 			while (actRs.next()) {
@@ -318,11 +303,9 @@ public class Form {
 				actionData.setCode(actRs.getString("action_code"));
 				actionData.setIconId(actRs.getInt("icon_id"));
 				actionData.setType(actRs.getString("action_type"));
-				// actionData.setSqlProcedureName(actRs.getString("procedure_name"));
 				actionData.setSqlProcedureName(Utils.bindVarsToLowerCase(actRs.getString("procedure_name"), "(?i):[\\w]+", ":", ":"));
 				actionData.setConfirmText(Utils.bindVarsToLowerCase(actRs.getString("confirm_text"), "(?i):[\\w]+", "&", "&"));
 				actionData.setDisplayName(Utils.bindVarsToLowerCase(actRs.getString("action_display_name"), "(?i):[\\w]+", "&", "&"));
-				// actionData.setDisplayName(actRs.getString("action_display_name"));
 				if (null != actionData.getSqlProcedureName()) {
 					actionData.setDmlProcText(getDMLProcText(actionData));
 				}
@@ -332,19 +315,12 @@ public class Form {
 				actionData.setChildFormCode(actRs.getString("child_form_code"));
 				result.add(actionData);
 
-				insertAllowed = ClientActionType.ADD.getValue().equals(actionData.getType()) ? true : insertAllowed;
-				updateAllowed = ClientActionType.UPD.getValue().equals(actionData.getType()) ? true : updateAllowed;
-				deleteAllowed = ClientActionType.DEL.getValue().equals(actionData.getType()) ? true : deleteAllowed;
-
 			}
 			actRs.close();
 			statement.close();
 		} catch (java.sql.SQLException e) {
 			e.printStackTrace();
 		}
-		result.setInsertAllowed(insertAllowed);
-		result.setUpdateAllowed(updateAllowed);
-		result.setDeleteAllowed(deleteAllowed);
 		return result;
 	}
 

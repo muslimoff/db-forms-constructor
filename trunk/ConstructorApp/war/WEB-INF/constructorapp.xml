@@ -218,10 +218,10 @@
 		<server id="25"
 			display="SOS Ins" 
 			dbusername="INS"
-			dbpassword="INS" 
+			dbpassword="ins" 
 			allowuserchange="false"
 			debug="true"
-			title="Ins KO"
+			title="Ins SOS"
 			default="true"
 			fcSchemaOwner="FC22">
 			ko:1521:XE
@@ -283,6 +283,7 @@
 				 Where l.lookup_code = lv.lookup_code
 				   --
 				   				   And l.lookup_code Not Like 'MZ%'
+				   				   And l.lookup_code Not Like 'INS%'
 			  Order By l.lookup_code, lv.lookup_value_code
 			]]>
 		</sqlStatement>

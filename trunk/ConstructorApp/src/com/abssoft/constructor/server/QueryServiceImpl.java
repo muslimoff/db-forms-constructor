@@ -26,9 +26,9 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import com.abssoft.constructor.client.data.QueryService;
-import com.abssoft.constructor.client.data.common.ClientActionType;
 import com.abssoft.constructor.client.data.common.ConnectionInfo;
 import com.abssoft.constructor.client.metadata.ActionStatus;
+import com.abssoft.constructor.client.metadata.FormActionMD;
 import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.MenusArr;
@@ -277,15 +277,16 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 		return result;
 	}
 
-	public Row executeDML(FormInstanceIdentifier formIdentifier, Row oldRow, Row newRow, String actionCode,
-			ClientActionType clientActionType) {
+	public Row executeDML(FormInstanceIdentifier formIdentifier, Row oldRow, Row newRow, FormActionMD actMD) {
 		try {
-			return sessionData.get(formIdentifier.getSessionId()).executeDML(formIdentifier, oldRow, newRow, actionCode, clientActionType);
+			return sessionData.get(formIdentifier.getSessionId()).executeDML(formIdentifier, oldRow, newRow, actMD);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("QueryServiceImpl.executeDML... oldRow:" + oldRow + "; newRow:" + newRow);
 			Row r;
-			if (!ClientActionType.DEL.equals(clientActionType)) {
+			if (!"3".equals(actMD.getType())
+			// !ClientActionType.DEL.equals(clientActionType)
+			) {
 				newRow.setStatus(new ActionStatus(e.getMessage(), ActionStatus.StatusType.ERROR));
 				r = newRow;
 			} else {

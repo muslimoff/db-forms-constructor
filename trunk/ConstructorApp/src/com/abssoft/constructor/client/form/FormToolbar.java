@@ -105,6 +105,7 @@ public class FormToolbar extends DynamicForm {
 				try {
 					((ActionItem) mi).setActionStatus();
 				} catch (Exception e) {
+					System.out.println("setActionsStatuses...Error " + e);
 					e.printStackTrace();
 				}
 			}

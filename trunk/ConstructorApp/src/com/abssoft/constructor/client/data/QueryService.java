@@ -2,8 +2,8 @@ package com.abssoft.constructor.client.data;
 
 import java.util.Map;
 
-import com.abssoft.constructor.client.data.common.ClientActionType;
 import com.abssoft.constructor.client.data.common.ConnectionInfo;
+import com.abssoft.constructor.client.metadata.FormActionMD;
 import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.MenusArr;
@@ -67,8 +67,7 @@ public interface QueryService extends RemoteService {
 	 * @return Возвращает измененные на сервере данные;
 	 */
 
-	public Row executeDML(FormInstanceIdentifier formIdentifier, Row oldRow, Row newRow, String actionCode,
-			ClientActionType clientActionType);
+	public Row executeDML(FormInstanceIdentifier formIdentifier, Row oldRow, Row newRow, FormActionMD actMD);
 
 	/**
 	 * Закрывает текущую сессию (перед выходом из приложения).

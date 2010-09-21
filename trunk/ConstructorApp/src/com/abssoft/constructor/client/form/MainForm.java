@@ -1,14 +1,19 @@
 package com.abssoft.constructor.client.form;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.TabSet;
+import com.abssoft.constructor.client.data.DMLProcExecution;
+import com.abssoft.constructor.client.data.FormDataSourceField;
 import com.abssoft.constructor.client.data.QueryService;
 import com.abssoft.constructor.client.data.QueryServiceAsync;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
+import com.abssoft.constructor.client.metadata.FormActionMD;
 import com.abssoft.constructor.client.metadata.FormMD;
+import com.abssoft.constructor.client.metadata.Row;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.smartgwt.client.data.Record;
@@ -57,7 +62,7 @@ class MainForm extends Canvas {
 	public class FormListGrid extends ListGrid {
 		public FormListGrid() {
 			this.setShowRowNumbers(true);
-			// TODO Высота строки..			// 
+			// TODO Высота строки.. //
 			this.setCellHeight(16);
 		}
 
@@ -235,23 +240,21 @@ class MainForm extends Canvas {
 		treeGrid.addRowEditorEnterHandler(new RowEditorEnterHandler() {
 			@Override
 			public void onRowEditorEnter(RowEditorEnterEvent event) {
-				System.out.println("RowEditorEnterHandler.getEditedRecord: 1");
+				// System.out.println("RowEditorEnterHandler.getEditedRecord: 1");
 				ListGrid grid = ((ListGrid) event.getSource());
-				System.out.println("RowEditorEnterHandler.getEditedRecord: 2");
+				// System.out.println("RowEditorEnterHandler.getEditedRecord: 2");
 				int rowNum = event.getRowNum();
-				System.out.println("RowEditorEnterHandler.getEditedRecord: 3");
+				// System.out.println("RowEditorEnterHandler.getEditedRecord: 3");
 				Record record = event.getRecord();
-				System.out.println("RowEditorEnterHandler.getEditedRecord: 4");
+				// System.out.println("RowEditorEnterHandler.getEditedRecord: 4");
 				Record newRec = grid.getEditedRecord(rowNum);
-				System.out.println("RowEditorEnterHandler.getEditedRecord: 5");
-				System.out.println("RowEditorEnterHandler.getEditedRecord: " + newRec);
-				System.out.println("RowEditorEnterHandler.getRowNum: " + rowNum);
+				// System.out.println("RowEditorEnterHandler.getEditedRecord: 5");
+				// System.out.println("RowEditorEnterHandler.getEditedRecord: " + newRec);
+				// System.out.println("RowEditorEnterHandler.getRowNum: " + rowNum);
 
 				// Default Values для новой записи.
 				if (null == record && 0 == newRec.getAttributes().length) {
-					grid.setEditValues(rowNum, Utils.getRowDefaultValuesMap(mainFormPane));
-					// mainFormPane.clearDetailValues();
-					mainFormPane.filterDetailData(null, treeGrid, rowNum);
+					setNewRecDefaultValues(grid, rowNum);
 				}
 			}
 		});
@@ -264,6 +267,28 @@ class MainForm extends Canvas {
 		// treeGrid.addEditFailedHandler(handler)
 
 		// TODO SmartGWT 2.2. - сделали сохранение состояния грида и дерева
+	}
+
+	public void setNewRecDefaultValues(final ListGrid grid, final int rowNum) {
+		FormActionMD actMD = mainFormPane.getCurrentAction();
+		final FormDataSourceField[] dsFields = mainFormPane.getFormColumns().getDataSourceFields();
+		Map<String, Object> rowMap = Utils.getRowDefaultValuesMap(mainFormPane);
+		grid.setEditValues(rowNum, rowMap);
+		if (null == actMD.getDmlProcText()) {
+			mainFormPane.filterDetailData(null, treeGrid, rowNum);
+		} else {
+			DMLProcExecution procExec = new DMLProcExecution(mainFormPane) {
+				@Override
+				public void executeSubProc() {
+					Map<String, Object> resultMap = Utils.getMapFromRow(dsFields, getResultRow());
+					grid.setEditValues(rowNum, resultMap);
+					mainFormPane.filterDetailData(null, treeGrid, rowNum);
+				}
+			};
+			Row oldRow = null;
+			Row newRow = Utils.getRowFromRecord(dsFields, (ListGridRecord) grid.getEditedRecord(rowNum));
+			procExec.executeGlobal(oldRow, newRow);
+		}
 	}
 
 	/**

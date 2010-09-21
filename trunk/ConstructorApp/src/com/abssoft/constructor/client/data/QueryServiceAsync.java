@@ -2,8 +2,8 @@ package com.abssoft.constructor.client.data;
 
 import java.util.Map;
 
-import com.abssoft.constructor.client.data.common.ClientActionType;
 import com.abssoft.constructor.client.data.common.ConnectionInfo;
+import com.abssoft.constructor.client.metadata.FormActionMD;
 import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.MenusArr;
@@ -21,8 +21,7 @@ public interface QueryServiceAsync {
 	public void fetch(FormInstanceIdentifier formIdentifier, String sortBy, int startRow, int endRow, Map<?, ?> criteria,
 			boolean forceFetch, AsyncCallback<RowsArr> callback);
 
-	public void executeDML(FormInstanceIdentifier formIdentifier, Row oldRow, Row newRow, String actionCode,
-			ClientActionType clientActionType, AsyncCallback<Row> callback);
+	public void executeDML(FormInstanceIdentifier formIdentifier, Row oldRow, Row newRow, FormActionMD actMD, AsyncCallback<Row> callback);
 
 	public void getFormMetaData(FormInstanceIdentifier formIdentifier, AsyncCallback<FormMD> callback);
 

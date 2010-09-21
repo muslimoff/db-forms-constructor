@@ -3,6 +3,8 @@
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'COLUMNS_LIST';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'COLUMNS_LIST';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -67,6 +69,23 @@ Insert Into FORM_COLUMNS
             ,'*Пользовательское имя поля', 'N', 'N', '', '', '', '2', '', '', '', '', '', '', 'Y', '*', '', '');
 /*  Form: COLUMNS_LIST. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: COLUMNS_LIST. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: COLUMNS_LIST. Entity: APPS_PRIVS.  */
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('BF', 'COLUMNS_LIST');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('AAHR', 'COLUMNS_LIST');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('TC', 'COLUMNS_LIST');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('INS', 'COLUMNS_LIST');
 
 
 
@@ -77,6 +96,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'DBLCLICK_FORM_ACT_LIST';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'DBLCLICK_FORM_ACT_LIST';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -155,6 +176,19 @@ Insert Into FORM_COLUMNS
             ,'', '**ACTION_DISPLAY_NAME', 'N', 'N', '', '', '', '2', '', '', '', '', '', 'L', 'Y', '*', '', '');
 /*  Form: DBLCLICK_FORM_ACT_LIST. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: DBLCLICK_FORM_ACT_LIST. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: DBLCLICK_FORM_ACT_LIST. Entity: APPS_PRIVS.  */
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('INS', 'DBLCLICK_FORM_ACT_LIST');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('TC', 'DBLCLICK_FORM_ACT_LIST');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('AAHR', 'DBLCLICK_FORM_ACT_LIST');
 
 
 
@@ -165,6 +199,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'FORMS_LIST';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'FORMS_LIST';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -258,6 +294,23 @@ Insert Into FORM_COLUMNS
             ,'', '3', '', '', '', '', '', '', 'Y', '*', '', '');
 /*  Form: FORMS_LIST. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: FORMS_LIST. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: FORMS_LIST. Entity: APPS_PRIVS.  */
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('BF', 'FORMS_LIST');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('AAHR', 'FORMS_LIST');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('TC', 'FORMS_LIST');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('INS', 'FORMS_LIST');
 
 
 
@@ -268,6 +321,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'FORM_TABS';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'FORM_TABS';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -468,6 +523,23 @@ Insert Into FORM_COLUMNS
             ,'N', 'FORM_TABS.TAB_TYPE', '', '', '', '', '', '', '', '', '', 'Y', '*', '', '');
 /*  Form: FORM_TABS. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: FORM_TABS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: FORM_TABS. Entity: APPS_PRIVS.  */
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('BF', 'FORM_TABS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('AAHR', 'FORM_TABS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('TC', 'FORM_TABS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('INS', 'FORM_TABS');
 
 
 Declare
@@ -554,6 +626,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'FORM_TABS_LIST';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'FORM_TABS_LIST';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -651,6 +725,23 @@ Insert Into FORM_COLUMNS
             ,'FORM_TABS.TAB_TYPE', '', '', '', '', '', '', '', '', '', 'Y', '*', '', '');
 /*  Form: FORM_TABS_LIST. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: FORM_TABS_LIST. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: FORM_TABS_LIST. Entity: APPS_PRIVS.  */
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('BF', 'FORM_TABS_LIST');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('AAHR', 'FORM_TABS_LIST');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('TC', 'FORM_TABS_LIST');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('INS', 'FORM_TABS_LIST');
 
 
 
@@ -661,6 +752,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'ICONS';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'ICONS';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -805,6 +898,23 @@ Insert Into FORM_COLUMNS
             ,'3', '', '', '', '', '', '', 'Y', '*', '', '');
 /*  Form: ICONS. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: ICONS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: ICONS. Entity: APPS_PRIVS.  */
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('BF', 'ICONS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('AAHR', 'ICONS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('TC', 'ICONS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('INS', 'ICONS');
 
 
 
@@ -815,6 +925,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'LOOKUPS_LIST';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'LOOKUPS_LIST';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -915,6 +1027,23 @@ Insert Into FORM_COLUMNS
             ,'FORM_COLUMNS.FIELD_TYPE', '', '', '', '', '', '', '', '', 'L', 'Y', '*', '', '');
 /*  Form: LOOKUPS_LIST. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: LOOKUPS_LIST. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: LOOKUPS_LIST. Entity: APPS_PRIVS.  */
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('BF', 'LOOKUPS_LIST');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('AAHR', 'LOOKUPS_LIST');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('TC', 'LOOKUPS_LIST');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('INS', 'LOOKUPS_LIST');
 
 
 
@@ -925,6 +1054,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'REPORTS';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'REPORTS';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -1053,6 +1184,7 @@ Insert Into FORM_COLUMNS
             ,'Y', '*', '', '');
 /*  Form: REPORTS. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: REPORTS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: REPORTS. Entity: APPS_PRIVS.  */
 
 
 
@@ -1063,6 +1195,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'USERS';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'USERS';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -1207,6 +1341,11 @@ Insert Into FORM_COLUMNS
             ,'N', 'N', '', '', '', '1', '', '', '', '', '', 'L', 'Y', '*', '', '');
 /*  Form: USERS. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: USERS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: USERS. Entity: APPS_PRIVS.  */
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('INS', 'USERS');
 
 
 
@@ -1217,6 +1356,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'LOOKUP_ATTRIBUTE_VALUES';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'LOOKUP_ATTRIBUTE_VALUES';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -1351,6 +1492,23 @@ Insert Into FORM_COLUMNS
             ,'');
 /*  Form: LOOKUP_ATTRIBUTE_VALUES. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: LOOKUP_ATTRIBUTE_VALUES. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: LOOKUP_ATTRIBUTE_VALUES. Entity: APPS_PRIVS.  */
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('BF', 'LOOKUP_ATTRIBUTE_VALUES');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('AAHR', 'LOOKUP_ATTRIBUTE_VALUES');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('TC', 'LOOKUP_ATTRIBUTE_VALUES');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('INS', 'LOOKUP_ATTRIBUTE_VALUES');
 
 
 
@@ -1361,6 +1519,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'LOOKUP_ATTRIBUTES';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'LOOKUP_ATTRIBUTES';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -1488,6 +1648,23 @@ Insert Into FORM_COLUMNS
             ,':lookup_code', 'L', 'Y', '*', '', '');
 /*  Form: LOOKUP_ATTRIBUTES. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: LOOKUP_ATTRIBUTES. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: LOOKUP_ATTRIBUTES. Entity: APPS_PRIVS.  */
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('BF', 'LOOKUP_ATTRIBUTES');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('AAHR', 'LOOKUP_ATTRIBUTES');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('TC', 'LOOKUP_ATTRIBUTES');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('INS', 'LOOKUP_ATTRIBUTES');
 
 
 
@@ -1498,6 +1675,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'LOOKUP_VALUES';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'LOOKUP_VALUES';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -1652,6 +1831,23 @@ Insert Into FORM_COLUMNS
             ,'N', 'N', '', '', '', '1', '', '', '', '', '', 'L', 'Y', '*', '', '');
 /*  Form: LOOKUP_VALUES. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: LOOKUP_VALUES. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: LOOKUP_VALUES. Entity: APPS_PRIVS.  */
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('BF', 'LOOKUP_VALUES');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('AAHR', 'LOOKUP_VALUES');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('TC', 'LOOKUP_VALUES');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('INS', 'LOOKUP_VALUES');
 
 
 
@@ -1662,6 +1858,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'LOOKUPS';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'LOOKUPS';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -1790,6 +1988,23 @@ Insert Into FORM_COLUMNS
             ,'*Пользовательское имя', 'N', 'N', '', '', '', '', '', '', '', '', '', '', 'Y', '*', '', '');
 /*  Form: LOOKUPS. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: LOOKUPS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: LOOKUPS. Entity: APPS_PRIVS.  */
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('BF', 'LOOKUPS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('AAHR', 'LOOKUPS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('TC', 'LOOKUPS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('INS', 'LOOKUPS');
 
 
 
@@ -1800,6 +2015,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'FORM_ACTIONS';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'FORM_ACTIONS';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -2078,6 +2295,23 @@ Insert Into FORM_COLUMNS
             ,'**SHOW_SEPARATOR_BELOW', 'N', 'N', '', '', '', '', '', '', '', '', '', 'L', 'Y', '*', '', '');
 /*  Form: FORM_ACTIONS. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: FORM_ACTIONS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: FORM_ACTIONS. Entity: APPS_PRIVS.  */
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('BF', 'FORM_ACTIONS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('AAHR', 'FORM_ACTIONS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('TC', 'FORM_ACTIONS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('INS', 'FORM_ACTIONS');
 
 
 Declare
@@ -2219,6 +2453,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'FORMS';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'FORMS';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -2624,6 +2860,23 @@ Insert Into FORM_COLUMNS
             ,'200', '', '', '', '', '', '', 'T', 'Y', '*', '', '');
 /*  Form: FORMS. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: FORMS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: FORMS. Entity: APPS_PRIVS.  */
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('BF', 'FORMS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('AAHR', 'FORMS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('TC', 'FORMS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('INS', 'FORMS');
 
 
 Declare
@@ -2840,6 +3093,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'FORM_COLUMNS';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'FORM_COLUMNS';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -3460,6 +3715,23 @@ Insert Into FORM_COLUMNS
             ,'*', '', '');
 /*  Form: FORM_COLUMNS. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: FORM_COLUMNS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: FORM_COLUMNS. Entity: APPS_PRIVS.  */
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('BF', 'FORM_COLUMNS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('AAHR', 'FORM_COLUMNS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('TC', 'FORM_COLUMNS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('INS', 'FORM_COLUMNS');
 
 
 Declare
@@ -3827,6 +4099,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'FORM_COLUMN_ATTR_VALS';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'FORM_COLUMN_ATTR_VALS';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -3955,6 +4229,15 @@ Insert Into FORM_COLUMNS
             ,'*Id', 'N', 'N', '', '', '', '', '', '', '', '', '', 'L', 'Y', '*', '', '');
 /*  Form: FORM_COLUMN_ATTR_VALS. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: FORM_COLUMN_ATTR_VALS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: FORM_COLUMN_ATTR_VALS. Entity: APPS_PRIVS.  */
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('FC', 'FORM_COLUMN_ATTR_VALS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('INS', 'FORM_COLUMN_ATTR_VALS');
 
 
 
@@ -3965,6 +4248,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'APPS_ROLE_MENUS';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'APPS_ROLE_MENUS';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -4164,6 +4449,7 @@ Insert Into FORM_COLUMNS
             ,'', '');
 /*  Form: APPS_ROLE_MENUS. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: APPS_ROLE_MENUS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: APPS_ROLE_MENUS. Entity: APPS_PRIVS.  */
 
 
 
@@ -4174,6 +4460,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'APPS_ROLE_USERS';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'APPS_ROLE_USERS';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -4292,6 +4580,7 @@ Insert Into FORM_COLUMNS
             ,'*Database user id.', 'N', 'N', 'USERS', '', '', '', '', '', '', '', '', 'L', 'Y', '*', '', '');
 /*  Form: APPS_ROLE_USERS. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: APPS_ROLE_USERS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: APPS_ROLE_USERS. Entity: APPS_PRIVS.  */
 
 
 
@@ -4302,6 +4591,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'APPS_ROLES';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'APPS_ROLES';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -4449,6 +4740,7 @@ Insert Into FORM_COLUMNS
             ,'N', '', '', '', '3', '', '', '', '', '', 'L', 'Y', '*', '', '');
 /*  Form: APPS_ROLES. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: APPS_ROLES. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: APPS_ROLES. Entity: APPS_PRIVS.  */
 
 
 
@@ -4459,6 +4751,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'FORMS2';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'FORMS2';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -4742,8 +5036,201 @@ Insert Into FORM_COLUMNS
             ,'');
 /*  Form: FORMS2. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: FORMS2. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: FORMS2. Entity: APPS_PRIVS.  */
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('BF', 'FORMS2');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('AAHR', 'FORMS2');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('TC', 'FORMS2');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('INS', 'FORMS2');
 
 
+
+Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
+Alter Table FORMS Enable All Triggers;
+
+/*****************FORM_TAB_PARENT_EXCLNS*********************/
+
+Alter Table FORMS Disable All Triggers;
+Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'FORM_TAB_PARENT_EXCLNS';
+Delete From FORM_TAB_PARENT_EXCLNS
+      Where form_code = 'FORM_TAB_PARENT_EXCLNS';
+Delete From FORM_COLUMN_ATTR_VALS
+      Where form_code = 'FORM_TAB_PARENT_EXCLNS';
+Delete From FORM_COLUMNS
+      Where form_code = 'FORM_TAB_PARENT_EXCLNS';
+Delete From FORM_COLUMNS$
+      Where form_code = 'FORM_TAB_PARENT_EXCLNS';
+Delete From FORM_ACTIONS
+      Where form_code = 'FORM_TAB_PARENT_EXCLNS';
+Delete From FORM_TABS
+      Where form_code = 'FORM_TAB_PARENT_EXCLNS';
+Delete From FORMS
+      Where form_code = 'FORM_TAB_PARENT_EXCLNS';
+/*  Form: FORM_TAB_PARENT_EXCLNS. Entity: FORMS.  */
+
+Insert Into FORMS
+            ("FORM_CODE", "HOT_KEY", "SQL_TEXT", "FORM_NAME", "FORM_TYPE", "SHOW_TREE_ROOT_NODE", "ICON_ID"
+            ,"FORM_WIDTH", "FORM_HEIGHT", "BOTTOM_TABS_ORIENTATION", "SIDE_TABS_ORIENTATION", "SHOW_BOTTOM_TOOLBAR"
+            ,"OBJECT_VERSION_NUMBER", "DEFAULT_COLUMN_WIDTH", "DESCRIPTION", "DOUBLE_CLICK_ACTION_CODE", "LOOKUP_WIDTH"
+            ,"APPS_CODE", "EXPORT_ORDER")
+     Values ('FORM_TAB_PARENT_EXCLNS', ''
+            ,'Select *
+  From &fc_schema_owner..FORM_TAB_PARENT_EXCLNS ftpe
+ Where ftpe.form_code = :form_code
+   And ftpe.tab_code = :tab_code
+'
+            ,'Исключение вкладок', 'G', 'Y', '', '*', '*', '', '', 'Y', '14', '*', '', '', '', 'FC', '100');
+/*  Form: FORM_TAB_PARENT_EXCLNS. Entity: FORM_TABS.  */
+/*  Form: FORM_TAB_PARENT_EXCLNS. Entity: FORM_ACTIONS.  */
+
+Insert Into FORM_ACTIONS
+            ("FORM_CODE", "ACTION_CODE", "PROCEDURE_NAME", "ACTION_DISPLAY_NAME", "ICON_ID", "DEFAULT_PARAM_PREFIX"
+            ,"DEFAULT_OLD_PARAM_PREFIX", "ACTION_TYPE", "DISPLAY_NUMBER", "CONFIRM_TEXT", "HOT_KEY"
+            ,"SHOW_SEPARATOR_BELOW", "DISPLAY_ON_TOOLBAR", "CHILD_FORM_CODE")
+     Values ('FORM_TAB_PARENT_EXCLNS', 'DEL', '&fc_schema_owner..FORM_TAB_PARENT_EXCLNS_PKG.p_delete', 'Удалить', '48'
+            ,'', '', '3', '130', 'Вы уверенны что хотите удалить запись?', '', 'N', 'Y', '');
+
+Insert Into FORM_ACTIONS
+            ("FORM_CODE", "ACTION_CODE", "PROCEDURE_NAME", "ACTION_DISPLAY_NAME", "ICON_ID", "DEFAULT_PARAM_PREFIX"
+            ,"DEFAULT_OLD_PARAM_PREFIX", "ACTION_TYPE", "DISPLAY_NUMBER", "CONFIRM_TEXT", "HOT_KEY"
+            ,"SHOW_SEPARATOR_BELOW", "DISPLAY_ON_TOOLBAR", "CHILD_FORM_CODE")
+     Values ('FORM_TAB_PARENT_EXCLNS', 'EDIT', '', 'Редактировать', '50', '', '', '8', '115', 'Вы уверенны?', '', 'N'
+            ,'Y', '');
+
+Insert Into FORM_ACTIONS
+            ("FORM_CODE", "ACTION_CODE", "PROCEDURE_NAME", "ACTION_DISPLAY_NAME", "ICON_ID", "DEFAULT_PARAM_PREFIX"
+            ,"DEFAULT_OLD_PARAM_PREFIX", "ACTION_TYPE", "DISPLAY_NUMBER", "CONFIRM_TEXT", "HOT_KEY"
+            ,"SHOW_SEPARATOR_BELOW", "DISPLAY_ON_TOOLBAR", "CHILD_FORM_CODE")
+     Values ('FORM_TAB_PARENT_EXCLNS', 'INS', '', 'Создать', '47', '', '', '1', '110', '', '', 'N', 'Y', '');
+
+Insert Into FORM_ACTIONS
+            ("FORM_CODE", "ACTION_CODE", "PROCEDURE_NAME", "ACTION_DISPLAY_NAME", "ICON_ID", "DEFAULT_PARAM_PREFIX"
+            ,"DEFAULT_OLD_PARAM_PREFIX", "ACTION_TYPE", "DISPLAY_NUMBER", "CONFIRM_TEXT", "HOT_KEY"
+            ,"SHOW_SEPARATOR_BELOW", "DISPLAY_ON_TOOLBAR", "CHILD_FORM_CODE")
+     Values ('FORM_TAB_PARENT_EXCLNS', 'REFR', '', 'Обновить', '15', '', '', '4', '10', '', '', 'N', 'Y', '');
+
+Insert Into FORM_ACTIONS
+            ("FORM_CODE", "ACTION_CODE", "PROCEDURE_NAME", "ACTION_DISPLAY_NAME", "ICON_ID", "DEFAULT_PARAM_PREFIX"
+            ,"DEFAULT_OLD_PARAM_PREFIX", "ACTION_TYPE", "DISPLAY_NUMBER", "CONFIRM_TEXT", "HOT_KEY"
+            ,"SHOW_SEPARATOR_BELOW", "DISPLAY_ON_TOOLBAR", "CHILD_FORM_CODE")
+     Values ('FORM_TAB_PARENT_EXCLNS', 'UPD', '&fc_schema_owner..FORM_TAB_PARENT_EXCLNS_PKG.p_ins_upd', 'Сохранить'
+            ,'46', '', '', '2', '120', 'Вы уверенны?', '', 'N', 'Y', '');
+/*  Form: FORM_TAB_PARENT_EXCLNS. Entity: FORM_COLUMNS$.  */
+
+Insert Into FORM_COLUMNS$
+            ("COL_NUM", "COL_TYPE", "COL_MAX_LEN", "COL_NAME", "COL_NAME_LEN", "COL_PRECISION", "COL_SCALE"
+            ,"FORM_CODE", "PIMARY_KEY_FLAG", "DEFAULT_COLUMN_WIDTH", "COLUMN_DESCRIPTION")
+     Values ('5', 'NUMBER', '22', 'EXCLN_ID', '8', '0', '-127', 'FORM_TAB_PARENT_EXCLNS', '', '*', '*ID');
+
+Insert Into FORM_COLUMNS$
+            ("COL_NUM", "COL_TYPE", "COL_MAX_LEN", "COL_NAME", "COL_NAME_LEN", "COL_PRECISION", "COL_SCALE"
+            ,"FORM_CODE", "PIMARY_KEY_FLAG", "DEFAULT_COLUMN_WIDTH", "COLUMN_DESCRIPTION")
+     Values ('1', 'VARCHAR2', '4000', 'FORM_CODE', '9', '0', '0', 'FORM_TAB_PARENT_EXCLNS', '', '*'
+            ,'*Идентификатор форм');
+
+Insert Into FORM_COLUMNS$
+            ("COL_NUM", "COL_TYPE", "COL_MAX_LEN", "COL_NAME", "COL_NAME_LEN", "COL_PRECISION", "COL_SCALE"
+            ,"FORM_CODE", "PIMARY_KEY_FLAG", "DEFAULT_COLUMN_WIDTH", "COLUMN_DESCRIPTION")
+     Values ('4', 'VARCHAR2', '8', 'INCLUDED_FLAG', '13', '0', '0', 'FORM_TAB_PARENT_EXCLNS', '', '*'
+            ,'**INCLUDED_FLAG');
+
+Insert Into FORM_COLUMNS$
+            ("COL_NUM", "COL_TYPE", "COL_MAX_LEN", "COL_NAME", "COL_NAME_LEN", "COL_PRECISION", "COL_SCALE"
+            ,"FORM_CODE", "PIMARY_KEY_FLAG", "DEFAULT_COLUMN_WIDTH", "COLUMN_DESCRIPTION")
+     Values ('3', 'VARCHAR2', '4000', 'PARENT_FORM_CODE', '16', '0', '0', 'FORM_TAB_PARENT_EXCLNS', '', '*'
+            ,'**PARENT_FORM_CODE');
+
+Insert Into FORM_COLUMNS$
+            ("COL_NUM", "COL_TYPE", "COL_MAX_LEN", "COL_NAME", "COL_NAME_LEN", "COL_PRECISION", "COL_SCALE"
+            ,"FORM_CODE", "PIMARY_KEY_FLAG", "DEFAULT_COLUMN_WIDTH", "COLUMN_DESCRIPTION")
+     Values ('2', 'VARCHAR2', '4000', 'TAB_CODE', '8', '0', '0', 'FORM_TAB_PARENT_EXCLNS', '', '*'
+            ,'*Идентификатор закладки');
+/*  Form: FORM_TAB_PARENT_EXCLNS. Entity: FORM_COLUMNS.  */
+
+Insert Into FORM_COLUMNS
+            ("FORM_CODE", "COLUMN_CODE", "COLUMN_USER_NAME", "COLUMN_DISPLAY_SIZE", "COLUMN_DATA_TYPE"
+            ,"COLUMN_DISPLAY_NUMBER", "PIMARY_KEY_FLAG", "SHOW_ON_GRID", "TREE_INITIALIZATION_VALUE", "TREE_FIELD_TYPE"
+            ,"EDITOR_TAB_CODE", "FIELD_TYPE", "COLUMN_DESCRIPTION", "IS_FROZEN_FLAG", "SHOW_HOVER_FLAG", "LOOKUP_CODE"
+            ,"HOVER_COLUMN_CODE", "EDITOR_HEIGHT", "LOOKUP_FIELD_TYPE", "HELP_TEXT", "TEXT_MASK", "VALIDATION_REGEXP"
+            ,"DEFAULT_ORDERBY_NUMBER", "DEFAULT_VALUE", "EDITOR_TITLE_ORIENTATION", "EDITOR_END_ROW_FLAG"
+            ,"EDITOR_COLS_SPAN", "LOOKUP_DISPLAY_VALUE", "EDITOR_ON_ENTER_KEY_ACTION")
+     Values ('FORM_TAB_PARENT_EXCLNS', 'EXCLN_ID', 'ID', '*', 'N', '1005', 'Y', 'N', '', '', '', '', '*ID', 'N', 'N'
+            ,'', '', '', '', '', '', '', '', '', 'L', 'Y', '*', '', '');
+
+Insert Into FORM_COLUMNS
+            ("FORM_CODE", "COLUMN_CODE", "COLUMN_USER_NAME", "COLUMN_DISPLAY_SIZE", "COLUMN_DATA_TYPE"
+            ,"COLUMN_DISPLAY_NUMBER", "PIMARY_KEY_FLAG", "SHOW_ON_GRID", "TREE_INITIALIZATION_VALUE", "TREE_FIELD_TYPE"
+            ,"EDITOR_TAB_CODE", "FIELD_TYPE", "COLUMN_DESCRIPTION", "IS_FROZEN_FLAG", "SHOW_HOVER_FLAG", "LOOKUP_CODE"
+            ,"HOVER_COLUMN_CODE", "EDITOR_HEIGHT", "LOOKUP_FIELD_TYPE", "HELP_TEXT", "TEXT_MASK", "VALIDATION_REGEXP"
+            ,"DEFAULT_ORDERBY_NUMBER", "DEFAULT_VALUE", "EDITOR_TITLE_ORIENTATION", "EDITOR_END_ROW_FLAG"
+            ,"EDITOR_COLS_SPAN", "LOOKUP_DISPLAY_VALUE", "EDITOR_ON_ENTER_KEY_ACTION")
+     Values ('FORM_TAB_PARENT_EXCLNS', 'FORM_CODE', 'Идентификатор форм', '*', 'S', '1001', 'N', 'N', '', '', '', ''
+            ,'*Идентификатор форм', 'N', 'N', '', '', '', '', '', '', '', '', ':FORM_CODE', 'L', 'Y', '*', '', '');
+
+Insert Into FORM_COLUMNS
+            ("FORM_CODE", "COLUMN_CODE", "COLUMN_USER_NAME", "COLUMN_DISPLAY_SIZE", "COLUMN_DATA_TYPE"
+            ,"COLUMN_DISPLAY_NUMBER", "PIMARY_KEY_FLAG", "SHOW_ON_GRID", "TREE_INITIALIZATION_VALUE", "TREE_FIELD_TYPE"
+            ,"EDITOR_TAB_CODE", "FIELD_TYPE", "COLUMN_DESCRIPTION", "IS_FROZEN_FLAG", "SHOW_HOVER_FLAG", "LOOKUP_CODE"
+            ,"HOVER_COLUMN_CODE", "EDITOR_HEIGHT", "LOOKUP_FIELD_TYPE", "HELP_TEXT", "TEXT_MASK", "VALIDATION_REGEXP"
+            ,"DEFAULT_ORDERBY_NUMBER", "DEFAULT_VALUE", "EDITOR_TITLE_ORIENTATION", "EDITOR_END_ROW_FLAG"
+            ,"EDITOR_COLS_SPAN", "LOOKUP_DISPLAY_VALUE", "EDITOR_ON_ENTER_KEY_ACTION")
+     Values ('FORM_TAB_PARENT_EXCLNS', 'INCLUDED_FLAG', '', '*', 'B', '1004', 'N', 'Y', '', '', '', ''
+            ,'**INCLUDED_FLAG', 'N', 'N', '', '', '', '', '', '', '', '', '', 'L', 'Y', '*', '', '');
+
+Insert Into FORM_COLUMNS
+            ("FORM_CODE", "COLUMN_CODE", "COLUMN_USER_NAME", "COLUMN_DISPLAY_SIZE", "COLUMN_DATA_TYPE"
+            ,"COLUMN_DISPLAY_NUMBER", "PIMARY_KEY_FLAG", "SHOW_ON_GRID", "TREE_INITIALIZATION_VALUE", "TREE_FIELD_TYPE"
+            ,"EDITOR_TAB_CODE", "FIELD_TYPE", "COLUMN_DESCRIPTION", "IS_FROZEN_FLAG", "SHOW_HOVER_FLAG", "LOOKUP_CODE"
+            ,"HOVER_COLUMN_CODE", "EDITOR_HEIGHT", "LOOKUP_FIELD_TYPE", "HELP_TEXT", "TEXT_MASK", "VALIDATION_REGEXP"
+            ,"DEFAULT_ORDERBY_NUMBER", "DEFAULT_VALUE", "EDITOR_TITLE_ORIENTATION", "EDITOR_END_ROW_FLAG"
+            ,"EDITOR_COLS_SPAN", "LOOKUP_DISPLAY_VALUE", "EDITOR_ON_ENTER_KEY_ACTION")
+     Values ('FORM_TAB_PARENT_EXCLNS', 'PARENT_FORM_CODE', '', '*', 'S', '1003', 'N', 'Y', '', '', '', '9'
+            ,'**PARENT_FORM_CODE', 'N', 'N', 'FORMS_LIST', '', '', '', '', '', '', '', '', 'L', 'Y', '*', '', '');
+
+Insert Into FORM_COLUMNS
+            ("FORM_CODE", "COLUMN_CODE", "COLUMN_USER_NAME", "COLUMN_DISPLAY_SIZE", "COLUMN_DATA_TYPE"
+            ,"COLUMN_DISPLAY_NUMBER", "PIMARY_KEY_FLAG", "SHOW_ON_GRID", "TREE_INITIALIZATION_VALUE", "TREE_FIELD_TYPE"
+            ,"EDITOR_TAB_CODE", "FIELD_TYPE", "COLUMN_DESCRIPTION", "IS_FROZEN_FLAG", "SHOW_HOVER_FLAG", "LOOKUP_CODE"
+            ,"HOVER_COLUMN_CODE", "EDITOR_HEIGHT", "LOOKUP_FIELD_TYPE", "HELP_TEXT", "TEXT_MASK", "VALIDATION_REGEXP"
+            ,"DEFAULT_ORDERBY_NUMBER", "DEFAULT_VALUE", "EDITOR_TITLE_ORIENTATION", "EDITOR_END_ROW_FLAG"
+            ,"EDITOR_COLS_SPAN", "LOOKUP_DISPLAY_VALUE", "EDITOR_ON_ENTER_KEY_ACTION")
+     Values ('FORM_TAB_PARENT_EXCLNS', 'TAB_CODE', 'Идентификатор закладки', '*', 'S', '1002', 'N', 'N', '', '', '', ''
+            ,'*Идентификатор закладки', 'N', 'N', '', '', '', '', '', '', '', '', ':TAB_CODE', 'L', 'Y', '*', '', '');
+/*  Form: FORM_TAB_PARENT_EXCLNS. Entity: FORM_COLUMN_ATTR_VALS.  */
+/*  Form: FORM_TAB_PARENT_EXCLNS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: FORM_TAB_PARENT_EXCLNS. Entity: APPS_PRIVS.  */
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('INS', 'FORM_TAB_PARENT_EXCLNS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('FC', 'FORM_TAB_PARENT_EXCLNS');
+
+
+Declare
+   l_clob   Clob
+      := 'Исключение из формы вкладок в случае если одна и та же форма может выступать как главная форма, так и как подчиненная.';
+Begin
+   Update FORMS
+      Set description = l_clob
+    Where form_code = 'FORM_TAB_PARENT_EXCLNS';
+End;
+/
 
 Alter Table forms Enable VALIDATE Constraint forms_form_actions_fk;
 Alter Table FORMS Enable All Triggers;
@@ -4752,6 +5239,8 @@ Alter Table FORMS Enable All Triggers;
 
 Alter Table FORMS Disable All Triggers;
 Alter Table forms Disable Constraint forms_form_actions_fk;
+Delete From APPS_PRIVS
+      Where form_code = 'MENUS';
 Delete From FORM_TAB_PARENT_EXCLNS
       Where form_code = 'MENUS';
 Delete From FORM_COLUMN_ATTR_VALS
@@ -5054,6 +5543,23 @@ Insert Into FORM_COLUMNS
             ,'*Показывать в навигаторе', 'N', 'N', '', '', '', '', '', '', '', '', '', '', 'Y', '*', '', '');
 /*  Form: MENUS. Entity: FORM_COLUMN_ATTR_VALS.  */
 /*  Form: MENUS. Entity: FORM_TAB_PARENT_EXCLNS.  */
+/*  Form: MENUS. Entity: APPS_PRIVS.  */
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('BF', 'MENUS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('AAHR', 'MENUS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('TC', 'MENUS');
+
+Insert Into APPS_PRIVS
+            ("APPS_CODE", "FORM_CODE")
+     Values ('INS', 'MENUS');
 
 
 
