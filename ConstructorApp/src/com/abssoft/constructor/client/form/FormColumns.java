@@ -26,6 +26,7 @@ public class FormColumns {
 
 	boolean hasBottomTabsCount = false;
 	boolean hasSideTabsCount = false;
+
 	public FormColumns(MainFormPane mainFormPane) {
 		this.formMetadata = mainFormPane.getFormMetadata();
 		this.columns = formMetadata.getColumns();
@@ -49,6 +50,7 @@ public class FormColumns {
 
 		Utils.debug("bottomTabsCount: " + hasBottomTabsCount + "; sideTabsCount: " + hasSideTabsCount);
 	}
+
 	public FormDataSourceField[] createDSFields() {
 		for (int i = 0; i < columnsCount; i++) {
 			dataSourceFields[i] = new FormDataSourceField(i, mainFormPane);

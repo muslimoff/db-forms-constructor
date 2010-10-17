@@ -12,6 +12,7 @@ import java.util.Map;
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 
+import com.abssoft.constructor.client.metadata.ExportData;
 import com.abssoft.constructor.client.metadata.FormActionMD;
 import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
 import com.abssoft.constructor.client.metadata.FormMD;
@@ -65,6 +66,10 @@ public class Session {
 			formDataHashMap.remove(fi.getKey());
 		}
 		Utils.debug("Server:session form " + fi.getInfo() + " closed...");
+	}
+
+	public Integer setExportData(FormInstanceIdentifier fi, ExportData exportData) {
+		return formDataHashMap.get(fi.getKey()).setExportData(fi, exportData);
 	}
 
 	public Row executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow, FormActionMD actMD) throws SQLException, Exception {

@@ -3,6 +3,7 @@ package com.abssoft.constructor.client.data;
 import java.util.Map;
 
 import com.abssoft.constructor.client.data.common.ConnectionInfo;
+import com.abssoft.constructor.client.metadata.ExportData;
 import com.abssoft.constructor.client.metadata.FormActionMD;
 import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
 import com.abssoft.constructor.client.metadata.FormMD;
@@ -90,4 +91,6 @@ public interface QueryService extends RemoteService {
 	public ServerInfoArr getServerInfoArr();
 
 	public String getFile();
+
+	public Integer setExportData(FormInstanceIdentifier fi, ExportData exportData);
 }

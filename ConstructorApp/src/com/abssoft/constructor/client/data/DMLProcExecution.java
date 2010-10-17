@@ -18,15 +18,21 @@ public class DMLProcExecution {
 	}
 
 	public void executeGlobal(Row oldRow, Row newRow) {
+		executeGlobal(oldRow, newRow, true);
+	}
+
+	public void executeGlobal(Row oldRow, Row newRow, final Boolean showPrompt) {
 		FormActionMD actMD = mainFormPane.getCurrentAction();
 		QueryServiceAsync service = GWT.create(QueryService.class);
-		SC.showPrompt("Server Connecting");
+		if (showPrompt)
+			SC.showPrompt("Server Connecting");
 		FormInstanceIdentifier fi = mainFormPane.getInstanceIdentifier();
 		service.executeDML(fi, oldRow, newRow, actMD, new DSAsyncCallback<Row>() {
 			@Override
 			public void onSuccess(Row result) {
 				DMLProcExecution.this.setResultRow(result);
-				SC.clearPrompt();
+				if (showPrompt)
+					SC.clearPrompt();
 				result.getStatus().showActionStatus();
 				if (!ActionStatus.StatusType.ERROR.equals(result.getStatus().getStatusType())) {
 					executeSubProc();

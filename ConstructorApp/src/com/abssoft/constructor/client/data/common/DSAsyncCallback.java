@@ -1,9 +1,11 @@
 package com.abssoft.constructor.client.data.common;
 
+import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.widgets.ActionStatusWindow;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.StatusCodeException;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.rpc.RPCResponse;
@@ -47,11 +49,20 @@ public abstract class DSAsyncCallback<T> implements AsyncCallback<T> {
 	}
 
 	public void onFailure(Throwable caught) {
+		String additionalDetails = "";
+		// TODO com.google.gwt.user.client.rpc.StatusCodeException
+		// см. http://markmail.org/message/mathox7k5ddzf4rq?q=com.google.gwt.user.client.rpc.StatusCodeException+timeout&page=1&refer=7etmvxwbevp4ytpb
+		if (caught instanceof StatusCodeException) {
+			additionalDetails = additionalDetails + ((StatusCodeException) caught).getStatusCode();
+		}
+
 		SC.clearPrompt();
 		String details = caught.getMessage();
 		String errCode = "Internal Error[GWT600]!";
 		try {
-			ActionStatusWindow.createActionStatusWindow(errCode, caught.toString(), Utils.getExceptionStack(caught));
+			if (ConstructorApp.debugEnabled)
+				ActionStatusWindow.createActionStatusWindow(errCode, caught.toString(), Utils.getExceptionStack(caught) + "\n"
+						+ additionalDetails);
 		} catch (Exception e) {
 			Window.alert(errCode + details);
 		}

@@ -3,6 +3,7 @@ package com.abssoft.constructor.client.data;
 import java.util.Map;
 
 import com.abssoft.constructor.client.data.common.ConnectionInfo;
+import com.abssoft.constructor.client.metadata.ExportData;
 import com.abssoft.constructor.client.metadata.FormActionMD;
 import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
 import com.abssoft.constructor.client.metadata.FormMD;
@@ -36,4 +37,6 @@ public interface QueryServiceAsync {
 	public void getServerInfoArr(AsyncCallback<ServerInfoArr> callback);
 
 	public void getFile(AsyncCallback<String> callback);
+
+	public void setExportData(FormInstanceIdentifier fi, ExportData exportData, AsyncCallback<Integer> callback);
 }

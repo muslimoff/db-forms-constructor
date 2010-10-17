@@ -11,6 +11,7 @@ import oracle.sql.CLOB;
 
 import com.abssoft.constructor.client.metadata.ActionStatus;
 import com.abssoft.constructor.client.metadata.Attribute;
+import com.abssoft.constructor.client.metadata.ExportData;
 import com.abssoft.constructor.client.metadata.FormColumnMD;
 import com.abssoft.constructor.client.metadata.FormColumnsArr;
 import com.abssoft.constructor.client.metadata.Row;
@@ -26,6 +27,7 @@ public class FormInstance {
 	private int currentEndRow = -1;
 	private RowsArr resultData = new RowsArr();
 	private HashMap<Integer, CLOB> ClobHM = new HashMap<Integer, CLOB>();
+	private HashMap<Integer, ExportData> exportDatHM = new HashMap<Integer, ExportData>();
 
 	public FormInstance(Form form) throws SQLException {
 		this.form = form;
@@ -72,6 +74,7 @@ public class FormInstance {
 
 		// ////////////////////////
 		String sqlText = null;
+		boolean isStmntClosedErr = false;
 		try {
 			// Первый вызов DataSource или изменение сортировки, фильтров, а также принудительно
 			if (forceFetch || -1 == currentEndRow || currentSortBy != sortBy || !currentFilterValues.equals(filterValues)) {
@@ -95,7 +98,14 @@ public class FormInstance {
 				statement = (OraclePreparedStatement) connection.prepareStatement(sqlText);
 				Utils.setFilterValues(statement, filterValues);
 				Utils.debug("sqlText:\n" + sqlText);
+				// 20100928
+				// if (statement.isClosed()) {
+				// Utils.debug("FormInstance. statement closed: ");
+				// } else {
+				isStmntClosedErr = true;
 				rs = statement.executeQuery();
+				isStmntClosedErr = false;
+				// }
 				currentSortBy = sortBy;
 				currentFilterValues = filterValues;
 
@@ -151,11 +161,16 @@ public class FormInstance {
 			}
 			currentData.setTotalRows(resultData.getTotalRows());
 		} catch (Exception e) {
+
 			String errText = Utils.getExceptionStackIntoString(e) + "\n";
 			errText = errText + "Form:" + form.getFormCode() + "\n";
 			errText = errText + "SQL:" + sqlText + "\n";
 			Utils.debug(errText);
-			currentData.setStatus(new ActionStatus(errText, ActionStatus.StatusType.ERROR));
+			if (!isStmntClosedErr) {
+				currentData.setStatus(new ActionStatus(errText, ActionStatus.StatusType.ERROR));
+			} else {
+				currentData.setStatus(new ActionStatus(errText, ActionStatus.StatusType.SUCCESS));
+			}
 		}
 		currentSortBy = sortBy;
 		Utils.debug("FormInstance.fetch... return");
@@ -176,5 +191,15 @@ public class FormInstance {
 
 	public Form getForm() {
 		return form;
+	}
+
+	public HashMap<Integer, ExportData> getExportDatHM() {
+		return exportDatHM;
+	}
+
+	public Integer setExportData(ExportData exportData) {
+		int clobID = exportData.hashCode();
+		exportDatHM.put(clobID, exportData);
+		return clobID;
 	}
 }

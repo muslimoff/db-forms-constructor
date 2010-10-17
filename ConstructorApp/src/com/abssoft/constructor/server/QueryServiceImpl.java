@@ -28,6 +28,7 @@ import org.xml.sax.InputSource;
 import com.abssoft.constructor.client.data.QueryService;
 import com.abssoft.constructor.client.data.common.ConnectionInfo;
 import com.abssoft.constructor.client.metadata.ActionStatus;
+import com.abssoft.constructor.client.metadata.ExportData;
 import com.abssoft.constructor.client.metadata.FormActionMD;
 import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
 import com.abssoft.constructor.client.metadata.FormMD;
@@ -314,6 +315,14 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 		Utils.debug("Server:service " + fi.getInfo() + " before close...");
 		sessionData.get(fi.getSessionId()).closeForm(fi, formState);
 		Utils.debug("Server:service form " + fi.getInfo() + " closed...");
+	}
+
+	public Integer setExportData(FormInstanceIdentifier fi, ExportData exportData) {
+
+		Utils.debug("Server:service " + fi.getInfo() + " before close...");
+		Integer result = sessionData.get(fi.getSessionId()).setExportData(fi, exportData);
+		Utils.debug("Server:service form " + fi.getInfo() + " closed...");
+		return result;
 	}
 
 	// TODO DownloadFileTest

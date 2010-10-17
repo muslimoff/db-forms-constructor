@@ -26,6 +26,7 @@ import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.ClosingEvent;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.util.DateDisplayFormatter;
@@ -129,6 +130,14 @@ public class ConstructorApp implements EntryPoint {
 		Window.addCloseHandler(new CloseHandler<Window>() {
 			public void onClose(CloseEvent<Window> event) {
 				doBeforeClose("onClose");
+			}
+		});
+		Window.addWindowClosingHandler(new Window.ClosingHandler() {
+			@Override
+			public void onWindowClosing(ClosingEvent event) {
+				// TODO Научиться не перечитывать, если приложение уже открыто и передается только идентификатор новой формы
+				if (debugEnabled)
+					event.setMessage(com.google.gwt.user.client.Window.Location.getHref());
 			}
 		});
 		add_debug_console();
@@ -236,6 +245,20 @@ public class ConstructorApp implements EntryPoint {
 		Utils.debug("QueryString:" + com.google.gwt.user.client.Window.Location.getQueryString());
 		canvas.draw();
 		connectWindow = new ConnectWindow(ConstructorApp.this);
+		{
+			// System.out.println("cccccccccc0:"
+			// + DOM.getElementProperty(mainToolBar.getElement().<com.google.gwt.user.client.Element> cast(), "visibility"));
+			// System.out.println("cccccccccc1:" + mainToolBar.getBackgroundColor());
+			// System.out.println("cccccccccc2:" + mainToolBar.getElement().getInnerHTML());
+			// System.out.println("cccccccccc3:" + mainToolBar.getBackgroundColor());
+			// System.out.println("cccccccccc4:"
+			// + DOM.getStyleAttribute(mainToolBar.getElement().<com.google.gwt.user.client.Element> cast(), "visibility") + "<");
+			// System.out.println("cccccccccc5:"
+			// + Utils.getComputedStyleProperty(mainToolBar.getElement().<com.google.gwt.user.client.Element> cast(),
+			// "backgroundColor"));
+			// canvas.setBackgroundColor(mainToolBar.getBackgroundColor());
+
+		}
 	}
 
 	public void add_debug_console() {

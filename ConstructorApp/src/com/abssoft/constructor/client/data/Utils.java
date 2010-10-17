@@ -16,6 +16,9 @@ import com.abssoft.constructor.client.form.MainFormPane;
 import com.abssoft.constructor.client.metadata.Attribute;
 import com.abssoft.constructor.client.metadata.IconsArr;
 import com.abssoft.constructor.client.metadata.Row;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.FieldType;
@@ -183,75 +186,84 @@ public class Utils {
 			if (null == attr.getAttributeAsObject()) {
 				attr.setDataType(dsFields[c].getColumnMD().getDataType());
 			}
-			debug(colName + ":" + attr.getAttribute() + "; Type:" + dsFields[c].getType() + ";" + dsFields[c].getColumnMD().getDataType());
+			debug("Utils.getRowFromRecord. " + colName + ":" + attr.getAttribute() + "; Type:" + dsFields[c].getType() + ";"
+					+ dsFields[c].getColumnMD().getDataType());
 			row.put(c, attr);
 		}
 		return row;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static Map<String, Object> getRowDefaultValuesMap(MainFormPane mainFormPane) {
 		// TODO Issue 49 - Получение значения по умолчанию запросом.
-		Utils.debug("getRowDefaultValuesMap...");
+		Utils.debug("01 getRowDefaultValuesMap...");
+		String dateFormat = "EEE MMM dd yyyy hh:mm:ss ZZZZ";
+		DateTimeFormat fmt = DateTimeFormat.getFormat(dateFormat);
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		MainFormPane pfp = mainFormPane.getParentFormPane();
+		Criteria cc = (null != pfp) ? pfp.getInitialFilter() : new Criteria();
+		Map<String, Object> critMap = cc.getValues();
 		for (FormDataSourceField dsf : mainFormPane.getDataSource().getFormDSFields()) {
+			try {
+				String defVal = dsf.getColumnMD().getDefaultValue();
+				String dataType = dsf.getColumnMD().getDataType();
+				Object objDefaultValue = null;
+				if (null != defVal) {
+					Iterator<String> itr = critMap.keySet().iterator();
+					while (itr.hasNext()) {
+						String key = itr.next();
+						Object val = critMap.get(key);
+						Utils.debug("02 getRowDefaultValuesMap... key:" + key + "=" + val);
+						String attrVal;
+						if (val instanceof Date) {
+							attrVal = (null == val) ? "" : fmt.format((Date) val);
+						} else {
+							attrVal = (null == val) ? "" : val + "";
+						}
+						defVal = defVal.replaceAll("&" + key.toLowerCase() + "&", attrVal);
+						Utils.debug("03 getRowDefaultValuesMap... key:" + key + "=" + val);
+					}
+					defVal = defVal.replaceAll("&[0-0a-zA-Z_]+&", "");
+					Utils.debug("04 Default Value: After Bind variables replaced: " + dsf.getName() + " => " + defVal);
+					if ("B".equals(dataType)) {
+						objDefaultValue = (Boolean) "1".equals(defVal) || "Y".equals(defVal);
+					} else if ("N".equals(dataType)) {
+						Double v = null;
+						try {
+							v = "".equals(defVal) ? null : Double.valueOf(defVal);
+							Utils.debug("05 getRowDefaultValuesMap...");
+						} catch (Exception e) {
+							Utils.debug("06 Number transform Error: " + e.getMessage());
+							e.printStackTrace();
+						}
+						objDefaultValue = (Double) v;
+					} else if ("D".equals(dataType)) {
+						Date v = null;
+						try {
+							v = "".equals(defVal) ? null : fmt.parse(defVal);
+						} catch (Exception e) {
+							Utils.debug("07 Date transform Error: " + defVal + "; " + e.getMessage());
+							e.printStackTrace();
+						}
+						objDefaultValue = (Date) v;
+					} else {
+						objDefaultValue = defVal;
+					}
+					if (null != objDefaultValue)
+						result.put(dsf.getName(), objDefaultValue);
+				}
 
-			String defVal = dsf.getColumnMD().getDefaultValue();
-			String dataType = dsf.getColumnMD().getDataType();
-			if (null != defVal) {
-				if (null != mainFormPane.getParentFormPane()) {
-					Criteria cc = mainFormPane.getParentFormPane().getInitialFilter();
-					for (String s : cc.getAttributes()) {
-						String attrVal = cc.getAttribute(s);
-						attrVal = (null == attrVal) ? "" : attrVal;
-						defVal = defVal.replaceAll("&" + s.toLowerCase() + "&", attrVal);
-					}
-				}
-				Utils.debug("Default Value: After Bind variables replaced: " + dsf.getName() + " => " + defVal);
-				if ("B".equals(dataType)) {
-					result.put(dsf.getName(), "1".equals(defVal) || "Y".equals(defVal));
-				} else if ("N".equals(dataType)) {
-					Double v = null;
-					try {
-						v = "".equals(defVal) ? null : Double.valueOf(defVal);
-					} catch (Exception e) {
-						Utils.debug("Number transform Error: " + e.getMessage());
-						e.printStackTrace();
-					}
-					result.put(dsf.getName(), v);
-				} else if ("D".equals(dataType)) {
-					Date v = null;
-					try {
-						// TODO Date и Double - косяк. Для Double предварительно решил
-						// v = "".equals(defVal) ? null : Double.valueOf(defVal);
-					} catch (Exception e) {
-						Utils.debug("Date transform Error: " + e.getMessage());
-						e.printStackTrace();
-					}
-					result.put(dsf.getName(), v);
-				} else {
-					result.put(dsf.getName(), defVal);
-				}
-				// if ("B".equals(dataType)) {
-				// result.put(dsf.getName(), (Boolean) null);
-				// } else if ("N".equals(dataType)) {
-				// result.put(dsf.getName(), (Double) null);
-				// } else if ("D".equals(dataType)) {
-				// result.put(dsf.getName(), (Date) null);
-				// } else {
-				// result.put(dsf.getName(), (String) null);
-				// }
+			} catch (Exception e) {
+				Utils.debug("08 getRowDefaultValuesMap other Error:" + e.getMessage());
 			}
 		}
+		Utils.debug("09 getRowDefaultValuesMap...");
 		return result;
 	}
 
 	public static Criteria getCriteriaFromListGridRecord(FormDataSourceField[] dsFields, Record record) {
 		Criteria criteria = new Criteria();
 		if (null != record) {
-			// for (String s : record.getAttributes()) {
-			// criteria.addCriteria(s, record.getAttribute(s));
-			// Utils.debug("getCriteriaFromListGridRecord: " + s + " => " + record.getAttribute(s));
-			// }
 			// TODO getCriteriaFromListGridRecord из getRowFromRecord
 			/***********************/
 			Row row = getRowFromRecord(dsFields, record);
@@ -288,7 +300,8 @@ public class Utils {
 	public static void debug(String text) {
 		if (ConstructorApp.debugEnabled) {
 			System.out.println(text);
-			SC.logWarn(text);
+			if (GWT.isScript())
+				SC.logWarn(text);
 		}
 	}
 
@@ -392,6 +405,7 @@ public class Utils {
 	@SuppressWarnings("unchecked")
 	public static LinkedHashMap<String, Object> getHashMapFromCriteria(Criteria cr) {
 		Map<String, Object> filterValues = cr.getValues();
+		Utils.debug(filterValues + "");
 		LinkedHashMap<String, Object> filterValues2 = new LinkedHashMap<String, Object>();
 		{
 			Iterator<String> it = filterValues.keySet().iterator();
@@ -407,4 +421,50 @@ public class Utils {
 		}
 		return filterValues2;
 	}
+
+	static public native String getComputedStyleProperty(Element el, String property)
+	/*-{
+		if (window['getComputedStyle']) { // W3C DOM method
+			if (property === 'float')
+			 	property = 'cssFloat';
+
+		    var value = el.style[property], computed;
+
+		    if (!value) {
+		        computed = el['ownerDocument']['defaultView']
+		['getComputedStyle'](el, null);
+		        if (computed) { // test computed before touching for safari
+		            value = computed[property];
+		        }
+		    }
+		    return value;
+
+		} else if (el['currentStyle']) {
+		    var value;
+
+		    switch(property) {
+		        case 'opacity' :// IE opacity uses filter
+		            value = 100;
+		            try { // will error if no DXImageTransform
+		                value =
+		el.filters['DXImageTransform.Microsoft.Alpha'].opacity;
+
+		            } catch(e) {
+		                try { // make sure its in the document
+		                    value = el.filters('alpha').opacity;
+		                } catch(err) {
+		                }
+		            }
+		            return value / 100;
+		        case 'float': // fix reserved word
+		            property = 'styleFloat'; // fall through
+		        default:
+		            value = el['currentStyle'] ? el['currentStyle']
+		[property] : null;
+		            return ( el.style[property] || value );
+		    }
+		}
+		return "";
+	}-*/;
+
 }

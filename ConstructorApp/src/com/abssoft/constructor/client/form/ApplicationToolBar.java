@@ -8,7 +8,7 @@ public class ApplicationToolBar extends ToolStrip {
 	private DynamicForm form;
 
 	public ApplicationToolBar() {
-		//TODO - Что-то вдруг тулбар стал вылазить за пределы окна при 100% размере
+		// TODO - Что-то вдруг тулбар стал вылазить за пределы окна при 100% размере
 		this.setWidth("90%");
 		this.setHeight("28");
 	}
@@ -35,5 +35,10 @@ public class ApplicationToolBar extends ToolStrip {
 	public void clear() {
 		this.removeMembers(this.getMembers());
 		ConstructorApp.setPageTitle("");
+	}
+
+	public String getBackgroundColor() {
+		return getAttribute("backgroundColor");
+
 	}
 }

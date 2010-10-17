@@ -120,7 +120,11 @@ public class FormDataSource extends GwtRpcDataSource {
 						if (0 != dynFormsCount) {
 							vm.editRecord(records[0]);
 						}
+
 					}
+//					if (mainFormPane.getMainForm().isExport) {
+//						mainFormPane.getMainForm().exportData();
+//					}
 				} else {
 					mainFormPane.filterDetailData(null, grid, -1);
 					if (0 != dynFormsCount) {
@@ -168,11 +172,12 @@ public class FormDataSource extends GwtRpcDataSource {
 
 	@Override
 	protected void executeUpdate(final String requestId, final DSRequest request, final DSResponse response) {
+		final ListGrid lGrid = mainFormPane.getMainForm().getTreeGrid();
+
 		DMLProcExecution updateProcExec = new DMLProcExecution(mainFormPane) {
 			@Override
 			public void executeSubProc() {
-				response.setData(new TreeNode[] { Utils.getTreeNodeFromRow(dsFields, this.getResultRow()) });
-				ListGrid lGrid = mainFormPane.getMainForm().getTreeGrid();
+				response.setData(new ListGridRecord[] { Utils.getTreeNodeFromRow(dsFields, getResultRow()) });
 				try {
 					ResultSet rs = lGrid.getResultSet();
 					rs.setCriteria(new Criteria());
@@ -186,9 +191,17 @@ public class FormDataSource extends GwtRpcDataSource {
 				mainFormPane.filterDetailData(selectedRec, lGrid, selectedRecIdx);
 			}
 		};
+
 		Record oldValues = request.getOldValues();
+		Utils.debug("executeUpdate. oldRow");
 		Row oldRow = (null != oldValues) ? Utils.getRowFromRecord(dsFields, oldValues) : null;
-		Row newRow = Utils.getRowFromRecord(dsFields, new Record(request.getData()));
+
+		Utils.debug("executeUpdate. newRow");
+		Record listGridRec = new ListGridRecord(request.getData());
+		listGridRec = lGrid.getEditedRecord(lGrid.getRecordIndex(listGridRec));
+		Row newRow = Utils.getRowFromRecord(dsFields, listGridRec);
+
+		Utils.debug("executeUpdate. updateProcExec.executeGlobal");
 		updateProcExec.executeGlobal(oldRow, newRow);
 	}
 

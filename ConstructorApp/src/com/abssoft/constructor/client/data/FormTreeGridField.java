@@ -4,16 +4,22 @@ import java.util.LinkedHashMap;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.form.MainFormPane;
+import com.abssoft.constructor.client.metadata.ColumnAction;
 import com.abssoft.constructor.client.metadata.FormColumnMD;
 import com.abssoft.constructor.client.widgets.GridComboBoxItem;
+import com.abssoft.constructor.client.widgets.MyComboBoxItem;
 import com.smartgwt.client.types.ListGridFieldType;
-import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
+import com.smartgwt.client.util.JSOHelper;
 import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.grid.CellFormatter;
 import com.smartgwt.client.widgets.grid.HoverCustomizer;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.grid.events.ChangedEvent;
 import com.smartgwt.client.widgets.grid.events.ChangedHandler;
+import com.smartgwt.client.widgets.grid.events.EditorEnterEvent;
+import com.smartgwt.client.widgets.grid.events.EditorEnterHandler;
+import com.smartgwt.client.widgets.grid.events.EditorExitEvent;
+import com.smartgwt.client.widgets.grid.events.EditorExitHandler;
 import com.smartgwt.client.widgets.tree.TreeGridField;
 
 public class FormTreeGridField extends TreeGridField {
@@ -40,7 +46,9 @@ public class FormTreeGridField extends TreeGridField {
 
 	}
 
-	public FormTreeGridField(MainFormPane mainFormPane, int colNum, final FormColumnMD c) {
+	private MyComboBoxItem cmbxItem = null;
+
+	public FormTreeGridField(final MainFormPane mainFormPane, int colNum, final FormColumnMD c) {
 		final String colName = c.getName();
 		String lookupCode = c.getLookupCode();
 		this.setMainFormPane(mainFormPane);
@@ -51,6 +59,7 @@ public class FormTreeGridField extends TreeGridField {
 		this.setWidth(c.getDisplaySize());
 		this.setFrozen(c.isFrozen());
 		this.setShowHover(c.isShowHover());
+
 		if (null != c.getHoverСolumnСode()) {
 			this.setHoverCustomizer(new HoverCustomizer() {
 
@@ -90,10 +99,10 @@ public class FormTreeGridField extends TreeGridField {
 		// TODO вывести одинаковый код
 		else if (("8".equals(c.getFieldType()) || "10".equals(c.getFieldType())) && null != lookupCode
 				&& ConstructorApp.staticLookupsArr.containsKey(lookupCode)) {
-			ComboBoxItem s = new ComboBoxItem();
+			cmbxItem = new MyComboBoxItem();
 			final LinkedHashMap<String, String> lhm = Utils.createStrSortedLinkedHashMap(ConstructorApp.staticLookupsArr.get(lookupCode),
 					!"8".equals(c.getFieldType()));
-			s.setValueMap(lhm);
+			cmbxItem.setValueMap(lhm);
 			// s.setPickListFields(pickListFields);
 			this.setCellFormatter(new CellFormatter() {
 				@Override
@@ -107,13 +116,94 @@ public class FormTreeGridField extends TreeGridField {
 					return result;
 				}
 			});
-			this.setEditorType(s);
+			this.setEditorType(cmbxItem);
 		}
 		// SQL Lookup
 		else if ("Y".equals(c.getShowOnGrid()) && null != lookupCode && ("9".equals(c.getFieldType()))) {
-			new GridComboBoxItem(c, mainFormPane, this);
+			cmbxItem = new GridComboBoxItem(c, mainFormPane, this);
+			// cbi.addChangedHandler(handler);
 		}
 
+		// 20101005-Перенос из GridComboBoxItem CellFormatter для накрываемых полей. Пофиг, даже если не лукап
+		final String lookupDisplValFld = columnMD.getLookupDisplayValue();
+		if (null != lookupDisplValFld) {
+			this.setCellFormatter(new CellFormatter() {
+				@Override
+				public String format(Object value, ListGridRecord record, int rowNum, int colNum) {
+					String result = (null != value) ? record.getAttribute(lookupDisplValFld) : null;
+					return result;
+				}
+			});
+		}
+		/***************** Действия ***********************/
+		for (int j = 0; j < c.getColActions().size(); j++) {
+			final ColumnAction ca = c.getColActions().get(j);
+			System.out.println("getColAction(" + j + "):" + ca);
+			String actionType = ca.getColActionTypeCode();
+			if ("1".equals(actionType)) {
+				// TODO Отловить Enter
+				// this.addChangedHandler(new ChangedHandler() {
+				// @Override
+				// public void onChanged(ChangedEvent event) {
+				//
+				// }
+				// });
+			}
+			if ("2".equals(actionType)) {
+				this.addEditorEnterHandler(new EditorEnterHandler() {
+					@Override
+					public void onEditorEnter(EditorEnterEvent event) {
+						mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm();
+					}
+				});
+			}
+
+			if ("3".equals(actionType)) {
+				this.addEditorExitHandler(new EditorExitHandler() {
+					@Override
+					public void onEditorExit(EditorExitEvent event) {
+						mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm();
+					}
+				});
+			}
+			boolean x = false;
+			if ("4".equals(actionType) && null != cmbxItem && x) {
+				// TODO пока не разрулилось различие между выбором из лукапа и
+				this.addChangedHandler(new ChangedHandler() {
+					@Override
+					public void onChanged(ChangedEvent event) {
+						System.out.println("01 >>>>>>>>>>>>>>>>>>>>");
+						System.out.println("02 event.getValue():" + event.getValue());
+						System.out.println("03 event.getClass():" + event.getClass());
+						System.out.println("04 event.getItem().getJsObj():" + event.getItem().getJsObj());
+						System.out.println("05 event.getColNum():" + event.getColNum());
+						System.out.println("06 event.getRowNum():" + event.getRowNum());
+						System.out.println("07 getEditedCell:"
+								+ mainFormPane.getMainForm().getTreeGrid().getEditedCell(event.getRowNum(), event.getColNum()));
+						System.out.println("08 >>>" + mainFormPane.getMainForm().getTreeGrid().getField(event.getColNum()).getType());
+
+						MyComboBoxItem cb = new MyComboBoxItem();
+						JSOHelper.apply(event.getItem().getJsObj(), cb.getJsObj());
+
+						System.out.println("09 cmbxItem.getType():" + cmbxItem.getType());
+						System.out.println("10 event.getItem().getType():" + event.getItem().getType());
+						System.out.println("11 cb.getType():" + cb.getType());
+						System.out.println("12 cmbxItem.getJsObj():" + cmbxItem.getJsObj());
+						System.out.println("13 cb.getJsObj():" + cb.getJsObj());
+						System.out.println("14 cb.getSelectedRecord():" + cb.getSelectedRecord());
+						if (!cb.isRecordSelected()) {
+							System.out.println("15 keypress");
+						} else {
+							System.out.println("16 select !!!!!!!!!!!!!!!!!!!" + cb.getValue() + cb.getDisplayValue());
+
+						}
+
+						// (ComboBoxItem) // .getSelectedRecord()
+						// mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm();
+					}
+				});
+			}
+		}
 	}
 
 	/**

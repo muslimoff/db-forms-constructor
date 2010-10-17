@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.form.MainFormPane;
+import com.abssoft.constructor.client.metadata.ColumnAction;
 import com.abssoft.constructor.client.metadata.FormColumnMD;
 import com.abssoft.constructor.client.widgets.FormPickTreeItem;
 import com.abssoft.constructor.client.widgets.GridComboBoxItem;
@@ -21,6 +22,8 @@ import com.smartgwt.client.widgets.form.fields.LinkItem;
 import com.smartgwt.client.widgets.form.fields.RichTextItem;
 import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
+import com.smartgwt.client.widgets.form.fields.events.BlurEvent;
+import com.smartgwt.client.widgets.form.fields.events.BlurHandler;
 import com.smartgwt.client.widgets.form.fields.events.FocusEvent;
 import com.smartgwt.client.widgets.form.fields.events.FocusHandler;
 import com.smartgwt.client.widgets.form.fields.events.IconClickEvent;
@@ -31,6 +34,7 @@ import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 public class EditorFormItem extends FormItem {
 	public static FormItem createItem(final FormColumnMD c, final MainFormPane mainFormPane) {
 		final FormItem item;
+		// LinkedHashMap
 		// boolean showHint = true;
 		String lookupCode = c.getLookupCode();
 		boolean showHint = !(null == c.getHelpText() || "".equals(c.getHelpText()));
@@ -132,6 +136,44 @@ public class EditorFormItem extends FormItem {
 					}
 				}
 			});
+		}
+		// TODO - циклит при входе/выходе из поля при обращении к БД
+		/***************** Действия ***********************/
+		for (int j = 0; 1 == 2 && j < c.getColActions().size(); j++) {
+			final ColumnAction ca = c.getColActions().get(j);
+			System.out.println("getColAction(" + j + "):" + ca);
+			String actionType = ca.getColActionTypeCode();
+			if ("1".equals(actionType)) {
+				// TODO Отловить Enter
+				// this.addChangedHandler(new ChangedHandler() {
+				// @Override
+				// public void onChanged(ChangedEvent event) {
+				//
+				// }
+				// });
+			}
+			if ("2".equals(actionType)) {
+				item.addFocusHandler(new FocusHandler() {
+					@Override
+					public void onFocus(FocusEvent event) {
+						mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm();
+					}
+				});
+			}
+
+			if ("3".equals(actionType)) {
+				item.addBlurHandler(new BlurHandler() {
+
+					@Override
+					public void onBlur(BlurEvent event) {
+						// TODO Auto-generated method stub
+						mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm();
+					}
+				});
+
+			}
+			// if ("4".equals(actionType) && item instanceof ComboBoxItem && 1 == 2) {
+			// }
 		}
 		return item;
 	}
