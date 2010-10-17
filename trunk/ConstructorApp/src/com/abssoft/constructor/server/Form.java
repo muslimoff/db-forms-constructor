@@ -13,6 +13,8 @@ import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 
 import com.abssoft.constructor.client.metadata.Attribute;
+import com.abssoft.constructor.client.metadata.ColumnAction;
+import com.abssoft.constructor.client.metadata.ExportData;
 import com.abssoft.constructor.client.metadata.FormActionMD;
 import com.abssoft.constructor.client.metadata.FormActionsArr;
 import com.abssoft.constructor.client.metadata.FormColumnMD;
@@ -140,6 +142,7 @@ public class Form {
 								+ ((null != val) ? val.getClass() : "null") + "; is null:" + (val == null), resultRow);
 					}
 					if (actMD.getOutputs().containsKey(paramNum)) {
+						Utils.debug("registerOutParameter. paramNum:" + paramNum + "; outParamType:" + outParamType, resultRow);
 						((OracleCallableStatement) stmnt).registerOutParameter(paramNum, outParamType);
 					}
 				}
@@ -241,12 +244,28 @@ public class Form {
 					String attrCode = attrRS.getString("attribute_code");
 					String attrValue = attrRS.getString("attribute_value");
 					metadata.get(colName).getLookupAttributes().put(attrCode, attrValue);
-					// System.out.println("column_code >>" + colName);
-					// System.out.println("attribute_code >>" + attrCode);
-					// System.out.println("attribute_value >>" + attrValue);
 				}
 				attrRS.close();
 				attrStmnt.close();
+			}
+
+			{
+				// get Column Actions
+				String columnActionsSQL = Utils.getSQLQueryFromXML("columnActionsSQL", session.getServerInfoMD());
+				OraclePreparedStatement actStmnt = (OraclePreparedStatement) getConnection().prepareStatement(columnActionsSQL);
+				Utils.setFormMDParams(actStmnt, getFormCode(), parentFormCode, isDrillDownForm);
+				ResultSet colActsRS = actStmnt.executeQuery();
+				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>xx<<<<<<<<<<<<<<<<<<<<<<<");
+				while (colActsRS.next()) {
+					String colName = colActsRS.getString("column_code");
+					ColumnAction ca = new ColumnAction();
+					ca.setActionCode(colActsRS.getString("action_code"));
+					ca.setActionKeyCode(colActsRS.getString("action_key_code"));
+					ca.setColActionTypeCode(colActsRS.getString("col_action_type_code"));
+					metadata.get(colName).getColActions().add(ca);
+				}
+				colActsRS.close();
+				actStmnt.close();
 			}
 		} catch (java.sql.SQLException e) {
 			Utils.debug(e.toString());
@@ -475,5 +494,9 @@ public class Form {
 
 	public String getFormCode() {
 		return formCode;
+	}
+
+	public Integer setExportData(FormInstanceIdentifier fi, ExportData exportData) {
+		return formInstance.get(fi.getGridHashCode()).setExportData(exportData);
 	}
 }

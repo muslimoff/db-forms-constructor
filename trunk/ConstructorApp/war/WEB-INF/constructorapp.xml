@@ -314,7 +314,12 @@
 			<![CDATA[
 				Select a.column_code, a.attribute_code, a.attribute_value From &fc_schema_owner..form_column_attr_vals a Where a.form_code = :p_form_code
 			]]>
-		</sqlStatement>	
+		</sqlStatement>
+		<sqlStatement name="columnActionsSQL">
+			<![CDATA[
+				Select * From &fc_schema_owner..form_column_actions a Where a.form_code = :p_form_code
+			]]>
+		</sqlStatement>			
 		<sqlStatement name="customLoginValidationSQL">
 			<![CDATA[
 				Select &validationFN (:p_username, :p_password, :p_url_params) isValid From DUAL

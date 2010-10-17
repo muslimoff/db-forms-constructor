@@ -25,7 +25,6 @@ import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.RichTextItem;
 import com.smartgwt.client.widgets.grid.ListGrid;
-import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.menu.MenuItemIfFunction;
@@ -94,15 +93,7 @@ public class ActionItem extends MenuItem {
 				try {
 					String actionType = ActionItem.this.formActionMD.getType();
 					ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
-					int currRow = 0;
-					try {
-						ListGridRecord r = grid.getSelectedRecord();
-						currRow = grid.getRecordIndex(r);
-					} catch (Exception e) {
-						System.out.println("ssss1");
-						e.printStackTrace();
-						System.out.println("ssss2");
-					}
+					int currRow = mainFormPane.getMainForm().getSelectedRecord();
 					if ("2".equals(actionType)) {
 						result = currRow == grid.getEditRow() || 0 != grid.getAllEditRows().length;
 					}
@@ -134,10 +125,11 @@ public class ActionItem extends MenuItem {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("doAction-5");
+		System.out.println("doAction-5;" + grid.getEditRow());
 		// String xmlpUrl = GWT.getModuleBaseURL() + title;
 		title = mainFormPane.getFormMetadata().getFormName() + " - " + title;
-		System.out.println("doAction-6:" + formActionMD.getType());
+		int currRecSelected = mainFormPane.getMainForm().getSelectedRecord();
+		System.out.println("doAction-6:" + formActionMD.getType() + "; currRecSelected:" + currRecSelected);
 		// TODO Проблема при сохранении записи из контекстного меню в случае, если фокус не на данной форме.
 		if ("2".equals(formActionMD.getType())) {
 			// TODO Проблема с DynamicForm.ItemChangedHandler в хроме - приходится сохранять данные RichTextItem не по событию, а по
@@ -178,14 +170,14 @@ public class ActionItem extends MenuItem {
 			mainFormPane.filterData();
 		} // prev record
 		else if ("5".equals(formActionMD.getType())) {
-			int currRecSelected = grid.getRecordIndex(grid.getSelectedRecord());
+			// int currRecSelected = grid.getRecordIndex(grid.getSelectedRecord());
 			if (currRecSelected > 0) {
 				grid.selectSingleRecord(--currRecSelected);
 				mainFormPane.filterDetailData(grid.getRecord(currRecSelected), grid, currRecSelected);
 			}
 		} // next record
 		else if ("6".equals(formActionMD.getType())) {
-			int currRecSelected = grid.getRecordIndex(grid.getSelectedRecord());
+			// int currRecSelected = grid.getRecordIndex(grid.getSelectedRecord());
 			if (currRecSelected + 1 < grid.getTotalRows()) {
 				grid.selectSingleRecord(++currRecSelected);
 				mainFormPane.filterDetailData(grid.getRecord(currRecSelected), grid, currRecSelected);
@@ -193,7 +185,6 @@ public class ActionItem extends MenuItem {
 		} // Custom PL/SQL
 		else if ("7".equals(formActionMD.getType())) {
 			System.out.println("Custom PL/SQL - start execution...");
-			int currRecSelected = grid.getRecordIndex(grid.getSelectedRecord());
 			grid.updateData(grid.getRecord(currRecSelected));
 			System.out.println("Custom PL/SQL - end execution...");
 		} // New Record
@@ -243,18 +234,23 @@ public class ActionItem extends MenuItem {
 				});
 				w.show();
 			}
-		} else if ("12".equals(formActionMD.getType())) {
-			mainFormPane.getMainForm().exportGrid();
-		} else if ("15".equals(formActionMD.getType())) {
+		} // Export grid
+		else if ("12".equals(formActionMD.getType())) {
+			String actionUrl = replaceBindVariables(formActionMD.getSqlProcedureName(), ":");
+			actionUrl = null != actionUrl ? actionUrl : "xmlp?type=xslt" + "&ContentType=application/vnd.ms-excel"
+					+ "&contentDisposition=attachment" + "&filename=rep1.xml" + "&template=EXP";
+			mainFormPane.getMainForm().exportGrid(GWT.getModuleBaseURL() + actionUrl);
+
+		} // Open Url
+		else if ("15".equals(formActionMD.getType())) {
 			try {
-				String xmlpUrl = GWT.getModuleBaseURL() + replaceBindVariables(formActionMD.getSqlProcedureName(), ":");
-				System.out.println(xmlpUrl);
-				// com.google.gwt.user.client.Window.open(xmlpUrl, "_new",
-				// "menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=250,height=150,navigation=no");
-				com.google.gwt.user.client.Window.open(xmlpUrl, "", "");
+				String actionUrl = replaceBindVariables(formActionMD.getSqlProcedureName(), ":");
+				com.google.gwt.user.client.Window.open(GWT.getModuleBaseURL() + actionUrl, "", "");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		} else if ("16".equals(formActionMD.getType())) {
+			mainFormPane.getMainForm().setNewRecDefaultValues(currRecSelected, false);
 		}
 	}
 

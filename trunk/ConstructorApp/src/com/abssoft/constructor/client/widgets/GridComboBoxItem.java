@@ -3,7 +3,6 @@ package com.abssoft.constructor.client.widgets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.FormDataSourceField;
@@ -28,50 +27,46 @@ import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.FormItemValueFormatter;
-import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.FilterCriteriaFunction;
 import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.grid.CellFormatter;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.events.EditorEnterEvent;
+import com.smartgwt.client.widgets.grid.events.EditorEnterHandler;
 import com.smartgwt.client.widgets.tree.TreeNode;
 
-//TODO Выести ширину лукапа как отдельную настройку формы (вместо FORM_WIDTH нужно LOOKUP_FORM_WIDTH)
 //TODO - Отображать при выборке записи до текущей... остальные фетчить по требованию
 //TODO - Завязать на Debug показку "Прочие" меню
-public class GridComboBoxItem extends ComboBoxItem {
-	private FormInstanceIdentifier instanceIdentifier;
-
+public class GridComboBoxItem extends MyComboBoxItem {
 	public class ComboBoxDataSource extends GwtRpcDataSource {
-		private String lookupCode;
 		private FormDataSourceField[] dsFields;
 		TreeNode[] records;
 		private int valueFieldNum = 0;
-		private String lookupDisplValFld;
-
-		public ComboBoxDataSource(String lookupCode, String lookupDisplValFld) {
-			this.lookupCode = lookupCode;
-			this.lookupDisplValFld = lookupDisplValFld;
-		}
 
 		protected void executeFetch(final String requestId, DSRequest request, final DSResponse response) {
 			Utils.debug("ReadOnlyDataSource Fetch. Lookup:" + lookupCode + "; " + request);
-			Criteria cr = new Criteria();
+			Criteria cr = (null != request && null != request.getCriteria()) ? request.getCriteria() : new Criteria();
 			try {
 				cr.addCriteria(getMainFormCriteria());
-				cr.addCriteria(request.getCriteria());
 			} catch (Exception e) {
 				Utils.debug("Exception on request.getCriteria().getValues():" + e.getMessage());
 			}
 			int startRow = 0;
-			int endRow = 10000;
+			int endRow = 1000;
 			String sortBy = null;
-			if (null != lookupDisplValFld) {
-				startRow = request.getStartRow();
-				endRow = request.getEndRow();
+
+			if (null != lookupDisplValFld && null != request) {
+				try {
+					startRow = request.getStartRow();
+					endRow = request.getEndRow();
+				} catch (Exception e) {
+					Utils.debug("ComboBoxDataSource.executeFetch. request.getStartRow/getEndRow error: " + e.getMessage());
+				}
 			}
+
+			System.out.println("aaaaaaaaaaaaaaaaaaaaaaaa>>>>>>>>>>>>>>>>>>>>>>>>>>" + getFilterWithValue());
 			sortBy = request.getAttribute("sortBy");
-			System.out.println("startRow:" + startRow + "; endRow:" + endRow);
 			QueryServiceAsync service = GWT.create(QueryService.class);
 			// TODO вынести в XML параметров endRow - фактически размер лова.
 			service.fetch(instanceIdentifier, sortBy, startRow, endRow, Utils.getHashMapFromCriteria(cr), false,
@@ -116,45 +111,41 @@ public class GridComboBoxItem extends ComboBoxItem {
 		}
 	}
 
-	public LinkedHashMap<Object, TreeNode> values = new LinkedHashMap<Object, TreeNode>();
-	private String valueFieldName = null;
+	private FormColumnMD columnMD;
+
 	private String displayFieldName = null;
+	private FormInstanceIdentifier instanceIdentifier;
+	private String lookupCode;
 	private String lookupDisplValFld;
 	private MainFormPane mainFormPane;
-	private FormColumnMD columnMD;
+	private String valueFieldName = null;
+	public LinkedHashMap<Object, TreeNode> values = new LinkedHashMap<Object, TreeNode>();
 
 	public GridComboBoxItem(FormColumnMD columnMD, MainFormPane mainFormPane) {
 		this(columnMD, mainFormPane, null);
 	}
 
-	public GridComboBoxItem(FormColumnMD columnMD, MainFormPane mainFormPane, FormTreeGridField formTreeGridField) {
+	public GridComboBoxItem(final FormColumnMD columnMD, final MainFormPane mainFormPane, FormTreeGridField formTreeGridField) {
 
 		this.columnMD = columnMD;
 		this.mainFormPane = mainFormPane;
-		final String lookupCode = columnMD.getLookupCode();
+		lookupCode = columnMD.getLookupCode();
 		int gridHashCode = 10000 + GridComboBoxItem.this.columnMD.getDisplayNum();
 		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, lookupCode, null, gridHashCode);
-
-		// this.formTreeGridField = formTreeGridField;
-
 		lookupDisplValFld = columnMD.getLookupDisplayValue();
 		GridComboBoxItem.this.setShowOptionsFromDataSource(true);
-		this.setPickListFilterCriteriaFunction(new FilterCriteriaFunction() {
-			public Criteria getCriteria() {
-				return getMainFormCriteria();
-			}
-		});
-
+		this.setFetchDelay(1000);
+		this.setValidateOnChange(true);
+		this.setRejectInvalidValueOnChange(true);
+		this.setCompleteOnTab(true);
+		// this.setHideEmptyPickList(true);
 		FormMD fmd = mainFormPane.getFormMetadata().getLookupsArr().get(lookupCode);
-		final ComboBoxDataSource lookupDataSource = new ComboBoxDataSource(lookupCode, lookupDisplValFld);
+		final ComboBoxDataSource lookupDataSource = new ComboBoxDataSource();
 		MainFormPane mfp = new MainFormPane();
 		mfp.setFormCode(lookupCode);
 		mfp.setFormMetadata(fmd);
 		mfp.setFormColumns(new FormColumns(mfp));
 		FormTreeGridField[] gridFields = mfp.getFormColumns().createGridFields();
-		// TODO Пока всегда отображаем шапку у лукапа
-		boolean showPickListHeader = false;
-		// boolean showPickListHeader = true;
 		valueFieldName = gridFields[0].getName();
 		int valueFieldNum = 0;
 		for (FormTreeGridField f : gridFields) {
@@ -168,12 +159,10 @@ public class GridComboBoxItem extends ComboBoxItem {
 				f.setHidden(false);
 				displayFieldName = fieldName;
 			} else if ("3".equals(lookupFieldType)) {
-				showPickListHeader = true;
 				f.setHidden(false);
 			} else {
 				f.setHidden(true);
 			}
-
 			// Initial sort
 			if ("1".equals(colMD.getDefaultOrderByNumber())) {
 				GridComboBoxItem.this.setSortField(fieldName);
@@ -181,28 +170,44 @@ public class GridComboBoxItem extends ComboBoxItem {
 		}
 		GridComboBoxItem.this.setValueField(valueFieldName);
 		GridComboBoxItem.this.setDisplayField(displayFieldName);
-		{
-			// TODO Всегда показывать заголовок для возможности пользовательской сортировки
-			showPickListHeader = true;
+		try {
+			String lookupWidth = fmd.getLookupWidth();
+			lookupWidth = (null == lookupWidth || "".equals(lookupWidth)) ? fmd.getWidth() : lookupWidth;
+			GridComboBoxItem.this.setPickListWidth(Integer.decode(lookupWidth));
+		} catch (Exception e) {
 		}
-		if (showPickListHeader) {
-			try {
-				String lookupWidth = fmd.getLookupWidth();
-				lookupWidth = (null == lookupWidth || "".equals(lookupWidth)) ? fmd.getWidth() : lookupWidth;
-				GridComboBoxItem.this.setPickListWidth(Integer.decode(lookupWidth));
-			} catch (Exception e) {
-			}
-			GridComboBoxItem.this.setPickListFields(gridFields);
-		}
+		GridComboBoxItem.this.setPickListFields(gridFields);
 		lookupDataSource.setValueFieldNum(valueFieldNum);
 		lookupDataSource.setFields(mfp.getFormColumns().createDSFields());
 		setOptionDataSource(lookupDataSource);
+		this.setPickListFilterCriteriaFunction(new FilterCriteriaFunction() {
+			@Override
+			public Criteria getCriteria() {
+				Criteria cr = getMainFormCriteria();
+				// Добавляем введенные пользователем данные, если вводил руками...
+				Utils.debug("1setPickListFilterCriteriaFunction");
+				String userTypedValue = null;
+				// TODO - не работат... getFilterWithValue();
+				Object value = null;
+				try {
+					value = GridComboBoxItem.this.getValue();
+				} catch (Exception e) {
+					e.printStackTrace();
+					ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
+					value = grid.getEditedCell(grid.getEditRow(), columnMD.getName());
+				}
+				String userTypedVarName = "p$lookup_entered_value";
+				userTypedValue = (null != value) ? value.toString() : null;
+				cr.addCriteria(userTypedVarName, userTypedValue);
+				Utils.debug("2setPickListFilterCriteriaFunction" + userTypedValue);
+				return cr;
+			}
+		});
 		// TODO Вынести в классы FormTreeGridField и FormRowEditorTab.createItem
 		if (null == formTreeGridField) {
 			this.setFetchMissingValues(true);
-			if (null != columnMD.getLookupDisplayValue()) {
+			if (null != lookupDisplValFld) {
 				this.setEditorValueFormatter(new FormItemValueFormatter() {
-
 					@Override
 					public String formatValue(Object value, Record record, DynamicForm form, FormItem i) {
 						String result = (String) value;
@@ -213,8 +218,7 @@ public class GridComboBoxItem extends ComboBoxItem {
 							String colName = GridComboBoxItem.this.columnMD.getName();
 							// System.out.println("##$@@" + result);
 							if (null != value) {
-								result = value.equals(rec.getAttribute(colName)) ? rec.getAttribute(GridComboBoxItem.this.columnMD
-										.getLookupDisplayValue()) : result;
+								result = value.equals(rec.getAttribute(colName)) ? rec.getAttribute(lookupDisplValFld) : result;
 							} else {
 								result = null;
 							}
@@ -227,39 +231,47 @@ public class GridComboBoxItem extends ComboBoxItem {
 				});
 			}
 		} else {
+			//
 			this.setFetchMissingValues(null == lookupDisplValFld);
+			// this.setFetchMissingValues(true);
 			formTreeGridField.setEditorType(GridComboBoxItem.this);
 			formTreeGridField.setGridComboBoxItem(this);
 			formTreeGridField.setAlign(Alignment.LEFT);
+			// http://forums.smartclient.com/showthread.php?t=6427&highlight=pickList
+			// formTreeGridField.addEditorEnterHandler(new EditorEnterHandler() {
+			// @Override
+			// public void onEditorEnter(EditorEnterEvent event) {
+			// // TODO Auto-generated method stub
+			// LinkedHashMap<String, String> l = new LinkedHashMap<String, String>();
+			// l.put(event.getValue() + "", "sssssss");
+			// // GridComboBoxItem.this.
+			// setValueMap(l);
+			// }
+			// });
 			if (null == lookupDisplValFld) {
 				lookupDataSource.fetchData();
-			}
-			// TODO Сломалось редактирование в строках с лукапами по кнопке или контекстному меню.
-			// TODO Иконки - лукап
-			if (1 == 2 && "ICONS".equals(columnMD.getLookupCode())) {
-				// this.setValueIcons(ConstructorApp.menus.getIcons());
-				// this.setValueIcons(values);
-				Map<String, String> m = new HashMap<String, String>();
-				m.put("29", "/ConstructorApp/resources/icons/database_gear.png");
-				this.setValueIcons(m);
-			} else {
 				formTreeGridField.setCellFormatter(new CellFormatter() {
 					@Override
 					public String format(Object value, ListGridRecord record, int rowNum, int colNum) {
 						String result = null;
 						if (null != value) {
-							if (null != lookupDisplValFld) {
-								result = record.getAttribute(lookupDisplValFld);
-							} else {
-								// System.out.println(lookupCode + " >>>" + value + " <<>>" + value.getClass());
-								value = (value instanceof Integer) ? ((Integer) value).doubleValue() : value;
-								result = values.containsKey(value) ? values.get(value).getAttribute(displayFieldName) : value + "$";
-							}
+							value = (value instanceof Integer) ? ((Integer) value).doubleValue() : value;
+							result = values.containsKey(value) ? values.get(value).getAttribute(displayFieldName) : value + "$";
 						}
 						return result;
 					}
 				});
 			}
+
+			// TODO Сломалось редактирование в строках с лукапами по кнопке или контекстному меню.
+			// TODO Иконки - лукап
+			// if (1 == 2 && "ICONS".equals(columnMD.getLookupCode())) {
+			// // this.setValueIcons(ConstructorApp.menus.getIcons());
+			// // this.setValueIcons(values);
+			// Map<String, String> m = new HashMap<String, String>();
+			// m.put("29", "/ConstructorApp/resources/icons/database_gear.png");
+			// this.setValueIcons(m);
+			// }
 		}
 	}
 
@@ -274,7 +286,6 @@ public class GridComboBoxItem extends ComboBoxItem {
 			String attrName = attrs.next();
 			criteria.addCriteria(attrName, lookupAttributes.get(attrName));
 		}
-		// System.out.println("############## lookupAttributes: " + lookupAttributes);
 		return criteria;
 	}
 }

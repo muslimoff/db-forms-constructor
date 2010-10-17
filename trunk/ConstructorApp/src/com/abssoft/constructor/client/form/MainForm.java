@@ -7,10 +7,12 @@ import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.TabSet;
 import com.abssoft.constructor.client.data.DMLProcExecution;
 import com.abssoft.constructor.client.data.FormDataSourceField;
+import com.abssoft.constructor.client.data.FormTreeGridField;
 import com.abssoft.constructor.client.data.QueryService;
 import com.abssoft.constructor.client.data.QueryServiceAsync;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
+import com.abssoft.constructor.client.metadata.ExportData;
 import com.abssoft.constructor.client.metadata.FormActionMD;
 import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.Row;
@@ -18,8 +20,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.ResultSet;
-import com.smartgwt.client.data.events.DataArrivedEvent;
-import com.smartgwt.client.data.events.DataArrivedHandler;
 import com.smartgwt.client.types.EditCompletionEvent;
 import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.types.RowEndEditAction;
@@ -29,8 +29,9 @@ import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.events.ResizedEvent;
 import com.smartgwt.client.widgets.events.ResizedHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
-import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.events.DataArrivedEvent;
+import com.smartgwt.client.widgets.grid.events.DataArrivedHandler;
 import com.smartgwt.client.widgets.grid.events.EditorExitEvent;
 import com.smartgwt.client.widgets.grid.events.EditorExitHandler;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
@@ -138,6 +139,21 @@ class MainForm extends Canvas {
 	private MainFormPane mainFormPane;
 	private ListGrid treeGrid;
 
+	public int getSelectedRecord() {
+		int currRow = mainFormPane.getSelectedRow();
+
+		if (-999 == currRow) {
+			try {
+				ListGridRecord r = treeGrid.getSelectedRecord();
+				currRow = treeGrid.getRecordIndex(r);
+			} catch (Exception e) {
+				currRow = treeGrid.getEventRow();
+				Utils.debug("MainForm.getSelectedRecord error:" + e.getMessage() + "; currRow:" + currRow);
+			}
+		}
+		return currRow;
+	}
+
 	MainForm(final MainFormPane mainFormPane, final boolean showResizeBar) {
 		Utils.debug("Constructor MainForm");
 		this.setMargin(0);
@@ -240,21 +256,33 @@ class MainForm extends Canvas {
 		treeGrid.addRowEditorEnterHandler(new RowEditorEnterHandler() {
 			@Override
 			public void onRowEditorEnter(RowEditorEnterEvent event) {
-				// System.out.println("RowEditorEnterHandler.getEditedRecord: 1");
 				ListGrid grid = ((ListGrid) event.getSource());
-				// System.out.println("RowEditorEnterHandler.getEditedRecord: 2");
 				int rowNum = event.getRowNum();
-				// System.out.println("RowEditorEnterHandler.getEditedRecord: 3");
+				mainFormPane.setSelectedRow(rowNum);
 				Record record = event.getRecord();
-				// System.out.println("RowEditorEnterHandler.getEditedRecord: 4");
 				Record newRec = grid.getEditedRecord(rowNum);
-				// System.out.println("RowEditorEnterHandler.getEditedRecord: 5");
-				// System.out.println("RowEditorEnterHandler.getEditedRecord: " + newRec);
-				// System.out.println("RowEditorEnterHandler.getRowNum: " + rowNum);
-
 				// Default Values для новой записи.
 				if (null == record && 0 == newRec.getAttributes().length) {
-					setNewRecDefaultValues(grid, rowNum);
+					setNewRecDefaultValues(rowNum, true);
+				} else {
+					// TODO Простановка DisplayValue для лукап-форм с DisplayFileds
+					FormDataSourceField[] dsf = mainFormPane.getFormColumns().getDataSourceFields();
+					for (FormDataSourceField f : dsf) {
+						System.out.println("sssssssssssss>>:" + f.getColumnMD().getLookupDisplayValue());
+					}
+					System.out.println("newRec.getAttributes():" + newRec.getAttributes());
+				}
+			}
+		});
+
+		treeGrid.addDataArrivedHandler(new DataArrivedHandler() {
+
+			@Override
+			public void onDataArrived(DataArrivedEvent event) {
+				// TODO Auto-generated method stub
+				// Utils.debug("@@@@@@@@@@@@@@@@@@@@@@@ Grid onDataArrived start @@@@@@@@@@@@");
+				if (isExport) {
+					exportData();
 				}
 			}
 		});
@@ -269,11 +297,13 @@ class MainForm extends Canvas {
 		// TODO SmartGWT 2.2. - сделали сохранение состояния грида и дерева
 	}
 
-	public void setNewRecDefaultValues(final ListGrid grid, final int rowNum) {
+	public void setNewRecDefaultValues(final int rowNum, boolean isFromDefaultVals) {
 		FormActionMD actMD = mainFormPane.getCurrentAction();
 		final FormDataSourceField[] dsFields = mainFormPane.getFormColumns().getDataSourceFields();
-		Map<String, Object> rowMap = Utils.getRowDefaultValuesMap(mainFormPane);
-		grid.setEditValues(rowNum, rowMap);
+		if (isFromDefaultVals) {
+			Map<String, Object> rowMap = Utils.getRowDefaultValuesMap(mainFormPane);
+			treeGrid.setEditValues(rowNum, rowMap);
+		}
 		if (null == actMD.getDmlProcText()) {
 			mainFormPane.filterDetailData(null, treeGrid, rowNum);
 		} else {
@@ -281,12 +311,12 @@ class MainForm extends Canvas {
 				@Override
 				public void executeSubProc() {
 					Map<String, Object> resultMap = Utils.getMapFromRow(dsFields, getResultRow());
-					grid.setEditValues(rowNum, resultMap);
+					treeGrid.setEditValues(rowNum, resultMap);
 					mainFormPane.filterDetailData(null, treeGrid, rowNum);
 				}
 			};
 			Row oldRow = null;
-			Row newRow = Utils.getRowFromRecord(dsFields, (ListGridRecord) grid.getEditedRecord(rowNum));
+			Row newRow = Utils.getRowFromRecord(dsFields, treeGrid.getEditedRecord(rowNum));
 			procExec.executeGlobal(oldRow, newRow);
 		}
 	}
@@ -369,95 +399,64 @@ class MainForm extends Canvas {
 
 	}
 
-	class ExpField {
-		private String name;
-		private String title;
+	public void exportData() {
+		ResultSet rs = treeGrid.getResultSet();
+		ExportData exportData = new ExportData();
+		String title = mainFormPane.getFormMetadata().getFormName();
+		title = "".equals(title) ? mainFormPane.getFormMetadata().getFormCode() : title;
+		exportData.setTitle(title);
 
-		ExpField() {
+		for (FormTreeGridField f : mainFormPane.getFormColumns().getGridFields()) {
+			if (!"false".equals(f.getAttribute("showIf")) && !"false".equals(f.getAttribute("canExport"))) {
+				exportData.getHeaderNames().add(f.getName());
+				exportData.getHeaderTitles().add(f.getTitle());
+				String displayField = (f instanceof FormTreeGridField) ? f.getColumnMD().getLookupDisplayValue() : null;
+				exportData.getHeaderDisplFldNames().add(displayField);
+			}
 		}
 
-		ExpField(String name, String title) {
-			this.name = name;
-			setTitle(name, title);
-		}
-
-		public void setTitle(String name, String title) {
-			this.title = null != title ? title : name;
-			this.title = "&nbsp;".equals(title) ? "_" : title;
-		}
-
-		public String getTitle() {
-			return title;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public String getName() {
-			return name;
-		}
-	}
-
-	public String getCSVData(ArrayList<ExpField> flds, ResultSet rs, String header, String spr, int dataLen) {
-		String rowsData = header;
-		// Вывод значений полей
+		int dataLen = rs.getLength();
+		// Чтение значений полей
 		try {
 			for (Record r : rs.getRange(0, dataLen)) {
-				for (int i = 0; i < flds.size(); i++) {
-					ExpField f = flds.get(i);
-					rowsData = rowsData + r.getAttribute(f.getName()) + spr;
+				ArrayList<String> row = new ArrayList<String>();
+				for (int i = 0; i < exportData.getHeaderNames().size(); i++) {
+					String attrName = (null == exportData.getHeaderDisplFldNames().get(i)) ? exportData.getHeaderNames().get(i)
+							: exportData.getHeaderDisplFldNames().get(i);
+					row.add(r.getAttribute(attrName));
 				}
-				rowsData = rowsData + "%0D%0A"; // "\n";
+				exportData.getData().add(row);
 			}
-			Utils.debug("@@@@@@@@@@@@@@@@@");
-			System.out.println(rowsData);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		// application/vnd.ms-excel
-		com.google.gwt.user.client.Window.open("data:text/plain;charset=utf-8, " + rowsData, "", "");
-		return rowsData;
+
+		QueryServiceAsync service = GWT.create(QueryService.class);
+		service.setExportData(mainFormPane.getInstanceIdentifier(), exportData, new DSAsyncCallback<Integer>() {
+			@Override
+			public void onSuccess(Integer result) {
+				String fullUrl = ExportUrl + "&dataClobId=" + result;
+				System.out.println("fullUrl:" + fullUrl);
+				com.google.gwt.user.client.Window.open(fullUrl, "", "");
+				isExport = false;
+				ExportUrl = "";
+			}
+		});
 	}
 
-	// TODO http://software.hixie.ch/utilities/cgi/data/data
-	// data:text/html;charset=utf-8,1%0D%0A2%0D%0A3%0D%0A
-	public void exportGrid() {
-		final String spr = ";";
-		// Получаем список экспортируемых полей
-		final ArrayList<ExpField> flds = new ArrayList<ExpField>();
-		for (ListGridField f : treeGrid.getAllFields()) {
-			// System.out.println("@@@ " + f.getName() + "; " + f.getAttribute("showIf") + "; " + f.getTitle());
-			// baseStyle; specialCol -- canExport; false
-			if (!"false".equals(f.getAttribute("showIf")) && !"false".equals(f.getAttribute("canExport"))) {
-				flds.add(new ExpField(f.getName(), f.getTitle()));
-			}
-		}
-		// Вывод заголовков полей
-		String result = "";
-		for (int i = 0; i < flds.size(); i++) {
-			ExpField f = flds.get(i);
-			result = result + f.getTitle() + spr;
-		}
-		result = result + "%0D%0A"; // "\n";
+	public boolean isExport = false;
+	private String ExportUrl = "";
 
-		final ResultSet rs = treeGrid.getResultSet();
+	public void exportGrid(final String url) {
+		isExport = true;
+		this.ExportUrl = url;
+		ResultSet rs = treeGrid.getResultSet();
 		// TODO least(100, dataLen)
-		final int dataLen = rs.getLength(); // 100;
-		final String header = result;
+		int dataLen = rs.getLength(); // 100;
 		if (!rs.rangeIsLoaded(0, dataLen)) {
 			rs.getRange(0, dataLen);
-
-			rs.addDataArrivedHandler(new DataArrivedHandler() {
-				@Override
-				public void onDataArrived(DataArrivedEvent event) {
-					Utils.debug("@@@@@@@@@@@@@@@@@@@@@@@ onDataArrived start@@@@@@@@@@@@");
-					getCSVData(flds, rs, header, spr, dataLen);
-					Utils.debug("@@@@@@@@@@@@@@@@@@@@@@@ onDataArrived end @@@@@@@@@@@@");
-				}
-			});
 		} else {
-			getCSVData(flds, rs, header, spr, dataLen);
+			exportData();
 		}
 	}
 }

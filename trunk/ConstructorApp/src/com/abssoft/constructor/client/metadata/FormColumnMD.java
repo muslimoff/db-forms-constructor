@@ -1,5 +1,6 @@
 package com.abssoft.constructor.client.metadata;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -11,6 +12,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  */
 public class FormColumnMD implements IsSerializable {
+
 	private String dataType;
 	private String description;
 	private String displayName;
@@ -39,7 +41,10 @@ public class FormColumnMD implements IsSerializable {
 	private String editorColsSpan;
 	private String lookupDisplayValue;
 	private String editorOnEnterKeyAction;
+
 	private HashMap<String, String> lookupAttributes = new HashMap<String, String>();
+
+	private ArrayList<ColumnAction> colActions = new ArrayList<ColumnAction>();
 
 	public FormColumnMD() {
 	}
@@ -132,6 +137,10 @@ public class FormColumnMD implements IsSerializable {
 	 */
 	public String getHoverСolumnСode() {
 		return hoverСolumnСode;
+	}
+
+	public HashMap<String, String> getLookupAttributes() {
+		return lookupAttributes;
 	}
 
 	/**
@@ -325,6 +334,10 @@ public class FormColumnMD implements IsSerializable {
 		this.hoverСolumnСode = hoverСolumnСode;
 	}
 
+	public void setLookupAttributes(HashMap<String, String> lookupAttributes) {
+		this.lookupAttributes = lookupAttributes;
+	}
+
 	/**
 	 * @param lookupCode
 	 *            the lookupCode to set
@@ -401,11 +414,11 @@ public class FormColumnMD implements IsSerializable {
 		this.validationRegexp = validationRegexp;
 	}
 
-	public void setLookupAttributes(HashMap<String, String> lookupAttributes) {
-		this.lookupAttributes = lookupAttributes;
+	public void setColActions(ArrayList<ColumnAction> colActions) {
+		this.colActions = colActions;
 	}
 
-	public HashMap<String, String> getLookupAttributes() {
-		return lookupAttributes;
+	public ArrayList<ColumnAction> getColActions() {
+		return colActions;
 	}
 }

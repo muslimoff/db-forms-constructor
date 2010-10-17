@@ -4,7 +4,7 @@
 	<property name="gwt.sdk" location="C:/GWT/lib/gwt-2.0.4" />
 	<property name="smartgwt" location="C:/GWT/lib/smartgwt-2.1" />
 	<property name="ofcgwt" location="C:/GWT/lib/ofcgwt.2.0.1.b" />
-	<property name="xmlp"  location="C:/GWT/lib/xmlp" />
+	<property name="xmlp" location="C:/GWT/lib/xmlp" />
 
 	<path id="project.class.path">
 		<pathelement location="war/WEB-INF/classes" />
@@ -14,7 +14,7 @@
 		<pathelement location="${ofcgwt}/ofcgwt.jar" />
 		<pathelement location="${gwt.sdk}/gwt-user.jar" />
 		<pathelement location="${gwt.sdk}/gwt-bikeshed.jar" />
-		<pathelement location="${xmlp}/*.jar" />		
+		<pathelement location="${xmlp}/*.jar" />
 		<fileset dir="${gwt.sdk}" includes="gwt-dev*.jar" />
 		<!-- Add any additional non-server libs (such as JUnit) -->
 		<fileset dir="war/WEB-INF/lib" includes="**/*.jar" />
@@ -52,11 +52,16 @@
 
 	<target name="build" depends="gwtc" description="Build this project" />
 
-	<target name="war" depends="build" description="Create a war file">
+
+	<target name="copyFiles" depends="build" description="Create a war file">
 		<copy todir="war/constructorapp/sc/resources">
 			<fileset dir="resources" excludes="**/.svn" />
 		</copy>
-		<zip destfile="ConstructorApp.war" basedir="war" excludes="**/.svn" />
+	</target>
+
+	<target name="war" depends="copyFiles" description="Create a war file">
+		<zip destfile="ConstructorApp_w_libs.war" basedir="war" excludes="**/.svn" />
+		<zip destfile="ConstructorApp.war" basedir="war" excludes="**/.svn, **/WEB-INF/lib/**, **/constructorapp/sc/**" />
 	</target>
 
 	<target name="StopTomcat" depends="war" description="Stop Tomcat">

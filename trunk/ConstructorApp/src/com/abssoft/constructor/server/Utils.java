@@ -85,7 +85,8 @@ public class Utils {
 			System.out.println("Dt:" + rs.getString(column));
 			// Date dt = rs.getDate(column);
 			DATE dt = rs.getDATE(column);
-			attr = new Attribute(dt.dateValue());
+			Date dt2 = rs.wasNull() ? null : dt.dateValue();
+			attr = new Attribute(dt2);
 		} else if ("B".equals(formColDataType)) {
 			val = rs.getString(column);
 			attr = new Attribute("1".equals(val) || "Y".equals(val));
