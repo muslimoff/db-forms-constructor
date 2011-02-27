@@ -1,84 +1,93 @@
-Create Role fc_admin
-NOT Identified
+DROP ROLE fc_admin
 /
-Grant Execute On applications_pkg To fc_admin
+
+CREATE ROLE fc_admin
+NOT IDENTIFIED
 /
-Grant Execute On apps_role_menus_pkg To fc_admin
+GRANT EXECUTE ON FC22.APPLICATIONS_PKG TO fc_admin
 /
-Grant Select On forms To fc_admin
+GRANT EXECUTE ON FC22.APPS_ROLE_MENUS_PKG TO fc_admin
 /
-Grant Insert On forms To fc_admin
+GRANT SELECT ON FC22.FORM_ACTIONS TO fc_admin
 /
-Grant Update On forms To fc_admin
+GRANT EXECUTE ON FC22.FORM_ACTIONS_PKG TO fc_admin
 /
-Grant Execute On forms_pkg To fc_admin
+GRANT EXECUTE ON FC22.FORM_AUTH_CUR_USER_UTLIS_PKG TO fc_admin
 /
-Grant Select On forms_v To fc_admin
+GRANT SELECT ON FC22.FORM_COLUMN_ACTIONS TO fc_admin
 /
-Grant Select On form_actions To fc_admin
+GRANT EXECUTE ON FC22.FORM_COLUMN_ACTIONS_PKG TO fc_admin
 /
-Grant Execute On form_actions_pkg To fc_admin
+GRANT SELECT ON FC22.FORM_COLUMN_ATTR_VALS TO fc_admin
 /
-Grant Execute On form_auth_cur_user_utlis_pkg To fc_admin
+GRANT EXECUTE ON FC22.FORM_COLUMN_ATTR_VALS_PKG TO fc_admin
 /
-Grant Select On form_columns To fc_admin
+GRANT SELECT ON FC22.FORM_COLUMNS TO fc_admin
 /
-Grant Select On form_columns$ To fc_admin
+GRANT SELECT ON FC22.FORM_COLUMNS$ TO fc_admin
 /
-Grant Execute On form_columns_pkg To fc_admin
+GRANT EXECUTE ON FC22.FORM_COLUMNS_PKG TO fc_admin
 /
-Grant Select On form_column_attr_vals To fc_admin
+GRANT INSERT ON FC22.FORMS TO fc_admin
 /
-Grant Execute On form_column_attr_vals_pkg To fc_admin
+GRANT UPDATE ON FC22.FORMS TO fc_admin
 /
-Grant Select On form_tabs To fc_admin
+GRANT SELECT ON FC22.FORMS TO fc_admin
 /
-Grant Execute On form_tabs_pkg To fc_admin
+GRANT EXECUTE ON FC22.FORMS_PKG TO fc_admin
 /
-Grant Select On form_tabs_v To fc_admin
+GRANT SELECT ON FC22.FORMS_V TO fc_admin
 /
-Grant Select On form_tab_parent_exclns To fc_admin
+GRANT SELECT ON FC22.FORM_TAB_PARENT_EXCLNS TO fc_admin
 /
-Grant Execute On form_tab_parent_exclns_pkg To fc_admin
+GRANT EXECUTE ON FC22.FORM_TAB_PARENT_EXCLNS_PKG TO fc_admin
 /
-Grant Execute On form_utils To fc_admin
+GRANT SELECT ON FC22.FORM_TABS TO fc_admin
 /
-Grant Select On icons To fc_admin
+GRANT EXECUTE ON FC22.FORM_TABS_PKG TO fc_admin
 /
-Grant Delete On lookups To fc_admin
+GRANT SELECT ON FC22.FORM_TABS_V TO fc_admin
 /
-Grant Select On lookups To fc_admin
+GRANT EXECUTE ON FC22.FORM_UTILS TO fc_admin
 /
-Grant Update On lookups To fc_admin
+GRANT SELECT ON FC22.GLOBAL_PARAMS TO fc_admin
 /
-Grant Insert On lookups To fc_admin
+GRANT SELECT ON FC22.ICONS TO fc_admin
 /
-Grant Select On lookup_attributes To fc_admin
+GRANT SELECT ON FC22.LOOKUP_ATTRIBUTES TO fc_admin
 /
-Grant Select On lookup_attribute_values To fc_admin
+GRANT SELECT ON FC22.LOOKUP_ATTRIBUTE_VALUES TO fc_admin
 /
-Grant Execute On lookup_attribute_values_pkg To fc_admin
+GRANT EXECUTE ON FC22.LOOKUP_ATTRIBUTE_VALUES_PKG TO fc_admin
 /
-Grant Insert On lookup_values To fc_admin
+GRANT INSERT ON FC22.LOOKUPS TO fc_admin
 /
-Grant Select On lookup_values To fc_admin
+GRANT SELECT ON FC22.LOOKUPS TO fc_admin
 /
-Grant Update On lookup_values To fc_admin
+GRANT UPDATE ON FC22.LOOKUPS TO fc_admin
 /
-Grant Delete On lookup_values To fc_admin
+GRANT DELETE ON FC22.LOOKUPS TO fc_admin
 /
-Grant Execute On lookup_values_pkg To fc_admin
+GRANT DELETE ON FC22.LOOKUP_VALUES TO fc_admin
 /
-Grant Select On menus To fc_admin
+GRANT SELECT ON FC22.LOOKUP_VALUES TO fc_admin
 /
-Grant Execute On menus_pkg To fc_admin
+GRANT UPDATE ON FC22.LOOKUP_VALUES TO fc_admin
 /
-Grant Select On report_templates To fc_admin
+GRANT INSERT ON FC22.LOOKUP_VALUES TO fc_admin
 /
-Grant Execute On text_utils_pkg To fc_admin
+GRANT EXECUTE ON FC22.LOOKUP_VALUES_PKG TO fc_admin
 /
-Grant Select On users To fc_admin
+GRANT SELECT ON FC22.MENUS TO fc_admin
 /
-Grant Execute On users_pkg To fc_admin
+GRANT EXECUTE ON FC22.MENUS_PKG TO fc_admin
+/
+GRANT SELECT ON FC22.REPORT_TEMPLATES TO fc_admin
+/
+GRANT EXECUTE ON FC22.TEXT_UTILS_PKG TO fc_admin
+/
+GRANT SELECT ON FC22.USERS TO fc_admin
+/
+GRANT EXECUTE ON FC22.USERS_PKG TO fc_admin
 /
 

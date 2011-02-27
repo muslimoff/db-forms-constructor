@@ -74,17 +74,26 @@ public class EditorFormItem extends FormItem {
 		//
 		else {
 			if ("D".equals(c.getDataType())) {
-				item = new DateItem();
-				((DateItem) item).setUseTextField(true);
-				// ((DateItem) item).setDisplayFormat(DateDisplayFormat.TOEUROPEANSHORTDATE);
+				DateItem dateItem = new DateItem();
+				dateItem.setUseTextField(true);
+				// http: // forums.smartclient.com/showthread.php?t=11017&highlight=DateChooser+DateItem
+				// http://forums.smartclient.com/showthread.php?t=8868&highlight=custom+dateItem
+				item = dateItem;
+				// ////////////////////////
+				// item = new DateItem();
+				// ((DateItem) item).setUseTextField(true);
+				// .... TODO - Маска для дат
+				// .. ((DateItem) item).setUseMask(true);
+				// .. ((DateItem) item).setDisplayFormat(DateDisplayFormat.TOEUROPEANSHORTDATE);
 			} else if ("B".equals(c.getDataType())) {
 				item = new BooleanItem();
 			} else if ("N".equals(c.getDataType())) {
 				item = new FloatItem();
 			} else {
 				item = new TextItem();
-				if (null != c.getTextMask())
-					((TextItem) item).setMask(c.getTextMask());
+
+//				if (null != c.getTextMask())
+//					((TextItem) item).setMask(c.getTextMask());
 			}
 		}
 		// item.setTextBoxStyle("textItem");

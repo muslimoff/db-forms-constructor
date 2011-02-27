@@ -9,7 +9,6 @@ import com.abssoft.constructor.client.metadata.FormColumnMD;
 import com.abssoft.constructor.client.widgets.GridComboBoxItem;
 import com.abssoft.constructor.client.widgets.MyComboBoxItem;
 import com.smartgwt.client.types.ListGridFieldType;
-import com.smartgwt.client.util.JSOHelper;
 import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.grid.CellFormatter;
 import com.smartgwt.client.widgets.grid.HoverCustomizer;
@@ -84,7 +83,6 @@ public class FormTreeGridField extends TreeGridField {
 
 		}
 		if ("D".equals(c.getDataType())) {
-			this.setType(ListGridFieldType.DATE);
 			// this.setDateFormatter(DateDisplayFormat.TOEUROPEANSHORTDATE);
 		}
 
@@ -123,6 +121,7 @@ public class FormTreeGridField extends TreeGridField {
 			cmbxItem = new GridComboBoxItem(c, mainFormPane, this);
 			// cbi.addChangedHandler(handler);
 		}
+
 
 		// 20101005-Перенос из GridComboBoxItem CellFormatter для накрываемых полей. Пофиг, даже если не лукап
 		final String lookupDisplValFld = columnMD.getLookupDisplayValue();
@@ -166,43 +165,67 @@ public class FormTreeGridField extends TreeGridField {
 					}
 				});
 			}
-			boolean x = false;
-			if ("4".equals(actionType) && null != cmbxItem && x) {
-				// TODO пока не разрулилось различие между выбором из лукапа и
+			if ("4".equals(actionType) && null != cmbxItem) {
+
 				this.addChangedHandler(new ChangedHandler() {
 					@Override
 					public void onChanged(ChangedEvent event) {
-						System.out.println("01 >>>>>>>>>>>>>>>>>>>>");
-						System.out.println("02 event.getValue():" + event.getValue());
-						System.out.println("03 event.getClass():" + event.getClass());
-						System.out.println("04 event.getItem().getJsObj():" + event.getItem().getJsObj());
-						System.out.println("05 event.getColNum():" + event.getColNum());
-						System.out.println("06 event.getRowNum():" + event.getRowNum());
-						System.out.println("07 getEditedCell:"
-								+ mainFormPane.getMainForm().getTreeGrid().getEditedCell(event.getRowNum(), event.getColNum()));
-						System.out.println("08 >>>" + mainFormPane.getMainForm().getTreeGrid().getField(event.getColNum()).getType());
-
-						MyComboBoxItem cb = new MyComboBoxItem();
-						JSOHelper.apply(event.getItem().getJsObj(), cb.getJsObj());
-
-						System.out.println("09 cmbxItem.getType():" + cmbxItem.getType());
-						System.out.println("10 event.getItem().getType():" + event.getItem().getType());
-						System.out.println("11 cb.getType():" + cb.getType());
-						System.out.println("12 cmbxItem.getJsObj():" + cmbxItem.getJsObj());
-						System.out.println("13 cb.getJsObj():" + cb.getJsObj());
-						System.out.println("14 cb.getSelectedRecord():" + cb.getSelectedRecord());
-						if (!cb.isRecordSelected()) {
-							System.out.println("15 keypress");
-						} else {
-							System.out.println("16 select !!!!!!!!!!!!!!!!!!!" + cb.getValue() + cb.getDisplayValue());
-
+						// System.out.println("01 >>>>>>>>>>>>>>>>>>>>");
+						// System.out.println("02 event.getValue():" + event.getValue());
+						// System.out.println("03 event.getClass():" + event.getClass());
+						// System.out.println("04 event.getItem().getJsObj():" + event.getItem().getJsObj());
+						// System.out.println("05 event.getColNum():" + event.getColNum());
+						// System.out.println("06 event.getRowNum():" + event.getRowNum());
+						// System.out.println("07 getEditedCell:"
+						// + mainFormPane.getMainForm().getTreeGrid().getEditedCell(event.getRowNum(), event.getColNum()));
+						// System.out.println("08 >>>" + mainFormPane.getMainForm().getTreeGrid().getField(event.getColNum()).getType());
+						//						
+						// MyComboBoxItem cb = new MyComboBoxItem();
+						// JSOHelper.apply(event.getItem().getJsObj(), cb.getJsObj());
+						//						
+						// System.out.println("09 cmbxItem.getType():" + cmbxItem.getType());
+						// System.out.println("10 event.getItem().getType():" + event.getItem().getType());
+						// System.out.println("10a cb.getJsObj().toSource():" + cb.getJsObj().toSource());
+						// System.out.println("11 cb.getType():" + cb.getType());
+						// System.out.println("12 cmbxItem.getJsObj():" + cmbxItem.getJsObj());
+						// System.out.println("13 cb.getJsObj():" + cb.getJsObj());
+						// System.out.println("14 cb.getSelectedRecord():" + cb.getSelectedRecord());
+						// System.out.println("15 getDisplayValue():" + cb.getDisplayValue());
+						// System.out.println("15 getDisplayValue():" + event.getItem().getDisplayValue());
+						// if (!cb.isRecordSelected()) {
+						// System.out.println("16 keypress");
+						// } else {
+						// System.out.println("17 select !!!!!!!!!!!!!!!!!!!" + cb.getValue() + cb.getDisplayValue());
+						//						
+						// }
+						try {
+							// TODO пока не разрулилось различие между выбором из лукапа и
+							String keyVal = event.getValue() + "";
+							String dispVal = event.getItem().getDisplayValue();
+							if (!keyVal.equals(dispVal))
+								mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm();
+						} catch (Exception e) {
+							e.printStackTrace();
+							Utils.debug(e.getMessage());
 						}
-
-						// (ComboBoxItem) // .getSelectedRecord()
-						// mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm();
 					}
 				});
 			}
+			// Простановка значений лукапов
+			// if (null != cmbxItem && null != lookupDisplValFld) {
+			// this.addEditorExitHandler(new EditorExitHandler() {
+			// @Override
+			// public void onEditorExit(EditorExitEvent event) {
+			// try {
+			// mainFormPane.getMainForm().getTreeGrid().setEditValue(event.getRowNum(), lookupDisplValFld,
+			// ((FormItem) event.getSource()).getDisplayValue());
+			// } catch (Exception e) {
+			// e.printStackTrace();
+			// Utils.debug(e.getMessage());
+			// }
+			// }
+			// });
+			// }
 		}
 	}
 

@@ -1,5 +1,6 @@
 package com.abssoft.constructor.client;
 
+import com.abssoft.constructor.client.common.TabSet;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.rednels.ofcgwt.client.ChartWidget;
@@ -25,9 +26,10 @@ import com.smartgwt.client.widgets.form.fields.RichTextItem;
 import com.smartgwt.client.widgets.form.fields.ViewFileItem;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.tab.Tab;
-import com.smartgwt.client.widgets.tab.TabSet;
 
 public class TestWindow extends Window {
+	TabSet tabSet = new TabSet();
+
 	class ChartTab extends Tab {
 		public ChartTab() {
 			ChartWidget chart1 = new ChartWidget();
@@ -126,7 +128,7 @@ public class TestWindow extends Window {
 		Canvas canvas = new Canvas();
 		canvas.setContents("aa");
 		canvas.setWidth("10%");
-		TabSet tabSet = new TabSet();
+
 		tabSet.setWidth100();
 		final RichTextItemIssueTab rit = new RichTextItemIssueTab();
 		tabSet.addTab(rit);
@@ -161,7 +163,8 @@ public class TestWindow extends Window {
 				// "menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=250,height=150,navigation=no");
 				// com.google.gwt.user.client.Window.open(rit.richTextItem.getValue().toString(), "File",
 				// "menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=250,height=150,navigation=no");
-				com.google.gwt.user.client.Window.open("data:text/html;charset=utf-8, aaabbb", "_blank", "height=300,width=400");
+				// com.google.gwt.user.client.Window.open("data:text/html;charset=utf-8, aaabbb", "_blank", "height=300,width=400");
+				tabSet.hideTabBar();
 			}
 		});
 
@@ -191,5 +194,6 @@ public class TestWindow extends Window {
 		// ////////////////////
 
 		this.show();
+		// tabSet.hideTabBar();
 	}
 }

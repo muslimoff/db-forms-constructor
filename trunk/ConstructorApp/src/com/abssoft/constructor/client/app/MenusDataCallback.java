@@ -2,6 +2,7 @@ package com.abssoft.constructor.client.app;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.FormTab;
@@ -110,6 +111,22 @@ public class MenusDataCallback extends DSAsyncCallback<MenusArr> {
 			mb.setMenu(smm);
 			ConstructorApp.menuBar.addMembers(mb);
 			smm.setHover();
+		}
+		openFormsFromURL();
+	}
+
+	public void openFormsFromURL() {
+		List<String> formList = ConstructorApp.urlParams.get("app.form");
+		if (null != formList) {
+			for (int i = 0; i < formList.size(); i++) {
+				String formCode = formList.get(i);
+				Utils.debug("Form, that will be open (" + i + "): \"" + formCode + "\"");
+				if (formCode != null && ConstructorApp.formNameArr.containsKey(formCode)) {
+					Utils.debug("Form opening (" + i + "):" + formCode);
+					MainFormContainer mfc = new MainFormContainer(FormTab.TabType.MAIN, ConstructorApp.tabSet, formCode, true, false, true);
+					mfc.getMainFormPane().setFromUrl(true);
+				}
+			}
 		}
 	}
 }

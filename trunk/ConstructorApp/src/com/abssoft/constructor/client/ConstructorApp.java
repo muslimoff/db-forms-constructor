@@ -16,6 +16,7 @@ import com.abssoft.constructor.client.data.QueryServiceAsync;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.form.ApplicationToolBar;
+import com.abssoft.constructor.client.metadata.ActionStatus;
 import com.abssoft.constructor.client.metadata.MenusArr;
 import com.abssoft.constructor.client.metadata.ServerInfoArr;
 import com.abssoft.constructor.client.metadata.StaticLookupsArr;
@@ -24,7 +25,6 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.ClosingEvent;
 import com.smartgwt.client.data.Criteria;
@@ -108,23 +108,17 @@ public class ConstructorApp implements EntryPoint {
 	}
 
 	public void onModuleLoad() {
+		setDataChoserDayOfWeek();
 		DateUtil.setShortDateDisplayFormatter(new DateDisplayFormatter() {
 			@Override
 			public String format(Date date) {
-				if (date == null)
-					return null;
-
-				DateTimeFormat dateFormatter = DateTimeFormat.getFormat("dd.MM.yyyy");
-				String format = dateFormatter.format(date);
-				return format;
+				return Utils.dateToString(date);
 			}
 		});
 		DateUtil.setDateInputFormatter(new DateInputFormatter() {
 			@Override
 			public Date parse(String dateString) {
-				final DateTimeFormat dateFormatter = DateTimeFormat.getFormat("dd.MM.yyyy");
-				Date date = dateFormatter.parse(dateString);
-				return date;
+				return Utils.stringToDate(dateString);
 			}
 		});
 		Window.addCloseHandler(new CloseHandler<Window>() {
@@ -207,7 +201,8 @@ public class ConstructorApp implements EntryPoint {
 		downloadMI.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(MenuItemClickEvent event) {
-				ActionStatusWindow.createActionStatusWindow("wwwwwwww", this.getClass().getName(), this.toString());
+				ActionStatusWindow.createActionStatusWindow("wwwwwwww", this.getClass().getName(), this.toString(),
+						ActionStatus.StatusType.SUCCESS);
 				// new RestfulDataSourceSample();
 			}
 		});
@@ -236,7 +231,7 @@ public class ConstructorApp implements EntryPoint {
 				for (String val : vals) {
 					if (!val.matches("app\\.")) {
 						urlParamsCriteria.addCriteria(pKey, val);
-						// Utils.debug("parameter: " + pKey + "=\"" + val + "\"");
+						Utils.debug("parameter: " + pKey + "=\"" + val + "\"");
 					}
 				}
 			}
@@ -275,4 +270,9 @@ public class ConstructorApp implements EntryPoint {
 		String pageTitle = (defaultTitle + " " + title).trim();
 		Page.setTitle(pageTitle);
 	}
+
+	public native void setDataChoserDayOfWeek()
+	/*-{
+		$wnd.isc.DateChooser.addProperties({firstDayOfWeek:1})
+	}-*/;
 }

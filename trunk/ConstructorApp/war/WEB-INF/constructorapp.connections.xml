@@ -230,100 +230,11 @@
 	</dbConnections>
 	
 	<metadataQuery>
-		<!--formSQL-->
-		<sqlStatement name="formSQL">
-			<![CDATA[
-                 Select *
-                   From Table (&fc_schema_owner..forms_pkg.get_form_md (:p_form_code, :p_master_form_code, :p_drilldown_flag)) a				 
-			]]>
-		</sqlStatement>
-		<!--extendedFormSQL-->
-		<sqlStatement name="extendedFormSQL">
-			<![CDATA[
-				 Select &fc_schema_owner..form_utils.get_extended_sql_text (a.sql_text)
-                   From Table (&fc_schema_owner..forms_pkg.get_form_md (:p_form_code, :p_master_form_code, :p_drilldown_flag)) a
-			]]>
-		</sqlStatement>
-		<!--ColumnsMetaDataSQL-->
-		<sqlStatement name="ColumnsMetaDataSQL">
-			<![CDATA[
-				Select *
-				  From Table (&fc_schema_owner..form_utils.describe_form_columns_pl (:p_form_code, :p_master_form_code))
-			  Order By form_code, column_display_number, column_code
-			]]>
-		</sqlStatement>
-		<!--formActionsSQL-->
-		<sqlStatement name="formActionsSQL">
-			<![CDATA[
-				Select   *
-				 From &fc_schema_owner..form_actions a
-				Where a.form_code = :p_form_code
-			 Order By form_code, display_number, action_code 
-			]]>
-		</sqlStatement>
-		<!--argsSQLText-->
-		<sqlStatement name="argsSQLText">
-			<![CDATA[
-				Select *
-				  From Table (&fc_schema_owner..form_auth_cur_user_utlis_pkg.get_proc_args (:p_procedure_name))
-			]]>
-		</sqlStatement>
-		<!--detailFormSQL-->
-		<sqlStatement name="detailFormSQL">
-			<![CDATA[
-				Select   *
-  				  From Table (&fc_schema_owner..form_utils.get_form_tabs (:p_form_code, :p_master_form_code))
-			]]>
-		</sqlStatement>
-		<!--statLookupsSQL-->
-		<sqlStatement name="statLookupsSQL">
-			<![CDATA[
-				Select l.lookup_code, lv.lookup_value_code, lv.lookup_display_value
-				  From &fc_schema_owner..lookups l, &fc_schema_owner..lookup_values lv
-				 Where l.lookup_code = lv.lookup_code
-				   --
-				   				   And l.lookup_code Not Like 'MZ%'
-				   				   And l.lookup_code Not Like 'INS%'
-			  Order By l.lookup_code, lv.lookup_value_code
-			]]>
-		</sqlStatement>
 		<!--menusSQLOld-->
-		<sqlStatement name="menusSQLOld">
+		<sqlStatement name="metadataSQL">
 			<![CDATA[
-				Select * From &fc_schema_owner..forms_v a Order By a.form_name
+				SELECT * FROM &fc_schema_owner..global_params
 			]]>
 		</sqlStatement>
-		<!--menusSQL-->
-		<sqlStatement name="menusSQL">
-			<![CDATA[
-				Select * From Table (&fc_schema_owner..apps_role_menus_pkg.get_menu_list ())
-			]]>
-		</sqlStatement>
-		<!--iconsSQL-->
-		<sqlStatement name="iconsSQL">
-			<![CDATA[
-				Select i.* From &fc_schema_owner..icons i
-			]]>
-		</sqlStatement>
-		<sqlStatement name="reportTemplatesSQL">
-			<![CDATA[
-				Select a.clob_content From &fc_schema_owner..report_templates a Where a.report_type_code = :p_report_code
-			]]>
-		</sqlStatement>
-		<sqlStatement name="columnAttributesSQL">
-			<![CDATA[
-				Select a.column_code, a.attribute_code, a.attribute_value From &fc_schema_owner..form_column_attr_vals a Where a.form_code = :p_form_code
-			]]>
-		</sqlStatement>
-		<sqlStatement name="columnActionsSQL">
-			<![CDATA[
-				Select * From &fc_schema_owner..form_column_actions a Where a.form_code = :p_form_code
-			]]>
-		</sqlStatement>			
-		<sqlStatement name="customLoginValidationSQL">
-			<![CDATA[
-				Select &validationFN (:p_username, :p_password, :p_url_params) isValid From DUAL
-			]]>
-		</sqlStatement>		
 	</metadataQuery>
 </root>

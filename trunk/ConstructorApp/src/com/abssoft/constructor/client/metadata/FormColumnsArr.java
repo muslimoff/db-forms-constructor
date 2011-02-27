@@ -22,7 +22,12 @@ public class FormColumnsArr extends HashMap<Integer, FormColumnMD> implements Is
 		return value;
 	}
 
-	public FormColumnMD get(String colName) {
-		return this.get(columnsByName.get(colName));
+	public Integer getColIndex(String colName) {
+		return columnsByName.get(colName);
 	}
+
+	public FormColumnMD get(String colName) {
+		return this.get(getColIndex(colName));
+	}
+
 }

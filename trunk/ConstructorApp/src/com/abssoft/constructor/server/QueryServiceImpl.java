@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -60,7 +61,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 	@Override
 	public void init() throws ServletException {
 		super.init();
-		String filename = getServletContext().getRealPath("/WEB-INF") + "/" + "constructorapp.xml";
+		String filename = getServletContext().getRealPath("/WEB-INF") + "/" + "constructorapp.connections.xml";
 		System.out.println("filename: " + filename);
 		Utils.debug("Middle tier service '" + this.getClass() + "' started...");
 		File f = new File(".");
@@ -195,17 +196,31 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 			Locale.setDefault(Locale.ENGLISH);
 			Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@" + serverInfoMD.getDbUrl(), userName, userPass);
 			Utils.debug("Server. Connected..");
-			connection.createStatement().execute("alter session set nls_language='AMERICAN'");
-			ResultSet sessionidRS = connection.createStatement().executeQuery("Select USERENV ('sessionid') From DUAL");
-			sessionidRS.next();
-			sessionId = sessionidRS.getBigDecimal(1).intValue();
-			sessionidRS.close();
+			{
+				String nlsLangSQL = "alter session set nls_language='AMERICAN'";
+				OraclePreparedStatement nlsStmnt = (OraclePreparedStatement) connection.prepareStatement(nlsLangSQL);
+				nlsStmnt.execute();
+				nlsStmnt.close();
+			}
+			{
+				String sessionSQL = "Select USERENV ('sessionid') as sessionid From DUAL";
+				Statement sessionStmnt = connection.createStatement();
+				ResultSet sessionidRS = sessionStmnt.executeQuery(sessionSQL);
+				sessionidRS.next();
+				sessionId = sessionidRS.getBigDecimal(1).intValue();
+				sessionidRS.close();
+				sessionStmnt.close();
+			}
+			Session session = new Session(connection, serverInfoMD);
+			session.setScript(isScript);
+			//session.setFcSchemaOwner(serverInfoMD.getFcSchemaOwner());
+			
 			// Custom Login Validation
 			System.out.println("serverInfoMD.isTransferPassToClient():" + serverInfoMD.isTransferPassToClient());
 			if (!serverInfoMD.isTransferPassToClient()) {
 				Utils.debug("Server. Custom Login.");
 				System.out.println("user:" + user + "; password:" + password + "; userName:" + userName + "; userPass:" + userPass);
-				String validateLoginSQL = Utils.getSQLQueryFromXML("customLoginValidationSQL", serverInfoMD);
+				String validateLoginSQL = Utils.getSQLQueryFromXML("customLoginValidationSQL", session);
 				System.out.println("@@@validateLoginSQL:\n" + validateLoginSQL);
 				OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(validateLoginSQL);
 				Utils.debug("Parameters: ");
@@ -222,21 +237,8 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 					throw new Exception("Пароль не тот...");
 				}
 			}
-			Session session = new Session(connection, serverInfoMD);
-			session.setScript(isScript);
-			session.setFcSchemaOwner(serverInfoMD.getFcSchemaOwner());
 			sessionData.put(sessionId, session);
-			// TODO wertyuiouytrewrtyui
 			this.getThreadLocalRequest().getSession(true).setAttribute(Utils.sessionIdentifier, sessionId);
-
-			// } catch (ClassNotFoundException e) {
-			// e.printStackTrace();
-			// errMsg = e.toString();
-			// sessionId = -1;
-			// } catch (java.sql.SQLException e) {
-			// e.printStackTrace();
-			// errMsg = e.getMessage();
-			// sessionId = -1;
 		} catch (Exception e) {
 			e.printStackTrace();
 			errMsg = e.toString();
@@ -270,11 +272,13 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 
 	public RowsArr fetch(FormInstanceIdentifier fi, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch) {
 		RowsArr result = new RowsArr();
+		Utils.debug("QueryServiceImpl.fetch. start");
 		try {
 			result = sessionData.get(fi.getSessionId()).fetch(fi, sortBy, startRow, endRow, criteria, forceFetch);
 		} catch (SQLException e) {
 			result.setStatus(new ActionStatus(Utils.getExceptionStackIntoString(e), ActionStatus.StatusType.ERROR));
 		}
+		Utils.debug("QueryServiceImpl.fetch. end");
 		return result;
 	}
 

@@ -14,8 +14,10 @@ import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.MapPair;
 import com.abssoft.constructor.client.form.MainFormPane;
 import com.abssoft.constructor.client.metadata.Attribute;
+import com.abssoft.constructor.client.metadata.FormColumnMD;
 import com.abssoft.constructor.client.metadata.IconsArr;
 import com.abssoft.constructor.client.metadata.Row;
+import com.abssoft.constructor.client.widgets.GridComboBoxItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -28,6 +30,22 @@ import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.tree.TreeNode;
 
 public class Utils {
+	private static final String dateFormat = "dd.MM.yyyy";
+
+	public static String dateToString(Date date) {
+		if (date == null)
+			return null;
+		DateTimeFormat dateFormatter = DateTimeFormat.getFormat(dateFormat);
+		String format = dateFormatter.format(date);
+		return format;
+	}
+
+	public static Date stringToDate(String dateString) {
+		final DateTimeFormat dateFormatter = DateTimeFormat.getFormat(dateFormat);
+		Date date = dateFormatter.parse(dateString);
+		return date;
+	}
+
 	public static TreeNode getTreeNodeFromRow(FormDataSourceField[] dsFields, Row row) {
 		TreeNode result = new TreeNode();
 		for (int c = 0; null != row && c < row.size(); c++) {
@@ -195,13 +213,14 @@ public class Utils {
 
 	@SuppressWarnings("unchecked")
 	public static Map<String, Object> getRowDefaultValuesMap(MainFormPane mainFormPane) {
-		// TODO Issue 49 - Получение значения по умолчанию запросом.
 		Utils.debug("01 getRowDefaultValuesMap...");
 		String dateFormat = "EEE MMM dd yyyy hh:mm:ss ZZZZ";
 		DateTimeFormat fmt = DateTimeFormat.getFormat(dateFormat);
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
+
 		MainFormPane pfp = mainFormPane.getParentFormPane();
 		Criteria cc = (null != pfp) ? pfp.getInitialFilter() : new Criteria();
+
 		Map<String, Object> critMap = cc.getValues();
 		for (FormDataSourceField dsf : mainFormPane.getDataSource().getFormDSFields()) {
 			try {
@@ -257,11 +276,28 @@ public class Utils {
 				Utils.debug("08 getRowDefaultValuesMap other Error:" + e.getMessage());
 			}
 		}
+		// ------
+		Utils.debug("UrlCriteria. mainFormPane.isMasterForm():" + mainFormPane.isMasterForm());
+		Utils.debug("UrlCriteria. mainFormPane.isFromUrl():" + mainFormPane.isFromUrl());
+		if (mainFormPane.isMasterForm() && mainFormPane.isFromUrl()) {
+			// result.putAll(ConstructorApp.urlParamsCriteria.getValues());
+			// ///////////////
+			Iterator<String> i = ConstructorApp.urlParamsCriteria.getValues().keySet().iterator();
+			while (i.hasNext()) {
+				String key = i.next();
+				String val = (String) ConstructorApp.urlParamsCriteria.getValues().get(key);
+				// System.out.println("!!!" + ky + ": " + val);
+				result.put(key.toUpperCase(), val);
+			}
+		}
+		// ------
 		Utils.debug("09 getRowDefaultValuesMap...");
 		return result;
+
 	}
 
 	public static Criteria getCriteriaFromListGridRecord(FormDataSourceField[] dsFields, Record record) {
+		Utils.debug("getCriteriaFromListGridRecord start");
 		Criteria criteria = new Criteria();
 		if (null != record) {
 			// TODO getCriteriaFromListGridRecord из getRowFromRecord
@@ -285,6 +321,7 @@ public class Utils {
 			}
 			/***********************/
 		}
+		Utils.debug("getCriteriaFromListGridRecord end");
 		return criteria;
 
 	}
@@ -404,22 +441,62 @@ public class Utils {
 	// Error При передаче Double почему-то передается Float и летим/ Поэтому - явно преобразовываем...
 	@SuppressWarnings("unchecked")
 	public static LinkedHashMap<String, Object> getHashMapFromCriteria(Criteria cr) {
+		Utils.debug("Utils.getHashMapFromCriteria start...");
 		Map<String, Object> filterValues = cr.getValues();
-		Utils.debug(filterValues + "");
+		Utils.debug("Utils.getHashMapFromCriteria. filterValues:" + filterValues + "");
 		LinkedHashMap<String, Object> filterValues2 = new LinkedHashMap<String, Object>();
 		{
 			Iterator<String> it = filterValues.keySet().iterator();
 			while (it.hasNext()) {
 				String key = it.next();
 				Object val = filterValues.get(key);
-				Utils.debug(key + ":=>" + val + "; class:" + ((null != val) ? val.getClass() : null));
+				Utils
+						.debug("Utils.getHashMapFromCriteria. key:" + key + ":=>" + val + "; class:"
+								+ ((null != val) ? val.getClass() : null));
 				if (val instanceof Float && null != val) {
 					val = Double.valueOf(val.toString());
 				}
 				filterValues2.put(key, val);
 			}
 		}
+		Utils.debug("Utils.getHashMapFromCriteria end...");
 		return filterValues2;
+	}
+
+	public static ArrayList<String> createArrayListFromRecord(Record r, MainFormPane mainFormPane, ArrayList<String> headers,
+			ArrayList<String> displHeaders) {
+		ArrayList<String> row = new ArrayList<String>();
+		for (int i = 0; i < headers.size(); i++) {
+			String attrName = (null == displHeaders.get(i)) ? headers.get(i) : displHeaders.get(i);
+			FormColumnMD cmd = mainFormPane.getFormMetadata().getColumns().get(attrName);
+			String value = "";
+			try {
+				value = r.getAttribute(attrName);
+				if ("8".equals(cmd.getFieldType()) && ConstructorApp.staticLookupsArr.containsKey(cmd.getLookupCode())) {
+					value = ConstructorApp.staticLookupsArr.get(cmd.getLookupCode()).get(value);
+				} else if ("D".equals(cmd.getDataType())) {
+					value = Utils.dateToString(r.getAttributeAsDate(attrName));
+				} else if ("B".equals(cmd.getDataType())) {
+					// TODO Сделать лукап true/false -> Да/Нет
+					value = r.getAttributeAsBoolean(attrName) ? "Y" : "N";
+				} else
+				// TODO для табличных лукапов без LookupDisplayValue
+				if ("9".equals(cmd.getFieldType()) && null == cmd.getLookupDisplayValue()) {
+					value = r.getAttribute(attrName);
+					Integer colIdx = mainFormPane.getFormMetadata().getColumns().getColIndex(attrName);
+
+					GridComboBoxItem cbx = (GridComboBoxItem) mainFormPane.getFormColumns().getEditorFormItems()[colIdx];
+					if (null == cbx) {
+						cbx = mainFormPane.getFormColumns().getGridFields()[colIdx].getGridComboBoxItem();
+					}
+					value = cbx.getValues().containsKey(value) ? cbx.getValues().get(value).getAttribute(cbx.getDisplayFieldName()) : value;
+				}
+			} catch (Exception e) {
+				value = e.getMessage();
+			}
+			row.add(value);
+		}
+		return row;
 	}
 
 	static public native String getComputedStyleProperty(Element el, String property)

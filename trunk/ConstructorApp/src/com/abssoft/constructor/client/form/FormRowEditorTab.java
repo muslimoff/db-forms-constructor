@@ -25,6 +25,7 @@ import com.smartgwt.client.widgets.grid.ListGrid;
 public class FormRowEditorTab extends FormTab {
 	DynamicForm form;
 	private int parentGridSelectedRow;
+	private ArrayList<FormItem> fieldsList = new ArrayList<FormItem>();
 
 	FormRowEditorTab(FormTabMD editorTab, MainFormPane mainFormPane) {
 		super(FormTab.TabType.EDITOR, mainFormPane.getFormCode());
@@ -32,13 +33,14 @@ public class FormRowEditorTab extends FormTab {
 		final FormMD formMetadata = getMainFormPane().getFormMetadata();
 		final FormColumnsArr columns = formMetadata.getColumns();
 		final int columnsCount = columns.size();
-		ArrayList<FormItem> fieldsList = new ArrayList<FormItem>();
+
 		for (int i = 0; i < columnsCount; i++) {
 			FormColumnMD c = columns.get(i);
 			if (editorTab.getTabCode().equals(c.getEditorTabCode())) {
 				FormItem item = EditorFormItem.createItem(c, mainFormPane);
 				// FormItem item = new EditorFormItem(c, mainFormPane);
 				fieldsList.add(item);
+				mainFormPane.getFormColumns().editorFormItems[i] = item;
 			}
 		}
 		form = new DynamicForm();
@@ -75,11 +77,14 @@ public class FormRowEditorTab extends FormTab {
 
 			@Override
 			public void onItemChanged(ItemChangedEvent event) {
+				FormItem item = event.getItem();
+				String itemName = item.getName();
+				String itemType = item.getType();
 				try {
-					FormItem item = event.getItem();
-					// item.setType(type);
-					String itemName = item.getName();
-					String itemType = item.getType();
+					// FormItem item = event.getItem();
+					// // item.setType(type);
+					// String itemName = item.getName();
+					// String itemType = item.getType();
 					Object itemValue = event.getItem().getValue();
 					Utils.debug("onItemChanged... " + itemName + "; " + itemType);
 					ListGrid g = getMainFormPane().getMainForm().getTreeGrid();
@@ -89,6 +94,7 @@ public class FormRowEditorTab extends FormTab {
 					} else if ("date".equals(itemType)) {
 						g.setEditValue(rn, itemName, item.getAttributeAsDate("value"));
 					}
+					// //
 					// else if ("float".equals(itemType)) {
 					// g.setEditValue(rn, itemName, item.getAttributeAsFloat("value"));
 					// }
@@ -99,11 +105,19 @@ public class FormRowEditorTab extends FormTab {
 							g.setEditValue(rn, itemName, item.getAttribute("value"));
 						}
 					} else {
-						g.setEditValue(rn, itemName, item.getAttribute("value"));
+						// System.out.println(">>" + item.getValue() + "; " + item.getValue().getClass());
+						String val = null;
+						try {
+							val = item.getAttribute("value");
+						} catch (java.lang.IllegalArgumentException e) {
+							Object objVal = item.getValue();
+							val = null == objVal ? null : objVal + "";
+						}
+						g.setEditValue(rn, itemName, val);
 					}
 
 				} catch (Exception e) {
-					Utils.logException(e, "FormRowEditorTab.onItemChanged");
+					Utils.logException(e, "FormRowEditorTab.onItemChanged. itemType:" + itemType + "; itemName:" + itemName);
 					e.printStackTrace();
 				}
 			}

@@ -1,9 +1,9 @@
-instance (default VM_XE): BAS_AMAZON_VM_XE
-FC Username (default FC22): fc22
+instance (default VM_XE): BTA_ERPG
+FC Username (default FC22): 
 Press Enter to start
 
 Connected.
-Create fc22 Objects
+Create FC22 Objects
 
 Sequence created.
 
@@ -633,7 +633,9 @@ PL/SQL procedure successfully completed.
 
 Select invalid Objects....
 
-no rows selected
+OBJECT_NAME                                                                     
+--------------------------------------------------------------------------------
+FORM_UTILS_CUSTOMIZATION                                                        
 
 Completed... Press Enter to exit
 

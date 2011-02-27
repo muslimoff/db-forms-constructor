@@ -145,6 +145,8 @@ public class DetailFormsContainer extends TabSet {
 		else
 			tabsOrient = Side.TOP;
 		setTabBarPosition(tabsOrient);
+		// обработку скрытия таббара (tabsOrientStr = "H") см в методе MainFormPane.createDetailForms, в самом конце
+
 		FormTabsArr tabs = formMetadata.getTabs();
 		// Цикл по табикам статических типов
 		for (int i = 0; i < tabs.size(); i++) {
@@ -222,6 +224,7 @@ public class DetailFormsContainer extends TabSet {
 				}
 			}
 		});
+		// this.hideTabBar();
 	}
 
 	public void createDynamicDetails(boolean filterDynamicMultiDetails, boolean filterDynamicSingleDetails) {

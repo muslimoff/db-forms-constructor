@@ -1,16 +1,13 @@
 package com.abssoft.constructor.client.app;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import com.abssoft.constructor.client.ConstructorApp;
-import com.abssoft.constructor.client.common.FormTab;
 import com.abssoft.constructor.client.data.QueryService;
 import com.abssoft.constructor.client.data.QueryServiceAsync;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.ConnectionInfo;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
-import com.abssoft.constructor.client.form.MainFormContainer;
 import com.abssoft.constructor.client.metadata.ServerInfoArr;
 import com.abssoft.constructor.client.metadata.ServerInfoMD;
 import com.abssoft.constructor.client.metadata.StaticLookupsArr;
@@ -54,7 +51,7 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 					public void onSuccess(StaticLookupsArr result) {
 						ConstructorApp.staticLookupsArr = result;
 						System.out.println(result);
-						openFormsFromURL();
+						//openFormsFromURL();
 					}
 				});
 				ConnectWindow.this.hide();
@@ -73,20 +70,20 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 	private ConstructorApp сonstructorApp;
 
 	// TODO Parameters
-	public void openFormsFromURL() {
-		List<String> formList = ConstructorApp.urlParams.get("app.form");
-		if (null != formList) {
-			for (int i = 0; i < formList.size(); i++) {
-				String formCode = formList.get(i);
-				Utils.debug("Form, that will be open (" + i + "): \"" + formCode + "\"");
-				if (formCode != null && ConstructorApp.formNameArr.containsKey(formCode)) {
-					Utils.debug("Form opening (" + i + "):" + formCode);
-					MainFormContainer mfc = new MainFormContainer(FormTab.TabType.MAIN, ConstructorApp.tabSet, formCode);
-					mfc.getMainFormPane().setFromUrl(true);
-				}
-			}
-		}
-	}
+//	public void openFormsFromURL1() {
+//		List<String> formList = ConstructorApp.urlParams.get("app.form");
+//		if (null != formList) {
+//			for (int i = 0; i < formList.size(); i++) {
+//				String formCode = formList.get(i);
+//				Utils.debug("Form, that will be open (" + i + "): \"" + formCode + "\"");
+//				if (formCode != null && ConstructorApp.formNameArr.containsKey(formCode)) {
+//					Utils.debug("Form opening (" + i + "):" + formCode);
+//					MainFormContainer mfc = new MainFormContainer(FormTab.TabType.MAIN, ConstructorApp.tabSet, formCode);
+//					mfc.getMainFormPane().setFromUrl(true);
+//				}
+//			}
+//		}
+//	}
 
 	public ConnectWindow(final ConstructorApp сonstructorApp) {
 		this.сonstructorApp = сonstructorApp;

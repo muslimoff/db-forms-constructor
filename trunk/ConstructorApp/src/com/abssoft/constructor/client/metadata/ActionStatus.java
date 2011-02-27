@@ -57,17 +57,18 @@ public class ActionStatus implements IsSerializable {
 			String msg = status.getStatusMessage();
 			String statusName = status.getStatusType().name();
 			String fullMsg = ": Message from server:\n" + msg;
-			String shortMsg = (fullMsg.length() > 100) ? fullMsg.substring(0, 100) : fullMsg;
+			// String shortMsg = (fullMsg.length() > 100) ? fullMsg.substring(0, 100) : fullMsg;
+			String shortMsg = (msg.length() > 100) ? msg.substring(0, 100) : msg;
 
 			if (StatusType.SUCCESS.equals(status.getStatusType())) {
 				if (!"".equals(msg)) {
 					if (ConstructorApp.debugEnabled) {
 						System.out.println(fullMsg);
-						ActionStatusWindow.createActionStatusWindow(statusName, shortMsg, fullMsg);
+						ActionStatusWindow.createActionStatusWindow(statusName, shortMsg, fullMsg, status.getStatusType());
 					}
 				}
 			} else {
-				ActionStatusWindow.createActionStatusWindow(statusName, shortMsg, fullMsg);
+				ActionStatusWindow.createActionStatusWindow(statusName, shortMsg, fullMsg, status.getStatusType());
 			}
 		}
 
