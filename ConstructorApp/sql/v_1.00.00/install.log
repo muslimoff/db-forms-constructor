@@ -1,132 +1,111 @@
-instance (default VM_XE): BAS_AMAZON_VM_XE
+instance (default VM_XE): BTA_ERPG
 Enter DBA Username(default SYS). If not SYS - grant privileges on SYS Objects manualy by starting script "sys_grants.sql "
-DBA Username: system
-FC Username (default FC22): fc22
-FC Tablespace (default HP_DATA): fc
+DBA Username: SYSTEM
+FC Username (default FC22): 
+FC Tablespace (default HP_DATA): APPS_TS_TX_DATA
 Connected.
 Press Enter to start
 
 Create user
 old   1: Drop User &fc_user Cascade
-new   1: Drop User fc22 Cascade
-Drop User fc22 Cascade
+new   1: Drop User FC22 Cascade
+Drop User FC22 Cascade
           *
 ERROR at line 1:
 ORA-01918: user 'FC22' does not exist 
 
 
 old   1: Create User &fc_user
-new   1: Create User fc22
+new   1: Create User FC22
 old   2: Identified By &fc_user_pass
-new   2: Identified By fc
+new   2: Identified By FC
 old   3: Default Tablespace &fc_user_ts
-new   3: Default Tablespace fc
+new   3: Default Tablespace APPS_TS_TX_DATA
 
 User created.
 
 old   1: Grant CREATE ANY PROCEDURE To &fc_user
-new   1: Grant CREATE ANY PROCEDURE To fc22
+new   1: Grant CREATE ANY PROCEDURE To FC22
 
 Grant succeeded.
 
 old   1: Grant CREATE ANY TABLE To &fc_user
-new   1: Grant CREATE ANY TABLE To fc22
+new   1: Grant CREATE ANY TABLE To FC22
 
 Grant succeeded.
 
 old   1: Grant DROP ANY TABLE To &fc_user
-new   1: Grant DROP ANY TABLE To fc22
+new   1: Grant DROP ANY TABLE To FC22
 
 Grant succeeded.
 
 old   1: Grant SELECT ANY TABLE To &fc_user
-new   1: Grant SELECT ANY TABLE To fc22
+new   1: Grant SELECT ANY TABLE To FC22
 
 Grant succeeded.
 
 old   1: Grant UNLIMITED TABLESPACE To &fc_user
-new   1: Grant UNLIMITED TABLESPACE To fc22
+new   1: Grant UNLIMITED TABLESPACE To FC22
 
 Grant succeeded.
 
 old   1: Grant CONNECT To &fc_user
-new   1: Grant CONNECT To fc22
+new   1: Grant CONNECT To FC22
 
 Grant succeeded.
 
 old   1: Grant DBA To &fc_user
-new   1: Grant DBA To fc22
+new   1: Grant DBA To FC22
 
 Grant succeeded.
 
 old   1: Grant RESOURCE To &fc_user
-new   1: Grant RESOURCE To fc22
+new   1: Grant RESOURCE To FC22
 
 Grant succeeded.
 
 old   1: Alter User &fc_user Default Role All
-new   1: Alter User fc22 Default Role All
+new   1: Alter User FC22 Default Role All
 
 User altered.
 
 old   1: Grant SELECT On dba_data_files To &fc_user
-new   1: Grant SELECT On dba_data_files To fc22
-Grant SELECT On dba_data_files To fc22
-                *
-ERROR at line 1:
-ORA-01031: insufficient privileges 
+new   1: Grant SELECT On dba_data_files To FC22
 
+Grant succeeded.
 
 old   1: Grant SELECT On dba_objects To &fc_user
-new   1: Grant SELECT On dba_objects To fc22
-Grant SELECT On dba_objects To fc22
-                *
-ERROR at line 1:
-ORA-01031: insufficient privileges 
+new   1: Grant SELECT On dba_objects To FC22
 
+Grant succeeded.
 
 old   1: Grant SELECT On dba_role_privs To &fc_user
-new   1: Grant SELECT On dba_role_privs To fc22
-Grant SELECT On dba_role_privs To fc22
-                *
-ERROR at line 1:
-ORA-01031: insufficient privileges 
+new   1: Grant SELECT On dba_role_privs To FC22
 
+Grant succeeded.
 
 old   1: Grant SELECT On dba_source To &fc_user
-new   1: Grant SELECT On dba_source To fc22
-Grant SELECT On dba_source To fc22
-                *
-ERROR at line 1:
-ORA-01031: insufficient privileges 
+new   1: Grant SELECT On dba_source To FC22
 
+Grant succeeded.
 
 old   1: Grant SELECT On dba_sys_privs To &fc_user
-new   1: Grant SELECT On dba_sys_privs To fc22
-Grant SELECT On dba_sys_privs To fc22
-                *
-ERROR at line 1:
-ORA-01031: insufficient privileges 
+new   1: Grant SELECT On dba_sys_privs To FC22
 
+Grant succeeded.
 
 old   1: Grant SELECT On dba_tab_columns To &fc_user
-new   1: Grant SELECT On dba_tab_columns To fc22
-Grant SELECT On dba_tab_columns To fc22
-                *
-ERROR at line 1:
-ORA-01031: insufficient privileges 
+new   1: Grant SELECT On dba_tab_columns To FC22
 
+Grant succeeded.
 
 old   1: Grant SELECT On dba_users To &fc_user
-new   1: Grant SELECT On dba_users To fc22
-Grant SELECT On dba_users To fc22
-                *
-ERROR at line 1:
-ORA-01031: insufficient privileges 
+new   1: Grant SELECT On dba_users To FC22
 
+Grant succeeded.
 
 Connected.
-Create fc22 Objects
+Create FC22 Objects
 
 Table created.
 
@@ -416,7 +395,7 @@ Comment created.
 Warning: View created with compilation errors.
 
 old  25:    And (   SYS_CONTEXT ('USERENV', 'SESSION_USER') = '&fc_user'
-new  25:    And (   SYS_CONTEXT ('USERENV', 'SESSION_USER') = 'fc22'
+new  25:    And (   SYS_CONTEXT ('USERENV', 'SESSION_USER') = 'FC22'
 
 View created.
 

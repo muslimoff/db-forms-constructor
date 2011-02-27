@@ -1,6 +1,7 @@
 package com.abssoft.constructor.client.widgets;
 
 import com.abssoft.constructor.client.data.Utils;
+import com.abssoft.constructor.client.metadata.ActionStatus.StatusType;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.HeaderControls;
 import com.smartgwt.client.util.Page;
@@ -23,10 +24,18 @@ import com.smartgwt.client.widgets.form.fields.ToolbarItem;
 
 public class ActionStatusWindow extends Window {
 	class MyDynamicForm extends DynamicForm {
-		MyDynamicForm(String title, String shortMsg, String longText) {
+		MyDynamicForm(String title, String shortMsg, String longText, StatusType statusType) {
 			int width = 400;
-			String imgHTML = Canvas.imgHTML("[SKINIMG]Dialog/say.png");
-			String msg = "<span>" + imgHTML + "&nbsp;" + shortMsg + "</span>";
+
+			String icon = "say";
+			if (StatusType.ERROR.equals(statusType)) {
+				icon = "error";
+			} else if (StatusType.WARNING.equals(statusType)) {
+				icon = "warn";
+			}
+			String imgHTML = Canvas.imgHTML("[SKINIMG]Dialog/" + icon + ".png");
+
+			String msg = "<span>" + imgHTML + "&nbsp;" + "<b>" + shortMsg + "</b></span>";
 			BlurbItem shortTextItem = new BlurbItem();
 			shortTextItem.setWrap(true);
 			shortTextItem.setValue(msg);
@@ -66,15 +75,15 @@ public class ActionStatusWindow extends Window {
 
 	public static int windowsCount = 0;
 
-	public static ActionStatusWindow createActionStatusWindow(String title, String shortMsg, String longText) {
+	public static ActionStatusWindow createActionStatusWindow(String title, String shortMsg, String longText, StatusType statusType) {
 		Utils.debug(title + ": " + shortMsg);
 		Utils.debug(longText);
-		return new ActionStatusWindow(title, shortMsg, longText);
+		return new ActionStatusWindow(title, shortMsg, longText, statusType);
 	}
 
 	private boolean detailsDisplayed = false;
 
-	private ActionStatusWindow(String title, String shortMsg, String longText) {
+	private ActionStatusWindow(String title, String shortMsg, String longText, StatusType statusType) {
 
 		int width = 360;
 		int height = 150;
@@ -98,7 +107,7 @@ public class ActionStatusWindow extends Window {
 		this.setLeft(left);
 		this.setAutoSize(true);
 		// this.setOverflow(Overflow.)
-		final MyDynamicForm f = new MyDynamicForm(title, shortMsg, longText);
+		final MyDynamicForm f = new MyDynamicForm(title, shortMsg, longText, statusType);
 		HeaderControl comment = new HeaderControl(HeaderControl.COMMENT, new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {

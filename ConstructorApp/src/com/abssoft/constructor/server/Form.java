@@ -185,7 +185,7 @@ public class Form {
 		try {
 			{
 				Utils.debug("Parse Query: ");
-				String ColumnsMetaDataSQL = Utils.getSQLQueryFromXML("ColumnsMetaDataSQL", session.getServerInfoMD());
+				String ColumnsMetaDataSQL = Utils.getSQLQueryFromXML("ColumnsMetaDataSQL", session);
 				Utils.debug(ColumnsMetaDataSQL);
 				OraclePreparedStatement statement = (OraclePreparedStatement) getConnection().prepareStatement(ColumnsMetaDataSQL);
 				Utils.debug("Parameters: ");
@@ -234,7 +234,7 @@ public class Form {
 			}
 			{
 				// get Column Attributes
-				String columnAttributesSQL = Utils.getSQLQueryFromXML("columnAttributesSQL", session.getServerInfoMD());
+				String columnAttributesSQL = Utils.getSQLQueryFromXML("columnAttributesSQL", session);
 				OraclePreparedStatement attrStmnt = (OraclePreparedStatement) getConnection().prepareStatement(columnAttributesSQL);
 				Utils.setFormMDParams(attrStmnt, getFormCode(), parentFormCode, isDrillDownForm);
 				ResultSet attrRS = attrStmnt.executeQuery();
@@ -251,7 +251,7 @@ public class Form {
 
 			{
 				// get Column Actions
-				String columnActionsSQL = Utils.getSQLQueryFromXML("columnActionsSQL", session.getServerInfoMD());
+				String columnActionsSQL = Utils.getSQLQueryFromXML("columnActionsSQL", session);
 				OraclePreparedStatement actStmnt = (OraclePreparedStatement) getConnection().prepareStatement(columnActionsSQL);
 				Utils.setFormMDParams(actStmnt, getFormCode(), parentFormCode, isDrillDownForm);
 				ResultSet colActsRS = actStmnt.executeQuery();
@@ -276,7 +276,7 @@ public class Form {
 
 	private String getDMLProcText(FormActionMD actionData) throws java.sql.SQLException {
 		String dmlProcText = "begin " + actionData.getSqlProcedureName() + "(";
-		String argsSQLText = Utils.getSQLQueryFromXML("argsSQLText", session.getServerInfoMD());
+		String argsSQLText = Utils.getSQLQueryFromXML("argsSQLText", session);
 		OraclePreparedStatement actProcStmnt = (OraclePreparedStatement) getConnection().prepareStatement(argsSQLText);
 		Utils.setParameterValue(actProcStmnt, "p_procedure_name", actionData.getSqlProcedureName());
 		Utils.setParameterValue(actProcStmnt, "p_fc_schema_owner", getFcSchemaOwner());
@@ -302,7 +302,7 @@ public class Form {
 		dmlProcText = dmlProcText.substring(0, dmlProcText.length() - (-1 == argNum ? 0 : 1)) + "); end;";
 		actProcRs.close();
 		actProcStmnt.close();
-		dmlProcText = Utils.getSQLwUserVarsReplaced(dmlProcText, session.getServerInfoMD());
+		dmlProcText = Utils.getSQLwUserVarsReplaced(dmlProcText, session);
 		return dmlProcText;
 	}
 
@@ -313,7 +313,7 @@ public class Form {
 	private FormActionsArr getFormActionsArr() {
 		FormActionsArr result = new FormActionsArr();
 		try {
-			String formActionsSQL = Utils.getSQLQueryFromXML("formActionsSQL", session.getServerInfoMD());
+			String formActionsSQL = Utils.getSQLQueryFromXML("formActionsSQL", session);
 			OraclePreparedStatement statement = (OraclePreparedStatement) getConnection().prepareStatement(formActionsSQL);
 			Utils.setFormMDParams(statement, getFormCode(), parentFormCode, isDrillDownForm);
 			ResultSet actRs = statement.executeQuery();
@@ -348,7 +348,7 @@ public class Form {
 	}
 
 	public FormMD getFormMetaData(boolean isNonLookupForm) throws SQLException {
-		String formSQL = Utils.getSQLQueryFromXML("formSQL", session.getServerInfoMD());
+		String formSQL = Utils.getSQLQueryFromXML("formSQL", session);
 		OraclePreparedStatement statement = (OraclePreparedStatement) getConnection().prepareStatement(formSQL);
 		// Utils.setStringParameterValue(statement, "p_form_code", formCode);
 		Utils.setFormMDParams(statement, getFormCode(), parentFormCode, isDrillDownForm);
@@ -415,7 +415,7 @@ public class Form {
 	private FormTabsArr getFormTabsArr() {
 		FormTabsArr result = new FormTabsArr();
 		try {
-			String detailFormSQL = Utils.getSQLQueryFromXML("detailFormSQL", session.getServerInfoMD());
+			String detailFormSQL = Utils.getSQLQueryFromXML("detailFormSQL", session);
 			OraclePreparedStatement statement = (OraclePreparedStatement) getConnection().prepareStatement(detailFormSQL);
 			// TODO Utils.setStringParameterValue(statement, "p_form_code", formCode);
 			// TODO Utils.setStringParameterValue(statement, "p_master_form_code", parentFormCode);
@@ -451,7 +451,7 @@ public class Form {
 	private void setFormSQLText() {
 
 		try {
-			String extendedFormSQL = Utils.getSQLQueryFromXML("extendedFormSQL", session.getServerInfoMD());
+			String extendedFormSQL = Utils.getSQLQueryFromXML("extendedFormSQL", session);
 			OraclePreparedStatement statement = (OraclePreparedStatement) getConnection().prepareStatement(extendedFormSQL);
 			Utils.setFormMDParams(statement, getFormCode(), parentFormCode, isDrillDownForm);
 			ResultSet rs = statement.executeQuery();

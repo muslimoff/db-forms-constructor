@@ -4,6 +4,7 @@ import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.form.MainFormContainer;
 import com.abssoft.constructor.client.form.MainFormPane;
+import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.events.CloseClickHandler;
 import com.smartgwt.client.widgets.tab.events.TabCloseClickEvent;
@@ -32,6 +33,7 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 				}
 			}
 		});
+
 	}
 
 	public void selectTab(MainFormPane mainFormPane) {
@@ -57,6 +59,17 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 				e.printStackTrace();
 			}
 			ConstructorApp.mainToolBar.clear();
+		}
+	}
+
+	public void hideTabBar() {
+		System.out.println("@@############:" + this);
+		for (Canvas c : this.getChildren()) { // System.out.println("!1xxxxxxxx>>" + c);
+			if (c.toString().contains("tabBar")) {   System.out.println("!2yyyyy>>" + c);
+				c.setHeight(0);
+				c.hide();
+				// c.removeFromParent();
+			}
 		}
 	}
 }

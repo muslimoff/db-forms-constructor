@@ -238,7 +238,7 @@ public class ActionItem extends MenuItem {
 		else if ("12".equals(formActionMD.getType())) {
 			String actionUrl = replaceBindVariables(formActionMD.getSqlProcedureName(), ":");
 			actionUrl = null != actionUrl ? actionUrl : "xmlp?type=xslt" + "&ContentType=application/vnd.ms-excel"
-					+ "&contentDisposition=attachment" + "&filename=rep1.xml" + "&template=EXP";
+					+ "&contentDisposition=attachment" + "&filename=rep1.xls" + "&template=EXP";
 			mainFormPane.getMainForm().exportGrid(GWT.getModuleBaseURL() + actionUrl);
 
 		} // Open Url
@@ -251,6 +251,10 @@ public class ActionItem extends MenuItem {
 			}
 		} else if ("16".equals(formActionMD.getType())) {
 			mainFormPane.getMainForm().setNewRecDefaultValues(currRecSelected, false);
+		}
+		// /TEST ACTION 99
+		else if ("99".equals(formActionMD.getType())) {
+			//mainFormPane.hideTabBar();
 		}
 	}
 

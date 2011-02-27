@@ -33,23 +33,17 @@ import com.abssoft.constructor.client.metadata.StaticLookupsArr;
 public class Session {
 
 	private OracleConnection connection;
-	private boolean isScript;
-	private HashMap<String, Form> formDataHashMap = new HashMap<String, Form>();
-
-	public HashMap<String, Form> getFormDataHashMap() {
-		return formDataHashMap;
-	}
-
-	public void setFormDataHashMap(HashMap<String, Form> formDataHashMap) {
-		this.formDataHashMap = formDataHashMap;
-	}
-
 	private String fcSchemaOwner;
+	private HashMap<String, Form> formDataHashMap = new HashMap<String, Form>();
+	private boolean isScript;
+	private final HashMap<String, String> paramsMap = new HashMap<String, String>();
 	private ServerInfoMD serverInfoMD;
 
 	public Session(Connection connection, ServerInfoMD serverInfoMD) {
 		this.connection = (OracleConnection) connection;
 		this.setServerInfoMD(serverInfoMD);
+		this.setFcSchemaOwner(serverInfoMD.getFcSchemaOwner());
+		setParamsMap();
 		getStaticLookupsArr();
 	}
 
@@ -66,10 +60,6 @@ public class Session {
 			formDataHashMap.remove(fi.getKey());
 		}
 		Utils.debug("Server:session form " + fi.getInfo() + " closed...");
-	}
-
-	public Integer setExportData(FormInstanceIdentifier fi, ExportData exportData) {
-		return formDataHashMap.get(fi.getKey()).setExportData(fi, exportData);
 	}
 
 	public Row executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow, FormActionMD actMD) throws SQLException, Exception {
@@ -89,6 +79,10 @@ public class Session {
 		return fcSchemaOwner;
 	}
 
+	public HashMap<String, Form> getFormDataHashMap() {
+		return formDataHashMap;
+	}
+
 	public FormMD getFormMetaData(FormInstanceIdentifier formIdentifier) throws SQLException {
 		return getFormMetaData(formIdentifier, true);
 	}
@@ -106,43 +100,47 @@ public class Session {
 	public MenusArr getMenusArrOld() {
 		MenusArr metadata = new MenusArr();
 		try {
-			OraclePreparedStatement statement = //
-			(OraclePreparedStatement) connection.prepareStatement(Utils.getSQLQueryFromXML("menusSQL", serverInfoMD));
 
-			ResultSet rs = statement.executeQuery();
-			while (rs.next()) {
-				String formCode = rs.getString("form_code");
+			OraclePreparedStatement menusStmnt = //
+			(OraclePreparedStatement) connection.prepareStatement(Utils.getSQLQueryFromXML("menusSQL", this));
+
+			ResultSet menusRs = menusStmnt.executeQuery();
+			while (menusRs.next()) {
+				String formCode = menusRs.getString("form_code");
 				// String formName = rs.getString("form_name");
-				String formName = rs.getString("menu_name");
+				String formName = menusRs.getString("menu_name");
 				MenuMD menu = new MenuMD();
 				menu.setFormCode(formCode);
 				menu.setFormName(formName);
-				menu.setIconId(rs.getInt("icon_id"));
-				menu.setHotKey(rs.getString("hot_key"));
-				menu.setDescription(rs.getString("description"));
+				menu.setIconId(menusRs.getInt("icon_id"));
+				menu.setHotKey(menusRs.getString("hot_key"));
+				menu.setDescription(menusRs.getString("description"));
 				//
-				menu.setLvl(rs.getString("lvl"));
-				menu.setMenuCode(rs.getString("menu_code"));
-				menu.setParentMenuCode(rs.getString("parent_menu_code"));
-				menu.setMenuPosition(rs.getString("menu_position"));
-				menu.setShowInNavigator(rs.getString("show_in_navigator"));
-				menu.setMenuName(rs.getString("menu_name"));
-				menu.setChildCount(rs.getInt("child_count"));
+				menu.setLvl(menusRs.getString("lvl"));
+				menu.setMenuCode(menusRs.getString("menu_code"));
+				menu.setParentMenuCode(menusRs.getString("parent_menu_code"));
+				menu.setMenuPosition(menusRs.getString("menu_position"));
+				menu.setShowInNavigator(menusRs.getString("show_in_navigator"));
+				menu.setMenuName(menusRs.getString("menu_name"));
+				menu.setChildCount(menusRs.getInt("child_count"));
 
 				metadata.add(menu);
 			}
-			rs.close();
-			// icons
-			statement = (OraclePreparedStatement) connection.prepareStatement(Utils.getSQLQueryFromXML("iconsSQL", serverInfoMD));
+			menusRs.close();
+			menusStmnt.close();
 
-			rs = statement.executeQuery();
+			// icons
+			OraclePreparedStatement iconsStmnt = (OraclePreparedStatement) connection.prepareStatement(Utils.getSQLQueryFromXML("iconsSQL",
+					this));
+			ResultSet iconsRs = iconsStmnt.executeQuery();
 			IconsArr icons = new IconsArr();
-			while (rs.next()) {
-				icons.put(rs.getInt("icon_id"), rs.getString("icon_file_name"), rs.getString("icon_path"), isScript);
+			while (iconsRs.next()) {
+				icons.put(iconsRs.getInt("icon_id"), iconsRs.getString("icon_file_name"), iconsRs.getString("icon_path"), isScript);
 			}
-			rs.close();
-			statement.close();
 			metadata.setIcons(icons);
+			iconsRs.close();
+			iconsStmnt.close();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -150,19 +148,27 @@ public class Session {
 		return metadata;
 	}
 
+	public HashMap<String, String> getParamsMap() {
+		return paramsMap;
+	}
+
+	public ServerInfoMD getServerInfoMD() {
+		return serverInfoMD;
+	}
+
 	public StaticLookupsArr getStaticLookupsArr() {
 		StaticLookupsArr lookupsArr = new StaticLookupsArr();
 		String currentLookupCode = "-9999";
 		try {
-			OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(Utils.getSQLQueryFromXML(
-					"statLookupsSQL", serverInfoMD));
+			OraclePreparedStatement lookupsStmnt = (OraclePreparedStatement) connection.prepareStatement(Utils.getSQLQueryFromXML(
+					"statLookupsSQL", this));
 
-			ResultSet rs = statement.executeQuery();
+			ResultSet lookupsRs = lookupsStmnt.executeQuery();
 			StaticLookup l = new StaticLookup();
-			while (rs.next()) {
-				String lookupCode = rs.getString("lookup_code");
-				String lookupValueCode = rs.getString("lookup_value_code");
-				String lookupDisplayValue = rs.getString("lookup_display_value");
+			while (lookupsRs.next()) {
+				String lookupCode = lookupsRs.getString("lookup_code");
+				String lookupValueCode = lookupsRs.getString("lookup_value_code");
+				String lookupDisplayValue = lookupsRs.getString("lookup_display_value");
 				if ("-9999".equals(currentLookupCode)) {
 					currentLookupCode = lookupCode;
 				}
@@ -174,8 +180,8 @@ public class Session {
 				currentLookupCode = lookupCode;
 				lookupsArr.put(currentLookupCode, l);
 			}
-			rs.close();
-			statement.close();
+			lookupsRs.close();
+			lookupsStmnt.close();
 		} catch (java.sql.SQLException e) {
 			e.printStackTrace();
 		}
@@ -186,8 +192,34 @@ public class Session {
 		return isScript;
 	}
 
+	public Integer setExportData(FormInstanceIdentifier fi, ExportData exportData) {
+		return formDataHashMap.get(fi.getKey()).setExportData(fi, exportData);
+	}
+
 	public void setFcSchemaOwner(String fcSchemaOwner) {
 		this.fcSchemaOwner = fcSchemaOwner;
+	}
+
+	public void setFormDataHashMap(HashMap<String, Form> formDataHashMap) {
+		this.formDataHashMap = formDataHashMap;
+	}
+
+	private void setParamsMap() {
+		try {
+			// metadataSQL
+			String metadataSQL = Utils.getSQLQueryFromXML("metadataSQL", this);
+			OraclePreparedStatement lookupsStmnt = (OraclePreparedStatement) connection.prepareStatement(metadataSQL);
+			ResultSet lookupsRs = lookupsStmnt.executeQuery();
+			while (lookupsRs.next()) {
+				String lookupCode = lookupsRs.getString("param_name");
+				String lookupValueCode = lookupsRs.getString("param_value");
+				paramsMap.put(lookupCode, lookupValueCode);
+			}
+			lookupsRs.close();
+			lookupsStmnt.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void setScript(boolean isScript) {
@@ -196,10 +228,6 @@ public class Session {
 
 	public void setServerInfoMD(ServerInfoMD serverInfoMD) {
 		this.serverInfoMD = serverInfoMD;
-	}
-
-	public ServerInfoMD getServerInfoMD() {
-		return serverInfoMD;
 	}
 
 }

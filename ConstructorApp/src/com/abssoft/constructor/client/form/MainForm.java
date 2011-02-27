@@ -190,13 +190,13 @@ class MainForm extends Canvas {
 		});
 		treeGrid.setWidth100();
 		// TODO Вывести в глобальные настройки с последующим переводом
-		treeGrid.setGroupByText("Группировать по ${title}");
-		treeGrid.setUngroupText("Убрать группировку");
-		treeGrid.setSortFieldAscendingText("Сортировать по возрастанию");
-		treeGrid.setSortFieldDescendingText("Сортировать по убыванию");
-		treeGrid.setFreezeFieldText("Заморозить поле ${title}");
-		treeGrid.setUnfreezeFieldText("Разморозить поле ${title}");
-		treeGrid.setFieldVisibilitySubmenuTitle("Столбцы");
+		// treeGrid.setGroupByText("Группировать по ${title}");
+		// treeGrid.setUngroupText("Убрать группировку");
+		// treeGrid.setSortFieldAscendingText("Сортировать по возрастанию");
+		// treeGrid.setSortFieldDescendingText("Сортировать по убыванию");
+		// treeGrid.setFreezeFieldText("Заморозить поле ${title}");
+		// treeGrid.setUnfreezeFieldText("Разморозить поле ${title}");
+		// treeGrid.setFieldVisibilitySubmenuTitle("Столбцы");
 		{// Редактирование в гриде.
 			treeGrid.setCanEdit(true);
 			// treeGrid.setModalEditing(true);
@@ -399,32 +399,53 @@ class MainForm extends Canvas {
 
 	}
 
-	public void exportData() {
-		ResultSet rs = treeGrid.getResultSet();
+	public ExportData createExportData() {
 		ExportData exportData = new ExportData();
 		String title = mainFormPane.getFormMetadata().getFormName();
 		title = "".equals(title) ? mainFormPane.getFormMetadata().getFormCode() : title;
 		exportData.setTitle(title);
 
 		for (FormTreeGridField f : mainFormPane.getFormColumns().getGridFields()) {
-			if (!"false".equals(f.getAttribute("showIf")) && !"false".equals(f.getAttribute("canExport"))) {
+			if ((!"false".equals(f.getAttribute("showIf")) && !"false".equals(f.getAttribute("canExport")))
+					|| null != f.getColumnMD().getEditorTabCode()) {
 				exportData.getHeaderNames().add(f.getName());
 				exportData.getHeaderTitles().add(f.getTitle());
 				String displayField = (f instanceof FormTreeGridField) ? f.getColumnMD().getLookupDisplayValue() : null;
 				exportData.getHeaderDisplFldNames().add(displayField);
+
+				String hdrType = "String";
+				if ("N".equals(f.getColumnMD().getDataType()) && null == f.getColumnMD().getLookupCode()) {
+					hdrType = "Number";
+				}
+				exportData.getHeaderTypes().add(hdrType);
 			}
 		}
+		return exportData;
+	}
 
+	public void exportData() {
+		// ResultSet rs = treeGrid.getResultSet();
+		ExportData exportData = createExportData();
+		try {
+			MainFormPane pfp = mainFormPane.getParentFormPane();
+			if (null != pfp) {
+				ExportData parentRowData = pfp.getMainForm().createExportData();
+				exportData.setParamNames(parentRowData.getHeaderTitles());
+				Record r = pfp.getMainForm().getTreeGrid().getRecord(pfp.getSelectedRow());
+				ArrayList<String> row = Utils.createArrayListFromRecord(r, pfp, parentRowData.getHeaderNames(), parentRowData
+						.getHeaderDisplFldNames());
+				exportData.setParamVals(row);
+			}
+		} catch (Exception e) {
+			Utils.debug("MainForm.exportData.Params!!!  " + e.getMessage());
+		}
+		ResultSet rs = treeGrid.getResultSet();
 		int dataLen = rs.getLength();
 		// Чтение значений полей
 		try {
 			for (Record r : rs.getRange(0, dataLen)) {
-				ArrayList<String> row = new ArrayList<String>();
-				for (int i = 0; i < exportData.getHeaderNames().size(); i++) {
-					String attrName = (null == exportData.getHeaderDisplFldNames().get(i)) ? exportData.getHeaderNames().get(i)
-							: exportData.getHeaderDisplFldNames().get(i);
-					row.add(r.getAttribute(attrName));
-				}
+				ArrayList<String> row = Utils.createArrayListFromRecord(r, mainFormPane, exportData.getHeaderNames(), exportData
+						.getHeaderDisplFldNames());
 				exportData.getData().add(row);
 			}
 		} catch (Exception e) {

@@ -82,8 +82,7 @@ public class MainFormContainer extends FormTab {
 			parentTabSet.addTab(MainFormContainer.this);
 			if (selectAfterCreation)
 				parentTabSet.selectTab(MainFormContainer.this);
-		} else {
-			// TODO Открытие не в табсете а в окне.
+			// parentTabSet.hideTabBar();
 		}
 	}
 

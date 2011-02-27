@@ -2,6 +2,7 @@ package com.abssoft.constructor.client.data.common;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.Utils;
+import com.abssoft.constructor.client.metadata.ActionStatus;
 import com.abssoft.constructor.client.widgets.ActionStatusWindow;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -29,7 +30,7 @@ public abstract class DSAsyncCallback<T> implements AsyncCallback<T> {
 	 * 
 	 */
 	public DSAsyncCallback() {
-		Utils.debug("DSAsyncCallback.CreateInstance");
+		Utils.debug("DSAsyncCallback.CreateInstance...");
 		// SC.clearPrompt();
 		// SC.showPrompt("Server Connecting");
 	}
@@ -51,7 +52,8 @@ public abstract class DSAsyncCallback<T> implements AsyncCallback<T> {
 	public void onFailure(Throwable caught) {
 		String additionalDetails = "";
 		// TODO com.google.gwt.user.client.rpc.StatusCodeException
-		// см. http://markmail.org/message/mathox7k5ddzf4rq?q=com.google.gwt.user.client.rpc.StatusCodeException+timeout&page=1&refer=7etmvxwbevp4ytpb
+		// см.
+		// http://markmail.org/message/mathox7k5ddzf4rq?q=com.google.gwt.user.client.rpc.StatusCodeException+timeout&page=1&refer=7etmvxwbevp4ytpb
 		if (caught instanceof StatusCodeException) {
 			additionalDetails = additionalDetails + ((StatusCodeException) caught).getStatusCode();
 		}
@@ -62,7 +64,7 @@ public abstract class DSAsyncCallback<T> implements AsyncCallback<T> {
 		try {
 			if (ConstructorApp.debugEnabled)
 				ActionStatusWindow.createActionStatusWindow(errCode, caught.toString(), Utils.getExceptionStack(caught) + "\n"
-						+ additionalDetails);
+						+ additionalDetails, ActionStatus.StatusType.ERROR);
 		} catch (Exception e) {
 			Window.alert(errCode + details);
 		}

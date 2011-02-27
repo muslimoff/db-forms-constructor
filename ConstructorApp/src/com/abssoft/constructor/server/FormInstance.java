@@ -59,6 +59,8 @@ public class FormInstance {
 	}
 
 	public RowsArr fetch(String sortBy, int startRow, int endRow, Map<?, ?> filterValues, boolean forceFetch) {
+		// TODO Обработка признака больших табличек - не выполнять запрос с TotalRows
+
 		RowsArr currentData = new RowsArr();
 		// /////////////////////////
 		if (null != sortBy) {
@@ -91,7 +93,9 @@ public class FormInstance {
 					Utils.debug("totalRowsSqlText:\n" + totalRowsSqlText);
 					ResultSet rowCntRS = rowCntStmnt.executeQuery();
 					rowCntRS.next();
-					resultData.setTotalRows(rowCntRS.getInt("CNT"));
+					int totalRows = rowCntRS.getInt("CNT");
+					Utils.debug("totalRows:" + totalRows);
+					resultData.setTotalRows(totalRows);
 					rowCntRS.close();
 					rowCntStmnt.close();
 				}
@@ -116,21 +120,22 @@ public class FormInstance {
 			// до конца текущего диапазона (endRow) или до оконца ResultSet. Если currentEndRow>endRow -
 			// цикл не выполняется - данные уже считаны.
 			for (int rowNum = currentEndRow + 1; rowNum <= endRow; rowNum++) {
+				boolean isRSclosed = false;
 				try {
-					// System.out.println("isAfterLast(): " + rs.isAfterLast());
 					if (!rs.next() // !rs.isAfterLast() //!rs.isClosed() &&
 					) {
-						// TODO Обработка признака больших табличек - не выполнять запрос с TotalRows
 						Utils.debug("FormInstance. ResultSet ended. rowNum:" + rowNum);
 						rs.close();
 						statement.close();
-						break;
+						isRSclosed = true;
 					}
-				} catch (java.sql.SQLException e) {
+				} catch (Exception e) {
 					Utils.debug("Error on close resultset/statement: " + e);
-					break;
+					// e.printStackTrace();
+					isRSclosed = true;
 				}
-
+				if (isRSclosed)
+					break;
 				Row r = new Row();
 				for (int colNum = 0; colNum < columnsArr.size(); colNum++) {
 					try {
@@ -148,6 +153,7 @@ public class FormInstance {
 				resultData.put(rowNum, r);
 				currentEndRow = rowNum;
 			}
+
 			Utils.debug("currentEndRow after:" + currentEndRow);
 			// пробегаем по resultData и возвращаем только данные в требуемом диапазоне: startRow и endRow.
 			// Очищаем ранее передаваемые данные из resultData для экономии памяти. Остаются только записи,
@@ -160,6 +166,7 @@ public class FormInstance {
 				// System.out.println("col:" + i + "; data1:" + r.get(0));
 			}
 			currentData.setTotalRows(resultData.getTotalRows());
+			Utils.debug("currentData.TotalRows setted" + resultData.getTotalRows());
 		} catch (Exception e) {
 
 			String errText = Utils.getExceptionStackIntoString(e) + "\n";
@@ -173,7 +180,7 @@ public class FormInstance {
 			}
 		}
 		currentSortBy = sortBy;
-		Utils.debug("FormInstance.fetch... return");
+		Utils.debug("FormInstance.fetch... return.." + this.form.getFormCode());
 		return currentData;
 	}
 

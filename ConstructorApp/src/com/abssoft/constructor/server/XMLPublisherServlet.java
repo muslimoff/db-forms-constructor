@@ -101,7 +101,7 @@ public class XMLPublisherServlet extends HttpServlet {
 
 	public static CLOB findCLOB(Session session, String reportCode) throws SQLException {
 		OracleConnection connection = session.getConnection();
-		String sqlText = Utils.getSQLQueryFromXML("reportTemplatesSQL", session.getServerInfoMD());
+		String sqlText = Utils.getSQLQueryFromXML("reportTemplatesSQL", session);
 		OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(sqlText);
 		Utils.setParameterValue(statement, "p_report_code", reportCode);
 		ResultSet rs = statement.executeQuery();
@@ -143,6 +143,8 @@ public class XMLPublisherServlet extends HttpServlet {
 		/******************* RequestData *******************/
 		Integer sessionID = (Integer) req.getSession(true).getAttribute(Utils.sessionIdentifier);
 		Session session = QueryServiceImpl.getSessionData(sessionID);
+		// TODO вылетает сессия XMLPublisherServlet при долгом таймауте 
+		//session.setMaxInactiveInterval(interval);
 		System.out.println("SessionID:" + sessionID + "; session:" + session);
 		System.out.println("req.getQueryString():" + req.getQueryString());
 		// System.out.println("ss: " + req.getQueryString());

@@ -216,7 +216,7 @@ public class Utils {
 	}
 
 	public static void setParameterValue(OraclePreparedStatement statement, String name, Object value) {
-		Utils.debug("setParameterValue. name=" + name + "=>" + (null != value ? value.getClass() : "null"));
+		Utils.debug("setParameterValue. name=" + name + "=>" + (null != value ? value : "null"));
 		try {
 			if (null != value) {
 				if (value instanceof Boolean) {
@@ -243,7 +243,8 @@ public class Utils {
 		return writer.toString();
 	}
 
-	public static String getSQLwUserVarsReplaced(String sqlText, ServerInfoMD serverInfoMD) {
+	public static String getSQLwUserVarsReplaced(String sqlText, Session session) {
+		ServerInfoMD serverInfoMD = session.getServerInfoMD();
 		String query = sqlText;
 		query = query.replaceAll("(?i)&validationFN", serverInfoMD.getValidationFN());
 		query = query.replaceAll("(?i)&fc_schema_owner\\.", serverInfoMD.getFcSchemaOwner());
@@ -253,14 +254,11 @@ public class Utils {
 		return query;
 	}
 
-	public static String getSQLQueryFromXML(String queryCode, ServerInfoMD serverInfoMD) {
-		String query = QueryServiceImpl.queryMap1.get(queryCode);
-		query = getSQLwUserVarsReplaced(query, serverInfoMD);
-		// query = query.replaceAll("(?i)&validationFN", serverInfoMD.getValidationFN());
-		// query = query.replaceAll("(?i)&fc_schema_owner\\.", serverInfoMD.getFcSchemaOwner());
-		// query = query.replaceAll("(?i)&fc_schema_owner", serverInfoMD.getFcSchemaOwner());
-		// query = query.replaceAll("(?i)&db_username\\.", serverInfoMD.getDbUsername());
-		// query = query.replaceAll("(?i)&db_username", serverInfoMD.getDbUsername());
+	public static String getSQLQueryFromXML(String queryCode, Session session) {
+		// Ищем запросы в session.paramsMap. Если там нет, то для обратной совместимости ищем в QueryServiceImpl.queryMap1 (в XML-ке)
+		String query = session.getParamsMap().containsKey(queryCode) ? session.getParamsMap().get(queryCode) : QueryServiceImpl.queryMap1
+				.get(queryCode);
+		query = getSQLwUserVarsReplaced(query, session);
 		return query;
 	}
 }

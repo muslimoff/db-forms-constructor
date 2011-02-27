@@ -14,6 +14,7 @@ import com.abssoft.constructor.client.metadata.FormMD;
 import com.abssoft.constructor.client.metadata.FormTabMD;
 import com.smartgwt.client.data.SortSpecifier;
 import com.smartgwt.client.types.SortDirection;
+import com.smartgwt.client.widgets.form.fields.FormItem;
 
 public class FormColumns {
 	int columnsCount;
@@ -21,6 +22,11 @@ public class FormColumns {
 	FormMD formMetadata;
 	FormTreeGridField[] gridFields;
 	FormDataSourceField[] dataSourceFields;
+	FormItem[] editorFormItems;
+
+	public FormItem[] getEditorFormItems() {
+		return editorFormItems;
+	}
 
 	MainFormPane mainFormPane;
 
@@ -34,6 +40,7 @@ public class FormColumns {
 		this.columnsCount = columns.size();
 		this.gridFields = new FormTreeGridField[columnsCount];
 		this.dataSourceFields = new FormDataSourceField[columnsCount];
+		this.editorFormItems = new FormItem[columnsCount];
 
 		for (FormTabMD e : formMetadata.getTabs()) {
 			if (e.getTabPosition().equals("B"))

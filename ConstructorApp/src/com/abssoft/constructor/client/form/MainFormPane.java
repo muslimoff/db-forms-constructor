@@ -101,7 +101,7 @@ public class MainFormPane extends Canvas {
 	public MainFormPane() {
 	}
 
-	public MainFormPane(final String formCode, boolean isMasterForm, final boolean isLookup, MainFormPane parentFormPane,
+	public MainFormPane(final String formCode, boolean isMasterForm, final boolean isLookup, final MainFormPane parentFormPane,
 			Boolean isDrillDownForm) {
 		this.setFormCode(formCode);
 		if (!ConstructorApp.formNameArr.containsKey(formCode)) {
@@ -154,13 +154,19 @@ public class MainFormPane extends Canvas {
 				Utils.debug("MainFormPane created");
 			}
 		});
+
 	}
+
+	// public void hideTabBar() {
+	// parentTabSet.hideTabBar();
+	// }
 
 	public void createDetailForms() {
 		String fc = this.getFormCode();
 		String formTitle = FormTab.getIconTitle(ConstructorApp.formNameArr.get(fc), ConstructorApp.formIconArr.get(fc));
 		sideDetailFormsContainer = new DetailFormsContainer(this, Orientation.HORIZONTAL);
 		bottomDetailFormsContainer = new DetailFormsContainer(this, Orientation.VERTICAL);
+
 		HLayout gridAndFormLayout = new HLayout();
 		gridAndFormLayout.setMargin(0);
 		gridAndFormLayout.addMember(mainForm);
@@ -193,6 +199,11 @@ public class MainFormPane extends Canvas {
 		this.setHeight100();
 		this.setWidth100();
 		this.addChild(sections);
+		//
+		if ("H".equals(formMetadata.getSideTabsPosition()))
+			sideDetailFormsContainer.hideTabBar();
+		if ("H".equals(formMetadata.getBottomTabsPosition()))
+			bottomDetailFormsContainer.hideTabBar();
 	}
 
 	public void doBeforeClose() {

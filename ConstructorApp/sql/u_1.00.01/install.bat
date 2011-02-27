@@ -1,1 +1,1 @@
-sqlplusw /nolog @install.sql
+sqlplus /nolog @install.sql

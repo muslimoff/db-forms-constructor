@@ -3,7 +3,10 @@ package com.abssoft.constructor.client.data;
 import com.abssoft.constructor.client.form.MainFormPane;
 import com.abssoft.constructor.client.metadata.FormColumnMD;
 import com.abssoft.constructor.client.metadata.FormMD;
+import com.smartgwt.client.types.DateDisplayFormat;
 import com.smartgwt.client.types.FieldType;
+import com.smartgwt.client.util.JSOHelper;
+import com.smartgwt.client.widgets.form.fields.DateItem;
 import com.smartgwt.client.widgets.form.validator.RegExpValidator;
 import com.smartgwt.client.widgets.tree.TreeGrid;
 
@@ -30,8 +33,22 @@ public class FormDataSourceField extends com.smartgwt.client.data.DataSourceFiel
 			type = FieldType.FLOAT;
 		} else if ("D".equals(columnMD.getDataType())) {
 			type = FieldType.DATE;
+			// this.setAttribute("inputFormat", "DMY");
+			// this.setAttribute("maskDateSeparator", ".");
+			// this.setAttribute("useMask", true);
+			//
+			DateItem di = new DateItem();
+			di.setInputFormat("DMY");
+			di.setMaskDateSeparator(".");
+			di.setUseMask(true);
+			di.setUseTextField(true);
+			JSOHelper.apply(di.getJsObj(), this.getJsObj());
 		} else {
 			type = FieldType.TEXT;
+			// Маска
+			if (null != columnMD.getTextMask()) {
+				this.setAttribute("mask", columnMD.getTextMask());
+			}
 		}
 		if // Tree
 		("T".equals(formType)) {
@@ -66,6 +83,7 @@ public class FormDataSourceField extends com.smartgwt.client.data.DataSourceFiel
 		}
 		// this.setRequired(true);
 		// this.setCanEdit(false);
+
 	}
 
 	/**
