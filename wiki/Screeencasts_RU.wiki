@@ -1,7 +1,7 @@
 #ScreeencastsRU
 
 = Начало =
-  * [http://code.google.com/p/db-forms-constructor/downloads/detail?name=forms1.wmv&can=2&q= Создание простой формы]
+  * [http://db-forms-constructor.googlecode.com/files/forms1.wmv Создание простой формы]
   * Действия
     * Обновление (Refresh)
     * Удаление
