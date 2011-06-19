@@ -1,5 +1,5 @@
 = Начало =
-<wiki:video url="http://www.screencast.com/t/YDFZ2y2Xl64M"/>
+<wiki:video url="http://www.youtube.com/watch?v=IhxHoZptO8c"/>
 
   * [http://www.screencast.com/t/YDFZ2y2Xl64M Навигация]
   * [http://db-forms-constructor.googlecode.com/files/forms1.wmv Создание простой формы]
