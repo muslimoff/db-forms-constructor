@@ -1,4 +1,6 @@
 = Начало =
+<wiki:video url="http://www.youtube.com/watch?v=3LkNlTNHZzE"/>
+
   * [http://www.screencast.com/t/YDFZ2y2Xl64M Навигация]
   * [http://db-forms-constructor.googlecode.com/files/forms1.wmv Создание простой формы]
   * Действия
