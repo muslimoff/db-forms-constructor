@@ -45,6 +45,7 @@ public class FormTab extends com.smartgwt.client.widgets.tab.Tab {
 	}
 
 	public static String getIconTitle(String title, int iconId) {
+		// TODO Rotate text: http://snook.ca/archives/html_and_css/css-text-rotation
 		String imgHTML = Canvas.imgHTML(ConstructorApp.menus.getIcons().get(iconId));
 		String formTitle = "<span>" + imgHTML + "&nbsp;" + title + "</span>";
 		return formTitle;

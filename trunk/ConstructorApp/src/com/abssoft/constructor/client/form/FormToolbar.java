@@ -17,10 +17,11 @@ import com.smartgwt.client.widgets.menu.MenuItemSeparator;
 
 public class FormToolbar extends DynamicForm {
 
-	private ArrayList<MenuItem> actionMenuItemsArr = new ArrayList<MenuItem>();
-	public LinkedHashMap<String, ActionItem> actionItemsMap = new LinkedHashMap<String, ActionItem>();
-
+	private ArrayList<MenuItem> actionItemsArr = new ArrayList<MenuItem>();
 	private ArrayList<IButton> actionButtonsArr = new ArrayList<IButton>();
+	private ArrayList<MenuItem> actionMenuItemsArr = new ArrayList<MenuItem>();
+
+	public LinkedHashMap<String, ActionItem> actionItemsMap = new LinkedHashMap<String, ActionItem>();
 	private MainFormPane mainFormPane;
 	private Menu ctxMenu;
 	private ToolbarItem btnToolbar = new ToolbarItem();
@@ -50,10 +51,13 @@ public class FormToolbar extends DynamicForm {
 		for (int i = 0; i < formActionsArr.size(); i++) {
 			FormActionMD formActionMD = formActionsArr.get(i);
 			ActionItem actionItem = new ActionItem(mainFormPane, formActionMD);
-			actionMenuItemsArr.add(actionItem);
-			// Если показываем разделитель меню
-			if (formActionMD.getShowSeparatorBelow()) {
-				actionMenuItemsArr.add(new MenuItemSeparator());
+			actionItemsArr.add(actionItem);
+			if (formActionMD.getDisplayInContextMenu()) {
+				actionMenuItemsArr.add(actionItem);
+				// Если показываем разделитель меню
+				if (formActionMD.getShowSeparatorBelow()) {
+					actionMenuItemsArr.add(new MenuItemSeparator());
+				}
 			}
 			// Если отображаем кнопку на панельке
 			if (null != actionItem.getButton()) {
@@ -89,8 +93,8 @@ public class FormToolbar extends DynamicForm {
 		btnToolbar.setStartRow(false);
 		setItems(formNameItem, btnToolbar);
 
-		for (int i = 0; i < actionMenuItemsArr.size(); i++) {
-			MenuItem mi = actionMenuItemsArr.get(i);
+		for (int i = 0; i < actionItemsArr.size(); i++) {
+			MenuItem mi = actionItemsArr.get(i);
 			if (mi instanceof ActionItem) {
 				ActionItem ai = (ActionItem) mi;
 				actionItemsMap.put(ai.getFormActionMD().getCode(), ai);
@@ -99,8 +103,8 @@ public class FormToolbar extends DynamicForm {
 	}
 
 	public void setActionsStatuses() {
-		for (int i = 0; i < actionMenuItemsArr.size(); i++) {
-			MenuItem mi = actionMenuItemsArr.get(i);
+		for (int i = 0; i < actionItemsArr.size(); i++) {
+			MenuItem mi = actionItemsArr.get(i);
 			if (mi instanceof ActionItem) {
 				try {
 					((ActionItem) mi).setActionStatus();

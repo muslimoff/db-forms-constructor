@@ -32,6 +32,8 @@ import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.grid.events.DataArrivedEvent;
 import com.smartgwt.client.widgets.grid.events.DataArrivedHandler;
+import com.smartgwt.client.widgets.grid.events.EditorEnterEvent;
+import com.smartgwt.client.widgets.grid.events.EditorEnterHandler;
 import com.smartgwt.client.widgets.grid.events.EditorExitEvent;
 import com.smartgwt.client.widgets.grid.events.EditorExitHandler;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
@@ -65,7 +67,38 @@ class MainForm extends Canvas {
 			this.setShowRowNumbers(true);
 			// TODO Высота строки.. //
 			this.setCellHeight(16);
+			// TODO Группировка для больших записей
+			this.setGroupByMaxRecords(10000);
+			this.addEditorEnterHandler(new EditorEnterHandler() {
+
+				@Override
+				public void onEditorEnter(EditorEnterEvent event) {
+					Utils.debug("FormListGrid.onEditorEnter started/ended...");
+
+				}
+			});
+			this.addRowEditorEnterHandler(new RowEditorEnterHandler() {
+
+				@Override
+				public void onRowEditorEnter(RowEditorEnterEvent event) {
+					Utils.debug("FormListGrid.onRowEditorEnter started/ended...");
+
+				}
+			});
 		}
+
+		@Override
+		public Boolean startEditing(int rowNum, int colNum, boolean suppressFocus) {
+			Utils.debug("FormListGrid.startEditing: " + this.getJsObj().toString());
+			return super.startEditing(rowNum, colNum, suppressFocus);
+		}
+		// Пример добавления хендлера для эвентов. См. http://forums.smartclient.com/showthread.php?t=9923
+		// @Override
+		// public HandlerRegistration addRowEditorEnterHandler(RowEditorEnterHandler handler) {
+		// Utils.debug("FormListGrid.Adding handler");
+		// HandlerRegistration r = doAddHandler(handler, RowEditorEnterEvent.getType());
+		// return r;
+		// };
 
 	}
 
@@ -109,6 +142,7 @@ class MainForm extends Canvas {
 	}
 
 	class GridRecordClickHandler implements RecordClickHandler {
+		@Override
 		public void onRecordClick(RecordClickEvent event) {
 			Record r = event.getRecord();
 			if (null == r) {
@@ -172,6 +206,9 @@ class MainForm extends Canvas {
 		} else {
 			treeGrid = new FormListGrid();
 		}
+		// 20110322
+		treeGrid.setShowHeaderMenuButton(false);
+		//
 		treeGrid.setShowFilterEditor(false);
 		treeGrid.setAlternateRecordStyles(true);
 		treeGrid.setCanMultiSort(true);
@@ -238,7 +275,7 @@ class MainForm extends Canvas {
 		treeGrid.addEditorExitHandler(new EditorExitHandler() {
 			@Override
 			public void onEditorExit(EditorExitEvent event) {
-				System.out.println("onEditorExit..");
+				Utils.debug("treeGrid.onEditorExit started...");
 				ListGrid grid = ((ListGrid) event.getSource());
 				int rowNum = event.getRowNum();
 				// Обработка выхода по клавише ESCAPE
@@ -251,13 +288,46 @@ class MainForm extends Canvas {
 					mainFormPane.setSelectedRow(nextRecord);
 					mainFormPane.filterDetailData(grid.getRecord(nextRecord), treeGrid, nextRecord);
 				}
+				Utils.debug("treeGrid.onEditorExit ended...");
 			}
 		});
+
+		// treeGrid.addRowEditorExitHandler(new RowEditorExitHandler() {
+		// @Override
+		// public void onRowEditorExit(RowEditorExitEvent event) {
+		// Utils.debug("treeGrid.onRowEditorExit started...");
+		// ListGrid grid = ((ListGrid) event.getSource());
+		// int rowNum = event.getRowNum();
+		// System.out.println("treeGrid.onRowEditorExit getEditCompletionEvent:" + event.getEditCompletionEvent());
+		// // Обработка выхода по клавише ESCAPE при отказе от ввода новой записи
+		// if (null == event.getRecord() && EditCompletionEvent.ESCAPE.equals(event.getEditCompletionEvent())) {
+		// int nextRecord = (0 == rowNum && null != grid.getRecord(rowNum + 1)) ? rowNum + 1 : rowNum - 1;
+		// System.out.println("rowNum:" + rowNum + "; nextRecord:" + nextRecord);
+		// // mainFormPane.getValuesManager().clearValues();
+		// grid.deselectAllRecords();
+		// grid.selectRecord(nextRecord);
+		// mainFormPane.setSelectedRow(nextRecord);
+		// mainFormPane.filterDetailData(grid.getRecord(nextRecord), treeGrid, nextRecord);
+		// }
+		// Utils.debug("treeGrid.onRowEditorExit ended...");
+		// }
+		// });
 		treeGrid.addRowEditorEnterHandler(new RowEditorEnterHandler() {
 			@Override
 			public void onRowEditorEnter(RowEditorEnterEvent event) {
+				Utils.debug("treeGrid.onRowEditorEnter started... event:" + event);
 				ListGrid grid = ((ListGrid) event.getSource());
-				int rowNum = event.getRowNum();
+				Utils.debug("grid:" + grid);
+
+				// int rowNum = event.getRowNum();
+				int rowNum;
+				try {
+					rowNum = event.getRowNum();
+				} catch (Exception e) {
+					Utils.debug(e.getMessage());
+					e.printStackTrace();
+					rowNum = mainFormPane.getSelectedRow();
+				}
 				mainFormPane.setSelectedRow(rowNum);
 				Record record = event.getRecord();
 				Record newRec = grid.getEditedRecord(rowNum);
@@ -268,18 +338,37 @@ class MainForm extends Canvas {
 					// TODO Простановка DisplayValue для лукап-форм с DisplayFileds
 					FormDataSourceField[] dsf = mainFormPane.getFormColumns().getDataSourceFields();
 					for (FormDataSourceField f : dsf) {
-						System.out.println("sssssssssssss>>:" + f.getColumnMD().getLookupDisplayValue());
+						Utils.debug("treeGrid.onRowEditorEnter." + f.getColumnMD().getName() + ">>:"
+								+ f.getColumnMD().getLookupDisplayValue());
 					}
-					System.out.println("newRec.getAttributes():" + newRec.getAttributes());
+					Utils.debug("treeGrid.onRowEditorEnter.newRec.getAttributes():" + newRec.getAttributes());
 				}
+				Utils.debug("treeGrid.onRowEditorEnter ended...");
 			}
 		});
 
+		// mm20110508 - for debug purposes
+		// ////////////////////////////////////
+		// treeGrid.addRowEditorExitHandler(new RowEditorExitHandler() {
+		//
+		// @Override
+		// public void onRowEditorExit(RowEditorExitEvent event) {
+		// Utils.debug("treeGrid.onRowEditorExit started/ended...");
+		// }
+		// });
+		// treeGrid.addEditorEnterHandler(new EditorEnterHandler() {
+		//
+		// @Override
+		// public void onEditorEnter(EditorEnterEvent event) {
+		// Utils.debug("treeGrid.onEditorEnter started/ended...");
+		//
+		// }
+		// });
+		// ////////////////////////////////////
 		treeGrid.addDataArrivedHandler(new DataArrivedHandler() {
 
 			@Override
 			public void onDataArrived(DataArrivedEvent event) {
-				// TODO Auto-generated method stub
 				// Utils.debug("@@@@@@@@@@@@@@@@@@@@@@@ Grid onDataArrived start @@@@@@@@@@@@");
 				if (isExport) {
 					exportData();
@@ -309,7 +398,7 @@ class MainForm extends Canvas {
 		} else {
 			DMLProcExecution procExec = new DMLProcExecution(mainFormPane) {
 				@Override
-				public void executeSubProc() {
+				public void executeSuccessSubProc() {
 					Map<String, Object> resultMap = Utils.getMapFromRow(dsFields, getResultRow());
 					treeGrid.setEditValues(rowNum, resultMap);
 					mainFormPane.filterDetailData(null, treeGrid, rowNum);

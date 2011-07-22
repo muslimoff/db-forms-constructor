@@ -64,7 +64,7 @@ public abstract class DSAsyncCallback<T> implements AsyncCallback<T> {
 		try {
 			if (ConstructorApp.debugEnabled)
 				ActionStatusWindow.createActionStatusWindow(errCode, caught.toString(), Utils.getExceptionStack(caught) + "\n"
-						+ additionalDetails, ActionStatus.StatusType.ERROR);
+						+ additionalDetails, ActionStatus.StatusType.ERROR, "Cancel");
 		} catch (Exception e) {
 			Window.alert(errCode + details);
 		}

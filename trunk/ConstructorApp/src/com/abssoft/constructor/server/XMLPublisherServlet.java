@@ -21,6 +21,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
@@ -137,14 +138,41 @@ public class XMLPublisherServlet extends HttpServlet {
 		doMethod(req, resp);
 	}
 
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		doMethod(req, resp);
+	}
+
+	// @Override
+	// protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	// super.service(req, resp);
+	// // TODO вылетает сессия XMLPublisherServlet при долгом таймауте
+	// // session.setMaxInactiveInterval(interval);
+	// HttpSession httpSession = req.getSession(true);
+	// httpSession.setMaxInactiveInterval(5);
+	// System.out.println("session.getCreationTime:" + httpSession.getCreationTime());
+	// System.out.println("session.getId:" + httpSession.getId());
+	// System.out.println("session.getLastAccessedTime:" + httpSession.getLastAccessedTime());
+	// System.out.println("session.getMaxInactiveInterval:" + httpSession.getMaxInactiveInterval());
+	// }
+
 	private void doMethod(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		req.setCharacterEncoding("utf-8");
 		resp.setCharacterEncoding("utf-8");
+
+		// TODO вылетает сессия XMLPublisherServlet при долгом таймауте
+		// session.setMaxInactiveInterval(interval);
+		req.getSession(true).setMaxInactiveInterval(2*60*60);
+		HttpSession httpSession = req.getSession(true);
+		System.out.println("session:" + httpSession);
+		System.out.println("session.getCreationTime:" + httpSession.getCreationTime());
+		System.out.println("session.getId:" + httpSession.getId());
+		System.out.println("session.getLastAccessedTime:" + httpSession.getLastAccessedTime());
+		System.out.println("session.getMaxInactiveInterval:" + httpSession.getMaxInactiveInterval());
+
 		/******************* RequestData *******************/
 		Integer sessionID = (Integer) req.getSession(true).getAttribute(Utils.sessionIdentifier);
 		Session session = QueryServiceImpl.getSessionData(sessionID);
-		// TODO вылетает сессия XMLPublisherServlet при долгом таймауте 
-		//session.setMaxInactiveInterval(interval);
 		System.out.println("SessionID:" + sessionID + "; session:" + session);
 		System.out.println("req.getQueryString():" + req.getQueryString());
 		// System.out.println("ss: " + req.getQueryString());
@@ -238,11 +266,6 @@ public class XMLPublisherServlet extends HttpServlet {
 				return;
 			}
 		}
-	}
-
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		doMethod(req, resp);
 	}
 
 	public void processXSLT(HttpServletRequest req, HttpServletResponse resp, Session session, String contentDisposition,

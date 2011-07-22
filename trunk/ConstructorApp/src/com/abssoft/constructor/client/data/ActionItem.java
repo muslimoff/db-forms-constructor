@@ -25,6 +25,8 @@ import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.RichTextItem;
 import com.smartgwt.client.widgets.grid.ListGrid;
+import com.smartgwt.client.widgets.grid.events.EditorEnterEvent;
+import com.smartgwt.client.widgets.grid.events.RowEditorEnterEvent;
 import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.menu.MenuItemIfFunction;
@@ -112,24 +114,24 @@ public class ActionItem extends MenuItem {
 	}
 
 	private void doAction() {
-		System.out.println("doAction-1");
+		Utils.debug("doAction-1");
 		final ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
-		System.out.println("doAction-2");
+		Utils.debug("doAction-2");
 		mainFormPane.setCurrentAction(formActionMD);
-		System.out.println("doAction-3");
+		Utils.debug("doAction-3");
 		String title = this.getFormActionMD().getDisplayName();
-		System.out.println("doAction-4");
+		Utils.debug("doAction-4");
 		try {
 			title = replaceBindVariables(title);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("doAction-5;" + grid.getEditRow());
+		Utils.debug("doAction-5;" + grid.getEditRow() + ";" + mainFormPane.getWarnButtonIdx());
 		// String xmlpUrl = GWT.getModuleBaseURL() + title;
 		title = mainFormPane.getFormMetadata().getFormName() + " - " + title;
 		int currRecSelected = mainFormPane.getMainForm().getSelectedRecord();
-		System.out.println("doAction-6:" + formActionMD.getType() + "; currRecSelected:" + currRecSelected);
+		Utils.debug("doAction-6:" + formActionMD.getType() + "; currRecSelected:" + currRecSelected);
 		// TODO Проблема при сохранении записи из контекстного меню в случае, если фокус не на данной форме.
 		if ("2".equals(formActionMD.getType())) {
 			// TODO Проблема с DynamicForm.ItemChangedHandler в хроме - приходится сохранять данные RichTextItem не по событию, а по
@@ -137,7 +139,7 @@ public class ActionItem extends MenuItem {
 			// сохранения
 			if (Utils.isChrome()) {
 				for (DynamicForm form : mainFormPane.getValuesManager().getMembers()) {
-					System.out.println("form: " + form);
+					Utils.debug("form: " + form);
 					for (FormItem formItem : form.getFields()) {
 						if (form.getItem(formItem.getName()) instanceof RichTextItem) {
 							// System.out.println(formItem.getValue());
@@ -147,15 +149,25 @@ public class ActionItem extends MenuItem {
 					}
 				}
 			}
-			grid.saveAllEdits();
+			Utils.debug("doAction-6-21;" + grid.hasChanges());
+			// TODO Убрать массовое сохранение для действий со статусным параметром - grid.saveAllEdits() - вещь в себе...
+			// if (1==2 && null == this.getFormActionMD().getStatusParameterName())
+			if (1 == 1) {
+				Utils.debug("doAction-6-21 - saveAllEdits;");
+				grid.saveAllEdits();
+			} else {
+				Utils.debug("doAction-6-21 - updateData;" + currRecSelected);
+				grid.updateData(grid.getRecord(currRecSelected));
+			}
+			Utils.debug("doAction-6-22;");
 		}
 		// New Record
 		else if ("1".equals(formActionMD.getType())) {
-			System.out.println("doAction-7:1.1");
+			Utils.debug("doAction-7:1.1");
 			grid.deselectAllRecords();
-			System.out.println("doAction-7:1.2");
+			Utils.debug("doAction-7:1.2");
 			grid.startEditingNew();
-			System.out.println("doAction-7:1.3");
+			Utils.debug("doAction-7:1.3");
 		}
 		// Remove records
 		else if ("3".equals(formActionMD.getType())) {
@@ -184,14 +196,21 @@ public class ActionItem extends MenuItem {
 			}
 		} // Custom PL/SQL
 		else if ("7".equals(formActionMD.getType())) {
-			System.out.println("Custom PL/SQL - start execution...");
+			Utils.debug("Custom PL/SQL - start execution...");
 			grid.updateData(grid.getRecord(currRecSelected));
-			System.out.println("Custom PL/SQL - end execution...");
+			Utils.debug("Custom PL/SQL - end execution...");
 		} // New Record
 		else if ("8".equals(formActionMD.getType())) {
-			System.out.println("New Record - start execution...");
-			grid.startEditing(mainFormPane.getSelectedRow(), 0, false);
-			System.out.println("New Record - end execution...");
+			// TODO - Смарты сломали редактирование в Режиме скрипта. В режиме хостед - все работает
+			Utils.debug("New Record - start execution...");
+			// /mm20110508 grid.startEditing(mainFormPane.getSelectedRow(), 0, false);
+			{
+				grid.fireEvent(new EditorEnterEvent(grid.getRecord(currRecSelected).getJsObj()));
+				grid.fireEvent(new RowEditorEnterEvent(grid.getJsObj()));
+				grid.startEditing(mainFormPane.getSelectedRow(), 0, false);
+			}
+
+			Utils.debug("New Record - end execution...");
 		} // Filter
 		else if ("9".equals(formActionMD.getType())) {
 			grid.setShowFilterEditor(!grid.getShowFilterEditor());
@@ -236,25 +255,23 @@ public class ActionItem extends MenuItem {
 			}
 		} // Export grid
 		else if ("12".equals(formActionMD.getType())) {
-			String actionUrl = replaceBindVariables(formActionMD.getSqlProcedureName(), ":");
+			// String actionUrl = formActionMD.getUrlText();
+			String actionUrl = null != formActionMD.getUrlText() ? formActionMD.getUrlText() : formActionMD.getSqlProcedureName();
+			actionUrl = Utils.replaceBindVariables(mainFormPane, actionUrl, ":");
 			actionUrl = null != actionUrl ? actionUrl : "xmlp?type=xslt" + "&ContentType=application/vnd.ms-excel"
 					+ "&contentDisposition=attachment" + "&filename=rep1.xls" + "&template=EXP";
 			mainFormPane.getMainForm().exportGrid(GWT.getModuleBaseURL() + actionUrl);
 
 		} // Open Url
 		else if ("15".equals(formActionMD.getType())) {
-			try {
-				String actionUrl = replaceBindVariables(formActionMD.getSqlProcedureName(), ":");
-				com.google.gwt.user.client.Window.open(GWT.getModuleBaseURL() + actionUrl, "", "");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			Utils.openURL(formActionMD, mainFormPane);
+			// Validation
 		} else if ("16".equals(formActionMD.getType())) {
 			mainFormPane.getMainForm().setNewRecDefaultValues(currRecSelected, false);
 		}
 		// /TEST ACTION 99
 		else if ("99".equals(formActionMD.getType())) {
-			//mainFormPane.hideTabBar();
+			// mainFormPane.hideTabBar();
 		}
 	}
 
@@ -319,32 +336,32 @@ public class ActionItem extends MenuItem {
 	}
 
 	public String replaceBindVariables(String str) {
-		return replaceBindVariables(str, "&");
+		return Utils.replaceBindVariables(mainFormPane, str, "&");
 	}
 
-	public String replaceBindVariables(String str, String chr) {
-		String result = str;
-		try {
-			FormColumnsArr fca = mainFormPane.getFormMetadata().getColumns();
-			if (null != str && str.contains(chr)) {
-				Iterator<Integer> itr = fca.keySet().iterator();
-				while (itr.hasNext()) {
-					String columnName = fca.get(itr.next()).getName();
-					// String columnValue = mainFormPane.getMainForm().getTreeGrid().getSelectedRecord().getAttribute(columnName);
-					ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
-					try {
-						String columnValue = grid.getSelectedRecord().getAttribute(columnName);
-						result = result.replaceAll(chr + columnName.toLowerCase() + chr, columnValue);
-						Utils.debug("columnName:" + columnName + "; columnValue:" + columnValue + "; result:" + result);
-					} catch (Exception e) {
-						Utils.debug("replaceBindVariables1. Error:" + e.getMessage());
-					}
-				}
-			}
-		} catch (Exception e) {
-			Utils.debug("replaceBindVariables. Error:" + e.getMessage());
-			e.printStackTrace();
-		}
-		return result;
-	}
+	// public String replaceBindVariables(String str, String chr) {
+	// String result = str;
+	// try {
+	// FormColumnsArr fca = mainFormPane.getFormMetadata().getColumns();
+	// if (null != str && str.contains(chr)) {
+	// Iterator<Integer> itr = fca.keySet().iterator();
+	// while (itr.hasNext()) {
+	// String columnName = fca.get(itr.next()).getName();
+	// // String columnValue = mainFormPane.getMainForm().getTreeGrid().getSelectedRecord().getAttribute(columnName);
+	// ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
+	// try {
+	// String columnValue = grid.getSelectedRecord().getAttribute(columnName);
+	// result = result.replaceAll(chr + columnName.toLowerCase() + chr, columnValue);
+	// Utils.debug("columnName:" + columnName + "; columnValue:" + columnValue + "; result:" + result);
+	// } catch (Exception e) {
+	// Utils.debug("replaceBindVariables1. Error:" + e.getMessage());
+	// }
+	// }
+	// }
+	// } catch (Exception e) {
+	// Utils.debug("replaceBindVariables. Error:" + e.getMessage());
+	// e.printStackTrace();
+	// }
+	// return result;
+	// }
 }

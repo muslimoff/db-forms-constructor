@@ -1,18 +1,19 @@
 package com.abssoft.constructor.client.metadata;
 
 import com.abssoft.constructor.client.ConstructorApp;
+import com.abssoft.constructor.client.data.DMLProcExecution;
 import com.abssoft.constructor.client.widgets.ActionStatusWindow;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ActionStatus implements IsSerializable {
 
 	public enum StatusType {
+		/* Ошибка */
+		ERROR("2"),
 		/* Успешно */
 		SUCCESS("0"),
 		/* Предупреждение */
-		WARNING("1"),
-		/* Ошибка */
-		ERROR("2");
+		WARNING("1");
 		private String value;
 
 		StatusType(String value) {
@@ -24,53 +25,85 @@ public class ActionStatus implements IsSerializable {
 		}
 	}
 
-	private String statusMessage = "";
+	private String longMessageText = "";
 	private StatusType statusType = StatusType.SUCCESS;
+	private String warnMsg = "";
+	private Integer warnButtonIdx = null;
 
 	public ActionStatus() {
 	}
 
-	public ActionStatus(String statusMessage, StatusType statusType) {
-		this.setStatusMessage(statusMessage);
+	public ActionStatus(String longMessageText, StatusType statusType) {
+		this.setLongMessageText(longMessageText);
 		this.setStatusType(statusType);
 	}
 
-	public void setStatusMessage(String statusMessage) {
-		this.statusMessage = statusMessage;
-	}
-
-	public String getStatusMessage() {
-		return statusMessage;
-	}
-
-	public void setStatusType(StatusType statusType) {
-		this.statusType = statusType;
+	public String getLongMessageText() {
+		return longMessageText;
 	}
 
 	public StatusType getStatusType() {
 		return statusType;
 	}
 
+	public String getWarnMsg() {
+		return warnMsg;
+	}
+
+	public void setLongMessageText(String longMessageText) {
+		this.longMessageText = longMessageText;
+	}
+
+	public void setStatusType(StatusType statusType) {
+		this.statusType = statusType;
+	}
+
+	public void setWarnMsg(String warnMsg) {
+		this.warnMsg = warnMsg;
+	}
+
 	public void showActionStatus() {
+		showActionStatus(null);
+	}
+
+	public void showActionStatus(DMLProcExecution dmlData) {
 		ActionStatus status = this;
 		if (null != status) {
-			String msg = status.getStatusMessage();
+			String msg = status.getLongMessageText();
 			String statusName = status.getStatusType().name();
 			String fullMsg = ": Message from server:\n" + msg;
 			// String shortMsg = (fullMsg.length() > 100) ? fullMsg.substring(0, 100) : fullMsg;
 			String shortMsg = (msg.length() > 100) ? msg.substring(0, 100) : msg;
-
 			if (StatusType.SUCCESS.equals(status.getStatusType())) {
-				if (!"".equals(msg)) {
-					if (ConstructorApp.debugEnabled) {
-						System.out.println(fullMsg);
-						ActionStatusWindow.createActionStatusWindow(statusName, shortMsg, fullMsg, status.getStatusType());
-					}
+				if (!"".equals(msg) && ConstructorApp.debugEnabled) {
+					System.out.println(fullMsg);
+					ActionStatusWindow.createActionStatusWindow(statusName, shortMsg, fullMsg, status.getStatusType(), "OK");
 				}
+			} else if (StatusType.WARNING.equals(status.getStatusType())) {
+				String warnMsg = status.getWarnMsg();
+				String[] strArr = warnMsg.split("`");
+				int btnsCnt = strArr.length - 1;
+				String[] btns = new String[btnsCnt];
+				System.arraycopy(strArr, 1, btns, 0, btnsCnt);
+				ActionStatusWindow.createActionStatusWindow(statusName, strArr[0], fullMsg, status.getStatusType(), dmlData, btns);
 			} else {
-				ActionStatusWindow.createActionStatusWindow(statusName, shortMsg, fullMsg, status.getStatusType());
+				String[] strArr = msg.replaceAll("ORA-[0-9]{5}:", "`").split("`");
+				// TODO - длинный текст ошибки все равно. Потому что
+				shortMsg = (msg.length() > 200) ? msg.substring(0, 200) : msg;
+				shortMsg = (2 > strArr.length) ? msg : strArr[1];
+
+				shortMsg = (shortMsg.length() > 200) ? shortMsg.substring(0, 200) : shortMsg;
+				ActionStatusWindow.createActionStatusWindow(statusName, shortMsg, fullMsg, status.getStatusType(), "Cancel");
 			}
 		}
 
+	}
+
+	public void setWarnButtonIdx(Integer warnButtonIdx) {
+		this.warnButtonIdx = warnButtonIdx;
+	}
+
+	public Integer getWarnButtonIdx() {
+		return warnButtonIdx;
 	}
 }

@@ -62,13 +62,13 @@ public class Utils {
 
 	public static void debug(String text) {
 		// Timer t = new Timer();
-		System.out.println(text);
+		 System.out.println(text);
 	}
 
 	public static void debug(String text, Row row) {
 		debug(text);
-		String currMsg = row.getStatus().getStatusMessage();
-		row.getStatus().setStatusMessage(currMsg + "\n" + text);
+		String currMsg = row.getStatus().getLongMessageText();
+		row.getStatus().setLongMessageText(currMsg + "\n" + text);
 	}
 
 	/******************************/

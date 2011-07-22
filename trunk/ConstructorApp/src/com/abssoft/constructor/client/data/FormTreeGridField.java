@@ -12,7 +12,10 @@ import com.smartgwt.client.types.ListGridFieldType;
 import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.grid.CellFormatter;
 import com.smartgwt.client.widgets.grid.HoverCustomizer;
+import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.events.ChangeEvent;
+import com.smartgwt.client.widgets.grid.events.ChangeHandler;
 import com.smartgwt.client.widgets.grid.events.ChangedEvent;
 import com.smartgwt.client.widgets.grid.events.ChangedHandler;
 import com.smartgwt.client.widgets.grid.events.EditorEnterEvent;
@@ -34,15 +37,22 @@ public class FormTreeGridField extends TreeGridField {
 			this.colName = colName;
 		}
 
+		// TODO Необоснованно вызывается для дат???
 		@Override
 		public void onChanged(ChangedEvent event) {
+			System.out.println("GridFieldChangedHandler.onChanged..." + event.getItem().getType());
 			if ("boolean".equals(event.getItem().getType())) {
 				getMainFormPane().getValuesManager().setValue(colName, "true".equals(event.getValue() + ""));
+			} else if ("date".equals(event.getItem().getType())) {
+				// System.out.println("c@@@@@@@@@event.getItem() xx..." + event.getItem().getValue());
+				// System.out.println("c@@@@@@@@@event.getItem() dt..." + (java.util.Date) event.getItem().getValue());
+				// System.out.println("c@@@@@@@@@event.getValue()yy..." + event.getValue());
+				// System.out.println("c@@@@@@@@@event.getValue()DT..." + (java.util.Date) event.getValue());
+				getMainFormPane().getValuesManager().setValue(colName, (java.util.Date) event.getValue());
 			} else {
 				getMainFormPane().getValuesManager().setValue(colName, event.getValue() + "");
 			}
 		}
-
 	}
 
 	private MyComboBoxItem cmbxItem = null;
@@ -78,6 +88,54 @@ public class FormTreeGridField extends TreeGridField {
 		// При редактировании грида изменять и значения в редакторе
 		this.addChangedHandler(new GridFieldChangedHandler(colName));
 
+		// //////////////Начало. Только для поиска проблемы захеривания дат \\\\\\\\\\\\\\\\\
+		// this.addEditorEnterHandler(new EditorEnterHandler() {
+		//
+		// @Override
+		// public void onEditorEnter(EditorEnterEvent event) {
+		// System.out.println("a@@@@@@@@@event.getClass():" + event.getClass());
+		// System.out.println("a@@@@@@@@@" + event.getValue());
+		// }
+		// });
+		// this.addChangeHandler(new ChangeHandler() {
+		//
+		// @Override
+		// public void onChange(ChangeEvent event) {
+		// System.out.println("b@@@@@@@@@event.getClass():" + event.getClass());
+		// System.out.println("b@@@@@@@@@" + event.getOldValue());
+		// System.out.println("b@@@@@@@@@" + event.getValue());
+		// }
+		// });
+
+		this.addEditorExitHandler(new EditorExitHandler() {
+
+			@Override
+			public void onEditorExit(EditorExitEvent event) {
+
+				System.out.println("d@@@@@@@@@event.getClass():" + event.getClass());
+				System.out.println("d@@@@@@@@@ getNewValue:" + event.getNewValue());
+				// System.out.println("d@@@@@@@@@ getNewValue" + event.getValue());
+				int rowNum = event.getRowNum();
+				int colNum = event.getColNum();
+				String[] attributes = event.getRecord().getAttributes();
+				for (int i = 0; i < attributes.length; i++) {
+					System.out.println("xxxxxxxxx>>" + i + "=" + attributes[i] + "; " + event.getRecord().getAttribute(attributes[i]));
+				}
+				System.out.println("d@@@@@@@@@ attributes:" + attributes);
+				String colName = attributes[colNum];
+				System.out.println("d@@@@@@@@@ colName:" + colName);
+				System.out.println("d@@@@@@@@@ colVal:" + event.getRecord().getAttribute(colName));
+				System.out.println("d@@@@@@@@@ event.getSource:" + event.getSource());
+				ListGridFieldType fieldType = mainFormPane.getMainForm().getTreeGrid().getField(colNum).getType();
+				System.out.println("d@@@@@@@@@ fieldType:" + fieldType);
+				if ("date".equals(fieldType.getValue())) {
+					System.out.println("d@@@@@@@@@ colValDT:" + event.getRecord().getAttributeAsDate(colName));
+				}
+				System.out.println("d@@@@@@@@@ rowNum:" + rowNum);
+				System.out.println("d@@@@@@@@@>>>" + mainFormPane.getMainForm().getTreeGrid().getEditValue(rowNum, colNum));
+			}
+		});
+		// //////////////Конец. Только для поиска проблемы захеривания дат.. потом удалить \\\\\\\\\\\\\\\\\
 		if ("N".equals(c.getDataType())) {
 			this.setType(ListGridFieldType.FLOAT);
 
@@ -85,7 +143,9 @@ public class FormTreeGridField extends TreeGridField {
 		if ("D".equals(c.getDataType())) {
 			// this.setDateFormatter(DateDisplayFormat.TOEUROPEANSHORTDATE);
 		}
-
+		// if ("S".equals(c.getDataType())) {
+		// TreeGridField fff = new TreeGridField();
+		// }
 		if ("3".equals(c.getFieldType())) {
 			this.setType(ListGridFieldType.IMAGE);
 		} else if ("4".equals(c.getFieldType())) {
@@ -122,14 +182,16 @@ public class FormTreeGridField extends TreeGridField {
 			// cbi.addChangedHandler(handler);
 		}
 
-
 		// 20101005-Перенос из GridComboBoxItem CellFormatter для накрываемых полей. Пофиг, даже если не лукап
 		final String lookupDisplValFld = columnMD.getLookupDisplayValue();
 		if (null != lookupDisplValFld) {
 			this.setCellFormatter(new CellFormatter() {
 				@Override
 				public String format(Object value, ListGridRecord record, int rowNum, int colNum) {
-					String result = (null != value) ? record.getAttribute(lookupDisplValFld) : null;
+					// 20110625 - косяк с обновлением записи. Проверено, работает нормально
+					String result = (null != value) ? mainFormPane.getMainForm().getTreeGrid().getEditedRecord(rowNum).getAttribute(
+							lookupDisplValFld) : null;
+					// String result = (null != value) ? record.getAttribute(lookupDisplValFld) : null;
 					return result;
 				}
 			});

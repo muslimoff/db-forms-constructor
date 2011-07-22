@@ -1,5 +1,6 @@
 package com.abssoft.constructor.client.widgets;
 
+import com.abssoft.constructor.client.data.DMLProcExecution;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.metadata.ActionStatus.StatusType;
 import com.smartgwt.client.types.Alignment;
@@ -24,7 +25,8 @@ import com.smartgwt.client.widgets.form.fields.ToolbarItem;
 
 public class ActionStatusWindow extends Window {
 	class MyDynamicForm extends DynamicForm {
-		MyDynamicForm(String title, String shortMsg, String longText, StatusType statusType) {
+		MyDynamicForm(String title, String shortMsg, String longText, final StatusType statusType, final DMLProcExecution dmlData,
+				String... buttonNames) {
 			int width = 400;
 
 			String icon = "say";
@@ -54,20 +56,45 @@ public class ActionStatusWindow extends Window {
 			});
 			ToolbarItem toolbar = new ToolbarItem();
 			toolbar.setAlign(Alignment.CENTER);
-			final IButton b = new IButton("OK");
-			b.setAlign(Alignment.CENTER);
-			b.addClickHandler(new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {
-					beforeClose();
-				}
-			});
-			b.addDrawHandler(new DrawHandler() {
-				public void onDraw(DrawEvent event) {
-					b.focus();
-				}
-			});
-			toolbar.setButtons(b);
+
+			IButton[] buttons = new IButton[buttonNames.length];
+			// Сбрасываем код нажатой кнопки
+			// if (null != dmlData) {
+			// dmlData.getMainFormPane().setWarnButtonIdx(null);
+			// }
+			for (int i = 0; i < buttonNames.length; i++) {
+				final int btnIdx = i;
+				final String btnName = buttonNames[btnIdx];
+				final IButton b = new IButton(btnName);
+
+				b.setAlign(Alignment.CENTER);
+				b.addClickHandler(new ClickHandler() {
+					@Override
+					public void onClick(ClickEvent event) {
+						System.out.println(">>>>>>>>>>btnIdx: " + btnIdx);
+						if (StatusType.WARNING.equals(statusType)) {
+							if (null != dmlData) {
+								// Устанвливаем код нажатой кнопки
+								dmlData.getMainFormPane().setWarnButtonIdx(btnIdx);
+								// com.google.gwt.user.client.Window.alert("2button name: " + btnName + "-" + btnIdx + "; "
+								// + dmlData.getMainFormPane().getWarnButtonIdx());
+								dmlData.getMainFormPane().getButtonsToolBar().actionItemsMap.get(
+										dmlData.getMainFormPane().getCurrentAction().getCode()).doActionWithConfirm();
+							}
+
+						}
+						beforeClose();
+					}
+				});
+				b.addDrawHandler(new DrawHandler() {
+					public void onDraw(DrawEvent event) {
+						b.focus();
+					}
+				});
+				buttons[i] = b;
+			}
+			// toolbar.setButtons(b);
+			toolbar.setButtons(buttons);
 			this.setMargin(10);
 			this.setFields(shortTextItem, toolbar, detailTextItem2);
 		}
@@ -75,15 +102,22 @@ public class ActionStatusWindow extends Window {
 
 	public static int windowsCount = 0;
 
-	public static ActionStatusWindow createActionStatusWindow(String title, String shortMsg, String longText, StatusType statusType) {
+	public static ActionStatusWindow createActionStatusWindow(String title, String shortMsg, String longText, StatusType statusType,
+			DMLProcExecution dmlData, String... buttonNames) {
 		Utils.debug(title + ": " + shortMsg);
 		Utils.debug(longText);
-		return new ActionStatusWindow(title, shortMsg, longText, statusType);
+		return new ActionStatusWindow(title, shortMsg, longText, statusType, dmlData, buttonNames);
+	}
+
+	public static ActionStatusWindow createActionStatusWindow(String title, String shortMsg, String longText, StatusType statusType,
+			String... buttonNames) {
+		return createActionStatusWindow(title, shortMsg, longText, statusType, null, buttonNames);
 	}
 
 	private boolean detailsDisplayed = false;
 
-	private ActionStatusWindow(String title, String shortMsg, String longText, StatusType statusType) {
+	private ActionStatusWindow(String title, String shortMsg, String longText, StatusType statusType, DMLProcExecution dmlData,
+			String... buttonNames) {
 
 		int width = 360;
 		int height = 150;
@@ -107,7 +141,7 @@ public class ActionStatusWindow extends Window {
 		this.setLeft(left);
 		this.setAutoSize(true);
 		// this.setOverflow(Overflow.)
-		final MyDynamicForm f = new MyDynamicForm(title, shortMsg, longText, statusType);
+		final MyDynamicForm f = new MyDynamicForm(title, shortMsg, longText, statusType, dmlData, buttonNames);
 		HeaderControl comment = new HeaderControl(HeaderControl.COMMENT, new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -132,4 +166,5 @@ public class ActionStatusWindow extends Window {
 		windowsCount--;
 		ActionStatusWindow.this.destroy();
 	}
+
 }

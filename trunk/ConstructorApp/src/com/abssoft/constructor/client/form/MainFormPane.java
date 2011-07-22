@@ -32,8 +32,17 @@ import com.smartgwt.client.widgets.tree.TreeGrid;
 
 public class MainFormPane extends Canvas {
 	public class FormValuesManager extends ValuesManager {
-		@Override
-		public void editRecord(Record record) {
+
+		public native void setValue(String fieldName, java.util.Date value)
+		/*-{
+			var self = this.@com.smartgwt.client.core.BaseClass::getOrCreateJsObj()();
+			var valueJS = @com.smartgwt.client.util.JSOHelper::convertToJavaScriptDate(Ljava/util/Date;)(value);
+			self.setValue(fieldName, valueJS);
+		}-*/;
+
+		// TODO Походу все заработало, кроме richTextItem????
+		// @Override
+		public void editRecord3(Record record) {
 			try {
 				super.editRecord(record);
 			} catch (Exception e) {
@@ -97,6 +106,9 @@ public class MainFormPane extends Canvas {
 	private FormActionMD currentAction = new FormActionMD();
 	private FormInstanceIdentifier instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId);
 	private boolean fromUrl = false;
+	private Integer warnButtonIdx = null;
+
+	// private Integer warnButtonIdx = null;
 
 	public MainFormPane() {
 	}
@@ -391,7 +403,7 @@ public class MainFormPane extends Canvas {
 	 * @return the currentGridRowSelected
 	 */
 	public int getSelectedRow() {
-		System.out.println("currentGridRowSelected:  " + selectedRow);
+		Utils.debug("currentGridRowSelected:  " + selectedRow);
 		return selectedRow;
 	}
 
@@ -587,4 +599,20 @@ public class MainFormPane extends Canvas {
 	public boolean isFromUrl() {
 		return fromUrl;
 	}
+
+	public void setWarnButtonIdx(Integer warnButtonIdx) {
+		this.warnButtonIdx = warnButtonIdx;
+	}
+
+	public Integer getWarnButtonIdx() {
+		return warnButtonIdx;
+	}
+
+	// public void setWarnButtonIdx(Integer warnButtonIdx) {
+	// this.warnButtonIdx = warnButtonIdx;
+	// }
+	//
+	// public Integer getWarnButtonIdx() {
+	// return warnButtonIdx;
+	// }
 }
