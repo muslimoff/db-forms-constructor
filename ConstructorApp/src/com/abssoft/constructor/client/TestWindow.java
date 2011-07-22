@@ -1,6 +1,8 @@
 package com.abssoft.constructor.client;
 
 import com.abssoft.constructor.client.common.TabSet;
+import com.abssoft.constructor.client.metadata.ActionStatus.StatusType;
+import com.abssoft.constructor.client.widgets.ActionStatusWindow;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.rednels.ofcgwt.client.ChartWidget;
@@ -12,6 +14,7 @@ import com.rednels.ofcgwt.client.model.elements.AreaChart;
 import com.rednels.ofcgwt.client.model.elements.BarChart;
 import com.rednels.ofcgwt.client.model.elements.BarChart.BarStyle;
 import com.rednels.ofcgwt.client.model.elements.LineChart.LineStyle;
+import com.smartgwt.client.types.Side;
 import com.smartgwt.client.types.TitleOrientation;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
@@ -130,10 +133,28 @@ public class TestWindow extends Window {
 		canvas.setWidth("10%");
 
 		tabSet.setWidth100();
+		tabSet.setTabBarPosition(Side.LEFT);
 		final RichTextItemIssueTab rit = new RichTextItemIssueTab();
+
+		String imgHTML = Canvas.imgHTML("[ISOMORPHIC]/resources/icons/database_connect.png");
+		System.out.println("imgHTML:" + imgHTML);
+		// TODO Rotate text:
+		// 1. http://snook.ca/archives/html_and_css/css-text-rotation
+		// 2. http://css3please.com/
+		String formTitle = "<span align=\"left\" style=\"{-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg);}\">" + imgHTML
+				+ "&nbsp;" + "Static" + "</span>";
+		System.out.println("formTitle:" + formTitle);
+		rit.setTitle(formTitle);
+
 		tabSet.addTab(rit);
 		tabSet.addTab(new ChartTab());
 		tabSet.addTab(new RadarChartTab());
+
+		// TestCase1
+		Tab testCase1Tab = new Tab("TestCase1");
+		testCase1Tab.setPane(new TestCase1());
+		tabSet.addTab(testCase1Tab);
+
 		HLayout vLayout = new HLayout();
 
 		IButton b = new IButton("xxx");
@@ -164,7 +185,10 @@ public class TestWindow extends Window {
 				// com.google.gwt.user.client.Window.open(rit.richTextItem.getValue().toString(), "File",
 				// "menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=250,height=150,navigation=no");
 				// com.google.gwt.user.client.Window.open("data:text/html;charset=utf-8, aaabbb", "_blank", "height=300,width=400");
-				tabSet.hideTabBar();
+				// tabSet.hideTabBar();
+
+				ActionStatusWindow.createActionStatusWindow("title", "short", "long", StatusType.WARNING);
+
 			}
 		});
 

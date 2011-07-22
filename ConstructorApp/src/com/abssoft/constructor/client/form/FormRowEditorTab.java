@@ -86,7 +86,7 @@ public class FormRowEditorTab extends FormTab {
 					// String itemName = item.getName();
 					// String itemType = item.getType();
 					Object itemValue = event.getItem().getValue();
-					Utils.debug("onItemChanged... " + itemName + "; " + itemType);
+					Utils.debug("FormRowEditorTab.onItemChanged... " + itemName + "; " + itemType);
 					ListGrid g = getMainFormPane().getMainForm().getTreeGrid();
 					int rn = getMainFormPane().getSelectedRow();
 					if ("boolean".equals(itemType)) {

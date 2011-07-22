@@ -11,7 +11,9 @@ import java.util.Map;
 import oracle.jdbc.OracleCallableStatement;
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
+import oracle.sql.CLOB;
 
+import com.abssoft.constructor.client.metadata.ActionStatus;
 import com.abssoft.constructor.client.metadata.Attribute;
 import com.abssoft.constructor.client.metadata.ColumnAction;
 import com.abssoft.constructor.client.metadata.ExportData;
@@ -77,6 +79,8 @@ public class Form {
 
 	public Row executeDML(int gridHashCode, Row oldRow, Row newRow, FormActionMD actMD) throws SQLException, Exception {
 		Row resultRow = null != newRow ? newRow : oldRow;
+		int msgParamIdx = -1;
+		String msgParamName = null;
 		Utils.debug("actionCode:" + actMD.getCode() + "; Type:" + actMD.getType(), resultRow);
 		{
 			String dmlProcText = actMD.getDmlProcText();
@@ -109,8 +113,9 @@ public class Form {
 				while (allParamsIterator.hasNext()) {
 					int paramNum = allParamsIterator.next();
 					int outParamType = Types.VARCHAR;
-
 					String paramName = actMD.getAllArgs().get(paramNum);
+					boolean isMsg = paramName.equals(actMD.getStatusParameterName());
+
 					if (isClobHM.containsKey(paramName)) {
 						outParamType = Types.CLOB;
 					}
@@ -136,16 +141,38 @@ public class Form {
 							outParamType = Types.VARCHAR;
 							stmnt.setString(paramNum, ((Boolean) val) ? "Y" : "N");
 						} else {
-							stmnt.setString(paramNum, (String) val);
+							if (isClobHM.containsKey(paramName)) {
+								Integer clobId = (null != val) ? Integer.valueOf((String) val) : null;
+								CLOB clb = formInstance.get(gridHashCode).getClobHM().get(clobId);
+								Utils.debug("clob: " + clb + "; clobId:" + clobId);
+								stmnt.setCLOB(paramNum, clb);
+							} else {
+								stmnt.setString(paramNum, (String) val);
+							}
 						}
 						Utils.debug("(" + (null != attr ? attr.getDataType() : null) + ")" + "IN:" + paramName + " => " + val + "; class:"
 								+ ((null != val) ? val.getClass() : "null") + "; is null:" + (val == null), resultRow);
+
+						// Передаем номер нажатой кнопки
+						if (isMsg && null != resultRow.getStatus().getWarnButtonIdx()) {
+							stmnt.setString(paramNum, resultRow.getStatus().getWarnButtonIdx() + "");
+						}
 					}
+
 					if (actMD.getOutputs().containsKey(paramNum)) {
-						Utils.debug("registerOutParameter. paramNum:" + paramNum + "; outParamType:" + outParamType, resultRow);
+						// boolean isMsg = paramName.equals(actMD.getStatusParameterName());
+						Utils.debug("registerOutParameter. paramName: " + paramName + "; paramNum:" + paramNum + "; outParamType:"
+								+ outParamType + "; isMessageParameter:" + isMsg, resultRow);
 						((OracleCallableStatement) stmnt).registerOutParameter(paramNum, outParamType);
+						// Фиксируем OUT-параметр сообщения (поле StatusParameterName)
+						if (isMsg) {
+							msgParamIdx = paramNum;
+							msgParamName = paramName;
+						}
+
 					}
 				}
+
 				stmnt.execute();
 				// Цикл по OUT-параметрам. P_OLD_ параметры не обрабатываются - предполагается, что они только IN
 				for (int j = 0; j < resultRow.size(); j++) {
@@ -162,6 +189,17 @@ public class Form {
 						Utils.debug("(" + dataType + ")" + "OUT:" + colName + " => " + attr.getAttribute() + "; is null:"
 								+ (null == attr.getAttribute()), resultRow);
 						resultRow.put(j, attr);
+					}
+				}
+				// Обрвботка сообщения
+				if (msgParamIdx != -1) {
+					String msgText = stmnt.getString(msgParamIdx);
+					if (!"".equals(msgText) && null != msgText) {
+						ActionStatus status = resultRow.getStatus();
+						status.setLongMessageText(status.getLongMessageText() + "\n" + "WarningMsg (" + msgParamName + "): " + msgText);
+						status.setStatusType(ActionStatus.StatusType.WARNING);
+						status.setWarnMsg(msgText);
+						resultRow.setStatus(status);
 					}
 				}
 				stmnt.close();
@@ -332,6 +370,13 @@ public class Form {
 				actionData.setShowSeparatorBelow("Y".equals(actRs.getString("show_separator_below")));
 				actionData.setDisplayOnToolbar("Y".equals(actRs.getString("display_on_toolbar")));
 				actionData.setChildFormCode(actRs.getString("child_form_code"));
+
+				// actionData.setUrlText(actRs.getString("url_text"));
+				actionData.setUrlText(Utils.bindVarsToLowerCase(actRs.getString("url_text"), "(?i):[\\w]+", ":", ":"));
+
+				actionData.setParentActionCode(actRs.getString("parent_action_code"));
+				actionData.setStatusParameterName(actRs.getString("status_parameter_name"));
+				actionData.setDisplayInContextMenu("Y".equals(actRs.getString("display_in_context_menu")));
 				result.add(actionData);
 
 			}

@@ -122,9 +122,9 @@ public class FormDataSource extends GwtRpcDataSource {
 						}
 
 					}
-//					if (mainFormPane.getMainForm().isExport) {
-//						mainFormPane.getMainForm().exportData();
-//					}
+					// if (mainFormPane.getMainForm().isExport) {
+					// mainFormPane.getMainForm().exportData();
+					// }
 				} else {
 					mainFormPane.filterDetailData(null, grid, -1);
 					if (0 != dynFormsCount) {
@@ -137,11 +137,12 @@ public class FormDataSource extends GwtRpcDataSource {
 		});
 	}
 
+	// TODO При добавлении с АУТ-параметрами - исчезает запись.
 	@Override
 	protected void executeAdd(final String requestId, final DSRequest request, final DSResponse response) {
 		DMLProcExecution addProcExec = new DMLProcExecution(mainFormPane) {
 			@Override
-			public void executeSubProc() {
+			public void executeSuccessSubProc() {
 				response.setData(new TreeNode[] { Utils.getTreeNodeFromRow(dsFields, this.getResultRow()) });
 				processResponse(requestId, response);
 				totalRows = totalRows + 1;
@@ -157,7 +158,7 @@ public class FormDataSource extends GwtRpcDataSource {
 	protected void executeRemove(final String requestId, final DSRequest request, final DSResponse response) {
 		DMLProcExecution removeProcExec = new DMLProcExecution(mainFormPane) {
 			@Override
-			public void executeSubProc() {
+			public void executeSuccessSubProc() {
 				// We do not receive removed record from server. Return record from request.
 				response.setData(new ListGridRecord[] { new ListGridRecord(request.getData()) });
 				processResponse(requestId, response);
@@ -176,7 +177,8 @@ public class FormDataSource extends GwtRpcDataSource {
 
 		DMLProcExecution updateProcExec = new DMLProcExecution(mainFormPane) {
 			@Override
-			public void executeSubProc() {
+			public void executeSuccessSubProc() {
+				System.out.println("executeUpdate.executeWarningSubProc");
 				response.setData(new ListGridRecord[] { Utils.getTreeNodeFromRow(dsFields, getResultRow()) });
 				try {
 					ResultSet rs = lGrid.getResultSet();
@@ -190,6 +192,11 @@ public class FormDataSource extends GwtRpcDataSource {
 				int selectedRecIdx = lGrid.getRecordIndex(selectedRec);
 				mainFormPane.filterDetailData(selectedRec, lGrid, selectedRecIdx);
 			}
+
+			@Override
+			public void executeWarningSubProc() {
+				System.out.println("executeUpdate.executeWarningSubProc");
+			};
 		};
 
 		Record oldValues = request.getOldValues();

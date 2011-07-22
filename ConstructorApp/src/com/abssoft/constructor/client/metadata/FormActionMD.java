@@ -17,6 +17,10 @@ public class FormActionMD implements IsSerializable {
 	private Boolean showSeparatorBelow;
 	private Boolean displayOnToolbar;
 	private String childFormCode;
+	private String urlText;
+	private String parentActionCode;
+	private String statusParameterName;
+	private Boolean displayInContextMenu;
 
 	private HashMap<Integer, String> inputs = new HashMap<Integer, String>();
 
@@ -223,6 +227,41 @@ public class FormActionMD implements IsSerializable {
 
 	public HashMap<Integer, String> getAllDataTypes() {
 		return allDataTypes;
+	}
+
+	public void setUrlText(String urlText) {
+		this.urlText = urlText;
+	}
+
+	public String getUrlText() {
+		return urlText;
+		// mm20110722 - обратная совместимость - раньше URL хранился в sqlProcedureName для действий 12 и 15
+		// String actionUrl = (null == urlText) ? sqlProcedureName : urlText;
+		// return actionUrl;
+	}
+
+	public void setParentActionCode(String parentActionCode) {
+		this.parentActionCode = parentActionCode;
+	}
+
+	public String getParentActionCode() {
+		return parentActionCode;
+	}
+
+	public void setStatusParameterName(String statusParameterName) {
+		this.statusParameterName = statusParameterName;
+	}
+
+	public String getStatusParameterName() {
+		return statusParameterName;
+	}
+
+	public void setDisplayInContextMenu(Boolean displayInContextMenu) {
+		this.displayInContextMenu = displayInContextMenu;
+	}
+
+	public Boolean getDisplayInContextMenu() {
+		return displayInContextMenu;
 	}
 
 }

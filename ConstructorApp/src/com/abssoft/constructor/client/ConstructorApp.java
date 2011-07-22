@@ -129,7 +129,7 @@ public class ConstructorApp implements EntryPoint {
 		Window.addWindowClosingHandler(new Window.ClosingHandler() {
 			@Override
 			public void onWindowClosing(ClosingEvent event) {
-				// TODO Научиться не перечитывать, если приложение уже открыто и передается только идентификатор новой формы
+				// TODO Научиться не перечитывать, если приложение уже открыто и передается только идентификатор новой формы (OEBS URL например)
 				if (debugEnabled)
 					event.setMessage(com.google.gwt.user.client.Window.Location.getHref());
 			}
@@ -202,7 +202,7 @@ public class ConstructorApp implements EntryPoint {
 			@Override
 			public void onClick(MenuItemClickEvent event) {
 				ActionStatusWindow.createActionStatusWindow("wwwwwwww", this.getClass().getName(), this.toString(),
-						ActionStatus.StatusType.SUCCESS);
+						ActionStatus.StatusType.SUCCESS, "Ok");
 				// new RestfulDataSourceSample();
 			}
 		});

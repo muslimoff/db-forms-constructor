@@ -14,7 +14,9 @@ import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.MapPair;
 import com.abssoft.constructor.client.form.MainFormPane;
 import com.abssoft.constructor.client.metadata.Attribute;
+import com.abssoft.constructor.client.metadata.FormActionMD;
 import com.abssoft.constructor.client.metadata.FormColumnMD;
+import com.abssoft.constructor.client.metadata.FormColumnsArr;
 import com.abssoft.constructor.client.metadata.IconsArr;
 import com.abssoft.constructor.client.metadata.Row;
 import com.abssoft.constructor.client.widgets.GridComboBoxItem;
@@ -405,8 +407,8 @@ public class Utils {
 		ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		Record record;
 		int editRowIdx = grid.getEditRow();
-		System.out.println("getEditedRow: editRowIdx=" + editRowIdx);
-		System.out.println("getEditedRow: getCurrentGridRowSelected=" + mainFormPane.getSelectedRow());
+		Utils.debug("getEditedRow: editRowIdx=" + editRowIdx);
+		Utils.debug("getEditedRow: getCurrentGridRowSelected=" + mainFormPane.getSelectedRow());
 		if (-1 != editRowIdx) {
 			mainFormPane.setSelectedRow(editRowIdx);
 			record = grid.getEditedRecord(editRowIdx);
@@ -497,6 +499,42 @@ public class Utils {
 			row.add(value);
 		}
 		return row;
+	}
+
+	public static String replaceBindVariables(MainFormPane mainFormPane, String str, String chr) {
+		String result = str;
+		try {
+			FormColumnsArr fca = mainFormPane.getFormMetadata().getColumns();
+			if (null != str && str.contains(chr)) {
+				Iterator<Integer> itr = fca.keySet().iterator();
+				while (itr.hasNext()) {
+					String columnName = fca.get(itr.next()).getName();
+					// String columnValue = mainFormPane.getMainForm().getTreeGrid().getSelectedRecord().getAttribute(columnName);
+					ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
+					try {
+						String columnValue = grid.getSelectedRecord().getAttribute(columnName);
+						result = result.replaceAll(chr + columnName.toLowerCase() + chr, columnValue);
+						Utils.debug("columnName:" + columnName + "; columnValue:" + columnValue + "; result:" + result);
+					} catch (Exception e) {
+						Utils.debug("replaceBindVariables1. Error:" + e.getMessage());
+					}
+				}
+			}
+		} catch (Exception e) {
+			Utils.debug("replaceBindVariables. Error:" + e.getMessage());
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public static void openURL(FormActionMD formActionMD, MainFormPane mainFormPane) {
+		try {
+			String actionUrl = null != formActionMD.getUrlText() ? formActionMD.getUrlText() : formActionMD.getSqlProcedureName();
+			actionUrl = Utils.replaceBindVariables(mainFormPane, actionUrl, ":");
+			com.google.gwt.user.client.Window.open(GWT.getModuleBaseURL() + actionUrl, "", "");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	static public native String getComputedStyleProperty(Element el, String property)
