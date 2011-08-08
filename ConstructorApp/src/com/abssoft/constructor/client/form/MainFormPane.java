@@ -106,9 +106,6 @@ public class MainFormPane extends Canvas {
 	private FormActionMD currentAction = new FormActionMD();
 	private FormInstanceIdentifier instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId);
 	private boolean fromUrl = false;
-	private Integer warnButtonIdx = null;
-
-	// private Integer warnButtonIdx = null;
 
 	public MainFormPane() {
 	}
@@ -599,20 +596,4 @@ public class MainFormPane extends Canvas {
 	public boolean isFromUrl() {
 		return fromUrl;
 	}
-
-	public void setWarnButtonIdx(Integer warnButtonIdx) {
-		this.warnButtonIdx = warnButtonIdx;
-	}
-
-	public Integer getWarnButtonIdx() {
-		return warnButtonIdx;
-	}
-
-	// public void setWarnButtonIdx(Integer warnButtonIdx) {
-	// this.warnButtonIdx = warnButtonIdx;
-	// }
-	//
-	// public Integer getWarnButtonIdx() {
-	// return warnButtonIdx;
-	// }
 }

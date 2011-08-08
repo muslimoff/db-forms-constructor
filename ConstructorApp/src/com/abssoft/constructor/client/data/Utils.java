@@ -29,6 +29,7 @@ import com.smartgwt.client.types.FieldType;
 import com.smartgwt.client.util.JSOHelper;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.grid.ListGrid;
+import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.tree.TreeNode;
 
 public class Utils {
@@ -90,7 +91,6 @@ public class Utils {
 			// if (dsFields[c].isTreeTitle()) {
 			// listGridRecord.setTitle(cellValue);
 			// }
-
 		}
 
 		return result;
@@ -184,7 +184,7 @@ public class Utils {
 						}
 					} else {
 						try {
-							fVal = record.getAttributeAsFloat(colName);
+							fVal = null != record.getAttribute(colName) ? record.getAttributeAsFloat(colName) : null;
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -501,40 +501,65 @@ public class Utils {
 		return row;
 	}
 
-	public static String replaceBindVariables(MainFormPane mainFormPane, String str, String chr) {
+	public static String replaceBindVariables(MainFormPane mainFormPane, ListGridRecord selectedRecord, String str, String chr) {
 		String result = str;
+		Utils.debug("replaceBindVariables1. selectedRecord:" + selectedRecord);
 		try {
 			FormColumnsArr fca = mainFormPane.getFormMetadata().getColumns();
 			if (null != str && str.contains(chr)) {
 				Iterator<Integer> itr = fca.keySet().iterator();
 				while (itr.hasNext()) {
 					String columnName = fca.get(itr.next()).getName();
-					// String columnValue = mainFormPane.getMainForm().getTreeGrid().getSelectedRecord().getAttribute(columnName);
-					ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 					try {
-						String columnValue = grid.getSelectedRecord().getAttribute(columnName);
+						String columnValue = selectedRecord.getAttribute(columnName);
 						result = result.replaceAll(chr + columnName.toLowerCase() + chr, columnValue);
 						Utils.debug("columnName:" + columnName + "; columnValue:" + columnValue + "; result:" + result);
 					} catch (Exception e) {
 						Utils.debug("replaceBindVariables1. Error:" + e.getMessage());
+						e.printStackTrace();
 					}
 				}
 			}
 		} catch (Exception e) {
-			Utils.debug("replaceBindVariables. Error:" + e.getMessage());
+			Utils.debug("replaceBindVariables. Error:" + e.getMessage() + "\n" + e);
 			e.printStackTrace();
 		}
 		return result;
 	}
 
-	public static void openURL(FormActionMD formActionMD, MainFormPane mainFormPane) {
-		try {
-			String actionUrl = null != formActionMD.getUrlText() ? formActionMD.getUrlText() : formActionMD.getSqlProcedureName();
-			actionUrl = Utils.replaceBindVariables(mainFormPane, actionUrl, ":");
-			com.google.gwt.user.client.Window.open(GWT.getModuleBaseURL() + actionUrl, "", "");
-		} catch (Exception e) {
-			e.printStackTrace();
+	public static String replaceBindVariables(MainFormPane mainFormPane, String str, String chr) {
+		return Utils.replaceBindVariables(mainFormPane, mainFormPane.getMainForm().getTreeGrid().getSelectedRecord(), str, chr);
+	}
+
+	// public static String replaceBindVariables(MainFormPane mainFormPane, ListGridRecord selectedRecord, String str) {
+	// return Utils.replaceBindVariables(mainFormPane, selectedRecord, str, "&");
+	// }
+
+	public static String replaceBindVariables(MainFormPane mainFormPane, String str) {
+		return Utils.replaceBindVariables(mainFormPane, str, "&");
+	}
+
+	// //
+	public static void openURL(FormActionMD formActionMD, ListGridRecord selectedRecord, MainFormPane mainFormPane) {
+		if (null != formActionMD.getUrlText()) {
+			System.out.println("111<<<<<<<<<<<<<<<<<<<<>>>>>>>>selectedRecord: " + selectedRecord);
+			try {
+				String actionUrl = null != formActionMD.getUrlText() ? formActionMD.getUrlText() : formActionMD.getSqlProcedureName();
+				actionUrl = Utils.replaceBindVariables(mainFormPane, selectedRecord, actionUrl, ":");
+				com.google.gwt.user.client.Window.open(GWT.getModuleBaseURL() + actionUrl, "", "");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			// System.out.println("ssssssssssssssssssssssssssssssssssssssssssss");
 		}
+	}
+
+	// openURL Для нестрочных действий (напр. Refresh), когда берем первую попавшуюся выбранную строку
+	public static void openURL2(FormActionMD formActionMD, MainFormPane mainFormPane) {
+		System.out
+				.println("222<<<<<<<<<<<<<<<<<<<<>>>>>>>>selectedRecord: " + mainFormPane.getMainForm().getTreeGrid().getSelectedRecord());
+		openURL(formActionMD, mainFormPane.getMainForm().getTreeGrid().getSelectedRecord(), mainFormPane);
 	}
 
 	static public native String getComputedStyleProperty(Element el, String property)

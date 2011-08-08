@@ -8,16 +8,12 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class ActionStatus implements IsSerializable {
 
 	public enum StatusType {
-		/* Ошибка */
-		ERROR("2"),
-		/* Успешно */
-		SUCCESS("0"),
-		/* Предупреждение */
-		WARNING("1");
+		ERROR("2"), SUCCESS("0"), WARNING("1"), CANCEL("3");
 		private String value;
 
 		StatusType(String value) {
 			this.value = value;
+
 		}
 
 		public String getValue() {
@@ -28,7 +24,7 @@ public class ActionStatus implements IsSerializable {
 	private String longMessageText = "";
 	private StatusType statusType = StatusType.SUCCESS;
 	private String warnMsg = "";
-	private Integer warnButtonIdx = null;
+	private Integer warnButtonIdx = -1;
 
 	public ActionStatus() {
 	}
@@ -77,7 +73,7 @@ public class ActionStatus implements IsSerializable {
 			if (StatusType.SUCCESS.equals(status.getStatusType())) {
 				if (!"".equals(msg) && ConstructorApp.debugEnabled) {
 					System.out.println(fullMsg);
-					ActionStatusWindow.createActionStatusWindow(statusName, shortMsg, fullMsg, status.getStatusType(), "OK");
+					ActionStatusWindow.createActionStatusWindow(statusName, shortMsg, fullMsg, status.getStatusType(), dmlData, "OK");
 				}
 			} else if (StatusType.WARNING.equals(status.getStatusType())) {
 				String warnMsg = status.getWarnMsg();
@@ -93,7 +89,7 @@ public class ActionStatus implements IsSerializable {
 				shortMsg = (2 > strArr.length) ? msg : strArr[1];
 
 				shortMsg = (shortMsg.length() > 200) ? shortMsg.substring(0, 200) : shortMsg;
-				ActionStatusWindow.createActionStatusWindow(statusName, shortMsg, fullMsg, status.getStatusType(), "Cancel");
+				ActionStatusWindow.createActionStatusWindow(statusName, shortMsg, fullMsg, status.getStatusType(), dmlData, "Cancel");
 			}
 		}
 
@@ -101,6 +97,11 @@ public class ActionStatus implements IsSerializable {
 
 	public void setWarnButtonIdx(Integer warnButtonIdx) {
 		this.warnButtonIdx = warnButtonIdx;
+	}
+
+	public void setWarnButtonIdx(String warnButtonIdx) {
+		System.out.println(">>>> " + warnButtonIdx);
+		this.warnButtonIdx = (null == warnButtonIdx) ? null : Integer.valueOf(warnButtonIdx);
 	}
 
 	public Integer getWarnButtonIdx() {

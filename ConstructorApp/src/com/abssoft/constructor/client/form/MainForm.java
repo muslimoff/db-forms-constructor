@@ -243,7 +243,7 @@ class MainForm extends Canvas {
 					@Override
 					public void onRecordDoubleClick(RecordDoubleClickEvent event) {
 						try {
-							mainFormPane.getButtonsToolBar().getDoubleClickActItem().doActionWithConfirm();
+							mainFormPane.getButtonsToolBar().getDoubleClickActItem().doActionWithConfirm(event.getRecordNum());
 						} catch (Exception e) {
 							e.printStackTrace();
 							Window.alert("treeGrid.addRecordDoubleClickHandler: " + e.getMessage());

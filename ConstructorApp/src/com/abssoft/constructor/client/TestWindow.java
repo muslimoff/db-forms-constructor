@@ -187,7 +187,7 @@ public class TestWindow extends Window {
 				// com.google.gwt.user.client.Window.open("data:text/html;charset=utf-8, aaabbb", "_blank", "height=300,width=400");
 				// tabSet.hideTabBar();
 
-				ActionStatusWindow.createActionStatusWindow("title", "short", "long", StatusType.WARNING);
+				ActionStatusWindow.createActionStatusWindow("title", "short", "long", StatusType.WARNING, null, "Ok");
 
 			}
 		});

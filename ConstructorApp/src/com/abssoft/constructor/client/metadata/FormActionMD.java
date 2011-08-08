@@ -19,8 +19,11 @@ public class FormActionMD implements IsSerializable {
 	private String childFormCode;
 	private String urlText;
 	private String parentActionCode;
-	private String statusParameterName;
 	private Boolean displayInContextMenu;
+	private Boolean autoCommit;
+	private String statusButtonParam;
+	private String statusMsgLevelParam;
+	private String statusMsgTxtParam;
 
 	private HashMap<Integer, String> inputs = new HashMap<Integer, String>();
 
@@ -248,20 +251,44 @@ public class FormActionMD implements IsSerializable {
 		return parentActionCode;
 	}
 
-	public void setStatusParameterName(String statusParameterName) {
-		this.statusParameterName = statusParameterName;
-	}
-
-	public String getStatusParameterName() {
-		return statusParameterName;
-	}
-
 	public void setDisplayInContextMenu(Boolean displayInContextMenu) {
 		this.displayInContextMenu = displayInContextMenu;
 	}
 
 	public Boolean getDisplayInContextMenu() {
 		return displayInContextMenu;
+	}
+
+	public void setAutoCommit(Boolean autoCommit) {
+		this.autoCommit = autoCommit;
+	}
+
+	public Boolean getAutoCommit() {
+		return autoCommit;
+	}
+
+	public void setStatusButtonParam(String statusButtonParam) {
+		this.statusButtonParam = statusButtonParam;
+	}
+
+	public String getStatusButtonParam() {
+		return statusButtonParam;
+	}
+
+	public void setStatusMsgLevelParam(String statusMsgLevelParam) {
+		this.statusMsgLevelParam = statusMsgLevelParam;
+	}
+
+	public String getStatusMsgLevelParam() {
+		return statusMsgLevelParam;
+	}
+
+	public void setStatusMsgTxtParam(String statusMsgTxtParam) {
+		this.statusMsgTxtParam = statusMsgTxtParam;
+	}
+
+	public String getStatusMsgTxtParam() {
+		return statusMsgTxtParam;
 	}
 
 }

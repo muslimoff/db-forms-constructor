@@ -12,10 +12,7 @@ import com.smartgwt.client.types.ListGridFieldType;
 import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.grid.CellFormatter;
 import com.smartgwt.client.widgets.grid.HoverCustomizer;
-import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
-import com.smartgwt.client.widgets.grid.events.ChangeEvent;
-import com.smartgwt.client.widgets.grid.events.ChangeHandler;
 import com.smartgwt.client.widgets.grid.events.ChangedEvent;
 import com.smartgwt.client.widgets.grid.events.ChangedHandler;
 import com.smartgwt.client.widgets.grid.events.EditorEnterEvent;
@@ -87,7 +84,7 @@ public class FormTreeGridField extends TreeGridField {
 
 		// При редактировании грида изменять и значения в редакторе
 		this.addChangedHandler(new GridFieldChangedHandler(colName));
-
+		// TODO - недорешил с исчезновением дат при выходе из нередактированного поля даты
 		// //////////////Начало. Только для поиска проблемы захеривания дат \\\\\\\\\\\\\\\\\
 		// this.addEditorEnterHandler(new EditorEnterHandler() {
 		//
@@ -111,28 +108,31 @@ public class FormTreeGridField extends TreeGridField {
 
 			@Override
 			public void onEditorExit(EditorExitEvent event) {
-
-				System.out.println("d@@@@@@@@@event.getClass():" + event.getClass());
-				System.out.println("d@@@@@@@@@ getNewValue:" + event.getNewValue());
-				// System.out.println("d@@@@@@@@@ getNewValue" + event.getValue());
-				int rowNum = event.getRowNum();
-				int colNum = event.getColNum();
-				String[] attributes = event.getRecord().getAttributes();
-				for (int i = 0; i < attributes.length; i++) {
-					System.out.println("xxxxxxxxx>>" + i + "=" + attributes[i] + "; " + event.getRecord().getAttribute(attributes[i]));
-				}
-				System.out.println("d@@@@@@@@@ attributes:" + attributes);
-				String colName = attributes[colNum];
-				System.out.println("d@@@@@@@@@ colName:" + colName);
-				System.out.println("d@@@@@@@@@ colVal:" + event.getRecord().getAttribute(colName));
-				System.out.println("d@@@@@@@@@ event.getSource:" + event.getSource());
-				ListGridFieldType fieldType = mainFormPane.getMainForm().getTreeGrid().getField(colNum).getType();
-				System.out.println("d@@@@@@@@@ fieldType:" + fieldType);
-				if ("date".equals(fieldType.getValue())) {
-					System.out.println("d@@@@@@@@@ colValDT:" + event.getRecord().getAttributeAsDate(colName));
-				}
-				System.out.println("d@@@@@@@@@ rowNum:" + rowNum);
-				System.out.println("d@@@@@@@@@>>>" + mainFormPane.getMainForm().getTreeGrid().getEditValue(rowNum, colNum));
+				// try {
+				// System.out.println("d@@@@@@@@@event.getClass():" + event.getClass());
+				// System.out.println("d@@@@@@@@@ getNewValue:" + event.getNewValue());
+				// // System.out.println("d@@@@@@@@@ getNewValue" + event.getValue());
+				// int rowNum = event.getRowNum();
+				// int colNum = event.getColNum();
+				// String[] attributes = event.getRecord().getAttributes();
+				// for (int i = 0; i < attributes.length; i++) {
+				// System.out.println("xxxxxxxxx>>" + i + "=" + attributes[i] + "; " + event.getRecord().getAttribute(attributes[i]));
+				// }
+				// System.out.println("d@@@@@@@@@ attributes:" + attributes);
+				// String colName = attributes[colNum];
+				// System.out.println("d@@@@@@@@@ colName:" + colName);
+				// System.out.println("d@@@@@@@@@ colVal:" + event.getRecord().getAttribute(colName));
+				// System.out.println("d@@@@@@@@@ event.getSource:" + event.getSource());
+				// ListGridFieldType fieldType = mainFormPane.getMainForm().getTreeGrid().getField(colNum).getType();
+				// System.out.println("d@@@@@@@@@ fieldType:" + fieldType);
+				// if ("date".equals(fieldType.getValue())) {
+				// System.out.println("d@@@@@@@@@ colValDT:" + event.getRecord().getAttributeAsDate(colName));
+				// }
+				// System.out.println("d@@@@@@@@@ rowNum:" + rowNum);
+				// System.out.println("d@@@@@@@@@>>>" + mainFormPane.getMainForm().getTreeGrid().getEditValue(rowNum, colNum));
+				// } catch (Exception e) {
+				// e.printStackTrace();
+				// }
 			}
 		});
 		// //////////////Конец. Только для поиска проблемы захеривания дат.. потом удалить \\\\\\\\\\\\\\\\\
@@ -214,7 +214,7 @@ public class FormTreeGridField extends TreeGridField {
 				this.addEditorEnterHandler(new EditorEnterHandler() {
 					@Override
 					public void onEditorEnter(EditorEnterEvent event) {
-						mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm();
+						mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm(event.getRowNum());
 					}
 				});
 			}
@@ -223,7 +223,7 @@ public class FormTreeGridField extends TreeGridField {
 				this.addEditorExitHandler(new EditorExitHandler() {
 					@Override
 					public void onEditorExit(EditorExitEvent event) {
-						mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm();
+						mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm(event.getRowNum());
 					}
 				});
 			}
@@ -265,7 +265,8 @@ public class FormTreeGridField extends TreeGridField {
 							String keyVal = event.getValue() + "";
 							String dispVal = event.getItem().getDisplayValue();
 							if (!keyVal.equals(dispVal))
-								mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm();
+								mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm(
+										event.getRowNum());
 						} catch (Exception e) {
 							e.printStackTrace();
 							Utils.debug(e.getMessage());

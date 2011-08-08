@@ -79,8 +79,8 @@ public class Form {
 
 	public Row executeDML(int gridHashCode, Row oldRow, Row newRow, FormActionMD actMD) throws SQLException, Exception {
 		Row resultRow = null != newRow ? newRow : oldRow;
-		int msgParamIdx = -1;
-		String msgParamName = null;
+		// String statusMsgLevelParamName = null;
+		// String statusMsgTxtParamName = null;
 		Utils.debug("actionCode:" + actMD.getCode() + "; Type:" + actMD.getType(), resultRow);
 		{
 			String dmlProcText = actMD.getDmlProcText();
@@ -114,7 +114,6 @@ public class Form {
 					int paramNum = allParamsIterator.next();
 					int outParamType = Types.VARCHAR;
 					String paramName = actMD.getAllArgs().get(paramNum);
-					boolean isMsg = paramName.equals(actMD.getStatusParameterName());
 
 					if (isClobHM.containsKey(paramName)) {
 						outParamType = Types.CLOB;
@@ -152,31 +151,23 @@ public class Form {
 						}
 						Utils.debug("(" + (null != attr ? attr.getDataType() : null) + ")" + "IN:" + paramName + " => " + val + "; class:"
 								+ ((null != val) ? val.getClass() : "null") + "; is null:" + (val == null), resultRow);
-
-						// Передаем номер нажатой кнопки
-						if (isMsg && null != resultRow.getStatus().getWarnButtonIdx()) {
-							stmnt.setString(paramNum, resultRow.getStatus().getWarnButtonIdx() + "");
-						}
 					}
 
 					if (actMD.getOutputs().containsKey(paramNum)) {
-						// boolean isMsg = paramName.equals(actMD.getStatusParameterName());
 						Utils.debug("registerOutParameter. paramName: " + paramName + "; paramNum:" + paramNum + "; outParamType:"
-								+ outParamType + "; isMessageParameter:" + isMsg, resultRow);
+								+ outParamType, resultRow);
 						((OracleCallableStatement) stmnt).registerOutParameter(paramNum, outParamType);
-						// Фиксируем OUT-параметр сообщения (поле StatusParameterName)
-						if (isMsg) {
-							msgParamIdx = paramNum;
-							msgParamName = paramName;
-						}
 
 					}
 				}
 
+				// Обработка сообщения
+				ActionStatus.StatusType msgLvl = ActionStatus.StatusType.SUCCESS;
+				String msgText = null;
 				stmnt.execute();
 				// Цикл по OUT-параметрам. P_OLD_ параметры не обрабатываются - предполагается, что они только IN
 				for (int j = 0; j < resultRow.size(); j++) {
-					System.out.println(">>>" + resultRow.get(j).getDataType());
+					// System.out.println(">>>" + resultRow.get(j).getDataType());
 					String colName = "P_" + formMetaData.getColumns().get(j).getName();
 					if (actMD.getOutputsByName().containsKey(colName)) {
 						String dataType = resultRow.get(j).getDataType();
@@ -189,21 +180,41 @@ public class Form {
 						Utils.debug("(" + dataType + ")" + "OUT:" + colName + " => " + attr.getAttribute() + "; is null:"
 								+ (null == attr.getAttribute()), resultRow);
 						resultRow.put(j, attr);
+
+						// Обработка сообщения
+						if (colName.equals("P_" + actMD.getStatusMsgLevelParam())) {
+							// statusMsgLevelParamName = "P_" + colName;
+							String msgLvlTxt = attr.getAttribute();
+							msgLvl = null == msgLvlTxt ? ActionStatus.StatusType.WARNING : ActionStatus.StatusType.valueOf(msgLvlTxt);
+						}
+
+						if (colName.equals("P_" + actMD.getStatusMsgTxtParam())) {
+							// statusMsgTxtParamName = "P_" + colName;
+							msgText = attr.getAttribute();
+						}
+
 					}
 				}
-				// Обрвботка сообщения
-				if (msgParamIdx != -1) {
-					String msgText = stmnt.getString(msgParamIdx);
-					if (!"".equals(msgText) && null != msgText) {
-						ActionStatus status = resultRow.getStatus();
-						status.setLongMessageText(status.getLongMessageText() + "\n" + "WarningMsg (" + msgParamName + "): " + msgText);
-						status.setStatusType(ActionStatus.StatusType.WARNING);
-						status.setWarnMsg(msgText);
-						resultRow.setStatus(status);
-					}
-				}
+				// Обработка сообщения
+				// if (!"".equals(msgText) && null != msgText) {
+				ActionStatus status = resultRow.getStatus();
+				// String longTxt = status.getLongMessageText() + "\n";
+				// longTxt = longTxt + "StatusTxt(" + statusMsgTxtParamName + "): " + msgText;
+				// longTxt = longTxt + "StatusLvl(" + statusMsgLevelParamName + "): " + msgLvl;
+				// status.setLongMessageText(longTxt);
+				status.setStatusType(msgLvl);
+				status.setWarnMsg(msgText);
+				status.setWarnButtonIdx((Integer) null);
+				resultRow.setStatus(status);
+
+				// }
 				stmnt.close();
-				getConnection().commit();
+				if (actMD.getAutoCommit()) {
+					Utils.debug("Auto Commit complete...", resultRow);
+					getConnection().commit();
+				} else {
+					Utils.debug("Auto Commit disabled...", resultRow);
+				}
 				// ----------------------------------
 
 			}
@@ -370,15 +381,15 @@ public class Form {
 				actionData.setShowSeparatorBelow("Y".equals(actRs.getString("show_separator_below")));
 				actionData.setDisplayOnToolbar("Y".equals(actRs.getString("display_on_toolbar")));
 				actionData.setChildFormCode(actRs.getString("child_form_code"));
-
-				// actionData.setUrlText(actRs.getString("url_text"));
 				actionData.setUrlText(Utils.bindVarsToLowerCase(actRs.getString("url_text"), "(?i):[\\w]+", ":", ":"));
-
 				actionData.setParentActionCode(actRs.getString("parent_action_code"));
-				actionData.setStatusParameterName(actRs.getString("status_parameter_name"));
 				actionData.setDisplayInContextMenu("Y".equals(actRs.getString("display_in_context_menu")));
-				result.add(actionData);
+				actionData.setAutoCommit("Y".equals(actRs.getString("autocommit")));
+				actionData.setStatusButtonParam(actRs.getString("status_button_param"));
+				actionData.setStatusMsgLevelParam(actRs.getString("status_msg_level_param"));
+				actionData.setStatusMsgTxtParam(actRs.getString("status_msg_txt_param"));
 
+				result.add(actionData);
 			}
 			actRs.close();
 			statement.close();

@@ -58,10 +58,6 @@ public class ActionStatusWindow extends Window {
 			toolbar.setAlign(Alignment.CENTER);
 
 			IButton[] buttons = new IButton[buttonNames.length];
-			// Сбрасываем код нажатой кнопки
-			// if (null != dmlData) {
-			// dmlData.getMainFormPane().setWarnButtonIdx(null);
-			// }
 			for (int i = 0; i < buttonNames.length; i++) {
 				final int btnIdx = i;
 				final String btnName = buttonNames[btnIdx];
@@ -71,17 +67,10 @@ public class ActionStatusWindow extends Window {
 				b.addClickHandler(new ClickHandler() {
 					@Override
 					public void onClick(ClickEvent event) {
-						System.out.println(">>>>>>>>>>btnIdx: " + btnIdx);
-						if (StatusType.WARNING.equals(statusType)) {
-							if (null != dmlData) {
-								// Устанвливаем код нажатой кнопки
-								dmlData.getMainFormPane().setWarnButtonIdx(btnIdx);
-								// com.google.gwt.user.client.Window.alert("2button name: " + btnName + "-" + btnIdx + "; "
-								// + dmlData.getMainFormPane().getWarnButtonIdx());
-								dmlData.getMainFormPane().getButtonsToolBar().actionItemsMap.get(
-										dmlData.getMainFormPane().getCurrentAction().getCode()).doActionWithConfirm();
-							}
-
+						Utils.debug(">>>>>> MyDynamicForm.IButton.onClick >>>>>>>>>>btnIdx: " + btnIdx + "; dmlData:" + dmlData);
+						if (null != dmlData) {
+							Utils.debug("null != dmlData; statusType:" + statusType);
+							dmlData.processActionStatusWindow(statusType, btnIdx);
 						}
 						beforeClose();
 					}
@@ -107,11 +96,6 @@ public class ActionStatusWindow extends Window {
 		Utils.debug(title + ": " + shortMsg);
 		Utils.debug(longText);
 		return new ActionStatusWindow(title, shortMsg, longText, statusType, dmlData, buttonNames);
-	}
-
-	public static ActionStatusWindow createActionStatusWindow(String title, String shortMsg, String longText, StatusType statusType,
-			String... buttonNames) {
-		return createActionStatusWindow(title, shortMsg, longText, statusType, null, buttonNames);
 	}
 
 	private boolean detailsDisplayed = false;
