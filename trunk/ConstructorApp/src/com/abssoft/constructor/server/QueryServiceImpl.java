@@ -211,10 +211,12 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 				sessionidRS.close();
 				sessionStmnt.close();
 			}
+			// mm20110724 Выключил автокоммит сессии для управления комитом на уровне действий (FormActionMD.autoCommit)
+			connection.setAutoCommit(false);
 			Session session = new Session(connection, serverInfoMD);
 			session.setScript(isScript);
-			//session.setFcSchemaOwner(serverInfoMD.getFcSchemaOwner());
-			
+			// session.setFcSchemaOwner(serverInfoMD.getFcSchemaOwner());
+
 			// Custom Login Validation
 			System.out.println("serverInfoMD.isTransferPassToClient():" + serverInfoMD.isTransferPassToClient());
 			if (!serverInfoMD.isTransferPassToClient()) {
@@ -292,12 +294,17 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 			if (!"3".equals(actMD.getType())
 			// !ClientActionType.DEL.equals(clientActionType)
 			) {
-				newRow.setStatus(new ActionStatus(e.getMessage(), ActionStatus.StatusType.ERROR));
+
 				r = newRow;
 			} else {
-				oldRow.setStatus(new ActionStatus(e.getMessage(), ActionStatus.StatusType.ERROR));
 				r = oldRow;
 			}
+			ActionStatus actionStatus = r.getStatus();
+			actionStatus.setStatusType(ActionStatus.StatusType.ERROR);
+			String longMessageText = actionStatus.getLongMessageText();
+			longMessageText = e.getMessage() + "\n-------------------------\n" + longMessageText;
+			actionStatus.setLongMessageText(longMessageText);
+			r.setStatus(actionStatus);
 			return r;
 		}
 	}

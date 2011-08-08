@@ -17,6 +17,11 @@ public class Row extends HashMap<Integer, Attribute> implements IsSerializable {
 	 */
 	private ActionStatus status = new ActionStatus();
 
+	/*
+	 * boolean isStatusBtn = paramName.equals(actMD.getStatusButtonParam()); boolean isStatusMsgLevel =
+	 * paramName.equals(actMD.getStatusMsgLevelParam()); boolean isStatusMsgTxt = paramName.equals(actMD.getStatusMsgTxtParam());
+	 */
+
 	/**
 	 * @param serverMessage
 	 *            the status to set

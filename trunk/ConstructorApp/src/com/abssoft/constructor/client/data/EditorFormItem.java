@@ -137,7 +137,8 @@ public class EditorFormItem extends FormItem {
 				@Override
 				public void onKeyPress(KeyPressEvent event) {
 					if ("Enter".equals(event.getKeyName())) {
-						mainFormPane.getButtonsToolBar().actionItemsMap.get(c.getEditorOnEnterKeyAction()).doActionWithConfirm();
+						mainFormPane.getButtonsToolBar().actionItemsMap.get(c.getEditorOnEnterKeyAction()).doActionWithConfirm(
+								mainFormPane.getSelectedRow());
 					}
 				}
 			});
@@ -161,7 +162,8 @@ public class EditorFormItem extends FormItem {
 				item.addFocusHandler(new FocusHandler() {
 					@Override
 					public void onFocus(FocusEvent event) {
-						mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm();
+						mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm(
+								mainFormPane.getSelectedRow());
 					}
 				});
 			}
@@ -171,7 +173,8 @@ public class EditorFormItem extends FormItem {
 
 					@Override
 					public void onBlur(BlurEvent event) {
-						mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm();
+						mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm(
+								mainFormPane.getSelectedRow());
 					}
 				});
 

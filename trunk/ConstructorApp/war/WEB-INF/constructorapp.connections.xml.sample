@@ -1,0 +1,240 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root attribute1="x" attribute2="y">
+<!-- variables: validationFN, fc_schema_owner, db_username -->
+	<dbConnections>
+		<defaultValues
+			dbusername="FORMS_CONSTRUCTOR"
+			fcSchemaOwner="FORMS_CONSTRUCTOR"
+			debug="true"
+			validationFN="&amp;fc_schema_owner..users_pkg.validate_login"
+			title="Forms Constructor" />
+
+		<server id="1"
+				display="AppAdmin (FC22)" 
+				default="true" 
+				fcSchemaOwner="FC22" 
+				dbusername="FC22">
+			ap.bas.kz:1521:XE
+		</server>
+
+		<server id="2"
+				display="Bas UserLogin" 
+				dbusername="INS"
+				dbpassword="INS" 
+				allowuserchange="false"
+				debug="true"
+				title="Ins KO"
+				default="false"
+				fcSchemaOwner="FC22">
+			ap.bas.kz:1521:XE
+		</server>
+		
+		<server	id="3"
+				display="NBAPPLPR">
+			10.0.14.10:1521:APPLPR
+		</server>
+		
+		<server id="4"
+				display="DemoLocal">
+			apps.abssoft.kz:1522:DEMO12i
+		</server>
+
+		<server id="5"
+				display="BAS_11">
+			apps.ba-solutions.kz:1522:DEMO
+		</server>
+		
+		<server id="6"
+				display="VM_XE" 
+			default="true">
+			VM_XE:1521:XE
+		</server>
+		
+		<server id="7"
+				display="VIS12">
+			rdbms.abssoft.kz:1524:VIS12
+		</server>
+		
+		<server id="8"
+				display="VIS12_IP">
+			192.168.110.3:1524:VIS12
+		</server>
+		
+		<server id="9"
+				display="EPM-Конструктор" 
+				allowuserchange="false"
+				debug="true" 
+				title="EPM - Forms Constructor">
+			hypo:1521:epm
+		</server>
+		
+		<server id="10"
+				display="EPM_EXT-Конструктор" 
+				allowuserchange="false"
+				default="true" 
+				debug="true" 
+				title="EPM Ext - Forms Constructor">
+			hypo:8521:epm
+		</server>
+		
+		<server id="11"
+				display="EPM_RATES-Тарифы" 
+				dbusername="APP_RATES"
+				default="true" 
+				dbpassword="" 
+				allowuserchange="false" 
+				debug="true"
+				title="Формирование тарифов на медицинские услуги">
+			hypo:1521:epm
+		</server>
+
+		<server id="12"
+				display="EPM_RATES_EXT-Тарифы" 
+				dbusername="APP_RATES"
+				dbpassword="A" 
+				allowuserchange="false" 
+				debug="true"
+				title="Формирование тарифов на медицинские услуги">
+			hypo:8521:epm
+		</server>
+		
+		<server id="13"
+				display="FC VM_XE" 
+				default="true" 
+				fcSchemaOwner="FC" 
+				dbusername="FC">
+			VM_XE:1521:XE
+		</server>
+		
+		<server id="14"
+				display="FC22 VM_XE" 
+				default="true" 
+				fcSchemaOwner="FC22" 
+				dbusername="FC22">
+			localhost:1521:XE
+		</server>
+
+        <server id="15"
+				display="FC BAS_XE" 
+				default="false" 
+				fcSchemaOwner="FC" 
+				dbusername="FC">
+			my.bas.kz:1521:XE
+		</server>
+
+		<server id="16"
+				display="KC FC" 
+				default="false" 
+				fcSchemaOwner="FC22" 
+				dbusername="APPS"
+				dbpassword="APPS"
+				allowuserchange="false"
+				validationFN="xxfnd_apps_utils_pkg.validate_ebs_login">
+			oebsdbala.air-astana.net:1521:OEBSPROD</server>
+
+		<server id="17"
+				display="KO Ins" 
+				dbusername="INS"
+				dbpassword="INS" 
+				allowuserchange="false"
+				debug="true"
+				title="Ins KO"
+				default="false"
+				fcSchemaOwner="FC22">
+			VM_XE:1521:XE
+		</server>
+		
+		<server id="18"
+				display="VIS12_full">
+			<![CDATA[
+			(DESCRIPTION =
+				(ADDRESS_LIST=
+					(ADDRESS = (PROTOCOL = TCP)(HOST = rdbms.abssoft.kz)(PORT = 1524)
+					)
+				)
+				(CONNECT_DATA =(SID = VIS12)(SERVER = DEDICATED)
+				)
+			)
+			]]>
+		</server>
+		<server id="19"
+				display="EPM_N-Конструктор"
+				allowuserchange="false"
+				fcSchemaOwner="FC"
+				dbusername="FC"
+				debug="true"
+				title="EPM - Forms Constructor">
+			hypo:1521:epmn
+		</server> 
+		<server id="20"
+				display="EPM_EXT_N-Конструктор"
+				allowuserchange="false"
+				fcSchemaOwner="FC"
+				dbusername="FC"
+				default="true"
+				debug="true"
+				title="EPM Ext - Forms Constructor">
+			hypo:8521:epmn
+		</server> 
+		<server id="21"
+				display="EPM_RATES_N-Тарифы N"
+				dbusername="APP_RATES"
+				default="true"
+				dbpassword=""
+				allowuserchange="false"
+				debug="false"
+				fcSchemaOwner="FC"
+				title="N - Формирование тарифов на медицинские услуги">
+			hypo:1521:epmn
+		</server> 
+		<server id="22"
+				display="EPM_RATES_EXT_N-Тарифы N"
+				dbusername="APP_RATES"
+				fcSchemaOwner="FC"
+				dbpassword="A"
+				allowuserchange="false"
+				debug="true"
+				title="N - Формирование тарифов на медицинские услуги">
+			hypo:1521:epmn
+		</server>
+		<server id="23"
+				display="EPMLN"
+				allowuserchange="true"
+				fcSchemaOwner="FC"
+				dbusername="FC"
+				debug="true"
+				title="EPMLN">
+			ob:1521:epmln
+		</server>
+		
+		<server id="24"
+			display="Admin KO" 
+			default="false" 
+			fcSchemaOwner="FC22" 
+			dbusername="FC22">
+			ko:1521:XE
+		</server>
+
+		<server id="25"
+			display="SOS Ins" 
+			dbusername="INS"
+			dbpassword="ins" 
+			allowuserchange="false"
+			debug="true"
+			title="Ins SOS"
+			default="true"
+			fcSchemaOwner="FC22">
+			ko:1521:XE
+		</server>
+
+	</dbConnections>
+	
+	<metadataQuery>
+		<!--menusSQLOld-->
+		<sqlStatement name="metadataSQL">
+			<![CDATA[
+				SELECT * FROM &fc_schema_owner..global_params
+			]]>
+		</sqlStatement>
+	</metadataQuery>
+</root>
