@@ -53,6 +53,9 @@ public class ActionItem extends MenuItem {
 		this.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(MenuItemClickEvent event) {
+				//Так надо - по всем строкам.
+				//doActionWithConfirm(mainFormPane.getSelectedRow());
+				//TODO - теперь проблема - не выполняется openUrl
 				doActionWithConfirm(null);
 			}
 		});
@@ -64,6 +67,7 @@ public class ActionItem extends MenuItem {
 			button.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
+					//doActionWithConfirm(mainFormPane.getSelectedRow());
 					doActionWithConfirm(null);
 				}
 			});

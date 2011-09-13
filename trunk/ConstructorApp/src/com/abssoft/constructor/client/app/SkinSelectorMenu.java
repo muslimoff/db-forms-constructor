@@ -12,7 +12,7 @@ import com.smartgwt.client.widgets.menu.events.ClickHandler;
 import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
 
 public class SkinSelectorMenu extends MenuItem {
-	public SkinSelectorMenu() {
+	private static LinkedHashMap<String, String> getSkinsList() {
 		LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
 		valueMap.put("Enterprise", "Enterprise");
 		valueMap.put("EnterpriseBlue", "Enterprise Blue");
@@ -23,19 +23,35 @@ public class SkinSelectorMenu extends MenuItem {
 		valueMap.put("fleet", "Fleet");
 		valueMap.put("Cupertino", "Cupertino");
 		valueMap.put("standard", "Standard");
+		return valueMap;
+	}
+
+	public SkinSelectorMenu() {
+		this(getSkinsList());
+		// this.
+	}
+
+	public SkinSelectorMenu(LinkedHashMap<String, String> valueMap) {
+		this.setTitle("Skins");
+		this.setIcon("[ISOMORPHIC]/resources/icons/" + "layers.png");
+		setItems(valueMap);
+	}
+
+	public void setItems(LinkedHashMap<String, String> valueMap) {
+		LinkedHashMap<String, String> valueMapIntr = 0 == valueMap.size() ? getSkinsList() : valueMap;
 		final Menu skinsSM = new Menu();
 		String currentSkin = Cookies.getCookie("skin");
 		if (currentSkin == null) {
-			currentSkin = "EnterpriseBlue";
+			currentSkin = "Enterprise";
 			Cookies.setCookie("skin", currentSkin);
 		}
-		Iterator<String> menuIterator = valueMap.keySet().iterator();
-		int formsCount = valueMap.size();
+		Iterator<String> menuIterator = valueMapIntr.keySet().iterator();
+		int formsCount = valueMapIntr.size();
 		MenuItem[] menuItems = new MenuItem[formsCount];
 		int i = 0;
 		while (menuIterator.hasNext()) {
 			String itrVal = menuIterator.next();
-			final MenuItem mi = new MenuItem(valueMap.get(itrVal));
+			final MenuItem mi = new MenuItem(valueMapIntr.get(itrVal));
 			mi.setAttribute("skin#", itrVal);
 			if (itrVal.equals(currentSkin))
 				mi.setChecked(true);
@@ -62,8 +78,5 @@ public class SkinSelectorMenu extends MenuItem {
 		}
 		skinsSM.setItems(menuItems);
 		this.setSubmenu(skinsSM);
-		this.setTitle("Skins");
-		this.setIcon("[ISOMORPHIC]/resources/icons/" + "layers.png");
 	}
-
 }

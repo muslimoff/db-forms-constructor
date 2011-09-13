@@ -27,8 +27,9 @@ import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.FormItemValueFormatter;
-import com.smartgwt.client.widgets.form.fields.FilterCriteriaFunction;
 import com.smartgwt.client.widgets.form.fields.FormItem;
+import com.smartgwt.client.widgets.form.fields.FormItemCriteriaFunction;
+import com.smartgwt.client.widgets.form.fields.FormItemFunctionContext;
 import com.smartgwt.client.widgets.grid.CellFormatter;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
@@ -51,12 +52,13 @@ public class GridComboBoxItem extends MyComboBoxItem {
 			Utils.debug("ComboBoxDataSource.executeFetch 1");
 			try {
 				Utils.debug("ComboBoxDataSource.executeFetch 2");
+				// cr.addCriteria(userTypedVarName, (String) userTypedValue);
 				cr.addCriteria(getMainFormCriteria());
 			} catch (Exception e) {
 				Utils.debug("ComboBoxDataSource.executeFetch 3");
 				Utils.debug("Exception on request.getCriteria().getValues():" + e.getMessage());
 			}
-			cr.addCriteria(userTypedVarName, userTypedValue);
+
 			int startRow = 0;
 			int endRow = 1000;
 			String sortBy = null;
@@ -78,6 +80,8 @@ public class GridComboBoxItem extends MyComboBoxItem {
 			QueryServiceAsync service = GWT.create(QueryService.class);
 			Utils.debug("ComboBoxDataSource.executeFetch 11:" + userTypedValue);
 			LinkedHashMap<String, Object> crMap = Utils.getHashMapFromCriteria(cr);
+			Utils.debug("ComboBoxDataSource.executeFetch 11A");
+			crMap.put(userTypedVarName, userTypedValue);
 			Utils.debug("ComboBoxDataSource.executeFetch 12");
 			// TODO вынести в XML параметров endRow - фактически размер лова.
 			service.fetch(instanceIdentifier, sortBy, startRow, endRow, crMap, false, new DSAsyncCallback<RowsArr>(requestId, response,
@@ -204,9 +208,10 @@ public class GridComboBoxItem extends MyComboBoxItem {
 		lookupDataSource.setValueFieldNum(valueFieldNum);
 		lookupDataSource.setFields(mfp.getFormColumns().createDSFields());
 		setOptionDataSource(lookupDataSource);
-		this.setPickListFilterCriteriaFunction(new FilterCriteriaFunction() {
+		this.setPickListFilterCriteriaFunction(new FormItemCriteriaFunction() {
+
 			@Override
-			public Criteria getCriteria() {
+			public Criteria getCriteria(FormItemFunctionContext itemContext) {
 				// 11
 				Criteria cr = getMainFormCriteria();
 				// Criteria cr = new Criteria();
@@ -217,7 +222,8 @@ public class GridComboBoxItem extends MyComboBoxItem {
 				Object value = null;
 				try {
 					Utils.debug("setPickListFilterCriteriaFunction 2");
-					value = GridComboBoxItem.this.getValue();
+					value = itemContext.getFormItem().getValue();
+					// value = GridComboBoxItem.this.getValue();
 					Utils.debug("setPickListFilterCriteriaFunction 3");
 				} catch (Exception e) {
 					Utils.debug("setPickListFilterCriteriaFunction 4:" + e.getMessage());
@@ -233,6 +239,36 @@ public class GridComboBoxItem extends MyComboBoxItem {
 				return cr;
 			}
 		});
+		// this.setPickListFilterCriteriaFunction(new FilterCriteriaFunction() {
+		// @Override
+		// public Criteria getCriteria() {
+		// // 11
+		// Criteria cr = getMainFormCriteria();
+		// // Criteria cr = new Criteria();
+		// // Добавляем введенные пользователем данные, если вводил руками...
+		// Utils.debug("setPickListFilterCriteriaFunction 1");
+		// userTypedValue = null;
+		// // TODO - не работат... getFilterWithValue();
+		// Object value = null;
+		// try {
+		// Utils.debug("setPickListFilterCriteriaFunction 2");
+		// value = GridComboBoxItem.this.getValue();
+		// Utils.debug("setPickListFilterCriteriaFunction 3");
+		// } catch (Exception e) {
+		// Utils.debug("setPickListFilterCriteriaFunction 4:" + e.getMessage());
+		// // e.printStackTrace();
+		// ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
+		// value = grid.getEditedCell(grid.getEditRow(), columnMD.getName());
+		// Utils.debug("setPickListFilterCriteriaFunction 5");
+		// }
+		// userTypedValue = (null != value) ? value.toString() : null;
+		// Utils.debug("setPickListFilterCriteriaFunction 6:" + userTypedValue);
+		// // 11 cr.addCriteria(userTypedVarName, userTypedValue);
+		// Utils.debug("setPickListFilterCriteriaFunction 7:" + userTypedValue);
+		// return cr;
+		// }
+		// });
+
 		// TODO Вынести в классы FormTreeGridField и FormRowEditorTab.createItem
 		if (null == formTreeGridField) {
 			this.setFetchMissingValues(true);
@@ -278,7 +314,8 @@ public class GridComboBoxItem extends MyComboBoxItem {
 			// }
 			// });
 			if (null == lookupDisplValFld) {
-				lookupDataSource.fetchData();
+				// !! lookupDataSource.fetchData();
+				lookupDataSource.fetchData(null, null);
 				formTreeGridField.setCellFormatter(new CellFormatter() {
 					@Override
 					public String format(Object value, ListGridRecord record, int rowNum, int colNum) {

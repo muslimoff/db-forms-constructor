@@ -51,7 +51,7 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 					public void onSuccess(StaticLookupsArr result) {
 						ConstructorApp.staticLookupsArr = result;
 						System.out.println(result);
-						//openFormsFromURL();
+						// openFormsFromURL();
 					}
 				});
 				ConnectWindow.this.hide();
@@ -70,20 +70,20 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 	private ConstructorApp сonstructorApp;
 
 	// TODO Parameters
-//	public void openFormsFromURL1() {
-//		List<String> formList = ConstructorApp.urlParams.get("app.form");
-//		if (null != formList) {
-//			for (int i = 0; i < formList.size(); i++) {
-//				String formCode = formList.get(i);
-//				Utils.debug("Form, that will be open (" + i + "): \"" + formCode + "\"");
-//				if (formCode != null && ConstructorApp.formNameArr.containsKey(formCode)) {
-//					Utils.debug("Form opening (" + i + "):" + formCode);
-//					MainFormContainer mfc = new MainFormContainer(FormTab.TabType.MAIN, ConstructorApp.tabSet, formCode);
-//					mfc.getMainFormPane().setFromUrl(true);
-//				}
-//			}
-//		}
-//	}
+	// public void openFormsFromURL1() {
+	// List<String> formList = ConstructorApp.urlParams.get("app.form");
+	// if (null != formList) {
+	// for (int i = 0; i < formList.size(); i++) {
+	// String formCode = formList.get(i);
+	// Utils.debug("Form, that will be open (" + i + "): \"" + formCode + "\"");
+	// if (formCode != null && ConstructorApp.formNameArr.containsKey(formCode)) {
+	// Utils.debug("Form opening (" + i + "):" + formCode);
+	// MainFormContainer mfc = new MainFormContainer(FormTab.TabType.MAIN, ConstructorApp.tabSet, formCode);
+	// mfc.getMainFormPane().setFromUrl(true);
+	// }
+	// }
+	// }
+	// }
 
 	public ConnectWindow(final ConstructorApp сonstructorApp) {
 		this.сonstructorApp = сonstructorApp;
@@ -157,6 +157,8 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 				}
 				serverSelectItem.setValueMap(valueMap);
 				setValues(defaultServerInfoArrIdx);
+				// 20110911
+				ConstructorApp.skinSelectorMenu.setItems(result.getSkinsList());
 
 				// UserName & Password from URL Parameters
 				String userName = com.google.gwt.user.client.Window.Location.getParameter("app.userName");

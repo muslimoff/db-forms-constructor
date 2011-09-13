@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <module rename-to="constructorapp">
 	<inherits name='com.google.gwt.user.User' />
-	<inherits name="com.google.gwt.i18n.I18N"/>
-	<extend-property name="locale" values="en"/>
-	<extend-property name="locale" values="ru_RU"/>
+	<inherits name="com.google.gwt.i18n.I18N" />
+	<extend-property name="locale" values="en" />
+	<extend-property name="locale" values="ru_RU" />
 	<inherits name="com.google.gwt.core.Core" />
 	<inherits name="com.google.gwt.user.History" />
 	<inherits name="com.rednels.ofcgwt.OFCGWT" />
-	<inherits name="com.smartgwt.SmartGwtNoScript" />
 
+	<!--
+		<inherits name="com.smartgwt.SmartGwtNoScript"/> <inherits
+		name="com.smartgwt.tools.SmartGwtTools"/> <inherits
+		name="com.smartclient.theme.enterprise.EnterpriseResources"/>
+		<inherits
+		name="com.smartclient.theme.enterpriseblue.EnterpriseBlueResources"/>
+		<inherits name="com.smartclient.theme.graphite.GraphiteResources"/>
+		<inherits
+		name="com.smartclient.theme.simplicity.SimplicityResources"/>
+	-->
+
+	<inherits name="com.smartgwt.SmartGwtNoScript" />
 	<inherits name="com.smartclient.theme.enterprise.EnterpriseResources" />
 	<inherits
 		name="com.smartclient.theme.enterpriseblue.EnterpriseBlueResources" />
 	<inherits name="com.smartclient.theme.graphite.GraphiteResources" />
+	<inherits name="com.smartclient.theme.mobile.MobileResources" />
+	<inherits name="com.smartclient.theme.simplicity.SimplicityResources" />
 	<inherits name="com.smartclient.theme.blackops.BlackOpsResources" />
 	<inherits name="com.smartclient.theme.silverwave.SilverWaveResources" />
 	<inherits name="com.smartclient.theme.treefrog.TreeFrogResources" />
@@ -22,7 +35,7 @@
 	<inherits name="com.smartclient.theme.standart.standartResources" />
 
 	<inherits name="com.smartgwt.tools.SmartGwtTools" />
-
+	<!--	-->
 	<entry-point class="com.abssoft.constructor.client.ConstructorApp" />
 	<servlet class="com.abssoft.constructor.server.QueryServiceImpl"
 		path="/query" />

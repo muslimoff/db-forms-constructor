@@ -171,10 +171,19 @@ public class MainFormPane extends Canvas {
 	// }
 
 	public void createDetailForms() {
+		System.out.println("createDetailForms... ###################################");
 		String fc = this.getFormCode();
 		String formTitle = FormTab.getIconTitle(ConstructorApp.formNameArr.get(fc), ConstructorApp.formIconArr.get(fc));
+
+		System.out.println("createDetailForms. sideDetailFormsContainer before: " + sideDetailFormsContainer);
+
 		sideDetailFormsContainer = new DetailFormsContainer(this, Orientation.HORIZONTAL);
+
+		System.out.println("createDetailForms. sideDetailFormsContainer: " + sideDetailFormsContainer);
+
 		bottomDetailFormsContainer = new DetailFormsContainer(this, Orientation.VERTICAL);
+
+		System.out.println("createDetailForms. bottomDetailFormsContainer: " + bottomDetailFormsContainer);
 
 		HLayout gridAndFormLayout = new HLayout();
 		gridAndFormLayout.setMargin(0);
@@ -264,6 +273,8 @@ public class MainFormPane extends Canvas {
 		Utils.debug("filterDetailData.... record:" + record);
 		setSelectedRow(selectedRecordIndex);
 		setInitialFilter(Utils.getCriteriaFromListGridRecord(this, record, this.getFormCode()));
+		System.out.println("filterDetailData.... BottomDetailFormsContainer:" + getBottomDetailFormsContainer());
+		System.out.println("filterDetailData.... SideDetailFormsContainer:" + getSideDetailFormsContainer());
 		getBottomDetailFormsContainer().filterData(filterDynamicMultiDetails, filterDynamicSingleDetails, filterStaticDetails);
 		getSideDetailFormsContainer().filterData(filterDynamicMultiDetails, filterDynamicSingleDetails, filterStaticDetails);
 		valuesManager.editRecord2();

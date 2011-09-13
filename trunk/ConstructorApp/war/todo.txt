@@ -1,6 +1,29 @@
+20110909 - Глюки SGWT.2.5/GWT.2.3.0:
+	+1. Снова появился косяк захеривания неизмененных записей при наличии на форме RichTextItem.
+		См коммент //20110913 в com.abssoft.constructor.client.data.EditorFormItem 
+	+2. Появление обработки в SGWT статуса fialure при ручной установке response.setStatus(RPCResponse.STATUS_FAILURE).
+	    Пофиксилось request.setWillHandleError(true);
+	+3. Орало NullPointerException при попытке установить для EditorFormItem setHeigth(null).
+	+4. Исчез метод fetchData() в smartGWT... DataSource. Изменил на fetchData(null, null)
+	+5. Проблемы со скином EnterpriseBlue и возможно с другими тоже.
+		Решилось. Уроды. В файле sc/skins/EnterpriseBlue/load_skin.js - ошибка (п21 Printing - вместо Calendar стояло `) 
+	+6. В некоторых лукапах (лукап-формы) - непонятная ошибка (com.google.gwt.user.client.rpc.SerializationException) Например FORM_COLUMNS.TAB_NAME.
+		Как показало вскрытие, неадекватное преобразования значения (String), внесенного в лукапе к LinkedHashMap (см ниже) 	
+ 				19:28:56.049:WARN:Log:XXXXXXXXXXXX. key:p$lookup_entered_value:=>{0=В, 1=с, 2=т, 3=а, 4=в, 5=к, cT=function Iib(b){return Hib(this,mG(b,1))}, eQ=function Jib(b){return xib(this,b)}, gC=function Lib(){return yO}, hC=function Mib(){return Tib(this)}, tS=function Nib(){return this}, cM={1=1, 162=1, 164=1, 166=1}}; class:class java.util.LinkedHashMap
+
+20110907 - Определился с динамическим read_only для полей:
+	Активность действий и read only полей - два типа поля (read_only_fields_list и disabled_actions_list)
+	  ListGridField nameField = new ListGridField("countryName", "Country");  nameField.setCanEdit(false);  
+ 
+20110826 - сделать вкл-выкл debug на серверной стороне наконец-то
 20110808
 java.lang.NullPointerException at com.abssoft.constructor.client.form.FormRowEditorTab$2.onItemChanged(FormRowEditorTab.java:104)
 
+важно: переменные подстановки (&) нужны. Удобно для аудитских формочек - не нужно париться с именем таблички (см.INS_AUDIT_REPORTS_PKG - пришлось делать динамику)
+   заодно сделать может и вот это: п.22 -а) реализация генерации фрагментов условий вида selest * from dual where &filter_expr1 and &filter_expr1. &filter_expr1 по умолчанию делать вида "1=1"
+   кста - предусмотреть на уровне формы значения по умолчанию для переменных подстановки, напр: &table_name => ins_account_lines, &dummy_tbl => (select x from dual connect by level<3)
+   
+Убрать сплиттер при ширине формы в 0 или 0%
 
 +20110625 Лукапы - ф-ция валидации не меняет "отображаемое поле" (см com.abssoft.constructor.client.data.FormTreeGridField - коммент // SQL Lookup
 
@@ -13,6 +36,7 @@ http://127.0.0.1:8888/ConstructorApp.html?gwt.codesvr=127.0.0.1:9997&app.serverI
   1. Действия - обработка новых параметров:
        +а) url_text - для отчетов - вызов PL/SQL процедуры перед формированием отчета. Удобно для вызова оебс-отчетов
       -+б) parent_action_code (цепочки действий) (пока только для DML и Refresh). Можно еще и по статусам выполнения подумать.
+           Вместо parent_action_code - дочерняя табличка со списвом возможных родительских действий
        +в) status_parameter_name (параметр - возвращающий статус действия-алерты)
              +1) остался косяк с grid.saveAllEdits
              +2) остался косяк с алертами при масс-DML...
@@ -25,7 +49,12 @@ http://127.0.0.1:8888/ConstructorApp.html?gwt.codesvr=127.0.0.1:9997&app.serverI
        -з) Добавить параметр для возвращения SmartGWT field errors (Map). См. DMLProcExecution.executeErrorSubProc()
        -и) ???Добавить параметр "показывать server connecting"[Y]. Удобно продолжать работу после того, как запущено длинное действие - например отчет.
        -к) ??параметр "Показывать в дочерних формах". Например выполнять отчет (действие формы-родителя) в дочерней форме.
-       -л) тип действия "Закрыть форму" (Для открытия формы выбора напр. людей и закрытия ее из меню).
+       +л) тип действия "Закрыть форму" (Для открытия формы выбора напр. людей и закрытия ее из меню).
+       -м) Тип действия - перед открытием формы
+      -+н) Тип действия - перед закрытием формы (в принципе рулится способом вызова цепочки действий, последнее из которых - закрыть форму)
+       -о) Тип действия, точнее в global params прописать процедуру, выполняемую перед закрытием приложения (например инвалидить OeBS транзакцию)
+       -п) Тип действия - открыть во вкладке в основном ТабСете
+       -р) Тип действия - отменить изменения (чтобы Esc не жать - пользователь чтобы видел).
 
  1. Форма-матрица или Cube. Для Минздрава и для табеля. Selection  - по ячейке. При выборе - передавать пересечение.
 ---------------------------- Глюки ------------------------
@@ -106,7 +135,7 @@ http://127.0.0.1:8888/ConstructorApp.html?gwt.codesvr=127.0.0.1:9997&app.serverI
         б) таблицы маппинга полей формы к процедурам действий (типа...p_old_column_name, p_new_column_name)
        (*form_code, *action_code, *column_code, procedure_parm_name).
        в) срочно: 
-       			--1. Разделяем FormActionMD на клиент и серверный кусок.
+       			Canceled>>>> --1. Разделяем FormActionMD на клиент и серверный кусок.
 		       	--2. Процедуры DML update insert delete в одной записи
        			+3. Обработка ins del на клиенте.
 		        +4. проблемы с кэшем при сохранении записи - datasource не пересоздается.
@@ -173,7 +202,7 @@ http://127.0.0.1:8888/ConstructorApp.html?gwt.codesvr=127.0.0.1:9997&app.serverI
  14. Превращение  табиков в форму и обратно.
  15. Одновременная работа со множеством серверов (например Афина и OEBS или SQL Navigator).
  16. Поддержка нескольких языков. 
- 17. Итоги в нижнем тулбаре (tree_path, avg, count, sum, min, max...) и отображение тулбара только после.
+ 17. Итоги в нижнем тулбаре (tree_path, avg, count, sum, min, max...) и отображение тулбара только в случае наличия итогов.
  18. Проблемы с вертикальными табиками - текст отображается горизонтально, нужно вертикально. 
 +19. Debug на клиенте (как в ODAC).
 

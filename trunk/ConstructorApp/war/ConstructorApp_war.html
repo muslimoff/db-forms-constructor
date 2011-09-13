@@ -29,28 +29,44 @@
 				}
 				return null;
 			}
-			var start_ 				= "<" + "script type=\"text/javascript\" language=\"javascript\" src=" + isomorphicDir;
-			var end_				= "?isc_version=7.0beta.js><" + "/script>";
+			
+			function setIndicatiorMsg(text) {
+				document.write("<" + "script type=\"text/javascript\"> document.getElementById('loadingMsg').innerHTML = '"+text+"'; <" + "/script>");
+				return null;
+			}
+			function docWrite(scriptName, msgText){
+				var start_ 				= "<" + "script type=\"text/javascript\" language=\"javascript\" src=" + isomorphicDir;
+				var end_				= "?isc_version=7.1.js><" + "/script>";		
+				
+				setIndicatiorMsg(null==msgText?'Loading script: <br><b>'+scriptName+'</b>':msgText);
+				document.write(start_ + scriptName + end_);
+				return null;
+			}
+			
 			var modulesDir			= "modules/";
-			document.getElementById('loadingMsg').innerHTML = 'Loading Core API...';
-			document.write(start_ + modulesDir + "ISC_Core.js" 				+ end_);
-			document.write(start_ + modulesDir + "ISC_Foundation.js" 		+ end_);
-			document.write(start_ + modulesDir + "ISC_Containers.js" 		+ end_);
-			document.write(start_ + modulesDir + "ISC_Grids.js" 			+ end_);
-			document.write(start_ + modulesDir + "ISC_Forms.js" 			+ end_);
-			document.write(start_ + modulesDir + "ISC_RichTextEditor.js" 	+ end_);
-			document.write(start_ + modulesDir + "ISC_Calendar.js" 			+ end_);
-			document.write(start_ + modulesDir + "ISC_DataBinding.js" 		+ end_);
-			//
+			setIndicatiorMsg();	
+			docWrite(modulesDir + "ISC_Core.js");
+			docWrite(modulesDir + "ISC_Foundation.js");
+			docWrite(modulesDir + "ISC_Containers.js");
+			docWrite(modulesDir + "ISC_Grids.js");
+			docWrite(modulesDir + "ISC_Forms.js");
+			docWrite(modulesDir + "ISC_RichTextEditor.js");
+			docWrite(modulesDir + "ISC_Calendar.js");
+			docWrite(modulesDir + "ISC_DataBinding.js");
+
 			// Determine what skin file to load
 			var currentSkin = readCookie('skin');
-			if (currentSkin == null) currentSkin = "EnterpriseBlue";
+			currentSkin = currentSkin==null?"Enterprise":currentSkin;
+			
 			//load skin
-			document.getElementById('loadingMsg').innerHTML = 'Loading Application<br> Skin:' + currentSkin + '<br><b>Please wait...</b>';
-			document.write(start_ + "skins/" + currentSkin + "/load_skin.js" + end_);
+			docWrite(
+				"skins/" + currentSkin + "/load_skin.js",
+				'Loading Application<br> Skin:' + currentSkin + '<br><b>Please wait...</b>');
+			
 			//include the application JS
-			document.getElementById('loadingMsg').innerHTML = 'Loading Application scripts...';
+			setIndicatiorMsg('Loading Application scripts...');
 		</script>
-		<script type="text/javascript" language="javascript" src="constructorapp/constructorapp.nocache.js?1.0.65"></script>
+		<script type="text/javascript" language="javascript" src="constructorapp/constructorapp.nocache.js?1.0.85"></script>
+		
 	</body>
 </html>

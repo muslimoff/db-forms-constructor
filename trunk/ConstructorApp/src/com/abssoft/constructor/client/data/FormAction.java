@@ -241,9 +241,11 @@ public class FormAction {
 		Utils.debug("doAction-5;" + grid.getEditRow() + ";"); // + mainFormPane.getWarnButtonIdx());
 		// String xmlpUrl = GWT.getModuleBaseURL() + title;
 		title = mainFormPane.getFormMetadata().getFormName() + " - " + title;
+		Utils.debug("doAction-6");
 		int currRecSelected = mainFormPane.getMainForm().getSelectedRecord();
-		Utils.debug("doAction-6:" + formActionMD.getType() + "; currRecSelected:" + currRecSelected + "; recordIndex:" + recordIndex);
+		Utils.debug("doAction-7");
 		String actionType = formActionMD.getType();
+		Utils.debug("doAction-8:" + actionType + "; currRecSelected:" + currRecSelected + "; recordIndex:" + recordIndex);
 		// New Record
 		if ("1".equals(actionType)) {
 			doAddNewRecord();
@@ -295,20 +297,30 @@ public class FormAction {
 			doGridExport();
 		} // Open Url
 		else if ("15".equals(actionType)) {
-			Utils.openURL(formActionMD, grid.getRecord(recordIndex), mainFormPane);
+			int recIdxInternal = null == recordIndex ? currRecSelected : recordIndex;
+			Utils.openURL(formActionMD, grid.getRecord(recIdxInternal), mainFormPane);
 			// Validation
 		} else if ("16".equals(actionType)) {
 			mainFormPane.getMainForm().setNewRecDefaultValues(currRecSelected, false);
 		}
 		// Close FormTabset/Window
 		else if ("17".equals(actionType)) {
+			Utils.debug("Action 17.1");
 			TabSet tabSet = mainFormPane.getMainFormContainer().getParentTabSet();
+			Utils.debug("Action 17.2");
 			boolean isWindow = null != tabSet.getParentElement() && null != tabSet.getParentElement().getParentElement()
 					&& tabSet.getParentElement().getParentElement() instanceof Window;
+			Utils.debug("Action 17.3");
 			if (isWindow || mainFormPane.getMainFormContainer().getCanClose()) {
+				Utils.debug("Action 17.4");
 				tabSet.removeMainFormContainerTab(mainFormPane.getMainFormContainer());
+				Utils.debug("Action 17.5");
 				if (isWindow)
-					tabSet.getParentElement().getParentElement().destroy();
+					Utils.debug("Action 17.6");
+				Utils.debug("Action 17.7" + tabSet.getParentElement());
+				Utils.debug("Action 17.8" + tabSet.getParentElement().getParentElement());
+				tabSet.getParentElement().getParentElement().destroy();
+				Utils.debug("Action 17.9");
 			}
 		}
 		// /TEST ACTION 99

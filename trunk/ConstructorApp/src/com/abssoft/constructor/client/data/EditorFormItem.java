@@ -47,6 +47,10 @@ public class EditorFormItem extends FormItem {
 			// TODO RichTextItem: Resize и все глюки.. Нужно свой класс MyRichTextItem
 			//
 			item = new RichTextItem();
+			//20110913 - пофиксил косяк FormRowEditorTab.onItemChanged, снова появившийся в SGWT 2.5
+			// при проверке - раньше getAttribute("type") возвращало "RichTextItem". Теперь внутри делают setAttribute("editorType", "RichTextItem"); 
+			item.setType("RichTextItem");
+			
 			// item = new MyRichTextItem();
 			item.setShowTitle(true);
 		} else if ("6".equals(c.getFieldType())) {
@@ -98,7 +102,9 @@ public class EditorFormItem extends FormItem {
 		item.setWidth("*");
 		item.setColSpan(c.getEditorColsSpan());
 		// item.setRowSpan("*");
-		item.setHeight(c.getEditorHeight());
+		if (null != c.getEditorHeight()) {
+			item.setHeight(c.getEditorHeight());
+		}
 		item.setEndRow(c.isEditorEndRow());
 		TitleOrientation titleOrientation = "L".equals(c.getEditorTitleOrientation()) ? TitleOrientation.LEFT : ("R".equals(c
 				.getEditorTitleOrientation()) ? TitleOrientation.LEFT : TitleOrientation.TOP);
