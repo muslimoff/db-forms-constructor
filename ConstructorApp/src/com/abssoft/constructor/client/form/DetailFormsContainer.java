@@ -125,6 +125,7 @@ public class DetailFormsContainer extends TabSet {
 	private HashMap<String, DynamicDetailTab> dynamicDetailTabs = new HashMap<String, DynamicDetailTab>();
 
 	DetailFormsContainer(MainFormPane mainFormPane, Orientation orientation) {
+		System.out.println("DetailFormsContainer... orientation:" + orientation);
 		this.setDestroyPanes(false);
 		this.mainFormPane = mainFormPane;
 		this.orientation = orientation;

@@ -30,7 +30,7 @@ import com.google.gwt.user.client.Window.ClosingEvent;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.util.DateDisplayFormatter;
-import com.smartgwt.client.util.DateInputFormatter;
+import com.smartgwt.client.util.DateParser;
 import com.smartgwt.client.util.DateUtil;
 import com.smartgwt.client.util.KeyCallback;
 import com.smartgwt.client.util.Page;
@@ -70,6 +70,10 @@ public class ConstructorApp implements EntryPoint {
 	private static MenuButton fileMenuBtn = new MenuButton("Файл");
 	public static Map<String, List<String>> urlParams;
 	public static Criteria urlParamsCriteria = new Criteria();
+	public static String moduleBaseURL;
+	public static String hostPageBaseURL;
+	public static String moduleName;
+	public static SkinSelectorMenu skinSelectorMenu;
 
 	ConnectWindow connectWindow;
 
@@ -115,7 +119,15 @@ public class ConstructorApp implements EntryPoint {
 				return Utils.dateToString(date);
 			}
 		});
-		DateUtil.setDateInputFormatter(new DateInputFormatter() {
+		// DateUtil.setDateInputFormatter(new DateInputFormatter() {
+		// @Override
+		// public Date parse(String dateString) {
+		// return Utils.stringToDate(dateString);
+		// }
+		// });
+
+		DateUtil.setDateParser(new DateParser() {
+
 			@Override
 			public Date parse(String dateString) {
 				return Utils.stringToDate(dateString);
@@ -135,6 +147,10 @@ public class ConstructorApp implements EntryPoint {
 					event.setMessage(com.google.gwt.user.client.Window.Location.getHref());
 			}
 		});
+
+		moduleBaseURL = GWT.getModuleBaseURL();
+		hostPageBaseURL = GWT.getHostPageBaseURL();
+		moduleName = GWT.getModuleName();
 		add_debug_console();
 		Canvas canvas = new Canvas();
 		canvas.setWidth100();
@@ -160,7 +176,7 @@ public class ConstructorApp implements EntryPoint {
 			}
 		});
 		//
-		final MenuItem debugMI = new MenuItem("Debug");
+		final MenuItem debugMI = new MenuItem("Debugxx");
 		debugMI.setIcon("[ISOMORPHIC]/resources/icons/" + "bug.png");
 		debugMI.setCheckIfCondition(new MenuItemIfFunction() {
 			public boolean execute(Canvas target, Menu menu, MenuItem item) {
@@ -174,7 +190,8 @@ public class ConstructorApp implements EntryPoint {
 		});
 
 		Menu mm = new Menu();
-		mm.setData(connMI, debugMI, new MenuItemSeparator(), new SkinSelectorMenu());
+		skinSelectorMenu = new SkinSelectorMenu();
+		mm.setData(connMI, debugMI, new MenuItemSeparator(), skinSelectorMenu);
 		fileMenuBtn.setMenu(mm);
 		// -----------
 		MenuItem testMI = new MenuItem("Test");

@@ -1,5 +1,18 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <root attribute1="x" attribute2="y">
+	<skins>
+		<skin code="Enterprise" 	name="Enterprise"></skin>
+		<skin code="EnterpriseBlue" name="Enterprise Blue"></skin>
+		<skin code="Graphite" 		name="Graphite"></skin>
+		<skin code="Simplicity" 	name="Simplicity"></skin>
+		<skin code="Mobile" 		name="Mobile"></skin>
+		<skin code="SilverWave" 	name="Silver Wave"></skin>
+		<skin code="BlackOps" 		name="Black Ops"></skin>
+		<skin code="TreeFrog" 		name="Tree Frog"></skin>
+		<skin code="fleet" 			name="Fleet"></skin>
+		<skin code="Cupertino" 		name="Cupertino"></skin>
+		<skin code="standard" 		name="Standard"></skin>
+	</skins>
 <!-- variables: validationFN, fc_schema_owner, db_username -->
 	<dbConnections>
 		<defaultValues
@@ -32,6 +45,14 @@
 			dbusername="SOSMA_TEST">
 			ko:1521:XE
 		</server>
+
+		<server id="21"
+			display="SOSMA" 
+			default="true" 
+			fcSchemaOwner="SOSMA" 
+			dbusername="SOSMA">
+			ko:1521:XE
+		</server>		
 		
 	</dbConnections>
 	

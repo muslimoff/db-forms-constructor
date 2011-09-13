@@ -546,7 +546,12 @@ public class Utils {
 			try {
 				String actionUrl = null != formActionMD.getUrlText() ? formActionMD.getUrlText() : formActionMD.getSqlProcedureName();
 				actionUrl = Utils.replaceBindVariables(mainFormPane, selectedRecord, actionUrl, ":");
-				com.google.gwt.user.client.Window.open(GWT.getModuleBaseURL() + actionUrl, "", "");
+				// 20110826 - openURL. Убрано явное зашитие GWT.getModuleBaseURL - вместо него подстановки
+				actionUrl = actionUrl.replaceAll("\\[ModuleBaseURL\\]", ConstructorApp.moduleBaseURL);
+				actionUrl = actionUrl.replaceAll("\\[HostPageBaseURL\\]", ConstructorApp.hostPageBaseURL);
+				actionUrl = actionUrl.replaceAll("\\[ModuleName\\]", ConstructorApp.moduleName);
+				// com.google.gwt.user.client.Window.open(GWT.getModuleBaseURL() + actionUrl, "", "");
+				com.google.gwt.user.client.Window.open(actionUrl, "", "");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

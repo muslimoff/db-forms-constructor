@@ -88,6 +88,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 			XPathExpression findDefalutServerSettings = xPath.compile("//dbConnections/defaultValues");
 			XPathExpression findServers = xPath.compile("//dbConnections/server");
 			XPathExpression findSQL = xPath.compile("//metadataQuery/sqlStatement");
+			XPathExpression findSkins = xPath.compile("//skins/skin");
 			File xmlDocument = new File(filename);
 
 			InputSource dfltServerSettingsIS = new InputSource(new FileInputStream(xmlDocument));
@@ -124,12 +125,12 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 				si.setTransferPassToClient(si.isAllowUserChange() || null == si.getDbPassword() || null == si.getDbUsername());
 				si.setServerID(Utils.getTextFromAttr(attributes, "id"));
 				si.setValidationFN(Utils.getTextFromAttr(attributes, "validationFN"));
-				System.out.println("getServerID>>" + si.getServerID());
-				System.out.println("getDisplayName>>" + si.getDisplayName());
-				System.out.println("isAllowUserChange>>" + si.isAllowUserChange());
-				System.out.println("getDbUsername>>" + si.getDbUsername());
-				System.out.println("getDbPassword>>" + si.getDbPassword());
-				System.out.println("isTransferPassToClient>>" + si.isTransferPassToClient());
+				// System.out.println("getServerID>>" + si.getServerID());
+				// System.out.println("getDisplayName>>" + si.getDisplayName());
+				// System.out.println("isAllowUserChange>>" + si.isAllowUserChange());
+				// System.out.println("getDbUsername>>" + si.getDbUsername());
+				// System.out.println("getDbPassword>>" + si.getDbPassword());
+				// System.out.println("isTransferPassToClient>>" + si.isTransferPassToClient());
 				if (null == si.getDbUsername()) {
 					si.setDbUsername(defaultUsername);
 				}
@@ -156,6 +157,18 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 				// queryMap.put(Utils.getTextFromAttr(attributes, "name"), node.getTextContent());
 				queryMap1.put(Utils.getTextFromAttr(attributes, "name"), Utils.getCharacterDataFromElement(node));
 			}
+
+			InputSource skinsIS = new InputSource(new FileInputStream(xmlDocument));
+			NodeList skinList = (NodeList) findSkins.evaluate(skinsIS, XPathConstants.NODESET);
+			for (int i = 0; i < skinList.getLength(); i++) {
+				Node node = skinList.item(i);
+				NamedNodeMap attributes = node.getAttributes();
+				// Utils.debug(Utils.getTextFromAttr(attributes, "code") + ":" + node.getTextContent());
+				// Utils.debug(Utils.getTextFromAttr(attributes, "name") + ":" + node.getTextContent());
+				serverInfoArr.getSkinsList().put(Utils.getTextFromAttr(attributes, "code"), Utils.getTextFromAttr(attributes, "name"));
+			}
+			// Collections.sort(serverInfoArr.getSkinsList());
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (XPathExpressionException e1) {
@@ -177,6 +190,8 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 			}
 			result.add(x);
 		}
+
+		result.setSkinsList(serverInfoArr.getSkinsList());
 		System.out.println("serverInfoArr:" + serverInfoArr);
 		System.out.println("result:" + result);
 		return result;

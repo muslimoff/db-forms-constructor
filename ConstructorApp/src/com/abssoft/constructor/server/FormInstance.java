@@ -52,10 +52,15 @@ public class FormInstance {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		resultData.clear();
-		ClobHM.clear();
 		Utils.debug("Server:FormInstance. Statement closed.");
+		resultData.clear();
+		//resultData = null;
+		Utils.debug("Server:FormInstance. resultData (RowsArr) cleared.");
+		ClobHM.clear();
+		//ClobHM = null;
+		Utils.debug("Server:FormInstance. ClobHM cleared.");
 		Utils.debug("Server:FormInstance closed...");
+		//showReferencedObjects(this);
 	}
 
 	public RowsArr fetch(String sortBy, int startRow, int endRow, Map<?, ?> filterValues, boolean forceFetch) {

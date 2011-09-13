@@ -8,8 +8,10 @@ import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
 import com.abssoft.constructor.client.metadata.Row;
 import com.abssoft.constructor.client.metadata.ActionStatus.StatusType;
 import com.google.gwt.core.client.GWT;
+import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
+import com.smartgwt.client.data.ResultSet;
 import com.smartgwt.client.rpc.RPCResponse;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.grid.ListGrid;
@@ -128,6 +130,17 @@ public class DMLProcExecution {
 		}
 		String requestId = request.getRequestId();
 		System.out.println("ccccccccccc " + response.getStatus());
+
+		// 20110824 - вернул кусок кода - походу была попытка избавиться от фильтрации обновленной записи - ее исчезновения
+		try {
+			ResultSet rs = grid.getResultSet();
+			for (String s : rs.getCriteria().getAttributes()) {
+				System.out.println("Criteria " + s + ": " + rs.getCriteria().getAttribute(s));
+			}
+			rs.setCriteria(new Criteria());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		response.setStatus(RPCResponse.STATUS_SUCCESS);
 		formDataSource.processResponse(requestId, response);
 
@@ -152,6 +165,7 @@ public class DMLProcExecution {
 
 	public void executeWarningSubProc() {
 		Utils.debug("DMLProcExecution.executeWarningSubProc:\n" + result.getStatus().getLongMessageText());
+		request.setWillHandleError(true);
 		response.setStatus(RPCResponse.STATUS_FAILURE);
 		formDataSource.processResponse(request.getRequestId(), response);
 		// result.getStatus().setLongMessageText("fffffffffffffff");
@@ -169,6 +183,7 @@ public class DMLProcExecution {
 		// HashMap hm = new HashMap();
 		// hm.put("MESSAGE", "???????eeeerrrooorrr");
 		// response.setErrors(hm);
+		request.setWillHandleError(true);
 		response.setStatus(RPCResponse.STATUS_FAILURE);
 		formDataSource.processResponse(request.getRequestId(), response);
 		// Вывод значений,которые вернулись из PL/SQL процедуры.
