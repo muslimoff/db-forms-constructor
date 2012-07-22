@@ -5,9 +5,14 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,21 +27,20 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.abssoft.constructor.client.metadata.Attribute;
-import com.abssoft.constructor.client.metadata.Row;
-import com.abssoft.constructor.client.metadata.ServerInfoMD;
+import com.abssoft.constructor.common.Attribute;
+import com.abssoft.constructor.common.metadata.ServerInfoMD;
 
 public class Utils {
 	public static final String sessionIdentifier = "ConstructorSession";
 
-	public static String bindVarsToLowerCase(String text, String regExp) {
-		return bindVarsToLowerCase(text, regExp, ":", "");
+	public static String bindVarsToLowerCase(Session session, String text, String regExp) {
+		return bindVarsToLowerCase(session, text, regExp, ":", "");
 	}
 
-	public static String bindVarsToLowerCase(String text, String regExp, String addStartChars, String addEndChars) {
+	public static String bindVarsToLowerCase(Session session, String text, String regExp, String addStartChars, String addEndChars) {
 		if (null != text) {
 			// "(?i):" + columnName.toLowerCase() + "(?=\\b)"
-			Utils.debug("bindVarsToLowerCase. 1>" + text);
+			session.debug("bindVarsToLowerCase. 1>" + text);
 
 			Vector<Integer> startPos = new Vector<Integer>();
 			Vector<Integer> endPos = new Vector<Integer>();
@@ -50,25 +54,49 @@ public class Utils {
 			for (int i = startPos.size() - 1; i >= 0; i--) {
 				int strt = startPos.get(i);
 				int end = endPos.get(i);
-				Utils.debug(i + "bindVarsToLowerCase. 2>" + text.substring(strt, end));
+				session.debug(i + "bindVarsToLowerCase. 2>" + text.substring(strt, end));
 				String strForReplace = text.substring(strt, end);
-				Utils.debug("bindVarsToLowerCase. 3> strt=" + strt + "; end=" + end + " >> " + strForReplace);
+				session.debug("bindVarsToLowerCase. 3> strt=" + strt + "; end=" + end + " >> " + strForReplace);
 				text = text.replaceAll(strForReplace, addStartChars + strForReplace.substring(1).toLowerCase() + addEndChars);
 			}
-			Utils.debug("bindVarsToLowerCase. 4:" + text);
+			session.debug("bindVarsToLowerCase. 4:" + text);
 		}
 		return text;
 	}
 
-	public static void debug(String text) {
-		// Timer t = new Timer();
-		 System.out.println(text);
+	public static void spoolOut(String text) {
+		System.out.println("SRV:" + text);
 	}
 
-	public static void debug(String text, Row row) {
-		debug(text);
-		String currMsg = row.getStatus().getLongMessageText();
-		row.getStatus().setLongMessageText(currMsg + "\n" + text);
+	/**
+	 *Создана для решения проблемы в Атырау - таймзона клиента на час меньше, чем таймзона сервера. Функция переводит srcDate из Таймзоны
+	 * сервера в таймзону UTC
+	 * 
+	 * @param srcDate
+	 *            - Дата в таймзоне сервера
+	 * @return - дата в таймзоне UTC
+	 */
+	public static Date changeTimezone(Date srcDate) {
+		Date destDate = srcDate;
+
+		// TimeZone tzALA = TimeZone.getTimeZone("Asia/Almaty");
+		// TimeZone tzALA = TimeZone.getTimeZone("Canada/Pacific");
+
+		TimeZone tzDefault = TimeZone.getDefault(); // Таймзона сервера (ALA например)
+		TimeZone tzUTC = TimeZone.getTimeZone("UTC"); // UTC - Таймзона
+		Calendar calendar = new GregorianCalendar(tzDefault); // Создаем новый календарь с дефолтной таймзоной
+		DateFormat dtFmt = DateFormat.getDateInstance(DateFormat.SHORT);
+		dtFmt.setCalendar(calendar);
+		String dateStr = dtFmt.format(srcDate); // конвертим в строку, отсекая всю лишнюю инфу, в т.ч. таймзону
+		calendar.setTimeZone(tzUTC); // перебрасываем таймзону календаря в UTC
+		try {
+			destDate = dtFmt.parse(dateStr); // Снова конвертим в Date, с новой таймзоной календаря
+		} catch (ParseException e) {
+			e.printStackTrace();
+			destDate = srcDate;
+		}
+		// spoolOut("tttt_srv_attr2:" + dateStr + "; xx: " + DateFormat.getDateInstance(DateFormat.FULL).format(destDate));
+		return destDate; // Таки вот - теперь сервер всегда отдает даты в UTCб пофигу метель...
 	}
 
 	/******************************/
@@ -82,11 +110,10 @@ public class Utils {
 			dVal = rs.wasNull() ? null : dVal;
 			attr = new Attribute(dVal);
 		} else if ("D".equals(formColDataType)) {
-			System.out.println("Dt:" + rs.getString(column));
-			// Date dt = rs.getDate(column);
 			DATE dt = rs.getDATE(column);
-			Date dt2 = rs.wasNull() ? null : dt.dateValue();
-			attr = new Attribute(dt2);
+			Date dateVal = rs.wasNull() ? null : dt.dateValue();
+			dateVal = changeTimezone(dateVal);
+			attr = new Attribute(dateVal);
 		} else if ("B".equals(formColDataType)) {
 			val = rs.getString(column);
 			attr = new Attribute("1".equals(val) || "Y".equals(val));
@@ -116,7 +143,9 @@ public class Utils {
 			dVal = rs.wasNull() ? null : dVal;
 			attr = new Attribute(dVal);
 		} else if ("D".equals(formColDataType)) {
-			attr = new Attribute(rs.getDate(column));
+			Date dateVal = rs.getDate(column);
+			dateVal = changeTimezone(dateVal);
+			attr = new Attribute(dateVal);
 		} else if ("B".equals(formColDataType)) {
 			val = rs.getString(column);
 			attr = new Attribute("1".equals(val) || "Y".equals(val));
@@ -126,7 +155,7 @@ public class Utils {
 			attr = new Attribute((Double) ((null != clobHashCode) ? Double.valueOf(clobHashCode) : null));
 			formInstance.getClobHM().put(clobHashCode, cval);
 		} else {
-			// System.out.println("type>>> " + rs.getMetaData().getColumnType(rs.findColumn(column)) + " >> "
+			// spoolOut("type>>> " + rs.getMetaData().getColumnType(rs.findColumn(column)) + " >> "
 			// + rs.getMetaData().getColumnTypeName(rs.findColumn(column)) + Types.CLOB);
 			val = rs.getString(column);
 			// Необходимо убирать символы chr #00, которые может возвращать БД - иначе grid вылетает..
@@ -141,7 +170,7 @@ public class Utils {
 	// public static void main(String[] args) {
 	// Integer clobHashCode = null;
 	// Double b = Double.valueOf(clobHashCode);
-	// System.out.println("xxxxxx:" + b);
+	// spoolOut("xxxxxx:" + b);
 	// }
 
 	/******************************/
@@ -182,7 +211,7 @@ public class Utils {
 		return result;
 	}
 
-	public static void setFilterValues(OraclePreparedStatement statement, Map<?, ?> filterValues) {
+	public static void setFilterValues(Session session, OraclePreparedStatement statement, Map<?, ?> filterValues) {
 		try {
 			try {
 				// Устанавливаем принудительно все параметры в null. В дальнейшем -
@@ -194,29 +223,30 @@ public class Utils {
 					// Utils.debug("OracleParameterMetaData: param(" + i + ") = " + md);
 				}
 			} catch (java.sql.SQLException e) {
-				e.printStackTrace();
+				session.printErrorStackTrace(e);
 			}
 			// Вывод значений фильтров... и их установка... по возможности
-			Utils.debug("setFilterValues... filterValues=" + filterValues + "; keySet=" + filterValues.keySet());
+			session.debug("setFilterValues... filterValues=" + filterValues + "; keySet=" + filterValues.keySet());
 			Iterator<?> it = filterValues.keySet().iterator();
 			while (it.hasNext()) {
 				String mapKey = (String) it.next();
 				Object valueObj = filterValues.get(mapKey);
-				Utils.setParameterValue(statement, mapKey.toLowerCase(), valueObj);
+				Utils.setParameterValue(session, statement, mapKey.toLowerCase(), valueObj);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			session.printErrorStackTrace(e);
 		}
 	}
 
-	public static void setFormMDParams(OraclePreparedStatement statement, String formCode, String parentFormCode, Boolean isDrillDownForm) {
-		Utils.setParameterValue(statement, "p_form_code", formCode);
-		Utils.setParameterValue(statement, "p_master_form_code", parentFormCode);
-		Utils.setParameterValue(statement, "p_drilldown_flag", isDrillDownForm ? "Y" : "N");
+	public static void setFormMDParams(Session session, OraclePreparedStatement statement, String formCode, String parentFormCode,
+			Boolean isDrillDownForm) {
+		Utils.setParameterValue(session, statement, "p_form_code", formCode);
+		Utils.setParameterValue(session, statement, "p_master_form_code", parentFormCode);
+		Utils.setParameterValue(session, statement, "p_drilldown_flag", isDrillDownForm ? "Y" : "N");
 	}
 
-	public static void setParameterValue(OraclePreparedStatement statement, String name, Object value) {
-		Utils.debug("setParameterValue. name=" + name + "=>" + (null != value ? value : "null"));
+	public static void setParameterValue(Session session, OraclePreparedStatement statement, String name, Object value) {
+		session.debug("setParameterValue. name=" + name + "=>" + (null != value ? value : "null"));
 		try {
 			if (null != value) {
 				if (value instanceof Boolean) {
@@ -232,7 +262,7 @@ public class Utils {
 				statement.setStringAtName(name, null);
 			}
 		} catch (java.sql.SQLException e) {
-			Utils.debug("*****setParameterValue: " + e.getMessage());
+			session.debug("*****setParameterValue: " + e.getMessage());
 		}
 	}
 

@@ -7,19 +7,16 @@ import java.util.LinkedHashMap;
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.FormDataSourceField;
 import com.abssoft.constructor.client.data.FormTreeGridField;
-import com.abssoft.constructor.client.data.QueryService;
-import com.abssoft.constructor.client.data.QueryServiceAsync;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.data.common.GwtRpcDataSource;
 import com.abssoft.constructor.client.form.FormColumns;
 import com.abssoft.constructor.client.form.MainFormPane;
-import com.abssoft.constructor.client.metadata.FormColumnMD;
-import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
-import com.abssoft.constructor.client.metadata.FormMD;
-import com.abssoft.constructor.client.metadata.Row;
-import com.abssoft.constructor.client.metadata.RowsArr;
-import com.google.gwt.core.client.GWT;
+import com.abssoft.constructor.common.FormInstanceIdentifier;
+import com.abssoft.constructor.common.Row;
+import com.abssoft.constructor.common.RowsArr;
+import com.abssoft.constructor.common.metadata.FormColumnMD;
+import com.abssoft.constructor.common.metadata.FormMD;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
@@ -77,52 +74,52 @@ public class GridComboBoxItem extends MyComboBoxItem {
 			Utils.debug("ComboBoxDataSource.executeFetch 9; " + getFilterWithValue());
 			sortBy = request.getAttribute("sortBy");
 			Utils.debug("ComboBoxDataSource.executeFetch 10");
-			QueryServiceAsync service = GWT.create(QueryService.class);
 			Utils.debug("ComboBoxDataSource.executeFetch 11:" + userTypedValue);
 			LinkedHashMap<String, Object> crMap = Utils.getHashMapFromCriteria(cr);
 			Utils.debug("ComboBoxDataSource.executeFetch 11A");
 			crMap.put(userTypedVarName, userTypedValue);
 			Utils.debug("ComboBoxDataSource.executeFetch 12");
 			// TODO вынести в XML параметров endRow - фактически размер лова.
-			service.fetch(instanceIdentifier, sortBy, startRow, endRow, crMap, false, new DSAsyncCallback<RowsArr>(requestId, response,
-					this) {
-				public void onSuccess(RowsArr result) {
-					Utils.debug("ComboBoxDataSource.executeFetch 13");
-					records = new TreeNode[result.size()];
-					values.clear();
-					Utils.debug("ComboBoxDataSource.executeFetch 14. valueFieldNum:" + valueFieldNum + "; result.size:" + result.size());
-					for (int r = 0; r < result.size(); r++) {
-						try {
-							Row row = result.get(r);
-							// Utils.debug("ComboBoxDataSource.executeFetch 15");
-							records[r] = Utils.getTreeNodeFromRow(dsFields, row);
-							// Utils.debug("ComboBoxDataSource.executeFetch 16");
-							Object key = row.get(valueFieldNum).getAttributeAsObject();
-							// Utils.debug("ComboBoxDataSource.executeFetch 17");
-							values.put(key, records[r]);
-							// Utils.debug("ComboBoxDataSource.executeFetch 18");
-						} catch (Exception e) {
-							Utils.debug("ComboBoxDataSource.executeFetch 19");
-							e.printStackTrace();
+			Utils.createQueryService("GridComboBoxItem.fetch").fetch(instanceIdentifier, sortBy, startRow, endRow, crMap, false,
+					new DSAsyncCallback<RowsArr>(requestId, response, this) {
+						public void onSuccess(RowsArr result) {
+							Utils.debug("ComboBoxDataSource.executeFetch 13");
+							records = new TreeNode[result.size()];
+							values.clear();
+							Utils.debug("ComboBoxDataSource.executeFetch 14. valueFieldNum:" + valueFieldNum + "; result.size:"
+									+ result.size());
+							for (int r = 0; r < result.size(); r++) {
+								try {
+									Row row = result.get(r);
+									// Utils.debug("ComboBoxDataSource.executeFetch 15");
+									records[r] = Utils.getTreeNodeFromRow(dsFields, row);
+									// Utils.debug("ComboBoxDataSource.executeFetch 16");
+									Object key = row.get(valueFieldNum).getAttributeAsObject();
+									// Utils.debug("ComboBoxDataSource.executeFetch 17");
+									values.put(key, records[r]);
+									// Utils.debug("ComboBoxDataSource.executeFetch 18");
+								} catch (Exception e) {
+									Utils.debug("ComboBoxDataSource.executeFetch 19");
+									e.printStackTrace();
+								}
+							}
+							Utils.debug("ComboBoxDataSource.executeFetch 20");
+							response.setTotalRows(result.getTotalRows());
+							Utils.debug("ComboBoxDataSource.executeFetch 21");
+							response.setData(records);
+							Utils.debug("ComboBoxDataSource.executeFetch 22");
+							try {
+								Utils.debug("ComboBoxDataSource.executeFetch 23");
+								processResponse(requestId, response);
+								Utils.debug("ComboBoxDataSource.executeFetch 24");
+							} catch (Exception e) {
+								Utils.debug("ComboBoxDataSource.executeFetch 25");
+								e.printStackTrace();
+								Utils.debug(e.getMessage());
+							}
+							Utils.debug("ComboBoxDataSource.executeFetch 26 ended...");
 						}
-					}
-					Utils.debug("ComboBoxDataSource.executeFetch 20");
-					response.setTotalRows(result.getTotalRows());
-					Utils.debug("ComboBoxDataSource.executeFetch 21");
-					response.setData(records);
-					Utils.debug("ComboBoxDataSource.executeFetch 22");
-					try {
-						Utils.debug("ComboBoxDataSource.executeFetch 23");
-						processResponse(requestId, response);
-						Utils.debug("ComboBoxDataSource.executeFetch 24");
-					} catch (Exception e) {
-						Utils.debug("ComboBoxDataSource.executeFetch 25");
-						e.printStackTrace();
-						Utils.debug(e.getMessage());
-					}
-					Utils.debug("ComboBoxDataSource.executeFetch 26 ended...");
-				}
-			});
+					});
 		}
 
 		public int getValueFieldNum() {
@@ -159,7 +156,8 @@ public class GridComboBoxItem extends MyComboBoxItem {
 		this.mainFormPane = mainFormPane;
 		lookupCode = columnMD.getLookupCode();
 		int gridHashCode = 10000 + GridComboBoxItem.this.columnMD.getDisplayNum();
-		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, lookupCode, null, gridHashCode);
+		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, lookupCode, null, gridHashCode,
+				ConstructorApp.debugEnabled);
 		lookupDisplValFld = columnMD.getLookupDisplayValue();
 		GridComboBoxItem.this.setShowOptionsFromDataSource(true);
 		this.setFetchDelay(1000);
@@ -354,7 +352,7 @@ public class GridComboBoxItem extends MyComboBoxItem {
 
 	public Criteria getMainFormCriteria() {
 		Utils.debug("getMainFormCriteria start");
-		Record record = Utils.getEditedRow(GridComboBoxItem.this.mainFormPane);
+		Record record = Utils.getEditedRecord(GridComboBoxItem.this.mainFormPane);
 		Criteria criteria = Utils.getCriteriaFromListGridRecord(GridComboBoxItem.this.mainFormPane, record, "GridComboBoxItem:"
 				+ GridComboBoxItem.this.getName());
 		HashMap<String, String> lookupAttributes = columnMD.getLookupAttributes();

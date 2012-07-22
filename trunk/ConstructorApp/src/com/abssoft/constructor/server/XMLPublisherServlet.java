@@ -34,7 +34,8 @@ import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 import oracle.sql.CLOB;
 
-public class XMLPublisherServlet extends HttpServlet {
+public class XMLPublisherServlet extends HttpServlet // implements javax.servlet.SingleThreadModel
+{
 	/**
 	 * 
 	 */
@@ -46,7 +47,7 @@ public class XMLPublisherServlet extends HttpServlet {
 		int chunkSize = clob.getChunkSize();
 		char[] binaryBuffer = new char[chunkSize];
 		while ((bytesRead = clobInputStream.read(binaryBuffer)) != -1) {
-			System.out.println("clobToOutputSteam: " + new String(binaryBuffer));
+			Utils.spoolOut("clobToOutputSteam: " + new String(binaryBuffer));
 			out.write(binaryBuffer, 0, bytesRead);
 		}
 		clobInputStream.close();
@@ -104,7 +105,7 @@ public class XMLPublisherServlet extends HttpServlet {
 		OracleConnection connection = session.getConnection();
 		String sqlText = Utils.getSQLQueryFromXML("reportTemplatesSQL", session);
 		OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(sqlText);
-		Utils.setParameterValue(statement, "p_report_code", reportCode);
+		Utils.setParameterValue(session, statement, "p_report_code", reportCode);
 		ResultSet rs = statement.executeQuery();
 		rs.next();
 		CLOB result = (CLOB) rs.getClob(1);
@@ -139,7 +140,7 @@ public class XMLPublisherServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		doMethod(req, resp);
 	}
 
@@ -159,22 +160,23 @@ public class XMLPublisherServlet extends HttpServlet {
 	private void doMethod(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		req.setCharacterEncoding("utf-8");
 		resp.setCharacterEncoding("utf-8");
-
+		cntr++;
 		// TODO вылетает сессия XMLPublisherServlet при долгом таймауте
 		// session.setMaxInactiveInterval(interval);
-		req.getSession(true).setMaxInactiveInterval(2*60*60);
 		HttpSession httpSession = req.getSession(true);
-		System.out.println("session:" + httpSession);
-		System.out.println("session.getCreationTime:" + httpSession.getCreationTime());
-		System.out.println("session.getId:" + httpSession.getId());
-		System.out.println("session.getLastAccessedTime:" + httpSession.getLastAccessedTime());
-		System.out.println("session.getMaxInactiveInterval:" + httpSession.getMaxInactiveInterval());
+
+		httpSession.setMaxInactiveInterval(-1); // (2 * 60 * 60); // A negative time indicates the session should never timeout.
+		Utils.spoolOut("httpSession:" + httpSession);
+		Utils.spoolOut("httpSession.getCreationTime:" + httpSession.getCreationTime());
+		Utils.spoolOut("httpSession.getId:" + httpSession.getId());
+		Utils.spoolOut("httpSession.getLastAccessedTime:" + httpSession.getLastAccessedTime());
+		Utils.spoolOut("httpSession.getMaxInactiveInterval:" + httpSession.getMaxInactiveInterval());
 
 		/******************* RequestData *******************/
-		Integer sessionID = (Integer) req.getSession(true).getAttribute(Utils.sessionIdentifier);
+		Integer sessionID = (Integer) httpSession.getAttribute(Utils.sessionIdentifier);
 		Session session = QueryServiceImpl.getSessionData(sessionID);
-		System.out.println("SessionID:" + sessionID + "; session:" + session);
-		System.out.println("req.getQueryString():" + req.getQueryString());
+		Utils.spoolOut("SessionID:" + sessionID + "; session:" + session);
+		Utils.spoolOut("req.getQueryString():" + req.getQueryString());
 		// System.out.println("ss: " + req.getQueryString());
 		// Reader r = req.getReader();
 		if (null == session) {
@@ -252,19 +254,18 @@ public class XMLPublisherServlet extends HttpServlet {
 			if ("file".equals(type)) {
 				getFile(req, resp, session, contentDisposition, ContentType);
 				return;
-			}
-			if ("xmlp".equals(type)) {
+			} else if ("xmlp".equals(type)) {
 				processXMLP(req, resp, session, contentDisposition, ContentType, template, docId, filename);
-				return;
-			}
-			if ("clob".equals(type)) {
+				// return;
+			} else if ("clob".equals(type)) {
 				getCLOB(req, resp, session, contentDisposition, ContentType, docId);
-				return;
-			}
-			if ("xslt".equals(type)) {
+				// return;
+			} else if ("xslt".equals(type)) {
 				processXSLT(req, resp, session, contentDisposition, ContentType, template, docId, filename);
-				return;
+				// return;
 			}
+			session.debug("Exiting... " + cntr + "; " + this);
+			// httpSession.invalidate();
 		}
 	}
 
@@ -352,10 +353,12 @@ public class XMLPublisherServlet extends HttpServlet {
 		out.close();
 	}
 
+	private int cntr = 0; // счетчик обращений
+
 	@Override
 	public void init() throws ServletException {
 		super.init();
-		Utils.debug("Middle tier service '" + this.getClass() + "' started...");
+		Utils.spoolOut("Middle tier service '" + this.getClass() + "' started...");
 	}
 
 	public void processEmptySessionResponse(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -376,7 +379,7 @@ public class XMLPublisherServlet extends HttpServlet {
 	// http://www.jdom.org/docs/faq.html
 	public void processXMLP(HttpServletRequest req, HttpServletResponse resp, Session session, String contentDisposition,
 			String ContentType, String template, Integer docId, String filename) throws IOException {
-		System.out.println("XMLPublisherServlet.processXMLP");
+		Utils.spoolOut("XMLPublisherServlet.processXMLP");
 		ServletOutputStream respOS = resp.getOutputStream();
 		byte format = FOProcessor.FORMAT_RTF;
 		String extention = "rtf";
@@ -406,8 +409,9 @@ public class XMLPublisherServlet extends HttpServlet {
 			processor.setOutput(respOS);
 			processor.generate();
 			foIS.close();
-			System.out.println("xx" + resp.getLocale() + "; zz:" + resp.getContentType() + "; " + resp.getCharacterEncoding()
-					+ resp.toString());
+			Utils
+					.spoolOut("xx" + resp.getLocale() + "; zz:" + resp.getContentType() + "; " + resp.getCharacterEncoding()
+							+ resp.toString());
 
 		} catch (Exception e) {
 			// resp.setContentType("text/plain");

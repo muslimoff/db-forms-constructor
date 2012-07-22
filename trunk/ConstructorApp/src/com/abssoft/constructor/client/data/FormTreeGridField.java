@@ -4,11 +4,12 @@ import java.util.LinkedHashMap;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.form.MainFormPane;
-import com.abssoft.constructor.client.metadata.ColumnAction;
-import com.abssoft.constructor.client.metadata.FormColumnMD;
 import com.abssoft.constructor.client.widgets.GridComboBoxItem;
 import com.abssoft.constructor.client.widgets.MyComboBoxItem;
+import com.abssoft.constructor.common.metadata.ColumnAction;
+import com.abssoft.constructor.common.metadata.FormColumnMD;
 import com.smartgwt.client.types.ListGridFieldType;
+import com.smartgwt.client.types.TextMatchStyle;
 import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.grid.CellFormatter;
 import com.smartgwt.client.widgets.grid.HoverCustomizer;
@@ -174,6 +175,10 @@ public class FormTreeGridField extends TreeGridField {
 					return result;
 				}
 			});
+			// mm20120125 По просьбе Акмарал - поиск внутри строки, а не только с начала ее.
+			// TODO - вынести в свойство лукапа.
+			cmbxItem.setTextMatchStyle(TextMatchStyle.SUBSTRING);
+
 			this.setEditorType(cmbxItem);
 		}
 		// SQL Lookup

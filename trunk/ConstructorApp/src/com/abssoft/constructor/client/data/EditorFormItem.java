@@ -4,11 +4,11 @@ import java.util.LinkedHashMap;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.form.MainFormPane;
-import com.abssoft.constructor.client.metadata.ColumnAction;
-import com.abssoft.constructor.client.metadata.FormColumnMD;
 import com.abssoft.constructor.client.widgets.FormPickTreeItem;
 import com.abssoft.constructor.client.widgets.GridComboBoxItem;
 import com.abssoft.constructor.client.widgets.HTMLPaneItem;
+import com.abssoft.constructor.common.metadata.ColumnAction;
+import com.abssoft.constructor.common.metadata.FormColumnMD;
 import com.smartgwt.client.types.TitleOrientation;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.form.fields.BooleanItem;

@@ -2,7 +2,7 @@ package com.abssoft.constructor.client.widgets;
 
 import com.abssoft.constructor.client.data.DMLProcExecution;
 import com.abssoft.constructor.client.data.Utils;
-import com.abssoft.constructor.client.metadata.ActionStatus.StatusType;
+import com.abssoft.constructor.common.ActionStatus.StatusType;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.HeaderControls;
 import com.smartgwt.client.util.Page;
@@ -13,7 +13,7 @@ import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.events.CloseClickHandler;
-import com.smartgwt.client.widgets.events.CloseClientEvent;
+import com.smartgwt.client.widgets.events.CloseClickEvent;
 import com.smartgwt.client.widgets.events.DrawEvent;
 import com.smartgwt.client.widgets.events.DrawHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
@@ -93,7 +93,7 @@ public class ActionStatusWindow extends Window {
 
 	public static ActionStatusWindow createActionStatusWindow(String title, String shortMsg, String longText, StatusType statusType,
 			DMLProcExecution dmlData, String... buttonNames) {
-		Utils.debug(title + ": " + shortMsg);
+		Utils.debug("ActionStatusWindow.createActionStatusWindow: "+title + ": " + shortMsg);
 		Utils.debug(longText);
 		return new ActionStatusWindow(title, shortMsg, longText, statusType, dmlData, buttonNames);
 	}
@@ -137,7 +137,7 @@ public class ActionStatusWindow extends Window {
 		this.addItem(f);
 		this.addCloseClickHandler(new CloseClickHandler() {
 			@Override
-			public void onCloseClick(CloseClientEvent event) {
+			public void onCloseClick(CloseClickEvent event) {
 				beforeClose();
 			}
 		});

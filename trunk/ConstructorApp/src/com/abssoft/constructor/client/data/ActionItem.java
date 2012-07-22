@@ -3,7 +3,7 @@ package com.abssoft.constructor.client.data;
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.KeyIdentifier;
 import com.abssoft.constructor.client.form.MainFormPane;
-import com.abssoft.constructor.client.metadata.FormActionMD;
+import com.abssoft.constructor.common.metadata.FormActionMD;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.events.ClickEvent;

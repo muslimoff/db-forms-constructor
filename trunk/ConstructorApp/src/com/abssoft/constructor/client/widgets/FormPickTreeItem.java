@@ -3,19 +3,16 @@ package com.abssoft.constructor.client.widgets;
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.FormDataSourceField;
 import com.abssoft.constructor.client.data.FormTreeGridField;
-import com.abssoft.constructor.client.data.QueryService;
-import com.abssoft.constructor.client.data.QueryServiceAsync;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.data.common.GwtRpcDataSource;
 import com.abssoft.constructor.client.form.FormColumns;
 import com.abssoft.constructor.client.form.MainFormPane;
-import com.abssoft.constructor.client.metadata.FormColumnMD;
-import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
-import com.abssoft.constructor.client.metadata.FormMD;
-import com.abssoft.constructor.client.metadata.Row;
-import com.abssoft.constructor.client.metadata.RowsArr;
-import com.google.gwt.core.client.GWT;
+import com.abssoft.constructor.common.FormInstanceIdentifier;
+import com.abssoft.constructor.common.Row;
+import com.abssoft.constructor.common.RowsArr;
+import com.abssoft.constructor.common.metadata.FormColumnMD;
+import com.abssoft.constructor.common.metadata.FormMD;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
@@ -41,9 +38,8 @@ public class FormPickTreeItem extends IPickTreeItem {
 			int startRow = 0;
 			int endRow = 10000;
 			String sortBy = request.getAttribute("sortBy");
-			QueryServiceAsync service = GWT.create(QueryService.class);
-			service.fetch(instanceIdentifier, sortBy, startRow, endRow, Utils.getHashMapFromCriteria(cr), false,
-					new DSAsyncCallback<RowsArr>(requestId, response, this) {
+			Utils.createQueryService("FormPickTreeItem.fetch").fetch(instanceIdentifier, sortBy, startRow, endRow,
+					Utils.getHashMapFromCriteria(cr), false, new DSAsyncCallback<RowsArr>(requestId, response, this) {
 						public void onSuccess(RowsArr result) {
 							records = new TreeNode[result.size()];
 							Utils.debug("PickDataSource. valueFieldNum:" + valueFieldNum + "; result.size:" + result.size());
@@ -87,7 +83,8 @@ public class FormPickTreeItem extends IPickTreeItem {
 		this.lookupCode = columnMD.getLookupCode();
 		this.columnMD = columnMD;
 		int gridHashCode = 10000 + FormPickTreeItem.this.columnMD.getDisplayNum();
-		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, lookupCode, null, gridHashCode);
+		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, lookupCode, null, gridHashCode,
+				ConstructorApp.debugEnabled);
 		FormMD fmd = mainFormPane.getFormMetadata().getLookupsArr().get(lookupCode);
 		Utils.debug("PickDataSource ******** " + fmd.getFormName());
 		final MainFormPane mfp = new MainFormPane();

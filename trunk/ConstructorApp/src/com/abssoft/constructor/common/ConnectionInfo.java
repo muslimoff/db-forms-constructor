@@ -1,13 +1,16 @@
-package com.abssoft.constructor.client.data.common;
+package com.abssoft.constructor.common;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-/** Хранит информацию о сессии и состоянии подключения
+/**
+ * Хранит информацию о сессии и состоянии подключения
+ * 
  * @author User
- *
+ * 
  */
 public class ConnectionInfo implements IsSerializable {
 	private String status;
+	private String dbServerVersion;
 	private int sessionId;
 
 	// так надо - конструктор без параметров, чтобы не было такого:
@@ -36,5 +39,13 @@ public class ConnectionInfo implements IsSerializable {
 
 	public int getSessionId() {
 		return sessionId;
+	}
+
+	public void setDbServerVersion(String dbServerVersion) {
+		this.dbServerVersion = dbServerVersion;
+	}
+
+	public String getDbServerVersion() {
+		return dbServerVersion;
 	}
 }

@@ -2,39 +2,39 @@ package com.abssoft.constructor.client.data;
 
 import java.util.Map;
 
-import com.abssoft.constructor.client.data.common.ConnectionInfo;
-import com.abssoft.constructor.client.metadata.ExportData;
-import com.abssoft.constructor.client.metadata.FormActionMD;
-import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
-import com.abssoft.constructor.client.metadata.FormMD;
-import com.abssoft.constructor.client.metadata.MenusArr;
-import com.abssoft.constructor.client.metadata.Row;
-import com.abssoft.constructor.client.metadata.RowsArr;
-import com.abssoft.constructor.client.metadata.ServerInfoArr;
-import com.abssoft.constructor.client.metadata.StaticLookupsArr;
+import com.abssoft.constructor.common.ConnectionInfo;
+import com.abssoft.constructor.common.ExportData;
+import com.abssoft.constructor.common.FormInstanceIdentifier;
+import com.abssoft.constructor.common.MenusArr;
+import com.abssoft.constructor.common.Row;
+import com.abssoft.constructor.common.RowsArr;
+import com.abssoft.constructor.common.ServerInfoArr;
+import com.abssoft.constructor.common.StaticLookupsArr;
+import com.abssoft.constructor.common.metadata.FormActionMD;
+import com.abssoft.constructor.common.metadata.FormMD;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface QueryServiceAsync {
 
-	public void connect(int ServerIdx, String user, String password, boolean isScript, String urlParams,
+	public void connect(int ServerIdx, String user, String password, boolean isScript, String urlParams, Boolean isDebugEnabled,
 			AsyncCallback<ConnectionInfo> callback);
 
-	public void fetch(FormInstanceIdentifier formIdentifier, String sortBy, int startRow, int endRow, Map<?, ?> criteria,
-			boolean forceFetch, AsyncCallback<RowsArr> callback);
+	public void fetch(FormInstanceIdentifier fi, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch,
+			AsyncCallback<RowsArr> callback);
 
-	public void executeDML(FormInstanceIdentifier formIdentifier, Row oldRow, Row newRow, FormActionMD actMD, AsyncCallback<Row> callback);
+	public void executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow, FormActionMD actMD, AsyncCallback<Row> callback);
 
-	public void getFormMetaData(FormInstanceIdentifier formIdentifier, AsyncCallback<FormMD> callback);
+	public void getFormMetaData(FormInstanceIdentifier fi, AsyncCallback<FormMD> callback);
 
 	public void getMenusArr(int sessionId, AsyncCallback<MenusArr> callback);
 
 	public void sessionClose(int sessionId, AsyncCallback<Void> callback);
 
-	public void closeForm(FormInstanceIdentifier formIdentifier, FormMD formState, AsyncCallback<Void> callback);
+	public void closeForm(FormInstanceIdentifier fi, FormMD formState, AsyncCallback<Void> callback);
 
 	public void getStaticLookupsArr(int sessionId, AsyncCallback<StaticLookupsArr> callback);
 
-	public void getServerInfoArr(AsyncCallback<ServerInfoArr> callback);
+	public void getServerInfoArrWithoutPassword(AsyncCallback<ServerInfoArr> callback);
 
 	public void getFile(AsyncCallback<String> callback);
 

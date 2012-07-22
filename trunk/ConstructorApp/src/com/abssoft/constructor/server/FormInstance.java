@@ -9,13 +9,13 @@ import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 import oracle.sql.CLOB;
 
-import com.abssoft.constructor.client.metadata.ActionStatus;
-import com.abssoft.constructor.client.metadata.Attribute;
-import com.abssoft.constructor.client.metadata.ExportData;
-import com.abssoft.constructor.client.metadata.FormColumnMD;
-import com.abssoft.constructor.client.metadata.FormColumnsArr;
-import com.abssoft.constructor.client.metadata.Row;
-import com.abssoft.constructor.client.metadata.RowsArr;
+import com.abssoft.constructor.common.ActionStatus;
+import com.abssoft.constructor.common.Attribute;
+import com.abssoft.constructor.common.ExportData;
+import com.abssoft.constructor.common.FormColumnsArr;
+import com.abssoft.constructor.common.Row;
+import com.abssoft.constructor.common.RowsArr;
+import com.abssoft.constructor.common.metadata.FormColumnMD;
 
 public class FormInstance {
 	private FormColumnsArr columnsArr = new FormColumnsArr();
@@ -28,39 +28,41 @@ public class FormInstance {
 	private RowsArr resultData = new RowsArr();
 	private HashMap<Integer, CLOB> ClobHM = new HashMap<Integer, CLOB>();
 	private HashMap<Integer, ExportData> exportDatHM = new HashMap<Integer, ExportData>();
+	private Session session;
 
 	public FormInstance(Form form) throws SQLException {
 		this.form = form;
 		this.columnsArr = form.getFormMetaData().getColumns();
+		this.session = form.getSession();
 	}
 
 	public void closeForm() {
-		Utils.debug("Server:FormInstance. before close...");
+		session.debug("FormInstance. before close...");
 		try {
 			rs.close();
 		} catch (java.sql.SQLException e) {
-			e.printStackTrace();
+			session.printErrorStackTrace(e);
 		} catch (Exception e) {
-			e.printStackTrace();
+			session.printErrorStackTrace(e);
 		}
-		Utils.debug("Server:FormInstance. Resultset closed.");
+		session.debug("FormInstance. Resultset closed.");
 		try {
 
 			statement.close();
 		} catch (java.sql.SQLException e) {
-			e.printStackTrace();
+			session.printErrorStackTrace(e);
 		} catch (Exception e) {
-			e.printStackTrace();
+			session.printErrorStackTrace(e);
 		}
-		Utils.debug("Server:FormInstance. Statement closed.");
+		session.debug("FormInstance. Statement closed.");
 		resultData.clear();
-		//resultData = null;
-		Utils.debug("Server:FormInstance. resultData (RowsArr) cleared.");
+		// resultData = null;
+		session.debug("FormInstance. resultData (RowsArr) cleared.");
 		ClobHM.clear();
-		//ClobHM = null;
-		Utils.debug("Server:FormInstance. ClobHM cleared.");
-		Utils.debug("Server:FormInstance closed...");
-		//showReferencedObjects(this);
+		// ClobHM = null;
+		session.debug("FormInstance. ClobHM cleared.");
+		session.debug("FormInstance closed...");
+		// showReferencedObjects(this);
 	}
 
 	public RowsArr fetch(String sortBy, int startRow, int endRow, Map<?, ?> filterValues, boolean forceFetch) {
@@ -76,7 +78,7 @@ public class FormInstance {
 				sortBy = sortBy + ("".equals(sortBy) ? "" : ", ") + ss.replaceAll("-", "") + (ss.contains("-") ? " desc" : "");
 			}
 			sortBy = "\n" + "order by " + sortBy;
-			Utils.debug("sortBy:" + sortBy);
+			session.debug("sortBy:" + sortBy);
 		}
 
 		// ////////////////////////
@@ -86,7 +88,7 @@ public class FormInstance {
 			// Первый вызов DataSource или изменение сортировки, фильтров, а также принудительно
 			if (forceFetch || -1 == currentEndRow || currentSortBy != sortBy || !currentFilterValues.equals(filterValues)) {
 				OracleConnection connection = form.getConnection();
-				Utils.debug("Erase ResultSetData....");
+				session.debug("Erase ResultSetData....");
 				currentEndRow = -1;
 				resultData = new RowsArr();
 				ClobHM.clear();
@@ -94,19 +96,19 @@ public class FormInstance {
 				{
 					String totalRowsSqlText = "select count(*) cnt from (" + sqlText + "\n)";
 					OraclePreparedStatement rowCntStmnt = (OraclePreparedStatement) connection.prepareStatement(totalRowsSqlText); // statement
-					Utils.setFilterValues(rowCntStmnt, filterValues);
-					Utils.debug("totalRowsSqlText:\n" + totalRowsSqlText);
+					Utils.setFilterValues(session, rowCntStmnt, filterValues);
+					session.debug("totalRowsSqlText:\n" + totalRowsSqlText);
 					ResultSet rowCntRS = rowCntStmnt.executeQuery();
 					rowCntRS.next();
 					int totalRows = rowCntRS.getInt("CNT");
-					Utils.debug("totalRows:" + totalRows);
+					session.debug("totalRows:" + totalRows);
 					resultData.setTotalRows(totalRows);
 					rowCntRS.close();
 					rowCntStmnt.close();
 				}
 				statement = (OraclePreparedStatement) connection.prepareStatement(sqlText);
-				Utils.setFilterValues(statement, filterValues);
-				Utils.debug("sqlText:\n" + sqlText);
+				Utils.setFilterValues(session, statement, filterValues);
+				session.debug("sqlText:\n" + sqlText);
 				// 20100928
 				// if (statement.isClosed()) {
 				// Utils.debug("FormInstance. statement closed: ");
@@ -119,7 +121,7 @@ public class FormInstance {
 				currentFilterValues = filterValues;
 
 			}
-			Utils.debug("currentEndRow before: " + currentEndRow + "; Cashe: " + resultData.size() + "; startRow: " + startRow
+			session.debug("currentEndRow before: " + currentEndRow + "; Cashe: " + resultData.size() + "; startRow: " + startRow
 					+ "; endRow: " + endRow + "; gridHashCode: " + "; sortBy: " + sortBy + "; forceFetch: " + forceFetch);
 			// Пробегаем по ResultSet от последней строки, считанной при предыдущем вызове (currentEndRow),
 			// до конца текущего диапазона (endRow) или до оконца ResultSet. Если currentEndRow>endRow -
@@ -129,13 +131,13 @@ public class FormInstance {
 				try {
 					if (!rs.next() // !rs.isAfterLast() //!rs.isClosed() &&
 					) {
-						Utils.debug("FormInstance. ResultSet ended. rowNum:" + rowNum);
+						session.debug("FormInstance. ResultSet ended. rowNum:" + rowNum);
 						rs.close();
 						statement.close();
 						isRSclosed = true;
 					}
 				} catch (Exception e) {
-					Utils.debug("Error on close resultset/statement: " + e);
+					session.debug("Error on close resultset/statement: " + e);
 					// e.printStackTrace();
 					isRSclosed = true;
 				}
@@ -150,8 +152,8 @@ public class FormInstance {
 						r.put(colNum, Utils.getAttribute(colName, formColDataType, rs, this));
 					} catch (Exception e) {
 						r.put(colNum, new Attribute(e.getMessage()));
-						Utils.debug("Error on column: " + columnsArr.get(colNum).getName());
-						e.printStackTrace();
+						session.debug("Error on column: " + columnsArr.get(colNum).getName());
+						session.printErrorStackTrace(e);
 					}
 
 				}
@@ -159,7 +161,7 @@ public class FormInstance {
 				currentEndRow = rowNum;
 			}
 
-			Utils.debug("currentEndRow after:" + currentEndRow);
+			session.debug("currentEndRow after:" + currentEndRow);
 			// пробегаем по resultData и возвращаем только данные в требуемом диапазоне: startRow и endRow.
 			// Очищаем ранее передаваемые данные из resultData для экономии памяти. Остаются только записи,
 			// считанные из курсора rs, но невостребованные ранее.
@@ -171,13 +173,13 @@ public class FormInstance {
 				// System.out.println("col:" + i + "; data1:" + r.get(0));
 			}
 			currentData.setTotalRows(resultData.getTotalRows());
-			Utils.debug("currentData.TotalRows setted" + resultData.getTotalRows());
+			session.debug("currentData.TotalRows setted" + resultData.getTotalRows());
 		} catch (Exception e) {
 
 			String errText = Utils.getExceptionStackIntoString(e) + "\n";
 			errText = errText + "Form:" + form.getFormCode() + "\n";
 			errText = errText + "SQL:" + sqlText + "\n";
-			Utils.debug(errText);
+			session.debug(errText);
 			if (!isStmntClosedErr) {
 				currentData.setStatus(new ActionStatus(errText, ActionStatus.StatusType.ERROR));
 			} else {
@@ -185,7 +187,7 @@ public class FormInstance {
 			}
 		}
 		currentSortBy = sortBy;
-		Utils.debug("FormInstance.fetch... return.." + this.form.getFormCode());
+		session.debug("FormInstance.fetch... return.." + this.form.getFormCode());
 		return currentData;
 	}
 

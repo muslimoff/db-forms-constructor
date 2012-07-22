@@ -1,8 +1,8 @@
 package com.abssoft.constructor.client;
 
 import com.abssoft.constructor.client.common.TabSet;
-import com.abssoft.constructor.client.metadata.ActionStatus.StatusType;
 import com.abssoft.constructor.client.widgets.ActionStatusWindow;
+import com.abssoft.constructor.common.ActionStatus.StatusType;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.rednels.ofcgwt.client.ChartWidget;

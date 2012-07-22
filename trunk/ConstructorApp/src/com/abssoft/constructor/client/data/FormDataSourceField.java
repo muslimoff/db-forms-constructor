@@ -1,8 +1,8 @@
 package com.abssoft.constructor.client.data;
 
 import com.abssoft.constructor.client.form.MainFormPane;
-import com.abssoft.constructor.client.metadata.FormColumnMD;
-import com.abssoft.constructor.client.metadata.FormMD;
+import com.abssoft.constructor.common.metadata.FormColumnMD;
+import com.abssoft.constructor.common.metadata.FormMD;
 import com.smartgwt.client.types.FieldType;
 import com.smartgwt.client.widgets.form.fields.DateItem;
 import com.smartgwt.client.widgets.form.validator.RegExpValidator;
@@ -37,7 +37,6 @@ public class FormDataSourceField extends com.smartgwt.client.data.DataSourceFiel
 			// TODO - events... Грид/редактор косячит ... di.setUseMask(true);
 			// di.setUseMask(true);
 			di.setUseTextField(true);
-			// Упростилось... JSOHelper.apply(di.getJsObj(), this.getJsObj());
 			this.setEditorType(di);
 		} else {
 			type = FieldType.TEXT;

@@ -2,6 +2,8 @@ package com.abssoft.constructor.client;
 
 import java.util.Date;
 
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.EventListener;
 import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.data.DataSourceField;
 import com.smartgwt.client.types.FieldType;
@@ -16,15 +18,39 @@ import com.smartgwt.client.widgets.grid.events.EditorExitEvent;
 import com.smartgwt.client.widgets.grid.events.EditorExitHandler;
 
 public class TestCase1 extends Canvas {
+	// public interface BodyKeyPressHandler extends EventHandler {
+	// void onBodyKeyPress(com.smartgwt.client.widgets.grid.events.BodyKeyPressEvent event);
+	// }
+
+	private class MyListGrid extends ListGrid {
+//		@Override
+//		public void onBrowserEvent(Event event) {
+//			super.onBrowserEvent(event);
+//			System.out.println("zzz1" + event);
+//			switch (event.getTypeInt()) {
+//			case Event.ONPASTE: {
+//				System.out.println("zzz2" + Event.getCurrentEvent());
+//				// do something here
+//				break;
+//			}
+//			}
+//		}
+	}
+
 	@SuppressWarnings("deprecation")
 	public TestCase1() {
-		final ListGrid countryGrid = new ListGrid();
+		final ListGrid countryGrid = new MyListGrid();
+		// EventListener eventListener = new EventListener();
+		// com.google.gwt.user.client.DOM.setEventListener(countryGrid.getElement(), EventListener).
+
 		countryGrid.setWidth("100%");
 		countryGrid.setHeight("100%");
 		countryGrid.setShowAllRecords(true);
 		countryGrid.setCanEdit(true);
 		countryGrid.setEditEvent(ListGridEditEvent.DOUBLECLICK);
 		countryGrid.setModalEditing(true);
+
+		// addEventListener(countryGrid, "paste", EventListener listener, false);
 
 		DataSourceField nameField = new DataSourceField("countryName", FieldType.TEXT, "Country");
 		DataSourceField independenceField = new DataSourceField("independence", FieldType.DATE, "Nationhood");

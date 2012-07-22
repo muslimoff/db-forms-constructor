@@ -4,10 +4,9 @@ import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.data.common.GwtRpcDataSource;
 import com.abssoft.constructor.client.form.MainFormPane;
-import com.abssoft.constructor.client.metadata.FormActionMD;
-import com.abssoft.constructor.client.metadata.Row;
-import com.abssoft.constructor.client.metadata.RowsArr;
-import com.google.gwt.core.client.GWT;
+import com.abssoft.constructor.common.Row;
+import com.abssoft.constructor.common.RowsArr;
+import com.abssoft.constructor.common.metadata.FormActionMD;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
@@ -23,6 +22,15 @@ public class FormDataSource extends GwtRpcDataSource {
 	private FormDataSourceField[] dsFields;
 	private String formCode;
 	private int gridHashCode;
+	private int editedRecordIndex = -1; // 20120319 Для масс-обновления...
+
+	public int getEditedRecordIndex() {
+		return editedRecordIndex;
+	}
+
+	public void setEditedRecordIndex(int editedRecordIndex) {
+		this.editedRecordIndex = editedRecordIndex;
+	}
 
 	private MainFormPane mainFormPane;
 
@@ -81,8 +89,8 @@ public class FormDataSource extends GwtRpcDataSource {
 			cr.addCriteria(ConstructorApp.urlParamsCriteria);
 		}
 		String sortBy = request.getAttribute("sortBy");
-		QueryServiceAsync service = GWT.create(QueryService.class);
-		service.fetch(mainFormPane.getInstanceIdentifier(), sortBy, startRow, endRow, Utils.getHashMapFromCriteria(cr)//
+		Utils.createQueryService("FormDataSource.fetch").fetch(mainFormPane.getInstanceIdentifier(), sortBy, startRow, endRow,
+				Utils.getHashMapFromCriteria(cr)//
 				, mainFormPane.isForceFetch(), new DSAsyncCallback<RowsArr>(requestId, response, this) {
 					@Override
 					public void onSuccess(RowsArr result) {
@@ -149,10 +157,25 @@ public class FormDataSource extends GwtRpcDataSource {
 		Utils.debug("executeAdd1");
 		DMLProcExecution addProcExec = new DMLProcExecution(DMLProcExecution.ExecutionType.ADD, this, mainFormPane, request, response);
 		Utils.debug("executeAdd2");
-		Row newRow = Utils.getRowFromRecord(dsFields, new TreeNode(request.getData()));
+
+		// ////////////////////////
+		Record listGridRec = new TreeNode(request.getData());
+		// int recordIndex = addProcExec.grid.getRecordIndex(listGridRec);
+		// Utils.debug("executeAdd. recordIndex:" + recordIndex);
+		// if (-1 == recordIndex && listGridRec.toMap().containsKey("_recIdx")) {
+		// recordIndex = listGridRec.getAttributeAsInt("_recIdx");
+		// }
+		// listGridRec = addProcExec.grid.getEditedRecord(recordIndex);
+		// addProcExec.setRecordIndex(recordIndex);
+		// listGridRec.setAttribute("_recIdx", recordIndex);
+		Utils.debugRecord(listGridRec, "listGridRec >>>>>>>>>>>>>>> 2");
+		// /////////////////////
+
+		Row newRow = Utils.getRowFromRecord(dsFields, listGridRec);
 		Utils.debug("executeAdd3");
 		Row oldRow = null;
 		Utils.debug("executeAdd4");
+
 		addProcExec.executeGlobal(oldRow, newRow);
 		Utils.debug("executeAdd5");
 	}
@@ -189,18 +212,22 @@ public class FormDataSource extends GwtRpcDataSource {
 			}
 		};
 
-		Record oldValues = request.getOldValues();
 		Utils.debug("executeUpdate. oldRow");
-		Row oldRow = (null != oldValues) ? Utils.getRowFromRecord(dsFields, oldValues) : null;
+		Record oldRecord = request.getOldValues();
+		Utils.debugRecord(oldRecord, "oldRecord-1");
+		Row oldRow = (null != oldRecord) ? Utils.getRowFromRecord(dsFields, oldRecord) : null;
 
 		Utils.debug("executeUpdate. newRow");
-		Record listGridRec = new ListGridRecord(request.getData());
-		int recordIndex = updateProcExec.grid.getRecordIndex(listGridRec);
-		listGridRec = updateProcExec.grid.getEditedRecord(recordIndex);
-		Row newRow = Utils.getRowFromRecord(dsFields, listGridRec);
-		// Сохранение порядкового номера ListGridRecord для корректной передачи аттрибутов статуса действия
-		updateProcExec.setRecordIndex(recordIndex);
-		Utils.debug("executeUpdate. updateProcExec.executeGlobal.. recordIndex:" + recordIndex);
+		Record newRecord = new ListGridRecord(request.getData());
+		Utils.debugRecord(newRecord, "newRecord-1");
+		// Дополнение недостающими полями
+		newRecord = Utils.getNewRecordWithOldValues(oldRecord, newRecord);
+		Utils.debugRecord(newRecord, "newRecord-2");
+		Row newRow = Utils.getRowFromRecord(dsFields, newRecord);
+
+		// newRow = Utils.getEditedRow(dsFields, oldRow, newRow);
+
+		Utils.debug("executeUpdate. updateProcExec.executeGlobal..");
 		updateProcExec.executeGlobal(oldRow, newRow);
 	}
 
