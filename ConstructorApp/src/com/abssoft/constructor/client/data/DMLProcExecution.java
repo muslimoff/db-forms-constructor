@@ -1,13 +1,14 @@
 package com.abssoft.constructor.client.data;
 
+import java.util.LinkedHashMap;
+
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.form.MainFormPane;
-import com.abssoft.constructor.client.metadata.ActionStatus;
-import com.abssoft.constructor.client.metadata.FormActionMD;
-import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
-import com.abssoft.constructor.client.metadata.Row;
-import com.abssoft.constructor.client.metadata.ActionStatus.StatusType;
-import com.google.gwt.core.client.GWT;
+import com.abssoft.constructor.common.ActionStatus;
+import com.abssoft.constructor.common.FormInstanceIdentifier;
+import com.abssoft.constructor.common.Row;
+import com.abssoft.constructor.common.ActionStatus.StatusType;
+import com.abssoft.constructor.common.metadata.FormActionMD;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
@@ -59,6 +60,9 @@ public class DMLProcExecution {
 		this.formDataSource = formDataSource;
 		this.executionType = executionType;
 		this.grid = mainFormPane.getMainForm().getTreeGrid();
+
+		this.recordIndex = formDataSource.getEditedRecordIndex(); // grid.getRecordIndex(listGridRec);
+		Utils.debug("DMLProcExecution.this. recordIndex:" + recordIndex);
 	}
 
 	// Для вызова вне DataSource.
@@ -72,13 +76,13 @@ public class DMLProcExecution {
 	}
 
 	public void executeGlobal(Row oldRow, Row newRow, final Boolean showPrompt) {
+		formDataSource.setEditedRecordIndex(-1); // 20120319 сброс редактируемой записи
 		FormActionMD actMD = mainFormPane.getCurrentAction();
-		QueryServiceAsync service = GWT.create(QueryService.class);
 		if (showPrompt)
 			SC.showPrompt("Server Connecting");
 		FormInstanceIdentifier fi = mainFormPane.getInstanceIdentifier();
 
-		service.executeDML(fi, oldRow, newRow, actMD, new DSAsyncCallback<Row>() {
+		Utils.createQueryService("DMLProcExecution.executeDML").executeDML(fi, oldRow, newRow, actMD, new DSAsyncCallback<Row>() {
 			@Override
 			public void onSuccess(Row result) {
 				DMLProcExecution.this.setResultRow(result);
@@ -88,8 +92,16 @@ public class DMLProcExecution {
 				resRec = ExecutionType.DELETE.equals(executionType) ? new TreeNode(request.getData()) : resRec;
 				// Очищаем код нажатой кнопки для повторного выполнения
 				resRec.setAttribute(mainFormPane.getCurrentAction().getStatusButtonParam(), (String) null);
+
+				// 20120317
+				// if (!resRec.toMap().containsKey("_recIdx")) {
+				// resRec.setAttribute("_recIdx", recordIndex);
+				// }
+				Utils.debugRecord(resRec, "DmlProcExecution.SUCCESS1");
 				setResultRecord(resRec);
 				response.setData(new TreeNode[] { resRec });
+				Utils.debug("xxxxxxxxxxx:" + grid.getRecordIndex(resRec));
+				Utils.debugRecord(resRec, "DmlProcExecution.SUCCESS2");
 				// 20110729e
 				if (showPrompt) {
 					SC.clearPrompt();
@@ -97,6 +109,7 @@ public class DMLProcExecution {
 				result.getStatus().showActionStatus(DMLProcExecution.this);
 				// DMLProcExecution.this.showActionStatus(result.getStatus());
 				StatusType resStatus = result.getStatus().getStatusType();
+				Utils.debug("DMLProcExecution.executeDML. StatusType:" + resStatus);
 				if (ActionStatus.StatusType.SUCCESS.equals(resStatus) // Успешно
 				) {
 					executeSuccessSubProc();
@@ -109,10 +122,20 @@ public class DMLProcExecution {
 				if (ExecutionType.UPDATE.equals(executionType)) {
 					// grid.selectRecord(recordIndex);
 					// mainFormPane.filterDetailData(grid.getRecord(recordIndex), grid, recordIndex);
-					ListGridRecord selectedRec = grid.getRecord(mainFormPane.getSelectedRow());
-					grid.selectRecord(selectedRec);
-					int selectedRecIdx = grid.getRecordIndex(selectedRec);
-					mainFormPane.filterDetailData(selectedRec, grid, selectedRecIdx);
+					int mfpSelectedRec = mainFormPane.getSelectedRow();
+					ListGridRecord selectedRec = grid.getRecord(mfpSelectedRec);
+					Utils.debug("DMLProcExecution.executeDML.onSuccess.UPDATE. mfpSelectedRec:" + mfpSelectedRec + "; selectedRec:"
+							+ selectedRec);
+					try {
+						if (null != selectedRec) {
+							grid.selectRecord(selectedRec);
+							int selectedRecIdx = grid.getRecordIndex(selectedRec);
+							mainFormPane.filterDetailData(selectedRec, grid, selectedRecIdx);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						Utils.logException(e, "DMLProcExecution.executeDML.onSuccess. grid.selectRecord...");
+					}
 				}
 			}
 		});
@@ -163,32 +186,46 @@ public class DMLProcExecution {
 		}
 	};
 
+	/* 20120312. Функция getErrors: - См. файл TODO, ошибка 20120312№2. */
+	// // lGrid.setFieldError(1, "MESSAGE", "!!!!!!!!!eeeerrrooorrr");
+	// TODO Хороший вариант для возвращения пользовательских ошибок валидации: lGrid.setRowErrors(rowNum, errors)
+	// HashMap hm = new HashMap();
+	// hm.put("MESSAGE", "???????eeeerrrooorrr");
+	// response.setErrors(hm);
+	private static LinkedHashMap<String, String> getErrors(Row result, FormDataSource formDataSource) {
+
+		LinkedHashMap<String, String> errMap = new LinkedHashMap<String, String>();
+		String firsFieldName = formDataSource.getFieldNames()[0];
+		errMap.put(firsFieldName, result.getStatus().getLongMessageText());
+		return errMap;
+	}
+
 	public void executeWarningSubProc() {
 		Utils.debug("DMLProcExecution.executeWarningSubProc:\n" + result.getStatus().getLongMessageText());
 		request.setWillHandleError(true);
 		response.setStatus(RPCResponse.STATUS_FAILURE);
-		formDataSource.processResponse(request.getRequestId(), response);
-		// result.getStatus().setLongMessageText("fffffffffffffff");
-		// result.getStatus().showActionStatus();
+		response.setErrors(getErrors(result, formDataSource));
+		//formDataSource.processResponse(request.getRequestId(), response);
 
 		// Вывод значений,которые вернулись из PL/SQL процедуры.
 		// Вместо processResponse, которое не отображает этих данных для неуспешных статусов
+		//Тут копать!
 		setSQLReturnedValues();
 	};
 
 	public void executeErrorSubProc() {
 		Utils.debug("DMLProcExecution.executeErrorSubProc:\n" + result.getStatus().getLongMessageText());
-		// // lGrid.setFieldError(1, "MESSAGE", "!!!!!!!!!eeeerrrooorrr");
-		// TODO Хороший вариант для возвращения пользовательских ошибок валидации: lGrid.setRowErrors(rowNum, errors)
-		// HashMap hm = new HashMap();
-		// hm.put("MESSAGE", "???????eeeerrrooorrr");
-		// response.setErrors(hm);
+
 		request.setWillHandleError(true);
 		response.setStatus(RPCResponse.STATUS_FAILURE);
+
+		response.setErrors(getErrors(result, formDataSource));
 		formDataSource.processResponse(request.getRequestId(), response);
+
 		// Вывод значений,которые вернулись из PL/SQL процедуры.
 		// Вместо processResponse, которое не отображает этих данных для неуспешных статусов
-		setSQLReturnedValues();
+		//Тут копать!
+		setSQLReturnedValues();		
 	};
 
 	private void setSQLReturnedValues() {
@@ -219,10 +256,10 @@ public class DMLProcExecution {
 		return executionType;
 	}
 
-	public void setRecordIndex(int recordIndex) {
-		this.recordIndex = recordIndex;
-	}
-
+	// public void setRecordIndex(int recordIndex) {
+	// this.recordIndex = recordIndex;
+	// }
+	//
 	public int getRecordIndex() {
 		return recordIndex;
 	}

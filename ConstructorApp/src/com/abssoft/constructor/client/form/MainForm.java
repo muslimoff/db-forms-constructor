@@ -8,19 +8,17 @@ import com.abssoft.constructor.client.common.TabSet;
 import com.abssoft.constructor.client.data.DMLProcExecution;
 import com.abssoft.constructor.client.data.FormDataSourceField;
 import com.abssoft.constructor.client.data.FormTreeGridField;
-import com.abssoft.constructor.client.data.QueryService;
-import com.abssoft.constructor.client.data.QueryServiceAsync;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
-import com.abssoft.constructor.client.metadata.ExportData;
-import com.abssoft.constructor.client.metadata.FormActionMD;
-import com.abssoft.constructor.client.metadata.FormMD;
-import com.abssoft.constructor.client.metadata.Row;
-import com.google.gwt.core.client.GWT;
+import com.abssoft.constructor.common.ExportData;
+import com.abssoft.constructor.common.Row;
+import com.abssoft.constructor.common.metadata.FormActionMD;
+import com.abssoft.constructor.common.metadata.FormMD;
 import com.google.gwt.user.client.Window;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.ResultSet;
 import com.smartgwt.client.types.EditCompletionEvent;
+import com.smartgwt.client.types.ListGridComponent;
 import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.types.RowEndEditAction;
 import com.smartgwt.client.widgets.Canvas;
@@ -44,7 +42,6 @@ import com.smartgwt.client.widgets.grid.events.RowContextClickEvent;
 import com.smartgwt.client.widgets.grid.events.RowContextClickHandler;
 import com.smartgwt.client.widgets.grid.events.RowEditorEnterEvent;
 import com.smartgwt.client.widgets.grid.events.RowEditorEnterHandler;
-import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.tree.Tree;
 import com.smartgwt.client.widgets.tree.TreeGrid;
 import com.smartgwt.client.widgets.tree.TreeNode;
@@ -92,6 +89,14 @@ class MainForm extends Canvas {
 			Utils.debug("FormListGrid.startEditing: " + this.getJsObj().toString());
 			return super.startEditing(rowNum, colNum, suppressFocus);
 		}
+
+		public native boolean saveAllEdits(int[] rows)
+		/*-{
+			var self = this.@com.smartgwt.client.widgets.BaseWidget::getOrCreateJsObj()();
+			var rowsJS = rows == null ? null : @com.smartgwt.client.util.JSOHelper::convertToJavaScriptArray([I)(rows);
+			return self.saveAllEdits(rowsJS);
+		}-*/;
+
 		// Пример добавления хендлера для эвентов. См. http://forums.smartclient.com/showthread.php?t=9923
 		// @Override
 		// public HandlerRegistration addRowEditorEnterHandler(RowEditorEnterHandler handler) {
@@ -103,6 +108,13 @@ class MainForm extends Canvas {
 	}
 
 	public class FormTreeGrid extends TreeGrid {
+
+		public native boolean saveAllEdits(int[] rows)
+		/*-{
+			var self = this.@com.smartgwt.client.widgets.BaseWidget::getOrCreateJsObj()();
+			var rowsJS = rows == null ? null : @com.smartgwt.client.util.JSOHelper::convertToJavaScriptArray([I)(rows);
+			return self.saveAllEdits(rowsJS);
+		}-*/;
 
 		FormTreeGrid() {
 			this.setShowConnectors(true);
@@ -206,6 +218,14 @@ class MainForm extends Canvas {
 		} else {
 			treeGrid = new FormListGrid();
 		}
+		// 20120501 - См. TODO ниже
+		bottomToolBar = new FormBottomToolBar();
+		bottomToolBar.setWidth100();
+		//
+		if (formMetadata.isShowBottomToolBar()) {
+			treeGrid.setGridComponents(new Object[] { ListGridComponent.HEADER, ListGridComponent.FILTER_EDITOR, ListGridComponent.BODY,
+					bottomToolBar }); // ListGridComponent.SUMMARY_ROW
+		}
 		// 20110322
 		treeGrid.setShowHeaderMenuButton(false);
 		//
@@ -259,17 +279,25 @@ class MainForm extends Canvas {
 		treeGrid.setHoverWidth(300);
 
 		treeGrid.setInitialSort(mainFormPane.getFormColumns().getDefaultSort());
-		VLayout mainLayout = new VLayout();
-		mainLayout.setWidth100();
-		mainLayout.setHeight100();
-		mainLayout.addMember(treeGrid);
-		// /////////
-		bottomToolBar = new FormBottomToolBar();
-		bottomToolBar.setWidth100();
-		mainLayout.addMember(bottomToolBar);
-		if (!formMetadata.isShowBottomToolBar())
-			bottomToolBar.hide();
-		this.addChild(mainLayout);
+		// 20120501 - Переделал то, что закоменчено в скобках на то, что ниже - появился ListGridComponent.SUMMARY_ROW
+		// {
+		// VLayout mainLayout = new VLayout();
+		// mainLayout.setWidth100();
+		// mainLayout.setHeight100();
+		// mainLayout.addMember(treeGrid);
+		// // ///////
+		// bottomToolBar = new FormBottomToolBar();
+		// bottomToolBar.setWidth100();
+		// mainLayout.addMember(bottomToolBar);
+		// if (!formMetadata.isShowBottomToolBar())
+		// bottomToolBar.hide();
+		// this.addChild(mainLayout);
+		// }
+		{
+			treeGrid.setHeight100();
+			this.addChild(treeGrid);
+		}
+
 		this.setHeight100();
 
 		treeGrid.addEditorExitHandler(new EditorExitHandler() {
@@ -279,7 +307,7 @@ class MainForm extends Canvas {
 				ListGrid grid = ((ListGrid) event.getSource());
 				int rowNum = event.getRowNum();
 				// Обработка выхода по клавише ESCAPE
-				if (null == event.getRecord() && EditCompletionEvent.ESCAPE.equals(event.getEditCompletionEvent())) {
+				if (null == event.getRecord() && EditCompletionEvent.ESCAPE_KEYPRESS.equals(event.getEditCompletionEvent())) {
 					int nextRecord = (0 == rowNum && null != grid.getRecord(rowNum + 1)) ? rowNum + 1 : rowNum - 1;
 					System.out.println("rowNum:" + rowNum + "; nextRecord:" + nextRecord);
 					// mainFormPane.getValuesManager().clearValues();
@@ -446,12 +474,11 @@ class MainForm extends Canvas {
 
 	public void doBeforeClose() {
 		final int gridHashCode = getHashCode();
-		QueryServiceAsync queryService = (QueryServiceAsync) GWT.create(QueryService.class);
 		final String formCode = mainFormPane.getFormCode();
 		Utils.debug(formCode + ": mainForm.doBeforeClose(). sessionId = " + ConstructorApp.sessionId + "; gridHashCode = " + gridHashCode);
 		FormMD formState = mainFormPane.getFormState();
-		System.out.println("mainFormPane.FormState: " + formState);
-		queryService.closeForm(mainFormPane.getInstanceIdentifier(), formState, new DSAsyncCallback<Void>() {
+		Utils.debug("mainFormPane.FormState: " + formState);
+		Utils.createQueryService("MainForm.closeForm").closeForm(mainFormPane.getInstanceIdentifier(), formState, new DSAsyncCallback<Void>() {
 			@Override
 			public void onSuccess(Void result) {
 				Utils.debug("MainForm. Form " + formCode + "(" + gridHashCode + ")" + " closed...");
@@ -541,8 +568,7 @@ class MainForm extends Canvas {
 			e.printStackTrace();
 		}
 
-		QueryServiceAsync service = GWT.create(QueryService.class);
-		service.setExportData(mainFormPane.getInstanceIdentifier(), exportData, new DSAsyncCallback<Integer>() {
+		Utils.createQueryService("MainForm.setExportData").setExportData(mainFormPane.getInstanceIdentifier(), exportData, new DSAsyncCallback<Integer>() {
 			@Override
 			public void onSuccess(Integer result) {
 				String fullUrl = ExportUrl + "&dataClobId=" + result;

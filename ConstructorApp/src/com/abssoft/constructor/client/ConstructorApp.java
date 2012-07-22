@@ -11,16 +11,14 @@ import com.abssoft.constructor.client.app.SkinSelectorMenu;
 import com.abssoft.constructor.client.common.KeyIdentifier;
 import com.abssoft.constructor.client.common.TabSet;
 import com.abssoft.constructor.client.common.ToolBar;
-import com.abssoft.constructor.client.data.QueryService;
-import com.abssoft.constructor.client.data.QueryServiceAsync;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.form.ApplicationToolBar;
-import com.abssoft.constructor.client.metadata.ActionStatus;
-import com.abssoft.constructor.client.metadata.MenusArr;
-import com.abssoft.constructor.client.metadata.ServerInfoArr;
-import com.abssoft.constructor.client.metadata.StaticLookupsArr;
 import com.abssoft.constructor.client.widgets.ActionStatusWindow;
+import com.abssoft.constructor.common.ActionStatus;
+import com.abssoft.constructor.common.MenusArr;
+import com.abssoft.constructor.common.ServerInfoArr;
+import com.abssoft.constructor.common.StaticLookupsArr;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -55,6 +53,7 @@ import com.smartgwt.client.widgets.tab.Tab;
 public class ConstructorApp implements EntryPoint {
 
 	public static TabSet tabSet = new TabSet();
+	public static final String queryServiceRelativePath = "query";
 	public static int sessionId = -1;
 	// TODO Разделить иконки и меню
 	public static MenusArr menus;
@@ -71,16 +70,21 @@ public class ConstructorApp implements EntryPoint {
 	public static Map<String, List<String>> urlParams;
 	public static Criteria urlParamsCriteria = new Criteria();
 	public static String moduleBaseURL;
+	public static String AIRmoduleBaseURL;
 	public static String hostPageBaseURL;
 	public static String moduleName;
 	public static SkinSelectorMenu skinSelectorMenu;
+	public static String clientVersion = Utils.getClientVersion();
+	public static String appServerVersion = "";
+	public static String dbServerVersion = "";
+	// public static QueryServiceAsync queryService; // = (QueryServiceAsync) GWT.create(QueryService.class);
+	// private static ServiceDefTarget queryServiceDefTarget = (ServiceDefTarget) queryService;
 
 	ConnectWindow connectWindow;
 
 	private void doBeforeClose(final String msg) {
 		if (-1 != sessionId) {
-			QueryServiceAsync queryService = (QueryServiceAsync) GWT.create(QueryService.class);
-			queryService.sessionClose(sessionId, new DSAsyncCallback<Void>() {
+			Utils.createQueryService("ConstructorApp.sessionClose").sessionClose(sessionId, new DSAsyncCallback<Void>() {
 				@Override
 				public void onSuccess(Void result) {
 					String msg2 = msg + ": DB session " + sessionId + " closed...";
@@ -113,18 +117,14 @@ public class ConstructorApp implements EntryPoint {
 
 	public void onModuleLoad() {
 		setDataChoserDayOfWeek();
+		// DateUtil.setAdjustForDST(false);
+		// DateUtil.setDefaultDisplayTimezone("-08:00");
 		DateUtil.setShortDateDisplayFormatter(new DateDisplayFormatter() {
 			@Override
 			public String format(Date date) {
 				return Utils.dateToString(date);
 			}
 		});
-		// DateUtil.setDateInputFormatter(new DateInputFormatter() {
-		// @Override
-		// public Date parse(String dateString) {
-		// return Utils.stringToDate(dateString);
-		// }
-		// });
 
 		DateUtil.setDateParser(new DateParser() {
 
@@ -151,6 +151,10 @@ public class ConstructorApp implements EntryPoint {
 		moduleBaseURL = GWT.getModuleBaseURL();
 		hostPageBaseURL = GWT.getHostPageBaseURL();
 		moduleName = GWT.getModuleName();
+		AIRmoduleBaseURL = moduleBaseURL;
+		// if isAIR...
+		// queryServiceDefTarget.setServiceEntryPoint(moduleBaseURL + "query");
+		// Window.alert(moduleBaseURL);
 		add_debug_console();
 		Canvas canvas = new Canvas();
 		canvas.setWidth100();
@@ -176,7 +180,7 @@ public class ConstructorApp implements EntryPoint {
 			}
 		});
 		//
-		final MenuItem debugMI = new MenuItem("Debugxx");
+		final MenuItem debugMI = new MenuItem("Debug@");
 		debugMI.setIcon("[ISOMORPHIC]/resources/icons/" + "bug.png");
 		debugMI.setCheckIfCondition(new MenuItemIfFunction() {
 			public boolean execute(Canvas target, Menu menu, MenuItem item) {
@@ -212,7 +216,7 @@ public class ConstructorApp implements EntryPoint {
 
 			@Override
 			public void onClick(MenuItemClickEvent event) {
-				tabSet.removeMainFormContainerTab(tabSet.getSelectedTab());
+				tabSet.removeMainFormContainerTab(tabSet.getSelectedTab(), false);
 			}
 		});
 		MenuItem downloadMI = new MenuItem("TestActWnd");

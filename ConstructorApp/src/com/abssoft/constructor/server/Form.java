@@ -13,20 +13,20 @@ import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 import oracle.sql.CLOB;
 
-import com.abssoft.constructor.client.metadata.ActionStatus;
-import com.abssoft.constructor.client.metadata.Attribute;
-import com.abssoft.constructor.client.metadata.ColumnAction;
-import com.abssoft.constructor.client.metadata.ExportData;
-import com.abssoft.constructor.client.metadata.FormActionMD;
-import com.abssoft.constructor.client.metadata.FormActionsArr;
-import com.abssoft.constructor.client.metadata.FormColumnMD;
-import com.abssoft.constructor.client.metadata.FormColumnsArr;
-import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
-import com.abssoft.constructor.client.metadata.FormMD;
-import com.abssoft.constructor.client.metadata.FormTabMD;
-import com.abssoft.constructor.client.metadata.FormTabsArr;
-import com.abssoft.constructor.client.metadata.Row;
-import com.abssoft.constructor.client.metadata.RowsArr;
+import com.abssoft.constructor.common.ActionStatus;
+import com.abssoft.constructor.common.Attribute;
+import com.abssoft.constructor.common.ExportData;
+import com.abssoft.constructor.common.FormActionsArr;
+import com.abssoft.constructor.common.FormColumnsArr;
+import com.abssoft.constructor.common.FormInstanceIdentifier;
+import com.abssoft.constructor.common.FormTabsArr;
+import com.abssoft.constructor.common.Row;
+import com.abssoft.constructor.common.RowsArr;
+import com.abssoft.constructor.common.metadata.ColumnAction;
+import com.abssoft.constructor.common.metadata.FormActionMD;
+import com.abssoft.constructor.common.metadata.FormColumnMD;
+import com.abssoft.constructor.common.metadata.FormMD;
+import com.abssoft.constructor.common.metadata.FormTabMD;
 
 /**
  * Данные формы <CODE>formCode</CODE> (метаданные, данные запроса).
@@ -53,6 +53,11 @@ public class Form {
 	private FormMD formMetaData = null;
 	private ArrayList<Integer> formLookupsIdx = new ArrayList<Integer>();
 	private Session session;
+
+	public Session getSession() {
+		return session;
+	}
+
 	private Boolean isDrillDownForm;
 
 	public Form(OracleConnection connection, String formCode, String parentFormCode, Boolean isDrillDownForm, Session session) {
@@ -62,31 +67,31 @@ public class Form {
 		this.setIsDrillDownForm(isDrillDownForm);
 		this.session = session;
 		setFormSQLText();
-		Utils.debug("" + this);
+		session.debug("" + this);
 	}
 
 	public void closeForm(int gridHashCode, FormMD formState) {
-		Utils.debug("Server:form " + getFormCode() + " - gridHashCode:" + gridHashCode + " before close...");
+		session.debug("form " + getFormCode() + " - gridHashCode:" + gridHashCode + " before close...");
 		formInstance.get(gridHashCode).closeForm();
 		formInstance.remove(gridHashCode);
 		if (0 == getInstancesCount()) {
-			Utils.debug("Server:form " + getFormCode() + " - gridHashCode:" + gridHashCode + " save current state for User...");
-			Utils.debug("formState:" + formState + "; FormCode:" + formState.getFormCode());
+			session.debug("form " + getFormCode() + " - gridHashCode:" + gridHashCode + " save current state for User...");
+			session.debug("formState:" + formState + "; FormCode:" + formState.getFormCode());
 			// TODO Обработка состояния формы при закрытии: FormMD formState - сохранение ширин, сортировок и прочей хери.
 		}
-		Utils.debug("Server:form " + getFormCode() + " - gridHashCode:" + gridHashCode + " closed...");
+		session.debug("form " + getFormCode() + " - gridHashCode:" + gridHashCode + " closed...");
 	}
 
 	public Row executeDML(int gridHashCode, Row oldRow, Row newRow, FormActionMD actMD) throws SQLException, Exception {
 		Row resultRow = null != newRow ? newRow : oldRow;
 		// String statusMsgLevelParamName = null;
 		// String statusMsgTxtParamName = null;
-		Utils.debug("actionCode:" + actMD.getCode() + "; Type:" + actMD.getType(), resultRow);
+		session.debug("actionCode:" + actMD.getCode() + "; Type:" + actMD.getType(), resultRow);
 		{
 			String dmlProcText = actMD.getDmlProcText();
 			if (null != dmlProcText) {
 				OracleCallableStatement stmnt = (OracleCallableStatement) getConnection().prepareCall(dmlProcText);
-				Utils.debug(dmlProcText, resultRow);
+				session.debug(dmlProcText, resultRow);
 				// ----------------------------------
 				HashMap<String, Attribute> rowValues = new HashMap<String, Attribute>();
 				HashMap<String, Boolean> isClobHM = new HashMap<String, Boolean>();
@@ -143,18 +148,18 @@ public class Form {
 							if (isClobHM.containsKey(paramName)) {
 								Integer clobId = (null != val) ? Integer.valueOf((String) val) : null;
 								CLOB clb = formInstance.get(gridHashCode).getClobHM().get(clobId);
-								Utils.debug("clob: " + clb + "; clobId:" + clobId);
+								session.debug("clob: " + clb + "; clobId:" + clobId);
 								stmnt.setCLOB(paramNum, clb);
 							} else {
 								stmnt.setString(paramNum, (String) val);
 							}
 						}
-						Utils.debug("(" + (null != attr ? attr.getDataType() : null) + ")" + "IN:" + paramName + " => " + val + "; class:"
-								+ ((null != val) ? val.getClass() : "null") + "; is null:" + (val == null), resultRow);
+						session.debug("(" + (null != attr ? attr.getDataType() : null) + ")" + "IN:" + paramName + " => " + val
+								+ "; class:" + ((null != val) ? val.getClass() : "null") + "; is null:" + (val == null), resultRow);
 					}
 
 					if (actMD.getOutputs().containsKey(paramNum)) {
-						Utils.debug("registerOutParameter. paramName: " + paramName + "; paramNum:" + paramNum + "; outParamType:"
+						session.debug("registerOutParameter. paramName: " + paramName + "; paramNum:" + paramNum + "; outParamType:"
 								+ outParamType, resultRow);
 						((OracleCallableStatement) stmnt).registerOutParameter(paramNum, outParamType);
 
@@ -177,7 +182,7 @@ public class Form {
 						resultRow.remove(j);
 						Integer colIdx = actMD.getOutputsByName().get(colName);
 						Attribute attr = Utils.getAttribute(colIdx, dataType, stmnt, formInstance.get(gridHashCode));
-						Utils.debug("(" + dataType + ")" + "OUT:" + colName + " => " + attr.getAttribute() + "; is null:"
+						session.debug("(" + dataType + ")" + "OUT:" + colName + " => " + attr.getAttribute() + "; is null:"
 								+ (null == attr.getAttribute()), resultRow);
 						resultRow.put(j, attr);
 
@@ -210,10 +215,10 @@ public class Form {
 				// }
 				stmnt.close();
 				if (actMD.getAutoCommit()) {
-					Utils.debug("Auto Commit complete...", resultRow);
+					session.debug("Auto Commit complete...", resultRow);
 					getConnection().commit();
 				} else {
-					Utils.debug("Auto Commit disabled...", resultRow);
+					session.debug("Auto Commit disabled...", resultRow);
 				}
 				// ----------------------------------
 
@@ -233,12 +238,12 @@ public class Form {
 	private FormColumnsArr getColumns() {
 		try {
 			{
-				Utils.debug("Parse Query: ");
+				session.debug("Parse Query: ");
 				String ColumnsMetaDataSQL = Utils.getSQLQueryFromXML("ColumnsMetaDataSQL", session);
-				Utils.debug(ColumnsMetaDataSQL);
+				session.debug(ColumnsMetaDataSQL);
 				OraclePreparedStatement statement = (OraclePreparedStatement) getConnection().prepareStatement(ColumnsMetaDataSQL);
-				Utils.debug("Parameters: ");
-				Utils.setFormMDParams(statement, getFormCode(), parentFormCode, isDrillDownForm);
+				session.debug("Parameters: ");
+				Utils.setFormMDParams(session, statement, getFormCode(), parentFormCode, isDrillDownForm);
 				ResultSet rs = statement.executeQuery();
 				int colNum = -1;
 				while (rs.next()) {
@@ -267,7 +272,7 @@ public class Form {
 					cmd.setTextMask(rs.getString("text_mask"));
 					cmd.setValidationRegexp(rs.getString("validation_regexp"));
 					cmd.setDefaultOrderByNumber(rs.getString("default_orderby_number"));
-					cmd.setDefaultValue(Utils.bindVarsToLowerCase(rs.getString("default_value"), "(?i):[\\w\\$]+", "&", "&"));
+					cmd.setDefaultValue(Utils.bindVarsToLowerCase(session, rs.getString("default_value"), "(?i):[\\w\\$]+", "&", "&"));
 					cmd.setEditorTitleOrientation(rs.getString("editor_title_orientation"));
 					cmd.setEditorEndRow("Y".equals(rs.getString("editor_end_row_flag")));
 					cmd.setEditorColsSpan(rs.getString("editor_cols_span"));
@@ -285,9 +290,8 @@ public class Form {
 				// get Column Attributes
 				String columnAttributesSQL = Utils.getSQLQueryFromXML("columnAttributesSQL", session);
 				OraclePreparedStatement attrStmnt = (OraclePreparedStatement) getConnection().prepareStatement(columnAttributesSQL);
-				Utils.setFormMDParams(attrStmnt, getFormCode(), parentFormCode, isDrillDownForm);
+				Utils.setFormMDParams(session, attrStmnt, getFormCode(), parentFormCode, isDrillDownForm);
 				ResultSet attrRS = attrStmnt.executeQuery();
-				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>xx<<<<<<<<<<<<<<<<<<<<<<<");
 				while (attrRS.next()) {
 					String colName = attrRS.getString("column_code");
 					String attrCode = attrRS.getString("attribute_code");
@@ -302,9 +306,8 @@ public class Form {
 				// get Column Actions
 				String columnActionsSQL = Utils.getSQLQueryFromXML("columnActionsSQL", session);
 				OraclePreparedStatement actStmnt = (OraclePreparedStatement) getConnection().prepareStatement(columnActionsSQL);
-				Utils.setFormMDParams(actStmnt, getFormCode(), parentFormCode, isDrillDownForm);
+				Utils.setFormMDParams(session, actStmnt, getFormCode(), parentFormCode, isDrillDownForm);
 				ResultSet colActsRS = actStmnt.executeQuery();
-				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>xx<<<<<<<<<<<<<<<<<<<<<<<");
 				while (colActsRS.next()) {
 					String colName = colActsRS.getString("column_code");
 					ColumnAction ca = new ColumnAction();
@@ -317,8 +320,7 @@ public class Form {
 				actStmnt.close();
 			}
 		} catch (java.sql.SQLException e) {
-			Utils.debug(e.toString());
-			e.printStackTrace();
+			session.printErrorStackTrace(e);
 		}
 		return metadata;
 	}
@@ -327,8 +329,8 @@ public class Form {
 		String dmlProcText = "begin " + actionData.getSqlProcedureName() + "(";
 		String argsSQLText = Utils.getSQLQueryFromXML("argsSQLText", session);
 		OraclePreparedStatement actProcStmnt = (OraclePreparedStatement) getConnection().prepareStatement(argsSQLText);
-		Utils.setParameterValue(actProcStmnt, "p_procedure_name", actionData.getSqlProcedureName());
-		Utils.setParameterValue(actProcStmnt, "p_fc_schema_owner", getFcSchemaOwner());
+		Utils.setParameterValue(session, actProcStmnt, "p_procedure_name", actionData.getSqlProcedureName());
+		Utils.setParameterValue(session, actProcStmnt, "p_fc_schema_owner", getFcSchemaOwner());
 		// Utils.setFormMDParams(actProcStmnt, formCode, parentFormCode);
 		ResultSet actProcRs = actProcStmnt.executeQuery();
 		int argNum = -1;
@@ -336,7 +338,7 @@ public class Form {
 			argNum = actProcRs.getInt("position");
 			String argName = actProcRs.getString("argument_name");
 			String argType = actProcRs.getString("data_type");
-			System.out.println("argNum: " + argNum + "; argName: " + argName + "(" + argType + ")");
+			session.debug("argNum: " + argNum + "; argName: " + argName + "(" + argType + ")");
 			dmlProcText = dmlProcText + argName + " => ?,";
 			actionData.getAllArgs().put(argNum, argName);
 			actionData.getAllDataTypes().put(argNum, argType);
@@ -364,16 +366,18 @@ public class Form {
 		try {
 			String formActionsSQL = Utils.getSQLQueryFromXML("formActionsSQL", session);
 			OraclePreparedStatement statement = (OraclePreparedStatement) getConnection().prepareStatement(formActionsSQL);
-			Utils.setFormMDParams(statement, getFormCode(), parentFormCode, isDrillDownForm);
+			Utils.setFormMDParams(session, statement, getFormCode(), parentFormCode, isDrillDownForm);
 			ResultSet actRs = statement.executeQuery();
 			while (actRs.next()) {
 				FormActionMD actionData = new FormActionMD();
 				actionData.setCode(actRs.getString("action_code"));
 				actionData.setIconId(actRs.getInt("icon_id"));
 				actionData.setType(actRs.getString("action_type"));
-				actionData.setSqlProcedureName(Utils.bindVarsToLowerCase(actRs.getString("procedure_name"), "(?i):[\\w]+", ":", ":"));
-				actionData.setConfirmText(Utils.bindVarsToLowerCase(actRs.getString("confirm_text"), "(?i):[\\w]+", "&", "&"));
-				actionData.setDisplayName(Utils.bindVarsToLowerCase(actRs.getString("action_display_name"), "(?i):[\\w]+", "&", "&"));
+				actionData.setSqlProcedureName(Utils.bindVarsToLowerCase(session, actRs.getString("procedure_name"), "(?i):[\\w]+", ":",
+						":"));
+				actionData.setConfirmText(Utils.bindVarsToLowerCase(session, actRs.getString("confirm_text"), "(?i):[\\w]+", "&", "&"));
+				actionData.setDisplayName(Utils.bindVarsToLowerCase(session, actRs.getString("action_display_name"), "(?i):[\\w]+", "&",
+						"&"));
 				if (null != actionData.getSqlProcedureName()) {
 					actionData.setDmlProcText(getDMLProcText(actionData));
 				}
@@ -381,7 +385,7 @@ public class Form {
 				actionData.setShowSeparatorBelow("Y".equals(actRs.getString("show_separator_below")));
 				actionData.setDisplayOnToolbar("Y".equals(actRs.getString("display_on_toolbar")));
 				actionData.setChildFormCode(actRs.getString("child_form_code"));
-				actionData.setUrlText(Utils.bindVarsToLowerCase(actRs.getString("url_text"), "(?i):[\\w]+", ":", ":"));
+				actionData.setUrlText(Utils.bindVarsToLowerCase(session, actRs.getString("url_text"), "(?i):[\\w]+", ":", ":"));
 				actionData.setParentActionCode(actRs.getString("parent_action_code"));
 				actionData.setDisplayInContextMenu("Y".equals(actRs.getString("display_in_context_menu")));
 				actionData.setAutoCommit("Y".equals(actRs.getString("autocommit")));
@@ -394,7 +398,7 @@ public class Form {
 			actRs.close();
 			statement.close();
 		} catch (java.sql.SQLException e) {
-			e.printStackTrace();
+			session.printErrorStackTrace(e);
 		}
 		return result;
 	}
@@ -407,19 +411,19 @@ public class Form {
 		String formSQL = Utils.getSQLQueryFromXML("formSQL", session);
 		OraclePreparedStatement statement = (OraclePreparedStatement) getConnection().prepareStatement(formSQL);
 		// Utils.setStringParameterValue(statement, "p_form_code", formCode);
-		Utils.setFormMDParams(statement, getFormCode(), parentFormCode, isDrillDownForm);
+		Utils.setFormMDParams(session, statement, getFormCode(), parentFormCode, isDrillDownForm);
 		ResultSet rs = statement.executeQuery();
 		while (rs.next()) {
 			Integer ovn = rs.getInt("object_version_number");
 			if (null != formMetaData && null != formMetaData.getColumns() && 0 != formMetaData.getColumns().size()
 					&& formMetaData.getObjectVersionNumber() == ovn) {
-				Utils.debug(getFormCode() + " FormMetadata exists. Exiting...");
+				session.debug(getFormCode() + " FormMetadata exists. Exiting...");
 				rs.close();
 				statement.close();
 				return formMetaData;
 			}
 			formMetaData = new FormMD();
-			Utils.debug("Reading Metadata for " + getFormCode());
+			session.debug("Reading Metadata for " + getFormCode());
 			formMetaData.setFormCode(getFormCode());
 			formMetaData.setHotKey(rs.getString("hot_key"));
 			formMetaData.setFormName(rs.getString("form_name"));
@@ -445,8 +449,8 @@ public class Form {
 		statement.close();
 
 		// Принудительно приводим все bind variables к lowerCase
-		setFormSQLText(Utils.bindVarsToLowerCase(getFormSQLText(), "(?i):[\\w\\$]+"));
-		Utils.debug("Form: Lookups Metadata...\n" + getFormSQLText());
+		setFormSQLText(Utils.bindVarsToLowerCase(session, getFormSQLText(), "(?i):[\\w\\$]+"));
+		session.debug("Form: Lookups Metadata...\n" + getFormSQLText());
 		for (int i = 0; i < formLookupsIdx.size(); i++) {
 			FormColumnMD cmd = formMetaData.getColumns().get(formLookupsIdx.get(i));
 			String formLookupCode = cmd.getLookupCode();
@@ -456,15 +460,15 @@ public class Form {
 				FormMD fmd = session.getFormMetaData(fi, false);
 				if (null != fmd) {
 					formMetaData.getLookupsArr().put(formLookupCode, fmd);
-					Utils.debug("***: " + formMetaData.getLookupsArr().get(formLookupCode).getFormCode());
+					session.debug("***: " + formMetaData.getLookupsArr().get(formLookupCode).getFormCode());
 				}
 			}
 			if ("8".equals(cmd.getFieldType())) {
 				// TODO Static Lookups - вычитывать для формы
 			}
 		}
-		Utils.debug("Form: Lookups Metadata finished...");
-		Utils.debug("Form: getFormMetaData(" + getFormCode() + ") executed...");
+		session.debug("Form: Lookups Metadata finished...");
+		session.debug("Form: getFormMetaData(" + getFormCode() + ") executed...");
 		return formMetaData;
 	}
 
@@ -475,7 +479,7 @@ public class Form {
 			OraclePreparedStatement statement = (OraclePreparedStatement) getConnection().prepareStatement(detailFormSQL);
 			// TODO Utils.setStringParameterValue(statement, "p_form_code", formCode);
 			// TODO Utils.setStringParameterValue(statement, "p_master_form_code", parentFormCode);
-			Utils.setFormMDParams(statement, getFormCode(), parentFormCode, isDrillDownForm);
+			Utils.setFormMDParams(session, statement, getFormCode(), parentFormCode, isDrillDownForm);
 			ResultSet detRs = statement.executeQuery();
 			while (detRs.next()) {
 				FormTabMD tabData = new FormTabMD();
@@ -491,7 +495,7 @@ public class Form {
 			detRs.close();
 			statement.close();
 		} catch (java.sql.SQLException e) {
-			e.printStackTrace();
+			session.printErrorStackTrace(e);
 		}
 		return result;
 	}
@@ -509,14 +513,14 @@ public class Form {
 		try {
 			String extendedFormSQL = Utils.getSQLQueryFromXML("extendedFormSQL", session);
 			OraclePreparedStatement statement = (OraclePreparedStatement) getConnection().prepareStatement(extendedFormSQL);
-			Utils.setFormMDParams(statement, getFormCode(), parentFormCode, isDrillDownForm);
+			Utils.setFormMDParams(session, statement, getFormCode(), parentFormCode, isDrillDownForm);
 			ResultSet rs = statement.executeQuery();
 			rs.next();
 			formSQLText = rs.getString(1);
 			rs.close();
 			statement.close();
 		} catch (java.sql.SQLException e) {
-			e.printStackTrace();
+			session.printErrorStackTrace(e);
 		}
 	}
 

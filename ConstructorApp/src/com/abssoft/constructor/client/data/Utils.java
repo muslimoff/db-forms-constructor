@@ -13,16 +13,18 @@ import java.util.Vector;
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.MapPair;
 import com.abssoft.constructor.client.form.MainFormPane;
-import com.abssoft.constructor.client.metadata.Attribute;
-import com.abssoft.constructor.client.metadata.FormActionMD;
-import com.abssoft.constructor.client.metadata.FormColumnMD;
-import com.abssoft.constructor.client.metadata.FormColumnsArr;
-import com.abssoft.constructor.client.metadata.IconsArr;
-import com.abssoft.constructor.client.metadata.Row;
 import com.abssoft.constructor.client.widgets.GridComboBoxItem;
+import com.abssoft.constructor.common.Attribute;
+import com.abssoft.constructor.common.FormColumnsArr;
+import com.abssoft.constructor.common.IconsArr;
+import com.abssoft.constructor.common.Row;
+import com.abssoft.constructor.common.metadata.FormActionMD;
+import com.abssoft.constructor.common.metadata.FormColumnMD;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.FieldType;
@@ -35,17 +37,55 @@ import com.smartgwt.client.widgets.tree.TreeNode;
 public class Utils {
 	private static final String dateFormat = "dd.MM.yyyy";
 
+	public static QueryServiceAsync createQueryService(String id) {
+		QueryServiceAsync res = (QueryServiceAsync) GWT.create(QueryService.class);
+		((ServiceDefTarget) res).setServiceEntryPoint(ConstructorApp.AIRmoduleBaseURL + ConstructorApp.queryServiceRelativePath);
+		if (Utils.isAIR() && ConstructorApp.debugEnabled) {
+			Window.alert("AIRmoduleBaseURL(" + id + "): " + ConstructorApp.AIRmoduleBaseURL);
+		}
+		return res;
+	}
+
 	public static String dateToString(Date date) {
 		if (date == null)
 			return null;
 		DateTimeFormat dateFormatter = DateTimeFormat.getFormat(dateFormat);
-		String format = dateFormatter.format(date);
-		return format;
+
+		// mm20120722 Попытка пофиксить проблему с датами в Атырау.
+		// http://forums.smartclient.com/showthread.php?t=7823&highlight=timezone
+		// было так: String dateString = dateFormatter.format(date);
+		String dateString = dateFormatter.format(date);
+		// теперь так:
+		// import com.google.gwt.i18n.client.TimeZone;
+		// import com.google.gwt.i18n.client.TimeZoneInfo;
+		// import com.google.gwt.i18n.client.constants.TimeZoneConstants;
+		// import com.smartgwt.client.util.DateUtil;
+
+		// final TimeZoneConstants timeZoneConstants = GWT.create(TimeZoneConstants.class);
+		// // TimeZone tzAsiaAlmaty = TimeZone.createTimeZone(TimeZoneInfo.buildTimeZoneData(timeZoneConstants.asiaAlmaty()));
+		// // TimeZone tzAsiaAlmaty = TimeZone.createTimeZone(TimeZoneInfo.buildTimeZoneData(timeZoneConstants.europeAthens()));
+		// TimeZone tzAsiaAlmaty = TimeZone.createTimeZone(0);
+		// tzAsiaAlmaty.getOffset(date);
+		//
+		// String dateString = dateFormatter.format(date, tzAsiaAlmaty);
+		// String dateString = dateFormatter.format(date);
+		// String dateString = DateUtil.formatAsShortDatetime(date);
+		// debug("tttt0-1 >> dateString:" + dateString + "; date:" + date + "; TimeZone: " + tzAsiaAlmaty.getShortName(date)
+		// + "; tzAsiaAlmaty.getOffset(date):" + tzAsiaAlmaty.getOffset(date));
+
+		return dateString;
 	}
 
 	public static Date stringToDate(String dateString) {
+		// TODO mm20120722 - не вызывается никогда что-ли?
+		// mm20120722 Попытка пофиксить проблему с датами в Атырау.
+		// Было:
 		final DateTimeFormat dateFormatter = DateTimeFormat.getFormat(dateFormat);
 		Date date = dateFormatter.parse(dateString);
+		// стало:
+		// final DateTimeFormat dateFormatter = DateTimeFormat.getFormat(dateFormat + ".zzzz");
+		// Date date = dateFormatter.parse(dateString + ".GMT");
+		// debug("tttt0-2 >> dateString:" + dateString + "; date:" + date);
 		return date;
 	}
 
@@ -76,6 +116,15 @@ public class Utils {
 				result.setAttribute(dsFieldName, attr.getAttributeAsDouble());
 			} else if (obj instanceof Date) {
 				result.setAttribute(dsFieldName, attr.getAttributeAsDate());
+				//
+				Utils.debug("tttt5-1:" + attr.getAttributeAsDate());
+				Utils.debug("tttt5-2:" + result.getAttributeAsDate(dsFieldName));
+				// result.setAttribute(dsFieldName, Utils.stringToDate(Utils.dateToString(attr.getAttributeAsDate())));
+				// Utils.debug("tttt5-3:" + result.getAttributeAsDate(dsFieldName));
+				// //
+				// Utils.debug("tttt5-4:" + Utils.dateToString(attr.getAttributeAsDate()));
+				// Utils.debug("tttt5-5:" + DateTimeFormat.getFormat(dateFormat + "-zzzz").format(attr.getAttributeAsDate()));
+
 			} else {
 				result.setAttribute(dsFieldName, cellValue);
 			}
@@ -213,6 +262,25 @@ public class Utils {
 		return row;
 	}
 
+	public static Row getEditedRow(FormDataSourceField[] dsFields, Row oldRow, Row newRow) {
+		Row row = new Row();
+		for (int i = 0; i < dsFields.length; i++) {
+			Attribute a;
+			try {
+				a = newRow.containsKey(i) ? newRow.get(i) : oldRow.get(i);
+				System.out.println(i + ":newRow:" + newRow.containsKey(i));
+				System.out.println(i + ":oldRow:" + oldRow.containsKey(i));
+				row.put(i, a);
+			} catch (Exception e) {
+				a = new Attribute();
+				System.out.println("Utils.getEditedRow - unknown attribute exception:");
+				e.printStackTrace();
+			}
+			System.out.println("Utils.getEditedRow[" + i + "]" + dsFields[i].getName() + ": " + a.getAttribute());
+		}
+		return row;
+	}
+
 	@SuppressWarnings("unchecked")
 	public static Map<String, Object> getRowDefaultValuesMap(MainFormPane mainFormPane) {
 		Utils.debug("01 getRowDefaultValuesMap...");
@@ -338,7 +406,7 @@ public class Utils {
 
 	public static void debug(String text) {
 		if (ConstructorApp.debugEnabled) {
-			System.out.println(text);
+			System.out.println("CLNT:" + text);
 			if (GWT.isScript())
 				SC.logWarn(text);
 		}
@@ -359,9 +427,19 @@ public class Utils {
 		return $wnd.isc.Browser.isMoz;
 	}-*/;
 
+	public static native boolean isAIR()
+	/*-{
+		return $wnd.isc.Browser.isAIR;
+	}-*/;
+
 	public static boolean isIE() {
 		return SC.isIE();
 	}
+
+	public static native String getClientVersion()
+	/*-{
+		return $wnd.clientVersion;
+	}-*/;
 
 	public static LinkedHashMap<String, String> createStrKeySortedLinkedHashMap(HashMap<String, String> mm) {
 		final LinkedHashMap<String, String> result = new LinkedHashMap<String, String>();
@@ -403,7 +481,26 @@ public class Utils {
 		}
 	}
 
-	public static Record getEditedRow(MainFormPane mainFormPane) {
+	public static void debugRecord(Record r, String recTitle) {
+		Utils.debug("debugRecord." + recTitle + "; " + r);
+		if (null != r) {
+			for (String s : r.getAttributes()) {
+				Utils.debug("	DEBUGRECORD " + recTitle + ". FIELD: " + s + "=" + r.getAttribute(s));
+			}
+		}
+	}
+
+	// TODO - Пересмотреть кучу хлама на использование класса JSOHelper
+	public static Record getNewRecordWithOldValues(Record oldRecord, Record newRecord) {
+		Record rec = (null != oldRecord) ? oldRecord : newRecord;
+		if (null != oldRecord) {
+			JSOHelper.apply(newRecord.getJsObj(), rec.getJsObj());
+		}
+
+		return rec;
+	}
+
+	public static Record getEditedRecord(MainFormPane mainFormPane) {
 		ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		Record record;
 		int editRowIdx = grid.getEditRow();

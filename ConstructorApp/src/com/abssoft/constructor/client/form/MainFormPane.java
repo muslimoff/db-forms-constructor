@@ -4,17 +4,14 @@ import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.FormTab;
 import com.abssoft.constructor.client.data.FormDataSource;
 import com.abssoft.constructor.client.data.FormTreeGridField;
-import com.abssoft.constructor.client.data.QueryService;
-import com.abssoft.constructor.client.data.QueryServiceAsync;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
-import com.abssoft.constructor.client.metadata.FormActionMD;
-import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
-import com.abssoft.constructor.client.metadata.FormMD;
-import com.abssoft.constructor.client.metadata.MenuMD;
 import com.abssoft.constructor.client.widgets.HTMLPaneItem;
 import com.abssoft.constructor.client.widgets.MyRichTextItem;
-import com.google.gwt.core.client.GWT;
+import com.abssoft.constructor.common.FormInstanceIdentifier;
+import com.abssoft.constructor.common.metadata.FormActionMD;
+import com.abssoft.constructor.common.metadata.FormMD;
+import com.abssoft.constructor.common.metadata.MenuMD;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.Orientation;
@@ -80,7 +77,7 @@ public class MainFormPane extends Canvas {
 		public void editRecord2() {
 			if (0 != this.getMembers().length) {
 				// Установка редактированных ранее значений из строки грида
-				Record record = Utils.getEditedRow(MainFormPane.this);
+				Record record = Utils.getEditedRecord(MainFormPane.this);
 				this.editRecord(record);
 			}
 
@@ -104,7 +101,7 @@ public class MainFormPane extends Canvas {
 	private FormValuesManager valuesManager = new FormValuesManager();
 	private FormDataSource dataSource;
 	private FormActionMD currentAction = new FormActionMD();
-	private FormInstanceIdentifier instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId);
+	private FormInstanceIdentifier instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, ConstructorApp.debugEnabled);
 	private boolean fromUrl = false;
 
 	public MainFormPane() {
@@ -127,13 +124,13 @@ public class MainFormPane extends Canvas {
 		this.setMasterForm(isMasterForm);
 		this.buttonsToolBar = new FormToolbar(this);
 		String parentFormCode = (null != parentFormPane) ? parentFormPane.getFormCode() : null;
-		QueryServiceAsync service = (QueryServiceAsync) GWT.create(QueryService.class);
 		instanceIdentifier.setFormCode(formCode);
 		instanceIdentifier.setParentFormCode(parentFormCode);
 		instanceIdentifier.setGridHashCode(-999);
 		instanceIdentifier.setIsDrillDownForm(isDrillDownForm);
-		service.getFormMetaData(instanceIdentifier, new DSAsyncCallback<FormMD>() {
+		Utils.createQueryService("MainFormPane.getFormMetaData").getFormMetaData(instanceIdentifier, new DSAsyncCallback<FormMD>() {
 			public void onSuccess(FormMD result) {
+				//TODO Error NullPointerException... 
 				result.getStatus().showActionStatus();
 				setFormMetadata(result);
 				setFormColumns(new FormColumns(MainFormPane.this));
@@ -195,6 +192,7 @@ public class MainFormPane extends Canvas {
 		sections.setHeight100();
 		gridAndFormLayout.setHeight(formMetadata.getHeight());
 		sections.setVisibilityMode(VisibilityMode.MULTIPLE);
+		// TODO - вынести в настройки высоту SectionStack: sections.setHeaderHeight(1);
 		SectionStackSection summarySection = new SectionStackSection(formTitle);
 		SectionStackSection detailsSection = new SectionStackSection(formTitle + "-Подробности");
 		summarySection.setExpanded(true);
@@ -225,11 +223,14 @@ public class MainFormPane extends Canvas {
 	}
 
 	public void doBeforeClose() {
-		if (null != getBottomDetailFormsContainer()) {
-			getBottomDetailFormsContainer().doBeforeClose();
+		DetailFormsContainer bottomCon = getBottomDetailFormsContainer();
+		DetailFormsContainer sideCon = getSideDetailFormsContainer();
+		Utils.debug("MainFormPane.doBeforeClose. bottomCon:" + bottomCon + "; sideCon:" + sideCon);
+		if (null != bottomCon) {
+			bottomCon.doBeforeClose();
 		}
-		if (null != getSideDetailFormsContainer()) {
-			getSideDetailFormsContainer().doBeforeClose();
+		if (null != sideCon) {
+			sideCon.doBeforeClose();
 		}
 		if (null != mainForm) {
 			mainForm.doBeforeClose();
@@ -306,7 +307,7 @@ public class MainFormPane extends Canvas {
 	 * @return the dataSource
 	 */
 	public FormDataSource getDataSource() {
-		System.out.println("z3:" + dataSource);
+		Utils.debug("z3:" + dataSource);
 		return dataSource;
 	}
 
@@ -333,33 +334,33 @@ public class MainFormPane extends Canvas {
 
 	public FormMD getFormState() {
 		// Сохранение параметров формы.
-		System.out.println("**************FORM: " + formCode + "*************************");
+		Utils.debug("**************FORM: " + formCode + "*************************");
 		FormMD form = new FormMD();
 		form.setFormCode(formCode);
 		Integer formWidth = mainForm.getWidth();
 		Integer formHeight = mainForm.getHeight();
 		Integer paneWidth = getWidth();
 		Integer paneHeight = getHeight();
-		System.out.println("Border:" + this.getBorder());
-		System.out.println("FormWidth. new:" + formWidth + "; old:" + this.getFormMetadata().getWidth());
-		System.out.println("FormHeight. new:" + formHeight + "; old:" + this.getFormMetadata().getHeight());
-		System.out.println("TotalWidth. new:" + paneWidth);
-		System.out.println("TotalHeight. new:" + paneHeight);
+		Utils.debug("Border:" + this.getBorder());
+		Utils.debug("FormWidth. new:" + formWidth + "; old:" + this.getFormMetadata().getWidth());
+		Utils.debug("FormHeight. new:" + formHeight + "; old:" + this.getFormMetadata().getHeight());
+		Utils.debug("TotalWidth. new:" + paneWidth);
+		Utils.debug("TotalHeight. new:" + paneHeight);
 		String formWidthStr = "" + (Math.round(formWidth.doubleValue() / paneWidth.doubleValue() * 20.0) * 5);
 		String formHeightStr = "" + (Math.round(formHeight.doubleValue() / paneHeight.doubleValue() * 20.0) * 5);
 		formWidthStr = (0 == this.getSideDetailFormsContainer().getTabCounter()) ? this.getFormMetadata().getWidth() : formWidthStr;
 		formHeightStr = (0 == this.getBottomDetailFormsContainer().getTabCounter()) ? this.getFormMetadata().getHeight() : formHeightStr;
-		System.out.println("W%" + formWidthStr + "; H%" + formHeightStr);
+		Utils.debug("W%" + formWidthStr + "; H%" + formHeightStr);
 
 		// Сохранение параметров (ширины и порядка) столбцов.
-		System.out.println("Columns before....");
+		Utils.debug("Columns before....");
 		for (FormTreeGridField f : this.getFormColumns().getGridFields()) {
 			if (!f.getColumnMD().getDisplaySize().equals(f.getWidth())) {
-				System.out.println(f.getName() + " Old width" + f.getColumnMD().getDisplaySize() + "New width:" + f.getWidth()
+				Utils.debug(f.getName() + " Old width" + f.getColumnMD().getDisplaySize() + "New width:" + f.getWidth()
 						+ "; getSortDirection:" + f.getSortDirection());
 			}
 		}
-		System.out.println("**************************************************");
+		Utils.debug("**************************************************");
 		return form;
 	}
 
@@ -372,6 +373,7 @@ public class MainFormPane extends Canvas {
 	}
 
 	public FormInstanceIdentifier getInstanceIdentifier() {
+		instanceIdentifier.setIsDebugEnabled(ConstructorApp.debugEnabled);
 		return instanceIdentifier;
 	}
 
@@ -439,19 +441,26 @@ public class MainFormPane extends Canvas {
 	}
 
 	public void releaseDetailsFocus() {
-		if (null != this.getBottomDetailFormsContainer())
+		Utils.debug("MainFormPane.releaseDetailsFocus");
+		if (null != this.getBottomDetailFormsContainer()) {
 			this.getBottomDetailFormsContainer().releaseFocus();
-		if (null != this.getSideDetailFormsContainer())
+			Utils.debug("MainFormPane.BottomDetailFormsContainer.releaseFocus. Processed...");
+		}
+		if (null != this.getSideDetailFormsContainer()) {
 			this.getSideDetailFormsContainer().releaseFocus();
+			Utils.debug("MainFormPane.SideDetailFormsContainer.releaseFocus. Processed...");
+		}
 	}
 
 	public void setBorder(boolean showBorder) {
-		Canvas cnv = this;
-		if (showBorder) {
-			cnv.setBorder("2px solid green");
-		} else {
-			cnv.setBorder("2px");
-		}
+		// TODO mm20120110 - Закоментил - расползание границ формы после изменения версии в 2.5 - 3.0. Да и вообще - криво с этой рамочкой.
+		// Что-то другое придумать.
+		// Canvas cnv = this;
+		// if (showBorder) {
+		// cnv.setBorder("2px solid green");
+		// } else {
+		// cnv.setBorder("2px");
+		// }
 	}
 
 	/**

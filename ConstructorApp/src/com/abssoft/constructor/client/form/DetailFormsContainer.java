@@ -6,11 +6,11 @@ import java.util.Iterator;
 import com.abssoft.constructor.client.common.FormTab;
 import com.abssoft.constructor.client.common.TabSet;
 import com.abssoft.constructor.client.data.Utils;
-import com.abssoft.constructor.client.metadata.FormColumnMD;
-import com.abssoft.constructor.client.metadata.FormColumnsArr;
-import com.abssoft.constructor.client.metadata.FormMD;
-import com.abssoft.constructor.client.metadata.FormTabMD;
-import com.abssoft.constructor.client.metadata.FormTabsArr;
+import com.abssoft.constructor.common.FormColumnsArr;
+import com.abssoft.constructor.common.FormTabsArr;
+import com.abssoft.constructor.common.metadata.FormColumnMD;
+import com.abssoft.constructor.common.metadata.FormMD;
+import com.abssoft.constructor.common.metadata.FormTabMD;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.types.Orientation;
 import com.smartgwt.client.types.Side;
@@ -125,7 +125,7 @@ public class DetailFormsContainer extends TabSet {
 	private HashMap<String, DynamicDetailTab> dynamicDetailTabs = new HashMap<String, DynamicDetailTab>();
 
 	DetailFormsContainer(MainFormPane mainFormPane, Orientation orientation) {
-		System.out.println("DetailFormsContainer... orientation:" + orientation);
+		Utils.debug("DetailFormsContainer... orientation:" + orientation);
 		this.setDestroyPanes(false);
 		this.mainFormPane = mainFormPane;
 		this.orientation = orientation;
@@ -268,11 +268,11 @@ public class DetailFormsContainer extends TabSet {
 	}
 
 	public void doBeforeClose() {
+		Utils.debug("DetailFormsContainer.doBeforeClose. orientation:" + orientation);
 		for (Tab t : this.getTabs()) {
 			FormTab ft = (FormTab) t;
 			if (ft instanceof MainFormContainer) {
 				try {
-					// ((MainFormContainer) ft).getMainFormPane().getMainForm().doBeforeClose();
 					((MainFormContainer) ft).getMainFormPane().doBeforeClose();
 				} catch (Exception e) {
 					Utils.logException(e, "DetailFormsContainer.doBeforeClose()");

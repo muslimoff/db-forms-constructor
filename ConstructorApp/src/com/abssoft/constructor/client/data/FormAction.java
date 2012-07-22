@@ -2,17 +2,18 @@ package com.abssoft.constructor.client.data;
 
 import com.abssoft.constructor.client.common.FormTab;
 import com.abssoft.constructor.client.common.TabSet;
+import com.abssoft.constructor.client.form.MainForm;
 import com.abssoft.constructor.client.form.MainFormContainer;
 import com.abssoft.constructor.client.form.MainFormPane;
-import com.abssoft.constructor.client.metadata.FormActionMD;
+import com.abssoft.constructor.common.metadata.FormActionMD;
 import com.google.gwt.core.client.GWT;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.types.Visibility;
 import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Window;
+import com.smartgwt.client.widgets.events.CloseClickEvent;
 import com.smartgwt.client.widgets.events.CloseClickHandler;
-import com.smartgwt.client.widgets.events.CloseClientEvent;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.RichTextItem;
@@ -38,6 +39,7 @@ public class FormAction {
 	// TODO Проблема при сохранении записи из контекстного меню в случае, если фокус не на данной форме.
 	private void doSaveEditedData(Integer recordIndex) {
 		Utils.debug("doSaveEditedData1");
+
 		// ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		// int currRecSelected = mainFormPane.getMainForm().getSelectedRecord();
 		// TODO Проблема с DynamicForm.ItemChangedHandler в хроме - приходится сохранять данные RichTextItem не по событию, а по кнопке
@@ -54,20 +56,77 @@ public class FormAction {
 				}
 			}
 		}
-		Utils.debug("doSaveEditedData2");
-		// Убрал массовое сохранение из-за действий со статусным параметром - grid.saveAllEdits() - вещь в себе...
-		// Победил сцко - при ошибочном статусе нужно делать response.setStatus(-1);
-		if (null != recordIndex) {
-			grid.updateData(grid.getRecord(recordIndex));
-		} else {
-			grid.saveAllEdits();
-		}
-		Utils.debug("doSaveEditedData3");
 
-		// for (int i : grid.getAllEditRows()) {
-		// // grid.updateData(grid.getRecord(i));
-		// grid.saveAllEdits(null, new int[] { i });
+		int[] editRowsArr = null != recordIndex ? new int[] { recordIndex } : grid.getAllEditRows();
+		Utils.debug("doSaveEditedData2. editRowsArr.length:" + editRowsArr.length);
+		// Если нет редактирванных строк - бежим по выбранным (Selected) строчкам. для объединения doSaveEditedData и doExecuteCustomPLSQL
+		// TODO - перенести в методы классов FormTreeGrid и FormTreeGrid
+		if (0 != editRowsArr.length) {
+			for (int i = 0; i < editRowsArr.length; i++) {
+				int rIdx = editRowsArr[i];
+				Utils.debug("doSaveEditedData3. editRowsArr[" + i + "]=" + rIdx);
+				mainFormPane.getDataSource().setEditedRecordIndex(rIdx);
+				//20120628
+				//mainFormPane.getMainForm().getTreeGrid().endEditing();
+				if (grid instanceof MainForm.FormListGrid) {
+					((MainForm.FormListGrid) grid).saveAllEdits(new int[] { rIdx });
+				} else if (grid instanceof MainForm.FormTreeGrid) {
+					((MainForm.FormTreeGrid) grid).saveAllEdits(new int[] { rIdx });
+				}
+
+			}
+		} else {
+			// ///////////////////
+			editRowsArr = new int[grid.getSelectedRecords().length];
+			Utils.debug("doSaveEditedData2a. editRowsArr.length:" + editRowsArr.length);
+			int rIdx = 0;
+			for (ListGridRecord r : grid.getSelectedRecords()) {
+				int idx = grid.getRecordIndex(r);
+				editRowsArr[rIdx] = idx;
+				Utils.debug("doSaveEditedData2b. editRowsArr[" + rIdx + "]:" + editRowsArr[rIdx]);
+				rIdx++;
+			}
+
+			for (int i : editRowsArr) {
+				Utils.debug("Custom PL/SQL - 4. idx:" + i);
+				mainFormPane.getDataSource().setEditedRecordIndex(i);
+				grid.updateData(grid.getRecord(i));
+			}
+			// ////////////
+		}
+		Utils.debug("doSaveEditedData4");
+	}
+
+	/********************************************************************/
+	private void doExecuteCustomPLSQL(Integer recordIndex) {
+		Utils.debug("Custom PL/SQL - start execution...");
+		// Если указан recordIndex - то обновляем только эту запись. Иначе - все подряд
+		ListGridRecord[] selRecArr = (null != recordIndex && -1 != recordIndex) ? new ListGridRecord[] { grid.getRecord(recordIndex) }
+				: grid.getSelectedRecords();
+		Utils.debug("Custom PL/SQL - 1. selRecArr.length:" + selRecArr.length);
+		for (ListGridRecord r : selRecArr) {
+			int idx = grid.getRecordIndex(r);
+			Utils.debug("Custom PL/SQL - 4. idx:" + idx);
+			mainFormPane.getDataSource().setEditedRecordIndex(idx);
+			grid.updateData(grid.getRecord(idx));
+		}
+		// if (null != recordIndex && -1 != recordIndex) {
+		// Utils.debug("Custom PL/SQL - 1...");
+		// grid.updateData(grid.getRecord(recordIndex));
+		// Utils.debug("Custom PL/SQL - 2...");
+		// } else {
+		// Utils.debug("Custom PL/SQL - 3...");
+		// for (ListGridRecord r : grid.getSelectedRecords()) {
+		//
+		// int idx = grid.getRecordIndex(r);
+		//
+		// Utils.debug("Custom PL/SQL - 4. idx:" + idx);
+		// // mainFormPane.getDataSource().setEditedRecordIndex(idx);
+		// grid.updateData(grid.getRecord(idx));
 		// }
+		// Utils.debug("Custom PL/SQL - 5...");
+		// }
+		Utils.debug("Custom PL/SQL - end execution...");
 	}
 
 	/********************************************************************/
@@ -117,20 +176,6 @@ public class FormAction {
 			grid.selectSingleRecord(++currRecSelected);
 			mainFormPane.filterDetailData(grid.getRecord(currRecSelected), grid, currRecSelected);
 		}
-	}
-
-	/********************************************************************/
-	private void doExecuteCustomPLSQL(Integer recordIndex) {
-		Utils.debug("Custom PL/SQL - start execution...");
-		// Если указан recordIndex - то обновляем только эту запись. Иначе - все подряд
-		if (null != recordIndex) {
-			grid.updateData(grid.getRecord(recordIndex));
-		} else {
-			for (ListGridRecord r : grid.getSelection()) {
-				grid.updateData(grid.getRecord(grid.getRecordIndex(r)));
-			}
-		}
-		Utils.debug("Custom PL/SQL - end execution...");
 	}
 
 	/********************************************************************/
@@ -200,10 +245,10 @@ public class FormAction {
 
 		w.addCloseClickHandler(new CloseClickHandler() {
 			@Override
-			public void onCloseClick(CloseClientEvent event) {
+			public void onCloseClick(CloseClickEvent event) {
 				try {
 					for (Tab tab : t.getTabs()) {
-						t.removeMainFormContainerTab(tab);
+						t.removeMainFormContainerTab(tab, false);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -274,7 +319,8 @@ public class FormAction {
 		}
 		// Custom PL/SQL
 		else if ("7".equals(actionType)) {
-			doExecuteCustomPLSQL(recordIndex);
+			// doExecuteCustomPLSQL(recordIndex);
+			doSaveEditedData(recordIndex);
 		}
 		// StartEditingExistingRecord
 		else if ("8".equals(actionType)) {
@@ -310,17 +356,20 @@ public class FormAction {
 			Utils.debug("Action 17.2");
 			boolean isWindow = null != tabSet.getParentElement() && null != tabSet.getParentElement().getParentElement()
 					&& tabSet.getParentElement().getParentElement() instanceof Window;
-			Utils.debug("Action 17.3");
+
+			// boolean isWindow = null != tabSet.getParentElement() && tabSet.getParentElement() instanceof Window;
+			Utils.debug("Action 17.3;" + isWindow);
 			if (isWindow || mainFormPane.getMainFormContainer().getCanClose()) {
 				Utils.debug("Action 17.4");
-				tabSet.removeMainFormContainerTab(mainFormPane.getMainFormContainer());
+				tabSet.removeMainFormContainerTab(mainFormPane.getMainFormContainer(), false);
 				Utils.debug("Action 17.5");
-				if (isWindow)
+				if (isWindow) {
 					Utils.debug("Action 17.6");
-				Utils.debug("Action 17.7" + tabSet.getParentElement());
-				Utils.debug("Action 17.8" + tabSet.getParentElement().getParentElement());
-				tabSet.getParentElement().getParentElement().destroy();
-				Utils.debug("Action 17.9");
+					Utils.debug("Action 17.7" + tabSet.getParentElement());
+					Utils.debug("Action 17.8" + tabSet.getParentElement().getParentElement());
+					tabSet.getParentElement().getParentElement().destroy();
+					Utils.debug("Action 17.9");
+				}
 			}
 		}
 		// /TEST ACTION 99

@@ -12,23 +12,27 @@ import java.util.Map;
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 
-import com.abssoft.constructor.client.metadata.ExportData;
-import com.abssoft.constructor.client.metadata.FormActionMD;
-import com.abssoft.constructor.client.metadata.FormInstanceIdentifier;
-import com.abssoft.constructor.client.metadata.FormMD;
-import com.abssoft.constructor.client.metadata.IconsArr;
-import com.abssoft.constructor.client.metadata.MenuMD;
-import com.abssoft.constructor.client.metadata.MenusArr;
-import com.abssoft.constructor.client.metadata.Row;
-import com.abssoft.constructor.client.metadata.RowsArr;
-import com.abssoft.constructor.client.metadata.ServerInfoMD;
-import com.abssoft.constructor.client.metadata.StaticLookup;
-import com.abssoft.constructor.client.metadata.StaticLookupsArr;
+import com.abssoft.constructor.common.ExportData;
+import com.abssoft.constructor.common.FormInstanceIdentifier;
+import com.abssoft.constructor.common.IconsArr;
+import com.abssoft.constructor.common.MenusArr;
+import com.abssoft.constructor.common.Row;
+import com.abssoft.constructor.common.RowsArr;
+import com.abssoft.constructor.common.StaticLookupsArr;
+import com.abssoft.constructor.common.metadata.FormActionMD;
+import com.abssoft.constructor.common.metadata.FormMD;
+import com.abssoft.constructor.common.metadata.MenuMD;
+import com.abssoft.constructor.common.metadata.ServerInfoMD;
+import com.abssoft.constructor.common.metadata.StaticLookup;
 
 /**
  * Данные сессии приложения - метаданные, <CODE>Connection</CODE>. Хранит {@link Form}
  * 
  * @author User
+ */
+/**
+ * @author amuslimov
+ * 
  */
 public class Session {
 
@@ -38,8 +42,21 @@ public class Session {
 	private boolean isScript;
 	private final HashMap<String, String> paramsMap = new HashMap<String, String>();
 	private ServerInfoMD serverInfoMD;
+	private Boolean isDebugEnabled = false;
 
-	public Session(Connection connection, ServerInfoMD serverInfoMD) {
+	// Для дебага (Session.debug) - вывода вне сессии
+	public static Session getEmptySession(Boolean isDebugEnabled) {
+		return new Session(isDebugEnabled, false);
+	}
+
+	// Пустышка для getEmptySession
+	private Session(Boolean isDebugEnabled, Boolean isScript) {
+		this.isDebugEnabled = isDebugEnabled;
+		this.isScript = isScript;
+	}
+
+	public Session(Connection connection, ServerInfoMD serverInfoMD, Boolean isDebugEnabled, Boolean isScript) {
+		this(isDebugEnabled, isScript);
 		this.connection = (OracleConnection) connection;
 		this.setServerInfoMD(serverInfoMD);
 		this.setFcSchemaOwner(serverInfoMD.getFcSchemaOwner());
@@ -47,19 +64,38 @@ public class Session {
 		getStaticLookupsArr();
 	}
 
+	public void debug(String text) {
+		// Timer t = new Timer();
+		if (isDebugEnabled) {
+//			Utils.spoolOut(text);
+		}
+	};
+
+	public void debug(String text, Row row) {
+		debug(text);
+		String currMsg = row.getStatus().getLongMessageText();
+		row.getStatus().setLongMessageText(currMsg + "\n" + text);
+	}
+
+	public void printErrorStackTrace(Exception e) {
+		this.debug(e.toString());
+		if (isDebugEnabled) {
+			e.printStackTrace();
+		}
+	}
+
 	public void closeForm(FormInstanceIdentifier fi, FormMD formState) {
-		// formIdentifier
-		Utils.debug("Server:session form " + fi.getInfo() + " before close...");
+		this.debug("session form " + fi.getInfo() + " before close...");
 		formDataHashMap.get(fi.getKey()).closeForm(fi.getGridHashCode(), formState);
 		// TODO Было закомментировано: Во избежание повторной вычитки настроек формы. Но тогда возникают проблемы при изменении формы на
 		// лету. Приходится делать реконнект. Раскомментировал. Предусмотреть режимы работы debug и рабочий. Или забить - пусть так будет.
 		// А еще лучше - при старте сессии вычитывать настройки всех форм, а потом только перечитывать при изменении OVN.
 		int instCount = formDataHashMap.get(fi.getKey()).getInstancesCount();
-		System.out.println("Form " + fi.getFormCode() + " instances: " + instCount);
+		this.debug("Form " + fi.getFormCode() + " instances: " + instCount);
 		if (0 == instCount) {
 			formDataHashMap.remove(fi.getKey());
 		}
-		Utils.debug("Server:session form " + fi.getInfo() + " closed...");
+		this.debug("session form " + fi.getInfo() + " closed...");
 	}
 
 	public Row executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow, FormActionMD actMD) throws SQLException, Exception {
@@ -142,9 +178,9 @@ public class Session {
 			iconsStmnt.close();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			printErrorStackTrace(e);
 		}
-		System.out.println("Server:session - MenusArr.size=" + metadata.size());
+		this.debug("session - MenusArr.size=" + metadata.size());
 		return metadata;
 	}
 
@@ -183,7 +219,7 @@ public class Session {
 			lookupsRs.close();
 			lookupsStmnt.close();
 		} catch (java.sql.SQLException e) {
-			e.printStackTrace();
+			printErrorStackTrace(e);
 		}
 		return lookupsArr;
 	}
@@ -218,16 +254,20 @@ public class Session {
 			lookupsRs.close();
 			lookupsStmnt.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			printErrorStackTrace(e);
 		}
-	}
-
-	public void setScript(boolean isScript) {
-		this.isScript = isScript;
 	}
 
 	public void setServerInfoMD(ServerInfoMD serverInfoMD) {
 		this.serverInfoMD = serverInfoMD;
+	}
+
+	public void setIsDebugEnabled(Boolean isDebugEnabled) {
+		this.isDebugEnabled = isDebugEnabled;
+	}
+
+	public Boolean getIsDebugEnabled() {
+		return isDebugEnabled;
 	}
 
 }

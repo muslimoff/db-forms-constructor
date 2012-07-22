@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE module SYSTEM "http://google-web-toolkit.googlecode.com/svn/releases/2.1/distro-source/core/src/gwt-module.dtd">
 <module rename-to="constructorapp">
 	<inherits name='com.google.gwt.user.User' />
 	<inherits name="com.google.gwt.i18n.I18N" />
+<!--
 	<extend-property name="locale" values="en" />
+ -->	
 	<extend-property name="locale" values="ru_RU" />
 	<inherits name="com.google.gwt.core.Core" />
 	<inherits name="com.google.gwt.user.History" />
@@ -39,4 +42,6 @@
 	<entry-point class="com.abssoft.constructor.client.ConstructorApp" />
 	<servlet class="com.abssoft.constructor.server.QueryServiceImpl"
 		path="/query" />
+	<source path="common"/>
+	<source path="client"/>
 </module>
