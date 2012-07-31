@@ -12,6 +12,7 @@
 			//OEBS:		var isomorphicDir = "sc/";
 			//HostedMode 	var isomorphicDir = "constructorapp/sc/"    ;
 			var isomorphicDir = "constructorapp/sc/";
+			var clientVersion = "@version@";
 			var indicatorDiv  = "<div id=\"loadingWrapper\"><div id=\"loading\"><div class=\"loadingIndicator\"><img src=\""+
 								isomorphicDir+
 								"resources/loading.gif\" width=\"32\" height=\"32\""+
@@ -36,7 +37,7 @@
 			}
 			function docWrite(scriptName, msgText){
 				var start_ 				= "<" + "script type=\"text/javascript\" language=\"javascript\" src=" + isomorphicDir;
-				var end_				= "?isc_version=7.1.js><" + "/script>";		
+				var end_				= "?isc_version=8.2.js><" + "/script>";		
 				
 				setIndicatiorMsg(null==msgText?'Loading script: <br><b>'+scriptName+'</b>':msgText);
 				document.write(start_ + scriptName + end_);

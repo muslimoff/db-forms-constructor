@@ -1,3 +1,24 @@
+20120312 - Переход на SGWT_3.0.
+	+1. ошибка и некорректное открытие новых форм после закрытия (новая форма встравивалась в низ предыдущей).
+			Пофиксил - см. коменты тут: com.abssoft.constructor.client.common.TabSet.removeMainFormContainerTab
+	+2. Окно с сообщением "Server returned FAILURE with no error message" при ошибке, возвращаемой с сервера (напр. PL/SQL)
+		См. так же: 20110909, ошибка №2
+			Пофиксил: DMLProcExecution.executeErrorSubProc - помогло response.setErrors(errMap), с выводом ошибки в первое поле
+	-3. В форме AA|420_490 (TEST_FORM) при выборе лукапа в первом поле - ошибка.
+			...
+			at com.smartgwt.client.widgets.grid.ListGrid.selectRecord(ListGrid.java)
+			at com.abssoft.constructor.client.data.DMLProcExecution$1.onSuccess(DMLProcExecution.java:115)
+			at com.abssoft.constructor.client.data.DMLProcExecution$1.onSuccess(DMLProcExecution.java:1)
+			...
+		
+20110917 - Косяки.
+	?1. Не открывается форма, заданная как часть URL:
+				http://serverdb.sosmed.kz:8080/ConstructorApp/?app.serverID=24&app.userName=sosma&app.pwd=sosma&app.form=MENUS
+			Хотя это работает:
+				http://localhost/ConstructorApp/?app.serverID=14&app.userName=FC22&app.pwd=fc&app.form=FORMS2&code=MENUS&entity_type=FORM	
+	+2.	После апдейта на 2.5 еще косяк - появляются скролики и какие-то попрыгушкина... В форм-конструкторе открыть любую форму.
+		Убрал рамку-индикатор зелененькую, в ней проблема.
+
 20110909 - Глюки SGWT.2.5/GWT.2.3.0:
 	+1. Снова появился косяк захеривания неизмененных записей при наличии на форме RichTextItem.
 		См коммент //20110913 в com.abssoft.constructor.client.data.EditorFormItem 
@@ -15,7 +36,8 @@
 	Активность действий и read only полей - два типа поля (read_only_fields_list и disabled_actions_list)
 	  ListGridField nameField = new ListGridField("countryName", "Country");  nameField.setCanEdit(false);  
  
-20110826 - сделать вкл-выкл debug на серверной стороне наконец-то
+20110826
+	+1. сделать вкл-выкл debug на серверной стороне наконец-то
 20110808
 java.lang.NullPointerException at com.abssoft.constructor.client.form.FormRowEditorTab$2.onItemChanged(FormRowEditorTab.java:104)
 

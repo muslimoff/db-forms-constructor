@@ -16,8 +16,8 @@
 <!-- variables: validationFN, fc_schema_owner, db_username -->
 	<dbConnections>
 		<defaultValues
-			dbusername="FORMS_CONSTRUCTOR"
-			fcSchemaOwner="FORMS_CONSTRUCTOR"
+			dbusername="FC22"
+			fcSchemaOwner="FC22"
 			debug="true"
 			validationFN="&amp;fc_schema_owner..users_pkg.validate_login"
 			title="Forms Constructor" />
@@ -52,7 +52,26 @@
 			fcSchemaOwner="SOSMA" 
 			dbusername="SOSMA">
 			ko:1521:XE
-		</server>		
+		</server>
+
+		<server id="41" display="KC PROD FC Admin" default="false">oebsdbala.air-astana.net:1521:OEBSPROD</server>
+
+		<server id="42"
+			display="KC PROD FC User" 
+			dbusername="APPS"
+			dbpassword="GHJLala2011" 
+			allowuserchange="false"
+			debug="false"
+			default="true"
+			validationFN="xxfnd_apps_utils_pkg.validate_ebs_login">oebsdbala.air-astana.net:1521:OEBSPROD</server>
+
+		<server id="51"
+				display="SMA DBLocal" 
+				default="true" 
+				fcSchemaOwner="SMA" 
+				dbusername="SMA">
+			localhost:1521:XE
+		</server>			
 		
 	</dbConnections>
 	
