@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="ConstructorApp_V2" default="build" basedir=".">
-	<property file="application.properties" />
+	<property file="war/WEB-INF/application.properties" />
 	<!-- Configure path to GWT SDK -->
 	<property name="gwt.sdk" 				location="D:/GWT/lib/gwt-2.3.0" />
-	<property name="smartgwt" 				location="D:/GWT/lib/smartgwt-2.5" />
+<!--	<property name="smartgwt" 				location="D:/GWT/lib/smartgwt-2.5" />  -->
+	<property name="smartgwt" 				location="D:/GWT/lib/smartgwt-3.0p" />
 	<property name="ofcgwt" 				location="D:/GWT/lib/ofcgwt.2.0.1.b" />
 	<property name="xmlp" 					location="D:/GWT/lib/xmlp" />
 	<property name="catalina.home" 			location="D:/Tomcat60/Tomcat 6.0" />
@@ -26,7 +27,7 @@
 	</path>
 
 	<target name="build_number" description="Application version auto increment">
-		<propertyfile file="application.properties" comment="Build Number for ANT.">
+		<propertyfile file="war/WEB-INF/application.properties" comment="Build Number for ANT.">
 			<entry key="build.number" type="int" operation="+" default="1" />
 		</propertyfile>
 		<property name="app.version" value="${major.minor}.${build.number}" />
@@ -78,6 +79,13 @@
 				<tokenfilter>
 				    <replacestring from="var isomorphicDir = &quot;constructorapp/sc/&quot;;" to="var isomorphicDir = &quot;../../sc/&quot;;"/>
 				</tokenfilter>
+			</filterchain>
+		</copy>
+		<copy file="war/ConstructorApp.html" tofile="war/ConstructorApp-air.html" overwrite="true">
+			<filterchain>
+				<replacetokens>
+					<token key="version" value="${app.version}" />
+				</replacetokens>
 			</filterchain>
 		</copy>
 	</target>

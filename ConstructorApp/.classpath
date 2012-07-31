@@ -5,8 +5,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/Oracle JDBC 10"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/GWT SDK [2.3.0]"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/SmartGWT 2.5"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/ofcgwt.2.0.1.b"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/xmlp"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/SmartGWT 3.0p"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
