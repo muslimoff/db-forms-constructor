@@ -99,31 +99,30 @@ public class Utils {
 		return destDate; // Таки вот - теперь сервер всегда отдает даты в UTCб пофигу метель...
 	}
 
-	/******************************/
-	// TODO getAttribute - одинаковый код. Как быть?
-	public static Attribute getAttribute(Integer column, String formColDataType, OracleCallableStatement rs, FormInstance formInstance)
-			throws SQLException {
+	private static Attribute getAttribute(String colStr, Integer colInt, String formColDataType, ResultSet rs, OracleCallableStatement cs,
+			FormInstance formInstance) throws SQLException {
 		Attribute attr;
 		String val;
+		boolean isCalStmnt = null == colStr && null == rs;
 		if ("N".equals(formColDataType)) {
-			Double dVal = rs.getDouble(column);
-			dVal = rs.wasNull() ? null : dVal;
+			Double dVal = isCalStmnt ? cs.getDouble(colInt) : rs.getDouble(colStr);
+			dVal = (isCalStmnt ? cs.wasNull() : rs.wasNull()) ? null : dVal;
 			attr = new Attribute(dVal);
 		} else if ("D".equals(formColDataType)) {
-			DATE dt = rs.getDATE(column);
-			Date dateVal = rs.wasNull() ? null : dt.dateValue();
+			DATE dt = isCalStmnt ? cs.getDATE(colInt) : null;
+			Date dateVal = isCalStmnt ? (cs.wasNull() ? null : dt.dateValue()) : rs.getDate(colStr);
 			dateVal = changeTimezone(dateVal);
 			attr = new Attribute(dateVal);
 		} else if ("B".equals(formColDataType)) {
-			val = rs.getString(column);
+			val = isCalStmnt ? cs.getString(colInt) : rs.getString(colStr);
 			attr = new Attribute("1".equals(val) || "Y".equals(val));
 		} else if ("CLOB".equals(formColDataType)) {
-			CLOB cval = (CLOB) rs.getClob(column);
+			CLOB cval = (CLOB) (isCalStmnt ? cs.getClob(colInt) : rs.getClob(colStr));
 			Integer clobHashCode = (null != cval) ? cval.hashCode() : null;
 			attr = new Attribute((Double) ((null != clobHashCode) ? Double.valueOf(clobHashCode) : null));
 			formInstance.getClobHM().put(clobHashCode, cval);
 		} else {
-			val = rs.getString(column);
+			val = isCalStmnt ? cs.getString(colInt) : rs.getString(colStr);
 			// Необходимо убирать символы chr #00, которые может возвращать БД - иначе grid вылетает..
 			if (null != val) {
 				val = val.replaceAll(Character.toString((char) 0), "");
@@ -133,57 +132,20 @@ public class Utils {
 		return attr;
 	}
 
-	/******************************/
-	public static Attribute getAttribute(String column, String formColDataType, ResultSet rs, FormInstance formInstance)
+	public static Attribute getAttribute(String colStr, String formColDataType, ResultSet rs, FormInstance formInstance)
 			throws SQLException {
-		Attribute attr;
-		String val;
-		if ("N".equals(formColDataType)) {
-			Double dVal = rs.getDouble(column);
-			dVal = rs.wasNull() ? null : dVal;
-			attr = new Attribute(dVal);
-		} else if ("D".equals(formColDataType)) {
-			Date dateVal = rs.getDate(column);
-			dateVal = changeTimezone(dateVal);
-			attr = new Attribute(dateVal);
-		} else if ("B".equals(formColDataType)) {
-			val = rs.getString(column);
-			attr = new Attribute("1".equals(val) || "Y".equals(val));
-		} else if ("CLOB".equals(formColDataType)) {
-			CLOB cval = (CLOB) rs.getClob(column);
-			Integer clobHashCode = (null != cval) ? cval.hashCode() : null;
-			attr = new Attribute((Double) ((null != clobHashCode) ? Double.valueOf(clobHashCode) : null));
-			formInstance.getClobHM().put(clobHashCode, cval);
-		} else {
-			// spoolOut("type>>> " + rs.getMetaData().getColumnType(rs.findColumn(column)) + " >> "
-			// + rs.getMetaData().getColumnTypeName(rs.findColumn(column)) + Types.CLOB);
-			val = rs.getString(column);
-			// Необходимо убирать символы chr #00, которые может возвращать БД - иначе grid вылетает..
-			if (null != val) {
-				val = val.replaceAll(Character.toString((char) 0), "");
-			}
-			attr = new Attribute(val);
-		}
-		return attr;
+		return getAttribute(colStr, null, formColDataType, rs, null, formInstance);
+	}
+
+	public static Attribute getAttribute(Integer colInt, String formColDataType, OracleCallableStatement cs, FormInstance formInstance)
+			throws SQLException {
+		return getAttribute(null, colInt, formColDataType, null, cs, formInstance);
 	}
 
 	// public static void main(String[] args) {
 	// Integer clobHashCode = null;
 	// Double b = Double.valueOf(clobHashCode);
 	// spoolOut("xxxxxx:" + b);
-	// }
-
-	/******************************/
-	// private static Attribute getAttribute(Object column, String formColDataType, java.sql.Wrapper rs) throws SQLException {
-	// Attribute attr = null;
-	// if (column instanceof Integer && rs instanceof OracleCallableStatement) {
-	// Integer col = (Integer) column;
-	// attr = getAttribute(col, formColDataType, (OracleCallableStatement) rs);
-	// } else if (column instanceof String && rs instanceof ResultSet) {
-	// String col = (String) column;
-	// attr = getAttribute(col, formColDataType, (ResultSet) rs);
-	// }
-	// return attr;
 	// }
 
 	/******************************/
