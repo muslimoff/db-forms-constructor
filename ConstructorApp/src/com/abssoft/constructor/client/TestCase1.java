@@ -2,8 +2,6 @@ package com.abssoft.constructor.client;
 
 import java.util.Date;
 
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.EventListener;
 import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.data.DataSourceField;
 import com.smartgwt.client.types.FieldType;
