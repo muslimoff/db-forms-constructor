@@ -84,7 +84,9 @@ public class FormTreeGridField extends TreeGridField {
 		}
 
 		// При редактировании грида изменять и значения в редакторе
+
 		this.addChangedHandler(new GridFieldChangedHandler(colName));
+		
 		// TODO - недорешил с исчезновением дат при выходе из нередактированного поля даты
 		// //////////////Начало. Только для поиска проблемы захеривания дат \\\\\\\\\\\\\\\\\
 		// this.addEditorEnterHandler(new EditorEnterHandler() {
@@ -267,6 +269,7 @@ public class FormTreeGridField extends TreeGridField {
 						// }
 						try {
 							// TODO пока не разрулилось различие между выбором из лукапа и
+							//см. http://forums.smartclient.com/showthread.php?t=16067&highlight=ComboBoxItem+onChanged
 							String keyVal = event.getValue() + "";
 							String dispVal = event.getItem().getDisplayValue();
 							if (!keyVal.equals(dispVal))

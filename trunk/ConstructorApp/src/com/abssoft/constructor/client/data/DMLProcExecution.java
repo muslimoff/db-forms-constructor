@@ -203,29 +203,30 @@ public class DMLProcExecution {
 	public void executeWarningSubProc() {
 		Utils.debug("DMLProcExecution.executeWarningSubProc:\n" + result.getStatus().getLongMessageText());
 		request.setWillHandleError(true);
+		setSQLReturnedValues();
 		response.setStatus(RPCResponse.STATUS_FAILURE);
 		response.setErrors(getErrors(result, formDataSource));
-		//formDataSource.processResponse(request.getRequestId(), response);
+		formDataSource.processResponse(request.getRequestId(), response);
 
 		// Вывод значений,которые вернулись из PL/SQL процедуры.
 		// Вместо processResponse, которое не отображает этих данных для неуспешных статусов
-		//Тут копать!
-		setSQLReturnedValues();
+		// Тут копать!
+		// setSQLReturnedValues();
 	};
 
 	public void executeErrorSubProc() {
 		Utils.debug("DMLProcExecution.executeErrorSubProc:\n" + result.getStatus().getLongMessageText());
 
 		request.setWillHandleError(true);
+		setSQLReturnedValues();
 		response.setStatus(RPCResponse.STATUS_FAILURE);
-
 		response.setErrors(getErrors(result, formDataSource));
 		formDataSource.processResponse(request.getRequestId(), response);
 
 		// Вывод значений,которые вернулись из PL/SQL процедуры.
 		// Вместо processResponse, которое не отображает этих данных для неуспешных статусов
-		//Тут копать!
-		setSQLReturnedValues();		
+		// Тут копать!
+		// setSQLReturnedValues();
 	};
 
 	private void setSQLReturnedValues() {
