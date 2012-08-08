@@ -78,24 +78,25 @@ public class Utils {
 	 */
 	public static Date changeTimezone(Date srcDate) {
 		Date destDate = srcDate;
+		if (null != destDate) {
+			// TimeZone tzALA = TimeZone.getTimeZone("Asia/Almaty");
+			// TimeZone tzALA = TimeZone.getTimeZone("Canada/Pacific");
 
-		// TimeZone tzALA = TimeZone.getTimeZone("Asia/Almaty");
-		// TimeZone tzALA = TimeZone.getTimeZone("Canada/Pacific");
-
-		TimeZone tzDefault = TimeZone.getDefault(); // Таймзона сервера (ALA например)
-		TimeZone tzUTC = TimeZone.getTimeZone("UTC"); // UTC - Таймзона
-		Calendar calendar = new GregorianCalendar(tzDefault); // Создаем новый календарь с дефолтной таймзоной
-		DateFormat dtFmt = DateFormat.getDateInstance(DateFormat.SHORT);
-		dtFmt.setCalendar(calendar);
-		String dateStr = dtFmt.format(srcDate); // конвертим в строку, отсекая всю лишнюю инфу, в т.ч. таймзону
-		calendar.setTimeZone(tzUTC); // перебрасываем таймзону календаря в UTC
-		try {
-			destDate = dtFmt.parse(dateStr); // Снова конвертим в Date, с новой таймзоной календаря
-		} catch (ParseException e) {
-			e.printStackTrace();
-			destDate = srcDate;
+			TimeZone tzDefault = TimeZone.getDefault(); // Таймзона сервера (ALA например)
+			TimeZone tzUTC = TimeZone.getTimeZone("UTC"); // UTC - Таймзона
+			Calendar calendar = new GregorianCalendar(tzDefault); // Создаем новый календарь с дефолтной таймзоной
+			DateFormat dtFmt = DateFormat.getDateInstance(DateFormat.SHORT);
+			dtFmt.setCalendar(calendar);
+			try {
+				String dateStr = dtFmt.format(srcDate); // конвертим в строку, отсекая всю лишнюю инфу, в т.ч. таймзону
+				calendar.setTimeZone(tzUTC); // перебрасываем таймзону календаря в UTC
+				destDate = dtFmt.parse(dateStr); // Снова конвертим в Date, с новой таймзоной календаря
+			} catch (ParseException e) {
+				e.printStackTrace();
+				destDate = srcDate;
+			}
+			// spoolOut("tttt_srv_attr2:" + dateStr + "; xx: " + DateFormat.getDateInstance(DateFormat.FULL).format(destDate));
 		}
-		// spoolOut("tttt_srv_attr2:" + dateStr + "; xx: " + DateFormat.getDateInstance(DateFormat.FULL).format(destDate));
 		return destDate; // Таки вот - теперь сервер всегда отдает даты в UTCб пофигу метель...
 	}
 

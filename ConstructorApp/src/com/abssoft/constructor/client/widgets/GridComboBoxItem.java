@@ -24,6 +24,7 @@ import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.FormItemValueFormatter;
+import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.FormItemCriteriaFunction;
 import com.smartgwt.client.widgets.form.fields.FormItemFunctionContext;
@@ -35,8 +36,10 @@ import com.smartgwt.client.widgets.tree.TreeNode;
 //TODO - Отображать при выборке записи до текущей... остальные фетчить по требованию
 //TODO - Завязать на Debug показку "Прочие" меню
 public class GridComboBoxItem extends MyComboBoxItem {
-	private final String userTypedVarName = "p$lookup_entered_value";
+	private final String userTypedVarName = "p$lookup_entered_value"; // То, что вводит пользователь с клавиатуры
+	private final String selectedValueVarName = "p$lookup_selected_value"; // идентификатор того, что пользователь ввел/выбрал (если есть)
 	private String userTypedValue = null;
+	private String userSelectedValue = null;
 
 	public class ComboBoxDataSource extends GwtRpcDataSource {
 		private FormDataSourceField[] dsFields;
@@ -73,51 +76,48 @@ public class GridComboBoxItem extends MyComboBoxItem {
 			}
 			Utils.debug("ComboBoxDataSource.executeFetch 9; " + getFilterWithValue());
 			sortBy = request.getAttribute("sortBy");
-			Utils.debug("ComboBoxDataSource.executeFetch 10");
-			Utils.debug("ComboBoxDataSource.executeFetch 11:" + userTypedValue);
+			Utils.debug("ComboBoxDataSource.executeFetch 10:" + userTypedValue);
 			LinkedHashMap<String, Object> crMap = Utils.getHashMapFromCriteria(cr);
-			Utils.debug("ComboBoxDataSource.executeFetch 11A");
+			Utils.debug("ComboBoxDataSource.executeFetch 11");
 			crMap.put(userTypedVarName, userTypedValue);
 			Utils.debug("ComboBoxDataSource.executeFetch 12");
+			crMap.put(selectedValueVarName, userSelectedValue);
+			Utils.debug("ComboBoxDataSource.executeFetch 13");
 			// TODO вынести в XML параметров endRow - фактически размер лова.
 			Utils.createQueryService("GridComboBoxItem.fetch").fetch(instanceIdentifier, sortBy, startRow, endRow, crMap, false,
 					new DSAsyncCallback<RowsArr>(requestId, response, this) {
 						public void onSuccess(RowsArr result) {
-							Utils.debug("ComboBoxDataSource.executeFetch 13");
+							Utils.debug("ComboBoxDataSource.executeFetch 14");
 							records = new TreeNode[result.size()];
 							values.clear();
-							Utils.debug("ComboBoxDataSource.executeFetch 14. valueFieldNum:" + valueFieldNum + "; result.size:"
+							Utils.debug("ComboBoxDataSource.executeFetch 15. valueFieldNum:" + valueFieldNum + "; result.size:"
 									+ result.size());
 							for (int r = 0; r < result.size(); r++) {
 								try {
 									Row row = result.get(r);
-									// Utils.debug("ComboBoxDataSource.executeFetch 15");
 									records[r] = Utils.getTreeNodeFromRow(dsFields, row);
-									// Utils.debug("ComboBoxDataSource.executeFetch 16");
 									Object key = row.get(valueFieldNum).getAttributeAsObject();
-									// Utils.debug("ComboBoxDataSource.executeFetch 17");
 									values.put(key, records[r]);
-									// Utils.debug("ComboBoxDataSource.executeFetch 18");
 								} catch (Exception e) {
-									Utils.debug("ComboBoxDataSource.executeFetch 19");
+									Utils.debug("ComboBoxDataSource.executeFetch 16");
 									e.printStackTrace();
 								}
 							}
-							Utils.debug("ComboBoxDataSource.executeFetch 20");
+							Utils.debug("ComboBoxDataSource.executeFetch 17");
 							response.setTotalRows(result.getTotalRows());
-							Utils.debug("ComboBoxDataSource.executeFetch 21");
+							Utils.debug("ComboBoxDataSource.executeFetch 18");
 							response.setData(records);
-							Utils.debug("ComboBoxDataSource.executeFetch 22");
+							Utils.debug("ComboBoxDataSource.executeFetch 19");
 							try {
-								Utils.debug("ComboBoxDataSource.executeFetch 23");
+								Utils.debug("ComboBoxDataSource.executeFetch 20");
 								processResponse(requestId, response);
-								Utils.debug("ComboBoxDataSource.executeFetch 24");
+								Utils.debug("ComboBoxDataSource.executeFetch 21");
 							} catch (Exception e) {
-								Utils.debug("ComboBoxDataSource.executeFetch 25");
+								Utils.debug("ComboBoxDataSource.executeFetch 22");
 								e.printStackTrace();
 								Utils.debug(e.getMessage());
 							}
-							Utils.debug("ComboBoxDataSource.executeFetch 26 ended...");
+							Utils.debug("ComboBoxDataSource.executeFetch 23. End of Fetch...");
 						}
 					});
 		}
@@ -162,6 +162,7 @@ public class GridComboBoxItem extends MyComboBoxItem {
 		GridComboBoxItem.this.setShowOptionsFromDataSource(true);
 		this.setFetchDelay(1000);
 		this.setValidateOnChange(true);
+		// TODO mm20120807 Посмотреть! - возможно пригодиццо при переделке лукапов: this.setChangeOnKeypress(false);
 		this.setRejectInvalidValueOnChange(true);
 		this.setCompleteOnTab(true);
 		// this.setHideEmptyPickList(true);
@@ -206,6 +207,15 @@ public class GridComboBoxItem extends MyComboBoxItem {
 		lookupDataSource.setValueFieldNum(valueFieldNum);
 		lookupDataSource.setFields(mfp.getFormColumns().createDSFields());
 		setOptionDataSource(lookupDataSource);
+
+		// this.addDataArrivedHandler(new DataArrivedHandler() {
+		//
+		// @Override
+		// public void onDataArrived(DataArrivedEvent event) {
+		// // TODO Auto-generated method stub
+		// Window.alert("onDataArrived(DataArrivedEvent:" + event);
+		// }
+		// });
 		this.setPickListFilterCriteriaFunction(new FormItemCriteriaFunction() {
 
 			@Override
@@ -216,56 +226,44 @@ public class GridComboBoxItem extends MyComboBoxItem {
 				// Добавляем введенные пользователем данные, если вводил руками...
 				Utils.debug("setPickListFilterCriteriaFunction 1");
 				userTypedValue = null;
+				userSelectedValue = null;
 				// TODO - не работат... getFilterWithValue();
-				Object value = null;
+				Object internalEnteredValue = null;
+				Object internalSelectedValue = null;
+				// valueFieldName
 				try {
 					Utils.debug("setPickListFilterCriteriaFunction 2");
-					value = itemContext.getFormItem().getValue();
+					internalEnteredValue = itemContext.getFormItem().getValue();
 					// value = GridComboBoxItem.this.getValue();
 					Utils.debug("setPickListFilterCriteriaFunction 3");
+					ListGridRecord rec = new ComboBoxItem(itemContext.getFormItem().getJsObj()).getSelectedRecord();
+					Utils.debug("setPickListFilterCriteriaFunction 4:" + rec + "; displayedValue:" + internalEnteredValue + "; rec:"
+							+ rec.getAttribute(displayFieldName));
+					// 20120807 - Забанить фильтрацию по идентификатору. Или наоборот добавить новую фильтрацию только по ID
+
+					if (null != rec) {
+						Utils.debug("setPickListFilterCriteriaFunction 5");
+						internalEnteredValue = rec.getAttribute(displayFieldName);
+						Utils.debug("setPickListFilterCriteriaFunction 6");
+						internalSelectedValue = rec.getAttribute(valueFieldName);
+						Utils.debug("setPickListFilterCriteriaFunction 7");
+					}
 				} catch (Exception e) {
-					Utils.debug("setPickListFilterCriteriaFunction 4:" + e.getMessage());
+					Utils.debug("setPickListFilterCriteriaFunction 8:" + e.getMessage());
 					// e.printStackTrace();
 					ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
-					value = grid.getEditedCell(grid.getEditRow(), columnMD.getName());
-					Utils.debug("setPickListFilterCriteriaFunction 5");
+					internalEnteredValue = grid.getEditedCell(grid.getEditRow(), columnMD.getName());
+					Utils.debug("setPickListFilterCriteriaFunction 9");
 				}
-				userTypedValue = (null != value) ? value.toString() : null;
-				Utils.debug("setPickListFilterCriteriaFunction 6:" + userTypedValue);
-				// 11 cr.addCriteria(userTypedVarName, userTypedValue);
-				Utils.debug("setPickListFilterCriteriaFunction 7:" + userTypedValue);
+				Utils.debug("setPickListFilterCriteriaFunction 10");
+				userTypedValue = (null != internalEnteredValue) ? internalEnteredValue.toString() : null;
+				Utils.debug("setPickListFilterCriteriaFunction 11");
+				userSelectedValue = (null != internalSelectedValue) ? internalSelectedValue.toString() : null;
+				Utils.debug("setPickListFilterCriteriaFunction 12. userSelectedValue:" + userTypedValue + "; userSelectedValue:"
+						+ userSelectedValue);
 				return cr;
 			}
 		});
-		// this.setPickListFilterCriteriaFunction(new FilterCriteriaFunction() {
-		// @Override
-		// public Criteria getCriteria() {
-		// // 11
-		// Criteria cr = getMainFormCriteria();
-		// // Criteria cr = new Criteria();
-		// // Добавляем введенные пользователем данные, если вводил руками...
-		// Utils.debug("setPickListFilterCriteriaFunction 1");
-		// userTypedValue = null;
-		// // TODO - не работат... getFilterWithValue();
-		// Object value = null;
-		// try {
-		// Utils.debug("setPickListFilterCriteriaFunction 2");
-		// value = GridComboBoxItem.this.getValue();
-		// Utils.debug("setPickListFilterCriteriaFunction 3");
-		// } catch (Exception e) {
-		// Utils.debug("setPickListFilterCriteriaFunction 4:" + e.getMessage());
-		// // e.printStackTrace();
-		// ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
-		// value = grid.getEditedCell(grid.getEditRow(), columnMD.getName());
-		// Utils.debug("setPickListFilterCriteriaFunction 5");
-		// }
-		// userTypedValue = (null != value) ? value.toString() : null;
-		// Utils.debug("setPickListFilterCriteriaFunction 6:" + userTypedValue);
-		// // 11 cr.addCriteria(userTypedVarName, userTypedValue);
-		// Utils.debug("setPickListFilterCriteriaFunction 7:" + userTypedValue);
-		// return cr;
-		// }
-		// });
 
 		// TODO Вынести в классы FormTreeGridField и FormRowEditorTab.createItem
 		if (null == formTreeGridField) {

@@ -130,7 +130,7 @@ public class MainFormPane extends Canvas {
 		instanceIdentifier.setIsDrillDownForm(isDrillDownForm);
 		Utils.createQueryService("MainFormPane.getFormMetaData").getFormMetaData(instanceIdentifier, new DSAsyncCallback<FormMD>() {
 			public void onSuccess(FormMD result) {
-				//TODO Error NullPointerException... 
+				// TODO Error NullPointerException...
 				result.getStatus().showActionStatus();
 				setFormMetadata(result);
 				setFormColumns(new FormColumns(MainFormPane.this));
@@ -192,9 +192,21 @@ public class MainFormPane extends Canvas {
 		sections.setHeight100();
 		gridAndFormLayout.setHeight(formMetadata.getHeight());
 		sections.setVisibilityMode(VisibilityMode.MULTIPLE);
-		// TODO - вынести в настройки высоту SectionStack: sections.setHeaderHeight(1);
-		SectionStackSection summarySection = new SectionStackSection(formTitle);
-		SectionStackSection detailsSection = new SectionStackSection(formTitle + "-Подробности");
+		int sectionsHeaderHeigth = sections.getHeaderHeight();
+		String summarySectionTitle = formTitle;
+		String detailsSectionTitle = formTitle + "-Подробности";
+
+		// TODO - вынести в настройки высоту SectionStack: sections.setHeaderHeight(1); По дефолту - 26
+		sectionsHeaderHeigth = 3;
+		sections.setHeaderHeight(sectionsHeaderHeigth);
+		if (sectionsHeaderHeigth <= 10) // Если высота меньше 10px то не выводим наименования - все равно некрасиво тогда получится если
+		// выводить наименования
+		{
+			summarySectionTitle = "";
+			detailsSectionTitle = "";
+		}
+		SectionStackSection summarySection = new SectionStackSection(summarySectionTitle);
+		SectionStackSection detailsSection = new SectionStackSection(detailsSectionTitle);
 		summarySection.setExpanded(true);
 		summarySection.setItems(gridAndFormLayout);
 		if (0 == bottomDetailFormsContainer.getTabCounter()) {
