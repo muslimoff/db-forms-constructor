@@ -237,12 +237,11 @@ public class GridComboBoxItem extends MyComboBoxItem {
 					// value = GridComboBoxItem.this.getValue();
 					Utils.debug("setPickListFilterCriteriaFunction 3");
 					ListGridRecord rec = new ComboBoxItem(itemContext.getFormItem().getJsObj()).getSelectedRecord();
-					Utils.debug("setPickListFilterCriteriaFunction 4:" + rec + "; displayedValue:" + internalEnteredValue + "; rec:"
-							+ rec.getAttribute(displayFieldName));
+					Utils.debug("setPickListFilterCriteriaFunction 4:" + rec + "; displayedValue:" + internalEnteredValue);
 					// 20120807 - Забанить фильтрацию по идентификатору. Или наоборот добавить новую фильтрацию только по ID
 
 					if (null != rec) {
-						Utils.debug("setPickListFilterCriteriaFunction 5");
+						Utils.debug("setPickListFilterCriteriaFunction 5. rec:" + rec.getAttribute(displayFieldName));
 						internalEnteredValue = rec.getAttribute(displayFieldName);
 						Utils.debug("setPickListFilterCriteriaFunction 6");
 						internalSelectedValue = rec.getAttribute(valueFieldName);
@@ -259,7 +258,7 @@ public class GridComboBoxItem extends MyComboBoxItem {
 				userTypedValue = (null != internalEnteredValue) ? internalEnteredValue.toString() : null;
 				Utils.debug("setPickListFilterCriteriaFunction 11");
 				userSelectedValue = (null != internalSelectedValue) ? internalSelectedValue.toString() : null;
-				Utils.debug("setPickListFilterCriteriaFunction 12. userSelectedValue:" + userTypedValue + "; userSelectedValue:"
+				Utils.debug("setPickListFilterCriteriaFunction 12. userTypedValue:" + userTypedValue + "; userSelectedValue:"
 						+ userSelectedValue);
 				return cr;
 			}

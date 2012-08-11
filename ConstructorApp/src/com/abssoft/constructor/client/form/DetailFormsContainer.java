@@ -14,6 +14,7 @@ import com.abssoft.constructor.common.metadata.FormTabMD;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.types.Orientation;
 import com.smartgwt.client.types.Side;
+import com.smartgwt.client.types.TabBarControls;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.events.CloseClickHandler;
 import com.smartgwt.client.widgets.tab.events.TabCloseClickEvent;
@@ -137,16 +138,19 @@ public class DetailFormsContainer extends TabSet {
 			tabsOrientStr = formMetadata.getSideTabsPosition();
 		}
 		Side tabsOrient;
-		if (tabsOrientStr.equals("L"))
+		if (tabsOrientStr.equals("L")) {
 			tabsOrient = Side.LEFT;
-		else if (tabsOrientStr.equals("R"))
+		} else if (tabsOrientStr.equals("R")) {
 			tabsOrient = Side.RIGHT;
-		else if (tabsOrientStr.equals("B"))
+		} else if (tabsOrientStr.equals("B")) {
 			tabsOrient = Side.BOTTOM;
-		else
+		} else {
 			tabsOrient = Side.TOP;
+		}
 		setTabBarPosition(tabsOrient);
 		// обработку скрытия таббара (tabsOrientStr = "H") см в методе MainFormPane.createDetailForms, в самом конце
+		
+		//this.setTabBarControls(TabBarControls.TAB_SCROLLER, TabBarControls.TAB_PICKER, form);
 
 		FormTabsArr tabs = formMetadata.getTabs();
 		// Цикл по табикам статических типов
