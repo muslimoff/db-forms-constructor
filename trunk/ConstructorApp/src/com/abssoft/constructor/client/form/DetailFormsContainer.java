@@ -14,7 +14,7 @@ import com.abssoft.constructor.common.metadata.FormTabMD;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.types.Orientation;
 import com.smartgwt.client.types.Side;
-import com.smartgwt.client.types.TabBarControls;
+import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.events.CloseClickHandler;
 import com.smartgwt.client.widgets.tab.events.TabCloseClickEvent;
@@ -125,6 +125,93 @@ public class DetailFormsContainer extends TabSet {
 
 	private HashMap<String, DynamicDetailTab> dynamicDetailTabs = new HashMap<String, DynamicDetailTab>();
 
+	// @Override
+	// protected void setHideTabsetPanesButtonIcons(Side tabBarPosition) {
+	// super.setHideTabsetPanesButtonIcons(tabBarPosition);
+	// String icon;
+	// String prevIcon;
+	// switch (orientation) {
+	// case HORIZONTAL:
+	// icon = "right";
+	// prevIcon = "left";
+	// break;
+	// default:
+	// icon = "up";
+	// prevIcon = "down";
+	// }
+	// currentHideTabsetPanesButtonIcon = hideTabsetPanesButtonIconTemplate.replace("&direction&", icon);
+	// prevHideTabsetPanesButtonIcon = hideTabsetPanesButtonIconTemplate.replace("&direction&", prevIcon);
+	// }
+
+	@Override
+	protected void showOrCollapse() {
+
+		// MainFormContainer mfc = (MainFormContainer) this.getSelectedTab();
+		// SectionStack s1 = mfc.getMainFormPane().sections;
+		// s1.getSection(0).setExpanded(!isCollapsed());
+
+		if (isCollapsed()) {
+			doUpAction();
+		} else {
+			doDownAction();
+		}
+		// if (sections.)
+		// .setExpanded(!isCollapsed())
+
+		//
+		// MainFormPane mfp1 = this.mainFormPane.getParentFormPane();
+		// Window.alert("showOrCollapse:" + mfp1.getFormCode());
+		// SectionStackSection s1 = this.mainFormPane.getParentFormPane().sections.getSection(1);
+		// s1.setExpanded(!isCollapsed());
+
+		// this.mainFormPane.sections.getSection(1).setExpanded(isCollapsed());
+		// isCollapsed
+
+		// Window.alert("showOrCollapse:" + this.getParent() + "; " + this.getParentElement() + "; "
+		// // + (this.getParentElement() instanceof SectionStackSection ? 1 : 2));
+		// + this.getSelectedTab());
+
+		// switch (orientation) {
+		// case HORIZONTAL:
+		// // mainFormPane.get
+		// ;
+		// break;
+		// default:
+		// ;
+		// }
+	}
+
+	@Override
+	protected void doUpAction() {
+		this.mainFormPane.getBottomDetailFormsContainer().setHeight100();
+
+		//
+
+		MainFormContainer mfc = (MainFormContainer) this.getSelectedTab();
+		SectionStack s1 = mfc.getMainFormPane().sections;
+		if (s1.getSection(0).getAttributeAsBoolean("showHeader")) {
+			s1.getSection(0).setExpanded(true);
+		}
+
+		// this.mainFormPane.getBottomDetailFormsContainer().doUpAction();
+	}
+
+	@Override
+	protected void doDownAction() {
+		// this.mainFormPane.sections.getSection(1).setExpanded(false);
+		this.mainFormPane.getBottomDetailFormsContainer().setHeight(24);
+
+		//
+		MainFormContainer mfc = (MainFormContainer) this.getSelectedTab();
+		SectionStack s1 = mfc.getMainFormPane().sections;
+		if (s1.getSection(0).getAttributeAsBoolean("showHeader")) {
+			s1.getSection(0).setExpanded(false);
+		}
+
+		// this.mainFormPane.getBottomDetailFormsContainer().doDownAction();
+
+	}
+
 	DetailFormsContainer(MainFormPane mainFormPane, Orientation orientation) {
 		Utils.debug("DetailFormsContainer... orientation:" + orientation);
 		this.setDestroyPanes(false);
@@ -149,8 +236,6 @@ public class DetailFormsContainer extends TabSet {
 		}
 		setTabBarPosition(tabsOrient);
 		// обработку скрытия таббара (tabsOrientStr = "H") см в методе MainFormPane.createDetailForms, в самом конце
-		
-		//this.setTabBarControls(TabBarControls.TAB_SCROLLER, TabBarControls.TAB_PICKER, form);
 
 		FormTabsArr tabs = formMetadata.getTabs();
 		// Цикл по табикам статических типов
