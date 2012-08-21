@@ -103,6 +103,9 @@ public class MainFormPane extends Canvas {
 	private FormActionMD currentAction = new FormActionMD();
 	private FormInstanceIdentifier instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, ConstructorApp.debugEnabled);
 	private boolean fromUrl = false;
+	private SectionStackSection summarySection;
+	private SectionStackSection detailsSection;
+	SectionStack sections;
 
 	public MainFormPane() {
 	}
@@ -187,7 +190,7 @@ public class MainFormPane extends Canvas {
 		gridAndFormLayout.addMember(mainForm);
 		gridAndFormLayout.addMember(sideDetailFormsContainer);
 		gridAndFormLayout.setWidth100();
-		SectionStack sections = new SectionStack();
+		sections = new SectionStack();
 		sections.setMargin(0);
 		sections.setHeight100();
 		gridAndFormLayout.setHeight(formMetadata.getHeight());
@@ -205,8 +208,8 @@ public class MainFormPane extends Canvas {
 			summarySectionTitle = "";
 			detailsSectionTitle = "";
 		}
-		SectionStackSection summarySection = new SectionStackSection(summarySectionTitle);
-		SectionStackSection detailsSection = new SectionStackSection(detailsSectionTitle);
+		summarySection = new SectionStackSection(summarySectionTitle);
+		detailsSection = new SectionStackSection(detailsSectionTitle);
 		summarySection.setExpanded(true);
 		summarySection.setItems(gridAndFormLayout);
 		if (0 == bottomDetailFormsContainer.getTabCounter()) {

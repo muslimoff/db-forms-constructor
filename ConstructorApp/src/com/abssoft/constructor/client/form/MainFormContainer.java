@@ -80,9 +80,11 @@ public class MainFormContainer extends FormTab {
 		setTitle(defaultTitle);
 		if (null != parentTabSet) {
 			parentTabSet.addTab(MainFormContainer.this);
-			if (selectAfterCreation)
+			if (selectAfterCreation) {
 				parentTabSet.selectTab(MainFormContainer.this);
+			}
 			// parentTabSet.hideTabBar();
+			//parentTabSet.setTabSetContextMenu(this);
 		}
 	}
 

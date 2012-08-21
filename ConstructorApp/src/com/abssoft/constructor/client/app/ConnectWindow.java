@@ -19,6 +19,8 @@ import com.smartgwt.client.widgets.HeaderControl;
 import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
+import com.smartgwt.client.widgets.events.VisibilityChangedEvent;
+import com.smartgwt.client.widgets.events.VisibilityChangedHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.FormItemIfFunction;
 import com.smartgwt.client.widgets.form.fields.FormItem;
@@ -127,6 +129,17 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 		this.setShowModalMask(true);
 		this.setIsModal(true);
 		this.centerInPage();
+		// 20120811 - Добавил для эргономичной работы с тестовым окном
+		this.addVisibilityChangedHandler(new VisibilityChangedHandler() {
+			@Override
+			public void onVisibilityChanged(VisibilityChangedEvent event) {
+				if (!event.getIsVisible() && ConstructorApp.debugEnabled) {
+					// Window.alert("hidden");
+					// new TestWindow();
+				}
+
+			}
+		});
 
 		this.setAutoSize(true);
 

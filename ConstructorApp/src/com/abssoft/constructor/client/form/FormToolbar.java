@@ -18,8 +18,8 @@ import com.smartgwt.client.widgets.menu.MenuItemSeparator;
 public class FormToolbar extends DynamicForm {
 
 	private ArrayList<MenuItem> actionItemsArr = new ArrayList<MenuItem>();
-	private ArrayList<IButton> actionButtonsArr = new ArrayList<IButton>();
-	private ArrayList<MenuItem> actionMenuItemsArr = new ArrayList<MenuItem>();
+	// private ArrayList<IButton> actionButtonsArr = new ArrayList<IButton>();
+	// private ArrayList<MenuItem> actionMenuItemsArr = new ArrayList<MenuItem>();
 
 	public LinkedHashMap<String, ActionItem> actionItemsMap = new LinkedHashMap<String, ActionItem>();
 	private MainFormPane mainFormPane;
@@ -28,6 +28,28 @@ public class FormToolbar extends DynamicForm {
 	private IButton[] btns;
 	private ActionItem doubleClickActItem;
 
+	private class CtxMenu extends Menu {
+		CtxMenu(ArrayList<MenuItem> menuItemsArr, MainFormPane mainFormPane) {
+			String formTitle = mainFormPane.getFormMetadata().getFormName();
+			String icon = ConstructorApp.menus.getIcons().get(mainFormPane.getFormMetadata().getIconId());
+
+			int additionalMICount = 2;
+			MenuItem[] menuItems = new MenuItem[menuItemsArr.size() + additionalMICount];
+			// Title MenuItem
+			menuItems[0] = new MenuItem(formTitle);
+			menuItems[0].setEnabled(false);
+			menuItems[0].set_baseStyle("bold");
+			menuItems[0].setIcon(icon);
+			// Separator
+			menuItems[1] = new MenuItemSeparator();
+			// Real menu items
+			for (int i = 0; i < menuItemsArr.size(); i++) {
+				menuItems[i + additionalMICount] = menuItemsArr.get(i);
+			}
+			this.setData(menuItems);
+		}
+	}
+
 	public FormToolbar(MainFormPane mainFormPane) {
 		this.mainFormPane = mainFormPane;
 		setWidth("*");
@@ -35,6 +57,8 @@ public class FormToolbar extends DynamicForm {
 	}
 
 	public void createButtons() {
+		ArrayList<MenuItem> actionMenuItemsArr = new ArrayList<MenuItem>();
+		ArrayList<IButton> actionButtonsArr = new ArrayList<IButton>();
 
 		String formName = mainFormPane.getFormMetadata().getFormName();
 		formName = null != formName ? formName : mainFormPane.getFormCode();
@@ -68,28 +92,17 @@ public class FormToolbar extends DynamicForm {
 			}
 		}
 		/*****************/
-		ctxMenu = new Menu();
-		int additionalMICount = 2;
-		MenuItem[] menuItems = new MenuItem[actionMenuItemsArr.size() + additionalMICount];
-		// Title MenuItem
-		menuItems[0] = new MenuItem(mainFormPane.getFormMetadata().getFormName());
-		menuItems[0].setEnabled(false);
-		menuItems[0].set_baseStyle("bold");
-		menuItems[0].setIcon(ConstructorApp.menus.getIcons().get(mainFormPane.getFormMetadata().getIconId()));
-		//
-		menuItems[1] = new MenuItemSeparator();
-		for (int i = 0; i < actionMenuItemsArr.size(); i++) {
-			menuItems[i + additionalMICount] = actionMenuItemsArr.get(i);
-		}
+		ctxMenu = new CtxMenu(actionMenuItemsArr, mainFormPane);
+
 		// Buttons
 		btns = new IButton[actionButtonsArr.size()];
 		for (int i = 0; i < actionButtonsArr.size(); i++) {
 			btns[i] = actionButtonsArr.get(i);
 		}
 		btnToolbar.setButtons(btns);
-		ctxMenu.setData(menuItems);
 		this.setContextMenu(ctxMenu);
 		mainFormPane.setContextMenu(ctxMenu);
+		mainFormPane.getMainFormContainer().setContextMenu(ctxMenu);
 		btnToolbar.setStartRow(false);
 		setItems(formNameItem, btnToolbar);
 
@@ -102,6 +115,7 @@ public class FormToolbar extends DynamicForm {
 		}
 	}
 
+	//
 	public void setActionsStatuses() {
 		for (int i = 0; i < actionItemsArr.size(); i++) {
 			MenuItem mi = actionItemsArr.get(i);

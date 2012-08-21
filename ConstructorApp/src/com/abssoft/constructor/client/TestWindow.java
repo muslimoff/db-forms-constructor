@@ -15,6 +15,7 @@ import com.rednels.ofcgwt.client.model.elements.BarChart;
 import com.rednels.ofcgwt.client.model.elements.BarChart.BarStyle;
 import com.rednels.ofcgwt.client.model.elements.LineChart.LineStyle;
 import com.smartgwt.client.types.Side;
+import com.smartgwt.client.types.TabBarControls;
 import com.smartgwt.client.types.TitleOrientation;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
@@ -28,7 +29,15 @@ import com.smartgwt.client.widgets.form.fields.CanvasItem;
 import com.smartgwt.client.widgets.form.fields.RichTextItem;
 import com.smartgwt.client.widgets.form.fields.ViewFileItem;
 import com.smartgwt.client.widgets.layout.HLayout;
+import com.smartgwt.client.widgets.menu.Menu;
+import com.smartgwt.client.widgets.menu.MenuItem;
+import com.smartgwt.client.widgets.menu.MenuItemSeparator;
 import com.smartgwt.client.widgets.tab.Tab;
+import com.smartgwt.client.widgets.tab.events.TabSelectedEvent;
+import com.smartgwt.client.widgets.tab.events.TabSelectedHandler;
+import com.smartgwt.client.widgets.toolbar.ToolStrip;
+import com.smartgwt.client.widgets.toolbar.ToolStripButton;
+import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 
 public class TestWindow extends Window {
 	TabSet tabSet = new TabSet();
@@ -57,7 +66,10 @@ public class TestWindow extends Window {
 			label1.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 			Canvas c = new Canvas();
 			c.addChild(chart1);
-			this.setTitle("ChartTab");
+			String imgHTML = Canvas.imgHTML("[ISOMORPHIC]/resources/icons/database_connect.png");
+			String title = "ChartTab";
+			String formTitle = "<span>" + imgHTML + "&nbsp;" + title + "</span>";
+			this.setTitle(formTitle);
 			this.setPane(c);
 		}
 	}
@@ -118,6 +130,13 @@ public class TestWindow extends Window {
 			});
 			this.setPane(form);
 			this.setTitle("Static");
+
+			// Для проверки функциональности контекстного меню в классе TabSet
+			Menu ctxMenu = new Menu();
+			MenuItem m1 = new MenuItem("sss-" + this.getTitle());
+			MenuItem m2 = new MenuItemSeparator();
+			ctxMenu.setData(m1, m2);
+			this.setContextMenu(ctxMenu);
 		}
 	}
 
@@ -126,6 +145,7 @@ public class TestWindow extends Window {
 		this.setHeight(400);
 		this.setTitle("Connect");
 		this.setShowMinimizeButton(false);
+		this.setCanDragResize(true);
 		this.setIsModal(true);
 		this.centerInPage();
 		Canvas canvas = new Canvas();
@@ -154,6 +174,69 @@ public class TestWindow extends Window {
 		Tab testCase1Tab = new Tab("TestCase1");
 		testCase1Tab.setPane(new TestCase1());
 		tabSet.addTab(testCase1Tab);
+
+		{ // 20120811 кнопки на табсете
+
+			// DynamicForm form = new DynamicForm();
+			// form.setPadding(0);
+			// form.setMargin(0);
+			// form.setCellPadding(1);
+			// form.setNumCols(1);
+			// form.setFields(selectItem);
+			// tabSet.setTabBarControls(TabBarControls.TAB_SCROLLER, TabBarControls.TAB_PICKER, form);
+
+			// final Menu menu = new Menu();
+			// MenuItem newItem = new MenuItem("New", "icons/16/document_plain_new.png", "Ctrl+N");
+			// menu.setItems(newItem);
+			// final ToolStripMenuButton menuButton = new ToolStripMenuButton("File", menu);
+			// menuButton.setWidth(100);
+			// ToolStrip toolStrip = new ToolStrip();
+			//
+			// // Если сбоку... кстати, работает херотенька для боковых табиков в хроме и фаерфоксе. Только в TAB_PICKER теперь все боком
+			// мля..
+			// // И с шириной все как-то не так..
+			// //
+			// // toolStrip.setVertical(true);
+			// // tabSet.setTabBarPosition(Side.LEFT);
+			//
+			// tabSet.setTabBarPosition(Side.TOP);
+			// toolStrip.setWidth(100);
+			// toolStrip.setHeight(null != tabSet.getHeight() ? tabSet.getHeight() : 24); // пофигу - дефолтной высоты tabSet не дает
+			// toolStrip.addMenuButton(menuButton);
+			// toolStrip.addSeparator();
+			// ToolStripButton hideTabsetPanesButton = new ToolStripButton();
+			// hideTabsetPanesButton.setIcon("[SKIN]/headerIcons/arrow_down_Over.png"); // arrow_left_Over/arrow_right_Over/arrow_up_Over
+			// toolStrip.addButton(hideTabsetPanesButton);
+			// tabSet.setTabBarControls(TabBarControls.TAB_SCROLLER, TabBarControls.TAB_PICKER, toolStrip);
+			tabSet.setCanCloseTabs(true);
+			{
+				// tabSet.addTabContextMenuHandler(new TabContextMenuHandler() {
+				//
+				// @Override
+				// public void onTabContextMenu(TabContextMenuEvent event) {
+				// com.google.gwt.user.client.Window.alert("TabContextMenuEvent. TabTitle:" + event.getTab().getTitle());
+				// Menu ctxMenu = new Menu();
+				// MenuItem m1 = new MenuItem("sss-" + event.getTab().getTitle());
+				// MenuItem m2 = new MenuItemSeparator();
+				// ctxMenu.setData(m1, m2);
+				// tabSet.setContextMenu(ctxMenu);
+				// }
+				// });
+
+				// tabSet.addTabSelectedHandler(new TabSelectedHandler() {
+				//
+				// @Override
+				// public void onTabSelected(TabSelectedEvent event) {
+				// // com.google.gwt.user.client.Window.alert("TabSelectedEvent. TabTitle:" + event.getTab().getTitle());
+				// String title = "New" + event.getTab().getTitle();
+				// MenuItem newItem = new MenuItem(title, "icons/16/document_plain_new.png", "Ctrl+N");
+				// menu.setItems(newItem);
+				// menuButton.setTitle(title);
+				// menuButton.setTooltip(title);
+				// }
+				// });
+			}
+		}
 
 		HLayout vLayout = new HLayout();
 
