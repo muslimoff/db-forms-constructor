@@ -112,7 +112,7 @@ public class Utils {
 		} else if ("D".equals(formColDataType)) {
 			DATE dt = isCalStmnt ? cs.getDATE(colInt) : null;
 			Date dateVal = isCalStmnt ? (cs.wasNull() ? null : dt.dateValue()) : rs.getDate(colStr);
-			dateVal = changeTimezone(dateVal);
+			//dateVal = changeTimezone(dateVal);
 			attr = new Attribute(dateVal);
 		} else if ("B".equals(formColDataType)) {
 			val = isCalStmnt ? cs.getString(colInt) : rs.getString(colStr);

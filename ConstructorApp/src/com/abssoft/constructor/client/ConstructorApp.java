@@ -261,21 +261,8 @@ public class ConstructorApp implements EntryPoint {
 		}
 		Utils.debug("QueryString:" + com.google.gwt.user.client.Window.Location.getQueryString());
 		canvas.draw();
-		connectWindow = new ConnectWindow(ConstructorApp.this);
-		{
-			// System.out.println("cccccccccc0:"
-			// + DOM.getElementProperty(mainToolBar.getElement().<com.google.gwt.user.client.Element> cast(), "visibility"));
-			// System.out.println("cccccccccc1:" + mainToolBar.getBackgroundColor());
-			// System.out.println("cccccccccc2:" + mainToolBar.getElement().getInnerHTML());
-			// System.out.println("cccccccccc3:" + mainToolBar.getBackgroundColor());
-			// System.out.println("cccccccccc4:"
-			// + DOM.getStyleAttribute(mainToolBar.getElement().<com.google.gwt.user.client.Element> cast(), "visibility") + "<");
-			// System.out.println("cccccccccc5:"
-			// + Utils.getComputedStyleProperty(mainToolBar.getElement().<com.google.gwt.user.client.Element> cast(),
-			// "backgroundColor"));
-			// canvas.setBackgroundColor(mainToolBar.getBackgroundColor());
 
-		}
+		connectWindow = new ConnectWindow(ConstructorApp.this);
 	}
 
 	public void add_debug_console() {

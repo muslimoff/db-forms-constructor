@@ -268,10 +268,13 @@ public class GridComboBoxItem extends MyComboBoxItem {
 		if (null == formTreeGridField) {
 			this.setFetchMissingValues(true);
 			if (null != lookupDisplValFld) {
-				this.setEditorValueFormatter(new FormItemValueFormatter() {
+				// b20121107
+				this.setValueFormatter(new FormItemValueFormatter() {
+
 					@Override
 					public String formatValue(Object value, Record record, DynamicForm form, FormItem i) {
-						String result = (String) value;
+						// 20121107 String result = (String) value;
+						String result = null == value ? null : ((String) value); // "" + value;
 						try {
 							int currRow = GridComboBoxItem.this.mainFormPane.getSelectedRow();
 							ListGrid grig = GridComboBoxItem.this.mainFormPane.getMainForm().getTreeGrid();
@@ -290,6 +293,32 @@ public class GridComboBoxItem extends MyComboBoxItem {
 						return result;
 					}
 				});
+				// e20121107
+/*				
+				this.setEditorValueFormatter(new FormItemValueFormatter() {
+					@Override
+					public String formatValue(Object value, Record record, DynamicForm form, FormItem i) {
+						// 20121107 String result = (String) value;
+						String result = null == value ? null : ((String) value); // "" + value;
+						try {
+							int currRow = GridComboBoxItem.this.mainFormPane.getSelectedRow();
+							ListGrid grig = GridComboBoxItem.this.mainFormPane.getMainForm().getTreeGrid();
+							ListGridRecord rec = grig.getRecord(currRow);
+							String colName = GridComboBoxItem.this.columnMD.getName();
+							// System.out.println("##$@@" + result);
+							if (null != value) {
+								result = value.equals(rec.getAttribute(colName)) ? rec.getAttribute(lookupDisplValFld) : result;
+							} else {
+								result = null;
+							}
+						} catch (Exception e) {
+							Utils.debug(e.getMessage());
+							e.printStackTrace();
+						}
+						return result;
+					}
+				});
+*/				
 			}
 		} else {
 			//

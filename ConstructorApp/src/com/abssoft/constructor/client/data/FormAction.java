@@ -66,8 +66,8 @@ public class FormAction {
 				int rIdx = editRowsArr[i];
 				Utils.debug("doSaveEditedData3. editRowsArr[" + i + "]=" + rIdx);
 				mainFormPane.getDataSource().setEditedRecordIndex(rIdx);
-				//20120628
-				//mainFormPane.getMainForm().getTreeGrid().endEditing();
+				// 20120628
+				// mainFormPane.getMainForm().getTreeGrid().endEditing();
 				if (grid instanceof MainForm.FormListGrid) {
 					((MainForm.FormListGrid) grid).saveAllEdits(new int[] { rIdx });
 				} else if (grid instanceof MainForm.FormTreeGrid) {
@@ -98,6 +98,8 @@ public class FormAction {
 	}
 
 	/********************************************************************/
+	//Походу избавился от нее. Удалить после выгрузки в SVN 
+	@SuppressWarnings("unused")
 	private void doExecuteCustomPLSQL(Integer recordIndex) {
 		Utils.debug("Custom PL/SQL - start execution...");
 		// Если указан recordIndex - то обновляем только эту запись. Иначе - все подряд
@@ -347,6 +349,11 @@ public class FormAction {
 			Utils.openURL(formActionMD, grid.getRecord(recIdxInternal), mainFormPane);
 			// Validation
 		} else if ("16".equals(actionType)) {
+			// 20121005 - алерты в процедуре валидации
+			{
+				int recIdxInternal = null == recordIndex ? currRecSelected : recordIndex;
+				mainFormPane.getDataSource().setEditedRecordIndex(recIdxInternal);
+			}
 			mainFormPane.getMainForm().setNewRecDefaultValues(currRecSelected, false);
 		}
 		// Close FormTabset/Window

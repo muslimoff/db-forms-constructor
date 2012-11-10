@@ -183,7 +183,7 @@ public class Utils {
 
 	public static void logException(Exception e, String txt) {
 		// e.printStackTrace();
-		Utils.debug(txt + ": " + e);
+		Utils.debugAlert(txt + ": " + e);
 	}
 
 	public static TreeNode getTreeNodeFromRecordWithoutRef(FormDataSourceField[] dsFields, Record record) {
@@ -405,10 +405,22 @@ public class Utils {
 	}
 
 	public static void debug(String text) {
+		debug(text, false);
+	}
+
+	public static void debugAlert(String text) {
+		debug(text, true);
+	}
+
+	private static void debug(String text, boolean withAlert) {
 		if (ConstructorApp.debugEnabled) {
 			System.out.println("CLNT:" + text);
-			if (GWT.isScript())
+			if (GWT.isScript()) {
 				SC.logWarn(text);
+			}
+			if (withAlert) {
+				Window.alert(text);
+			}
 		}
 	}
 

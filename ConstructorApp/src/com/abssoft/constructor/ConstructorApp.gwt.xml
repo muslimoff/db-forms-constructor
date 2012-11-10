@@ -38,10 +38,17 @@
 	<inherits name="com.smartclient.theme.standart.standartResources" />
 
 	<inherits name="com.smartgwt.tools.SmartGwtTools" />
-	<!--	-->
+	
+	<!--	
+	<inherits name="com.mastergaurav.codemirror.CodeMirror"/>
+	-->
 	<entry-point class="com.abssoft.constructor.client.ConstructorApp" />
 	<servlet class="com.abssoft.constructor.server.QueryServiceImpl"
 		path="/query" />
 	<source path="common"/>
 	<source path="client"/>
+	
+	<script src="codemirror233/codemirror.js" />
+	<script src="codemirror233/plsqlmm.js" />
+	<stylesheet src="codemirror233/codemirror.css" />
 </module>

@@ -2,6 +2,7 @@ package com.abssoft.constructor.client;
 
 import com.abssoft.constructor.client.common.TabSet;
 import com.abssoft.constructor.client.widgets.ActionStatusWindow;
+import com.abssoft.constructor.client.widgets.CodeEditorItem;
 import com.abssoft.constructor.common.ActionStatus.StatusType;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -15,7 +16,6 @@ import com.rednels.ofcgwt.client.model.elements.BarChart;
 import com.rednels.ofcgwt.client.model.elements.BarChart.BarStyle;
 import com.rednels.ofcgwt.client.model.elements.LineChart.LineStyle;
 import com.smartgwt.client.types.Side;
-import com.smartgwt.client.types.TabBarControls;
 import com.smartgwt.client.types.TitleOrientation;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
@@ -27,7 +27,10 @@ import com.smartgwt.client.widgets.form.events.ItemChangedEvent;
 import com.smartgwt.client.widgets.form.events.ItemChangedHandler;
 import com.smartgwt.client.widgets.form.fields.CanvasItem;
 import com.smartgwt.client.widgets.form.fields.RichTextItem;
+import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.form.fields.ViewFileItem;
+import com.smartgwt.client.widgets.form.fields.events.FocusEvent;
+import com.smartgwt.client.widgets.form.fields.events.FocusHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
@@ -35,9 +38,6 @@ import com.smartgwt.client.widgets.menu.MenuItemSeparator;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.events.TabSelectedEvent;
 import com.smartgwt.client.widgets.tab.events.TabSelectedHandler;
-import com.smartgwt.client.widgets.toolbar.ToolStrip;
-import com.smartgwt.client.widgets.toolbar.ToolStripButton;
-import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 
 public class TestWindow extends Window {
 	TabSet tabSet = new TabSet();
@@ -166,7 +166,9 @@ public class TestWindow extends Window {
 		System.out.println("formTitle:" + formTitle);
 		rit.setTitle(formTitle);
 
+		SyntaxHighLightTab syntaxHighLightTab = new SyntaxHighLightTab();
 		tabSet.addTab(rit);
+		tabSet.addTab(syntaxHighLightTab);
 		tabSet.addTab(new ChartTab());
 		tabSet.addTab(new RadarChartTab());
 
@@ -278,6 +280,7 @@ public class TestWindow extends Window {
 		vLayout.addMember(b);
 		vLayout.addMember(canvas);
 		vLayout.addMember(tabSet);
+
 		this.addItem(vLayout);
 
 		// /////////////
@@ -299,8 +302,102 @@ public class TestWindow extends Window {
 		// tabSet.addTab(t2);
 		// g.fetchData();
 		// ////////////////////
+		// tabSet.addTestBtn();
+
+		// Попытка зафигачить кнопку на табсете слева
+		// http://forums.smartclient.com/showthread.php?t=4533&highlight=TabBar&page=2
 
 		this.show();
-		// tabSet.hideTabBar();
+		//tabSet.viewToolstripAfterDraw();
+		// for (Canvas cc : syntaxHighLightTab.getPane().getChildren()) {
+		// com.google.gwt.user.client.Window.alert("SS>" + cc.getDOM().getInnerHTML());
+		// com.google.gwt.user.client.Window.alert("SS2>" + cc.getDOM().getChild(0).getChild(0));
+		// syntaxHighLightTab.initCodeMirror(cc.getDOM().getChild(0).getChild(0));
+
+		// com.google.gwt.user.client.Window.alert("SS2>"
+		// + cc.getDOM().getChild(0).getChild(0).getChild(2).getChild(1).getChild(1).getChild(0));
+		// syntaxHighLightTab.initCodeMirror(cc.getDOM().getChild(0).getChild(0).getChild(2).getChild(1).getChild(1).getChild(0));
+
+		// }
+		// syntaxHighLightTab.initCodeMirror(syntaxHighLightTab.getPane().getDOM().getChild(0).getChild(0).getChild(2).getChild(1).getChild(1)
+		// .getChild(0));
+
+		// com.google.gwt.user.client.Window.alert("SS>" + Canvas.getById("z123456"));
+		// syntaxHighLightTab.initCodeMirror(Canvas.getById("z123456").getJsObj());
+		syntaxHighLightTab.init();
+	}
+
+	class SyntaxHighLightTab extends Tab {
+
+		TextAreaItem tai = new TextAreaItem("test");
+		DynamicForm f = new DynamicForm();
+		CodeEditorItem codeEditor = new CodeEditorItem();
+		CodeEditorItem codeEditor2 = new CodeEditorItem();
+		boolean isRendered = false;
+
+		public void init() {
+			tai.focusInItem();
+			// com.google.gwt.user.client.Window.alert("0>>>" + f.getInnerHTML());
+			// com.google.gwt.user.client.Window.alert("1>>>" + tai.getAttribute("ID"));
+			// String fID = tai.getAttribute("ID"); // Работает. Взял из f.getID();
+			// Element fEl = Document.get().getElementById(fID);
+			// com.google.gwt.user.client.Window.alert("2>>>" + fEl);
+			// com.google.gwt.user.client.Window.alert("3>>>" + fEl.getChildCount());
+			// com.google.gwt.user.client.Window.alert("4>>>" + tai.getJsObj().toString());
+			// com.google.gwt.user.client.Window.alert("5>>>" + Document.get().getElementById("isc_3P"));
+			// String textAreaID = getTextAreaID(f);
+			// com.google.gwt.user.client.Window.alert("5>>>" + Document.get().getElementById(textAreaID));
+			// initCodeMirror(textAreaID);
+			// initCodeMirror(codeEditor.getId());
+			// codeEditor.initCodeMirror();
+		}
+
+		// public native JavaScriptObject initCodeMirror(String id) /*-{
+		// window.alert("zzzz:"+id+"; "+$doc.getElementById(id));
+		// var editor = $wnd.CodeMirror.fromTextArea($doc.getElementById(id), {
+		// lineNumbers: true,
+		// matchBrackets: true,
+		// indentUnit: 4,
+		// mode: "text/x-plsql"
+		// });
+		// window.alert("2zzzz:"+id+"; "+$wnd.document.getElementById(id));
+		// return editor;
+		// }-*/;
+
+		public String getTextAreaID(DynamicForm form) {
+			String textAreaID = form.getInnerHTML();
+			com.google.gwt.user.client.Window.alert("0-1>>>" + textAreaID);
+			textAreaID = textAreaID.replaceFirst("<FORM.*<TEXTAREA.*?ID=", "").replaceFirst(" .*$", "");
+			com.google.gwt.user.client.Window.alert("0-2>>>" + textAreaID);
+			return textAreaID;
+		}
+
+		SyntaxHighLightTab() {
+			this.addTabSelectedHandler(new TabSelectedHandler() {
+
+				@Override
+				public void onTabSelected(TabSelectedEvent event) {
+					// TODO Auto-generated method stub
+					codeEditor.setValue("declare\n  x dual%rowtype;\nbegin\n select * into x from dual;\nend;");
+					codeEditor2.setValue("declare\n  xz dual%rowtype;\nbegin\n select * into x from dual;\nend;");
+				}
+			});
+			f.setItems(codeEditor2, codeEditor, tai);
+			setPane(f);
+			// Canvas[] cc = f.getChildren();
+			// com.google.gwt.user.client.Window.alert("0>>>" + cc.length);
+			// Ловим id для textarea.
+			tai.addFocusHandler(new FocusHandler() {
+
+				@Override
+				public void onFocus(FocusEvent event) {
+					if (!isRendered) {
+						isRendered = true;
+						tai.setValue("{\n	if (1==2) {\n	}\n}");
+						// initCodeMirror(getTextAreaID(event.getForm()));
+					}
+				}
+			});
+		}
 	}
 }

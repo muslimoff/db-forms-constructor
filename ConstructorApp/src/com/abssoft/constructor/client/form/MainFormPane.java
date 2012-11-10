@@ -6,6 +6,7 @@ import com.abssoft.constructor.client.data.FormDataSource;
 import com.abssoft.constructor.client.data.FormTreeGridField;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
+import com.abssoft.constructor.client.widgets.CodeEditorItem;
 import com.abssoft.constructor.client.widgets.HTMLPaneItem;
 import com.abssoft.constructor.client.widgets.MyRichTextItem;
 import com.abssoft.constructor.common.FormInstanceIdentifier;
@@ -29,7 +30,25 @@ import com.smartgwt.client.widgets.tree.TreeGrid;
 
 public class MainFormPane extends Canvas {
 	public class FormValuesManager extends ValuesManager {
+		public FormValuesManager() {
+			super();
+		}
 
+		@Override
+		public void setValue(String fieldName, String value) {
+			super.setValue(fieldName, value);
+			try {
+				for (DynamicForm form : super.getMembers()) {
+					FormItem field = form.getField(fieldName);
+					if (field instanceof CodeEditorItem) {
+						((CodeEditorItem) field).setValue(value);
+					}
+				}
+			} catch (Exception e) {
+			}
+		}
+
+		@Override
 		public native void setValue(String fieldName, java.util.Date value)
 		/*-{
 			var self = this.@com.smartgwt.client.core.BaseClass::getOrCreateJsObj()();
@@ -51,21 +70,29 @@ public class MainFormPane extends Canvas {
 					for (FormItem f : d.getFields()) {
 						String fieldName = f.getFieldName();
 						String fieldValue = record.getAttribute(fieldName);
+						// Window.alert("d:" + d + "; f:" + f);
 
-						// вот так вот потому что:
-						// http://code.google.com/p/smartgwt/issues/detail?id=266
 						FormItem ff = d.getField(fieldName);
-						if (ff instanceof HTMLPaneItem) {
-							((HTMLPaneItem) ff).setValue(fieldValue);
-						}
-						// В SmartGWT 1.3 поломали super.editRecord для
-						// HeaderItem
+						// В SmartGWT 1.3 поломали super.editRecord еще и для HeaderItem
 						if (ff instanceof HeaderItem) {
 							((HeaderItem) ff).setValue(fieldValue);
 						}
+
+						// вот так вот потому что: Проблемы с CanvasItem
+						// http://code.google.com/p/smartgwt/issues/detail?id=266
+						// Updated: http://code.google.com/p/smartgwt/issues/detail?id=180#c10
+						// Fixed for 3.1d from 5/19 onwards - see smartclient.com/builds. Please confirm.
+						if (ff instanceof HTMLPaneItem) {
+							((HTMLPaneItem) ff).setValue(fieldValue);
+						}
+
 						if (ff instanceof MyRichTextItem) {
 							((MyRichTextItem) ff).setValue(fieldValue);
 						}
+
+						// if (ff instanceof CodeEditorItem) {
+						// ((CodeEditorItem) ff).setValue(fieldValue);
+						// }
 					}
 				}
 			} catch (Exception e) {
@@ -78,7 +105,9 @@ public class MainFormPane extends Canvas {
 			if (0 != this.getMembers().length) {
 				// Установка редактированных ранее значений из строки грида
 				Record record = Utils.getEditedRecord(MainFormPane.this);
-				this.editRecord(record);
+				// this.editRecord(record);
+
+				this.editRecord3(record);// mm20120902 - съехали снова. Вернулся на editRecord3
 			}
 
 		}
