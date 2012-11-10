@@ -86,7 +86,7 @@ public class FormTreeGridField extends TreeGridField {
 		// При редактировании грида изменять и значения в редакторе
 
 		this.addChangedHandler(new GridFieldChangedHandler(colName));
-		
+
 		// TODO - недорешил с исчезновением дат при выходе из нередактированного поля даты
 		// //////////////Начало. Только для поиска проблемы захеривания дат \\\\\\\\\\\\\\\\\
 		// this.addEditorEnterHandler(new EditorEnterHandler() {
@@ -155,7 +155,14 @@ public class FormTreeGridField extends TreeGridField {
 			this.setType(ListGridFieldType.TEXT);
 			this.setEditorType(new TextAreaItem());
 
+		} // CodeEditorItem
+		else if ("15".equals(c.getFieldType())) {
+			this.setType(ListGridFieldType.TEXT);
+			// this.setEditorType(new CodeEditorItem());
+			this.setEditorType(new TextAreaItem());
+
 		}
+
 		// StaticLookup
 		// TODO вывести одинаковый код
 		else if (("8".equals(c.getFieldType()) || "10".equals(c.getFieldType())) && null != lookupCode
@@ -269,7 +276,7 @@ public class FormTreeGridField extends TreeGridField {
 						// }
 						try {
 							// TODO пока не разрулилось различие между выбором из лукапа и
-							//см. http://forums.smartclient.com/showthread.php?t=16067&highlight=ComboBoxItem+onChanged
+							// см. http://forums.smartclient.com/showthread.php?t=16067&highlight=ComboBoxItem+onChanged
 							String keyVal = event.getValue() + "";
 							String dispVal = event.getItem().getDisplayValue();
 							if (!keyVal.equals(dispVal))

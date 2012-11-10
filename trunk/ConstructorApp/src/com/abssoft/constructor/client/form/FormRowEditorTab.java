@@ -106,7 +106,7 @@ public class FormRowEditorTab extends FormTab {
 						}
 					} else {
 						Utils.debug("FormRowEditorTab.onItemChanged... ???. Value:  " + item.getAttribute("value"));
-						Utils.debug("FormRowEditorTab.onItemChanged... ???. LGRecord:"+g.getRecord(rn));
+						Utils.debug("FormRowEditorTab.onItemChanged... ???. LGRecord:" + g.getRecord(rn));
 						// System.out.println(">>" + item.getValue() + "; " + item.getValue().getClass());
 						String val = null;
 						try {

@@ -94,7 +94,8 @@ public class TestCase1 extends Canvas {
 					System.out.println("d@@@@@@@@@ colValDT:" + event.getRecord().getAttributeAsDate(colName));
 				}
 				System.out.println("d@@@@@@@@@ rowNum:" + rowNum);
-				System.out.println("d@@@@@@@@@>>>" + countryGrid.getEditValue(rowNum, colNum));
+				//20121004-3.1d tests. System.out.println("d@@@@@@@@@>>>" + countryGrid.getEditValue(rowNum, colNum));
+				System.out.println("d@@@@@@@@@>>>" + countryGrid.getEditValue(rowNum, colName));
 
 			}
 		});

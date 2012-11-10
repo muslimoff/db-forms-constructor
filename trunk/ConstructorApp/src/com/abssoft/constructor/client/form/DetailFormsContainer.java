@@ -181,34 +181,32 @@ public class DetailFormsContainer extends TabSet {
 		// }
 	}
 
+	protected void showOrCollapseReviewSuperclassPlease(boolean isExpanded) {
+		Utils.debugAlert("1showOrCollapseReviewSuperclassPlease(boolean isExpanded=" + isExpanded + ")");
+		MainFormPane mfp = null;
+		if (this.getSelectedTab() instanceof FormTab) {
+			Utils.debugAlert("2showOrCollapseReviewSuperclassPlease(boolean isExpanded=" + isExpanded + ")");
+			mfp = ((FormTab) this.getSelectedTab()).getMainFormPane();
+		}
+		if (null != mfp) {
+			SectionStack s1 = mfp.sections;
+			if (null != s1 && null != s1.getSection(0) && s1.getSection(0).getAttributeAsBoolean("showHeader")) {
+				Utils.debugAlert("3showOrCollapseReviewSuperclassPlease(boolean isExpanded=" + isExpanded + ")");
+				s1.getSection(0).setExpanded(isExpanded);
+			}
+		}
+	}
+
 	@Override
 	protected void doUpAction() {
 		this.mainFormPane.getBottomDetailFormsContainer().setHeight100();
-
-		//
-
-		MainFormContainer mfc = (MainFormContainer) this.getSelectedTab();
-		SectionStack s1 = mfc.getMainFormPane().sections;
-		if (s1.getSection(0).getAttributeAsBoolean("showHeader")) {
-			s1.getSection(0).setExpanded(true);
-		}
-
-		// this.mainFormPane.getBottomDetailFormsContainer().doUpAction();
+		showOrCollapseReviewSuperclassPlease(true);
 	}
 
 	@Override
 	protected void doDownAction() {
-		// this.mainFormPane.sections.getSection(1).setExpanded(false);
 		this.mainFormPane.getBottomDetailFormsContainer().setHeight(24);
-
-		//
-		MainFormContainer mfc = (MainFormContainer) this.getSelectedTab();
-		SectionStack s1 = mfc.getMainFormPane().sections;
-		if (s1.getSection(0).getAttributeAsBoolean("showHeader")) {
-			s1.getSection(0).setExpanded(false);
-		}
-
-		// this.mainFormPane.getBottomDetailFormsContainer().doDownAction();
+		showOrCollapseReviewSuperclassPlease(false);
 
 	}
 
@@ -234,7 +232,9 @@ public class DetailFormsContainer extends TabSet {
 		} else {
 			tabsOrient = Side.TOP;
 		}
+		Utils.debug("before DetailFormsContainer.setTabBarPosition...");
 		setTabBarPosition(tabsOrient);
+		Utils.debug("after DetailFormsContainer.setTabBarPosition...");
 		// обработку скрытия таббара (tabsOrientStr = "H") см в методе MainFormPane.createDetailForms, в самом конце
 
 		FormTabsArr tabs = formMetadata.getTabs();

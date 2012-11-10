@@ -102,7 +102,9 @@ public class FormToolbar extends DynamicForm {
 		btnToolbar.setButtons(btns);
 		this.setContextMenu(ctxMenu);
 		mainFormPane.setContextMenu(ctxMenu);
-		mainFormPane.getMainFormContainer().setContextMenu(ctxMenu);
+		if (null != mainFormPane.getMainFormContainer()) { //20120824 была ошибка для одиночных динамических форм
+			mainFormPane.getMainFormContainer().setContextMenu(ctxMenu);
+		}
 		btnToolbar.setStartRow(false);
 		setItems(formNameItem, btnToolbar);
 

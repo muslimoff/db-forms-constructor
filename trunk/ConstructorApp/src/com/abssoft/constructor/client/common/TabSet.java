@@ -4,11 +4,13 @@ import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.form.MainFormContainer;
 import com.abssoft.constructor.client.form.MainFormPane;
+import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.Side;
-import com.smartgwt.client.types.TabBarControls;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
+import com.smartgwt.client.widgets.events.DrawEvent;
+import com.smartgwt.client.widgets.events.DrawHandler;
 import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.tab.Tab;
@@ -25,8 +27,9 @@ import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 
 	protected final String hideTabsetPanesButtonIconTemplate = "[SKIN]/headerIcons/double_arrow_&direction&_Over.png";
+	private final int toolstripSize = 110;
 	private Menu menu = new Menu();
-	private ToolStripMenuButton menuButton = new ToolStripMenuButton("*", menu);
+	private ToolStripMenuButton menuButton = new ToolStripMenuButton("", menu);
 	private ToolStrip toolStrip = new ToolStrip();
 
 	// /удалитьна
@@ -37,8 +40,8 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 	protected String prevHideTabsetPanesButtonIcon;
 
 	// Оставитьна
-	ToolStripButton bUp = new ToolStripButton("", "[SKIN]/headerIcons/double_arrow_up_Over.png");
-	ToolStripButton bDown = new ToolStripButton("", "[SKIN]/headerIcons/double_arrow_down_Over.png");
+	// ToolStripButton bUp = new ToolStripButton("", "[SKIN]/headerIcons/double_arrow_up_Over.png");
+	// ToolStripButton bDown = new ToolStripButton("", "[SKIN]/headerIcons/double_arrow_down_Over.png");
 
 	protected void showOrCollapse() {
 		TabSet ts = TabSet.this;
@@ -93,22 +96,26 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 	@Override
 	public void setTabBarPosition(Side tabBarPosition) throws IllegalStateException {
 		super.setTabBarPosition(tabBarPosition);
+		String menuTitle = "";
 		switch (tabBarPosition) {
 		case LEFT:
 		case RIGHT:
-			toolStrip.setVertical(true);
-			toolStrip.setHeight(70);
-			toolStrip.setWidth(24);
+			getToolStrip().setVertical(true);
+			getToolStrip().setHeight(toolstripSize);
+			getToolStrip().setWidth(24);
 			break;
 		default: // TOP or BOTTOM
-			toolStrip.setHeight(24);
-			toolStrip.setWidth(70);
+			getToolStrip().setHeight(24);
+			getToolStrip().setWidth(toolstripSize);
+			menuTitle = "Действия";
 		}
-		toolStrip.addMenuButton(menuButton);
-		toolStrip.addSeparator();
+		getToolStrip().addMenuButton(menuButton);
+		getToolStrip().addSeparator();
 		setHideTabsetPanesButtonIcons(tabBarPosition);
 		hideTabsetPanesButton.setIcon(currentHideTabsetPanesButtonIcon);
 		hideTabsetPanesButton.setIconSize(15);
+		hideTabsetPanesButton.setTooltip("Скрыть/показать");
+		menuButton.setTitle(menuTitle);
 
 		hideTabsetPanesButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -140,11 +147,8 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 		// });
 		// toolStrip.addButton(bUp);
 		// toolStrip.addButton(bDown);
-		toolStrip.addButton(hideTabsetPanesButton);
-		// /
-
-		this.setTabBarControls(TabBarControls.TAB_SCROLLER, TabBarControls.TAB_PICKER, toolStrip);
-
+		getToolStrip().addButton(hideTabsetPanesButton);
+		// this.setTabBarControls(TabBarControls.TAB_SCROLLER, TabBarControls.TAB_PICKER, toolStrip);
 	}
 
 	protected void doUpAction() {
@@ -157,10 +161,37 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 
 	}
 
-	public TabSet() {
-		// 20120812-b
+	private boolean isDisplayed = false;
 
+	public TabSet() {
+		super();
+		// 20120812-b
 		this.setAttribute("paneMargin", 0, false);
+
+		{
+			// Offsets the TabBar start position to give room for a button
+			Record rec = new Record();
+			rec.setAttribute("layoutStartMargin", toolstripSize + 5);
+			this.setAttribute("tabBarProperties", rec.toMap(), false); // toMap нужно. При других способах - проблемы с cast to Canvas
+		}
+
+		// Показать тулстрип при первой отрисовке табсета.
+		this.addDrawHandler(new DrawHandler() {
+			@Override
+			public void onDraw(DrawEvent event) {
+				if (!isDisplayed) {
+					Canvas[] children = getChildren();
+					for (Canvas c : children) {
+						if (c.getID().contains("tabBar"))
+							c.addChild(toolStrip);
+					}
+					// toolStrip.bringToFront();
+					// toolStrip.sendToBack();
+					isDisplayed = true;
+				}
+			}
+		});
+
 		addCloseClickHandler(new CloseClickHandler() {
 			public void onCloseClick(TabCloseClickEvent event) {
 				try {
@@ -197,8 +228,9 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 			public void onTabContextMenu(TabContextMenuEvent event) {
 				try {
 					TabSet.this.setContextMenu(event.getTab().getPane().getContextMenu());
+					// Utils.debugAlert("!" + TabSet.this.getContextMenu());
 				} catch (Exception e) {
-					Utils.debug("Error in com.abssoft.constructor.client.common.TabSet - TabContextMenuEvent" + e.getMessage());
+					Utils.logException(e, "Error in com.abssoft.constructor.client.common.TabSet - TabContextMenuEvent" + e.getMessage());
 					TabSet.this.setContextMenu(null);
 
 				}
@@ -226,8 +258,23 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 		// this.setBackgroundColor(menuButton.getBackgroundColor());
 		// this.setStyleName("headerButton");
 		// this.setBackgroundImage("");
-		this.setBackgroundColor("#f0f0f0"); //Запарился - херь со стилями. Привинтил гвоздями серенький...
+		this.setBackgroundColor("#f0f0f0"); // Запарился - херь со стилями. Привинтил гвоздями серенький...
 
+	}
+
+	public MenuItem[] getContextMenuParent(Canvas c) {
+		MenuItem[] result = null;
+		if (null != c) {
+			if (null != c.getContextMenu()) {
+				result = c.getContextMenu().getItems();
+			} else {
+				Canvas parent = c.getParentElement();
+				if (null != parent) {
+					result = getContextMenuParent(parent);
+				}
+			}
+		}
+		return result;
 	}
 
 	public void setTabSetContextMenu(Tab tab) {
@@ -235,13 +282,13 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 		MenuItem[] ctxMenuItems = null;
 		if (null != tab) {
 			title = tab.getTitle();
-			if (null != tab.getPane() && null != tab.getPane().getContextMenu()) {
-				ctxMenuItems = tab.getPane().getContextMenu().getItems();
+			if (null != tab.getPane()) {
+				ctxMenuItems = getContextMenuParent(tab.getPane());
 			}
 		}
 		menu.setItems(ctxMenuItems);
 		// menuButton.setTitle(title);
-		menuButton.setTitle("*");
+		// menuButton.setTitle("Действия");
 		menuButton.setTooltip(title);
 	}
 
@@ -304,5 +351,9 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 
 	public boolean isCollapsed() {
 		return isCollapsed;
+	}
+
+	private ToolStrip getToolStrip() {
+		return toolStrip;
 	}
 }

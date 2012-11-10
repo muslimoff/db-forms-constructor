@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.form.MainFormPane;
+import com.abssoft.constructor.client.widgets.CodeEditorItem;
 import com.abssoft.constructor.client.widgets.FormPickTreeItem;
 import com.abssoft.constructor.client.widgets.GridComboBoxItem;
 import com.abssoft.constructor.client.widgets.HTMLPaneItem;
@@ -47,10 +48,11 @@ public class EditorFormItem extends FormItem {
 			// TODO RichTextItem: Resize и все глюки.. Нужно свой класс MyRichTextItem
 			//
 			item = new RichTextItem();
-			//20110913 - пофиксил косяк FormRowEditorTab.onItemChanged, снова появившийся в SGWT 2.5
-			// при проверке - раньше getAttribute("type") возвращало "RichTextItem". Теперь внутри делают setAttribute("editorType", "RichTextItem"); 
+			// 20110913 - пофиксил косяк FormRowEditorTab.onItemChanged, снова появившийся в SGWT 2.5
+			// при проверке - раньше getAttribute("type") возвращало "RichTextItem". Теперь внутри делают setAttribute("editorType",
+			// "RichTextItem");
 			item.setType("RichTextItem");
-			
+
 			// item = new MyRichTextItem();
 			item.setShowTitle(true);
 		} else if ("6".equals(c.getFieldType())) {
@@ -69,6 +71,8 @@ public class EditorFormItem extends FormItem {
 			item = new GridComboBoxItem(c, mainFormPane);
 		} else if ("11".equals(c.getFieldType())) {
 			item = new LinkItem();
+		} else if ("15".equals(c.getFieldType())) {
+			item = new CodeEditorItem(); // c + mainFormPane.getJsObj().toString() // просто ID
 		}
 		// TODO PickTreeItem
 		else if ("99".equals(c.getFieldType())) {

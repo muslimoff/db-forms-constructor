@@ -84,8 +84,15 @@ class MainForm extends Canvas {
 			});
 		}
 
+		// 20121004-3.1d test. Commented
+		// @Override
+		// public Boolean startEditing(int rowNum, int colNum, boolean suppressFocus) {
+		// Utils.debug("FormListGrid.startEditing: " + this.getJsObj().toString());
+		// return super.startEditing(rowNum, colNum, suppressFocus);
+		// }
+
 		@Override
-		public Boolean startEditing(int rowNum, int colNum, boolean suppressFocus) {
+		public Boolean startEditing(Integer rowNum, Integer colNum, Boolean suppressFocus) {
 			Utils.debug("FormListGrid.startEditing: " + this.getJsObj().toString());
 			return super.startEditing(rowNum, colNum, suppressFocus);
 		}
@@ -157,14 +164,17 @@ class MainForm extends Canvas {
 		@Override
 		public void onRecordClick(RecordClickEvent event) {
 			Record r = event.getRecord();
+			Utils.debug("1. GridRecordClickHandler.onRecordClick. r:" + r);
 			if (null == r) {
 				r = ((ListGrid) event.getSource()).getEditedRecord(event.getRecordNum());
+				Utils.debug("2. GridRecordClickHandler.onRecordClick. r:" + r);
 			}
 			if (treeGrid instanceof TreeGrid) {
 				treeGrid.deselectAllRecords();
 				treeGrid.selectRecord(event.getRecordNum());
 			}
-			mainFormPane.filterDetailData((ListGridRecord) r, treeGrid, event.getRecordNum());
+			// 20120902 mainFormPane.filterDetailData((ListGridRecord) r, treeGrid, event.getRecordNum());
+			mainFormPane.filterDetailData(r, treeGrid, event.getRecordNum());
 		}
 	}
 
@@ -427,6 +437,7 @@ class MainForm extends Canvas {
 			DMLProcExecution procExec = new DMLProcExecution(mainFormPane) {
 				@Override
 				public void executeSuccessSubProc() {
+					Utils.debug("MainForm.setNewRecDefaultValues: DMLProcExecution.executeSuccessSubProc() start...");
 					Map<String, Object> resultMap = Utils.getMapFromRow(dsFields, getResultRow());
 					treeGrid.setEditValues(rowNum, resultMap);
 					mainFormPane.filterDetailData(null, treeGrid, rowNum);
@@ -478,12 +489,13 @@ class MainForm extends Canvas {
 		Utils.debug(formCode + ": mainForm.doBeforeClose(). sessionId = " + ConstructorApp.sessionId + "; gridHashCode = " + gridHashCode);
 		FormMD formState = mainFormPane.getFormState();
 		Utils.debug("mainFormPane.FormState: " + formState);
-		Utils.createQueryService("MainForm.closeForm").closeForm(mainFormPane.getInstanceIdentifier(), formState, new DSAsyncCallback<Void>() {
-			@Override
-			public void onSuccess(Void result) {
-				Utils.debug("MainForm. Form " + formCode + "(" + gridHashCode + ")" + " closed...");
-			}
-		});
+		Utils.createQueryService("MainForm.closeForm").closeForm(mainFormPane.getInstanceIdentifier(), formState,
+				new DSAsyncCallback<Void>() {
+					@Override
+					public void onSuccess(Void result) {
+						Utils.debug("MainForm. Form " + formCode + "(" + gridHashCode + ")" + " closed...");
+					}
+				});
 	}
 
 	class MainFormResizedHandler implements ResizedHandler {
@@ -568,16 +580,17 @@ class MainForm extends Canvas {
 			e.printStackTrace();
 		}
 
-		Utils.createQueryService("MainForm.setExportData").setExportData(mainFormPane.getInstanceIdentifier(), exportData, new DSAsyncCallback<Integer>() {
-			@Override
-			public void onSuccess(Integer result) {
-				String fullUrl = ExportUrl + "&dataClobId=" + result;
-				System.out.println("fullUrl:" + fullUrl);
-				com.google.gwt.user.client.Window.open(fullUrl, "", "");
-				isExport = false;
-				ExportUrl = "";
-			}
-		});
+		Utils.createQueryService("MainForm.setExportData").setExportData(mainFormPane.getInstanceIdentifier(), exportData,
+				new DSAsyncCallback<Integer>() {
+					@Override
+					public void onSuccess(Integer result) {
+						String fullUrl = ExportUrl + "&dataClobId=" + result;
+						System.out.println("fullUrl:" + fullUrl);
+						com.google.gwt.user.client.Window.open(fullUrl, "", "");
+						isExport = false;
+						ExportUrl = "";
+					}
+				});
 	}
 
 	public boolean isExport = false;

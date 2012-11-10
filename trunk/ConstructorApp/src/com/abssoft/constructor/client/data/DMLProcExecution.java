@@ -100,8 +100,8 @@ public class DMLProcExecution {
 				Utils.debugRecord(resRec, "DmlProcExecution.SUCCESS1");
 				setResultRecord(resRec);
 				response.setData(new TreeNode[] { resRec });
-				Utils.debug("xxxxxxxxxxx:" + grid.getRecordIndex(resRec));
-				Utils.debugRecord(resRec, "DmlProcExecution.SUCCESS2");
+				Utils.debug("DmlProcExecution.SUCCESS2A" + grid.getRecordIndex(resRec));
+				Utils.debugRecord(resRec, "DmlProcExecution.SUCCESS2B");
 				// 20110729e
 				if (showPrompt) {
 					SC.clearPrompt();
@@ -112,11 +112,17 @@ public class DMLProcExecution {
 				Utils.debug("DMLProcExecution.executeDML. StatusType:" + resStatus);
 				if (ActionStatus.StatusType.SUCCESS.equals(resStatus) // Успешно
 				) {
+					Utils.debug("DMLProcExecution.executeDML. Before executeSuccessSubProc.");
 					executeSuccessSubProc();
+					Utils.debug("DMLProcExecution.executeDML. After executeSuccessSubProc.");
 				} else if (ActionStatus.StatusType.WARNING.equals(resStatus)) {
 					executeWarningSubProc();
-				} else {
+				} else if (ActionStatus.StatusType.CANCEL.equals(resStatus)) {
+					executeErrorSubProc(); // Окошко не показываем, однако не сохраняем изменения. См ActionStatus.showActionStatus
+				} else if (ActionStatus.StatusType.ERROR.equals(resStatus)) {
 					executeErrorSubProc();
+				} else {
+					Utils.debugAlert("Unknown Action status!!! DMLProcExecution.executeDML");
 				}
 				// Пока только для апдейта - фильтрация дочерних форм.
 				if (ExecutionType.UPDATE.equals(executionType)) {
@@ -152,13 +158,13 @@ public class DMLProcExecution {
 			rowsAdded = 0;
 		}
 		String requestId = request.getRequestId();
-		System.out.println("ccccccccccc " + response.getStatus());
+		Utils.debug("DMLProcExecution... response.getStatus " + response.getStatus());
 
 		// 20110824 - вернул кусок кода - походу была попытка избавиться от фильтрации обновленной записи - ее исчезновения
 		try {
 			ResultSet rs = grid.getResultSet();
 			for (String s : rs.getCriteria().getAttributes()) {
-				System.out.println("Criteria " + s + ": " + rs.getCriteria().getAttribute(s));
+				Utils.debug("DMLProcExecution... Criteria " + s + ": " + rs.getCriteria().getAttribute(s));
 			}
 			rs.setCriteria(new Criteria());
 		} catch (Exception e) {
@@ -202,16 +208,20 @@ public class DMLProcExecution {
 
 	public void executeWarningSubProc() {
 		Utils.debug("DMLProcExecution.executeWarningSubProc:\n" + result.getStatus().getLongMessageText());
+		/*--*/
 		request.setWillHandleError(true);
-		setSQLReturnedValues();
+		// /20121005/
+		setSQLReturnedValues(); // для типа действий 2?
 		response.setStatus(RPCResponse.STATUS_FAILURE);
 		response.setErrors(getErrors(result, formDataSource));
+		// /20121005/
 		formDataSource.processResponse(request.getRequestId(), response);
-
+		/*--*/
 		// Вывод значений,которые вернулись из PL/SQL процедуры.
 		// Вместо processResponse, которое не отображает этих данных для неуспешных статусов
 		// Тут копать!
 		// setSQLReturnedValues();
+
 	};
 
 	public void executeErrorSubProc() {
@@ -271,6 +281,9 @@ public class DMLProcExecution {
 		FormActionMD fAct = mainFormPane.getCurrentAction();
 		if (StatusType.WARNING.equals(statusType)) {
 			// Устанвливаем код нажатой кнопки
+			Utils
+					.debug("recordIndex:" + recordIndex + "; fAct.getStatusButtonParam():" + fAct.getStatusButtonParam() + ";btnIdx:"
+							+ btnIdx);
 			grid.setEditValue(recordIndex, fAct.getStatusButtonParam(), btnIdx);
 			mainFormPane.getButtonsToolBar().actionItemsMap.get(fAct.getCode()).doActionWithConfirm(recordIndex);
 		} else if (StatusType.SUCCESS.equals(statusType)) {

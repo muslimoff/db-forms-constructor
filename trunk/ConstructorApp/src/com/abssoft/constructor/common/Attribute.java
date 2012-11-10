@@ -2,6 +2,7 @@ package com.abssoft.constructor.common;
 
 import java.util.Date;
 
+import com.abssoft.constructor.server.Utils;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class Attribute implements IsSerializable {
@@ -24,9 +25,7 @@ public class Attribute implements IsSerializable {
 		} else if (val instanceof Date) {
 			Date dateVal = (Date) val;
 			this.dateVal = dateVal;
-			// this.dateVal = Utils.changeTimezone(dateVal);
-			// this.dateVal = (Date) dateVal.clone();
-			// System.out.println("tttt_srv-set:" + dateVal + "; timezone:" + dateVal.getTimezoneOffset());
+			//Utils.spoolOut("Attribute D:" + dateVal);
 			dataType = "D";
 		} else if (val instanceof Double) {
 			Double doubleVal = (Double) val;

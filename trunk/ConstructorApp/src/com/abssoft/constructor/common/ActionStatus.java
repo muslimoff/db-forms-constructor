@@ -2,6 +2,7 @@ package com.abssoft.constructor.common;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.DMLProcExecution;
+import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.widgets.ActionStatusWindow;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -70,7 +71,7 @@ public class ActionStatus implements IsSerializable {
 			String fullMsg = ": Message from server:\n" + msg;
 			// String shortMsg = (fullMsg.length() > 100) ? fullMsg.substring(0, 100) : fullMsg;
 			String shortMsg = (msg.length() > 100) ? msg.substring(0, 100) : msg;
-			if (StatusType.SUCCESS.equals(status.getStatusType())) {
+			if (StatusType.SUCCESS.equals(status.getStatusType()) || StatusType.CANCEL.equals(status.getStatusType())) {
 				if (!"".equals(msg) && ConstructorApp.debugEnabled) {
 					// System.out.println(fullMsg);
 					ActionStatusWindow.createActionStatusWindow(statusName, shortMsg, fullMsg, status.getStatusType(), dmlData, "OK");
@@ -82,7 +83,9 @@ public class ActionStatus implements IsSerializable {
 				String[] btns = new String[btnsCnt];
 				System.arraycopy(strArr, 1, btns, 0, btnsCnt);
 				ActionStatusWindow.createActionStatusWindow(statusName, strArr[0], fullMsg, status.getStatusType(), dmlData, btns);
-			} else {
+			} else if (StatusType.ERROR.equals(status.getStatusType())) {
+				// TODO Поведение для STATUS=Error ваще другое...
+				// ...
 				String[] strArr = msg.replaceAll("ORA-[0-9]{5}:", "`").split("`");
 				// TODO - длинный текст ошибки все равно. Потому что
 				shortMsg = (msg.length() > 200) ? msg.substring(0, 200) : msg;
@@ -90,6 +93,11 @@ public class ActionStatus implements IsSerializable {
 
 				shortMsg = (shortMsg.length() > 200) ? shortMsg.substring(0, 200) : shortMsg;
 				ActionStatusWindow.createActionStatusWindow(statusName, shortMsg, fullMsg, status.getStatusType(), dmlData, "Cancel");
+			}
+			// if (StatusType.CANCEL.equals(status.getStatusType())) { }
+			else // CANCEL
+			{
+				Utils.debugAlert("!!!UUU!!! " + status.getStatusType());
 			}
 		}
 

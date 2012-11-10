@@ -3,6 +3,7 @@ package com.abssoft.constructor.client.app;
 import java.util.LinkedHashMap;
 
 import com.abssoft.constructor.client.ConstructorApp;
+import com.abssoft.constructor.client.TestWindow;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.common.ConnectionInfo;
@@ -202,6 +203,7 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 			@Override
 			public void onClick(ClickEvent event) {
 				Utils.debug("connectBtn.onClick");
+				// ConstructorApp.tabSet.viewToolstripAfterDraw();
 				connect();
 			}
 		});
