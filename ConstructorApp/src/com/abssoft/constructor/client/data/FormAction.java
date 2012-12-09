@@ -136,6 +136,7 @@ public class FormAction {
 		// ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		grid.deselectAllRecords();
 		grid.startEditingNew();
+//		TODO grid.getRecordList().addAt(record, pos);
 	}
 
 	/********************************************************************/
