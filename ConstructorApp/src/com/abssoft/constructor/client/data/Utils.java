@@ -32,6 +32,7 @@ import com.smartgwt.client.util.JSOHelper;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.tree.TreeGrid;
 import com.smartgwt.client.widgets.tree.TreeNode;
 
 public class Utils {
@@ -91,16 +92,17 @@ public class Utils {
 
 	public static TreeNode getTreeNodeFromRow(FormDataSourceField[] dsFields, Row row) {
 		TreeNode result = new TreeNode();
+		String formType = null != dsFields[0] ? dsFields[0].getFormMetadata().getFormType() : null;
+		MainFormPane mainFormPane = null != dsFields[0] ? dsFields[0].getMainFormPane() : null;
 		for (int c = 0; null != row && c < row.size(); c++) {
 			String dsFieldName = dsFields[c].getName();
 			Attribute attr = row.get(c);
 			String cellValue = attr.getAttribute();
 			Object obj = attr.getAttributeAsObject();
-			boolean b = "T".equals(dsFields[c].getFormMetadata().getFormType()) && "4".equals(dsFields[c].getColumnMD().getTreeFieldType());
+			boolean b = "T".equals(formType) && "4".equals(dsFields[c].getColumnMD().getTreeFieldType());
 			if (b || null != dsFields[c].getColumnMD().getFieldType() && dsFields[c].getColumnMD().getFieldType().equals("3")
 					&& null != cellValue) {
 				try {
-
 					String iconFileName = ConstructorApp.menus.getIcons().get((Float.valueOf(cellValue)).intValue());
 					result.setAttribute(dsFieldName, iconFileName);
 				} catch (Exception e) {
@@ -111,6 +113,13 @@ public class Utils {
 				result.setAttribute(dsFieldName, bVal);
 				if (dsFields[c].isTreeFolder()) {
 					result.setIsFolder(bVal);
+				}
+
+				if (dsFields[c].isCanAcceptDrop()) {
+					result.setCanAcceptDrop(bVal);
+				}
+				if (dsFields[c].isCanDrag()) {
+					result.setCanDrag(bVal);
 				}
 			} else if (obj instanceof Double) {
 				result.setAttribute(dsFieldName, attr.getAttributeAsDouble());
@@ -128,52 +137,42 @@ public class Utils {
 			} else {
 				result.setAttribute(dsFieldName, cellValue);
 			}
-
-			// 1
-			// if ("1".equals(dsFields[c].getColumnMD().getTreeFieldType())) {
-			// result.setID(cellValue);
-			// result.setName(cellValue);
-			// }
-			// if ("2".equals(dsFields[c].getColumnMD().getTreeFieldType())) {
-			// result.setParentID(cellValue);
-			// }
-			// if (dsFields[c].isTreeTitle()) {
-			// listGridRecord.setTitle(cellValue);
-			// }
 		}
 
+		// 20130316 - добавлена обработка для возможности Drop на leaf
+		// TODO - теоретически от иконки наверное избавиться. Лучше зарегить их иконку как свою и вперед...
+		if ("T".equals(formType)) {
+			try {
+				TreeGrid treeGrid = ((TreeGrid) mainFormPane.getMainForm().getTreeGrid());
+
+				if (!result.getAttributeAsBoolean("isFolder")) {
+					result.setIsFolder(true);
+					result.setChildren(new TreeNode[] {});
+					String customIconProperty = treeGrid.getCustomIconProperty();
+					String defaultNodeIcon = treeGrid.getNodeIcon();
+					String customIconValue = result.getAttribute(customIconProperty);
+					customIconValue = null == customIconValue ? defaultNodeIcon : customIconValue;
+					result.setAttribute(customIconProperty, customIconValue);
+					if (null == result.getIcon()) {
+						result.setIcon(defaultNodeIcon);
+					}
+				} else {
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		return result;
 	}
 
-	// TODO Причесать функции. getMapFromRow - копия getTreeNodeFromRow
 	public static Map<String, Object> getMapFromRow(FormDataSourceField[] dsFields, Row row) {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
+
+		TreeNode treeNode = getTreeNodeFromRow(dsFields, row);
 		for (int c = 0; null != row && c < row.size(); c++) {
 			String dsFieldName = dsFields[c].getName();
-			Attribute attr = row.get(c);
-			String cellValue = attr.getAttribute();
-			Object obj = attr.getAttributeAsObject();
-			boolean b = "T".equals(dsFields[c].getFormMetadata().getFormType()) && "4".equals(dsFields[c].getColumnMD().getTreeFieldType());
-			if (b || null != dsFields[c].getColumnMD().getFieldType() && dsFields[c].getColumnMD().getFieldType().equals("3")
-					&& null != cellValue) {
-				try {
-					String iconFileName = ConstructorApp.menus.getIcons().get((Float.valueOf(cellValue)).intValue());
-					result.put(dsFieldName, iconFileName);
-				} catch (Exception e) {
-					Utils.debug("Icon " + cellValue + " not found: " + e);
-				}
-			} else if (obj instanceof Boolean) {
-				Boolean bVal = attr.getAttributeAsBoolean();
-				result.put(dsFieldName, bVal);
-			} else if (obj instanceof Double) {
-				result.put(dsFieldName, attr.getAttributeAsDouble());
-			} else if (obj instanceof Date) {
-				result.put(dsFieldName, attr.getAttributeAsDate());
-			} else {
-				result.put(dsFieldName, cellValue);
-			}
+			result.put(dsFieldName, treeNode.getAttributeAsObject(dsFieldName));
 		}
-
 		return result;
 	}
 
@@ -287,9 +286,7 @@ public class Utils {
 		String dateFormat = "EEE MMM dd yyyy hh:mm:ss ZZZZ";
 		DateTimeFormat fmt = DateTimeFormat.getFormat(dateFormat);
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
-
-		MainFormPane pfp = mainFormPane.getParentFormPane();
-		Criteria cc = (null != pfp) ? pfp.getInitialFilter() : new Criteria();
+		Criteria cc = mainFormPane.getParentFormCriteria();
 
 		Map<String, Object> critMap = cc.getValues();
 		for (FormDataSourceField dsf : mainFormPane.getDataSource().getFormDSFields()) {
@@ -366,7 +363,7 @@ public class Utils {
 
 	}
 
-	public static Criteria getCriteriaFromListGridRecord(FormDataSourceField[] dsFields, Record record) {
+	private static Criteria getCriteriaFromListGridRecord(FormDataSourceField[] dsFields, Record record) {
 		Utils.debug("getCriteriaFromListGridRecord start");
 		Criteria criteria = new Criteria();
 		if (null != record) {
@@ -391,15 +388,41 @@ public class Utils {
 			}
 			/***********************/
 		}
-		Utils.debug("getCriteriaFromListGridRecord end");
+		Utils.debug("getCriteriaFromListGridRecord end.. dsFields:" + dsFields);
 		return criteria;
 
 	}
 
-	public static Criteria getCriteriaFromListGridRecord(MainFormPane mainFormPane, Record record, String masterFormCode) {
+	public static Criteria getCriteriaFromListGridRecord(MainFormPane mainFormPane, Record record
+	// , String masterFormCode,String masterFormTabCode
+	) {
+		//
 		Criteria criteria = getCriteriaFromListGridRecord(mainFormPane.getDataSource().getFormDSFields(), record);
-		criteria.addCriteria(new Criteria("P_$MASTER_FORM_CODE", masterFormCode));
-		Utils.debug(masterFormCode + " getCriteriaFromListGridRecord executed..");
+		// //criteria.addCriteria(new Criteria(Constants.formMasterFormCode, masterFormCode));
+		// // criteria.addCriteria(new Criteria(Constants.formMasterFormTabCode, masterFormTabCode));
+		// // try {
+		// // criteria.addCriteria(new Criteria(Constants.formMasterFormCode, mainFormPane.getParentFormPane().getFormCode()));
+		// // } catch (Exception e) {
+		// // Utils.debug("Can't define system variable \"" + Constants.formMasterFormCode + "\": " + e.getMessage());
+		// // criteria.addCriteria(new Criteria(Constants.formMasterFormCode, e.getMessage()));
+		// // // Utils.debugAlert("6: Err");
+		// // }
+		// // // criteria.addCriteria(new Criteria(Constants.formMasterFormTabCode, masterFormCode));
+		// // try {
+		// // // Utils.debugAlert("0:" + mainFormPane.getParentFormPane().getFormCode());
+		// // // Utils.debugAlert("1:" + mainFormPane);
+		// // // Utils.debugAlert("2:" + mainFormPane.getMainFormContainer());
+		// // // Utils.debugAlert("3:" + mainFormPane.getMainFormContainer().getTabMetaData());
+		// // // Utils.debugAlert("4:" + mainFormPane.getMainFormContainer().getTabMetaData().getTabCode());
+		// // String masterFormTabCode = mainFormPane.getMainFormContainer().getTabMetaData().getTabCode();
+		// // criteria.addCriteria(new Criteria(Constants.formMasterFormTabCode, "Ssssssssss"));// masterFormTabCode));
+		// // // Utils.debugAlert("5: OK. " + masterFormTabCode);
+		// // } catch (Exception e) {
+		// // Utils.debug("Can't define system variable \"" + Constants.formMasterFormTabCode + "\": " + e.getMessage());
+		// // criteria.addCriteria(new Criteria(Constants.formMasterFormTabCode, e.getMessage()));
+		// // // Utils.debugAlert("6: Err");
+		// // }
+		Utils.debug("getCriteriaFromListGridRecord executed... mainFormPane: " + mainFormPane);
 		return criteria;
 
 	}
@@ -419,7 +442,11 @@ public class Utils {
 				SC.logWarn(text);
 			}
 			if (withAlert) {
-				Window.alert(text);
+				try {
+					Window.alert(text);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -552,7 +579,7 @@ public class Utils {
 	// Error При передаче Double почему-то передается Float и летим/ Поэтому - явно преобразовываем...
 	@SuppressWarnings("unchecked")
 	public static LinkedHashMap<String, Object> getHashMapFromCriteria(Criteria cr) {
-		Utils.debug("Utils.getHashMapFromCriteria start...");
+		Utils.debug("Utils.getHashMapFromCriteria start..." + cr);
 		Map<String, Object> filterValues = cr.getValues();
 		Utils.debug("Utils.getHashMapFromCriteria. filterValues:" + filterValues + "");
 		LinkedHashMap<String, Object> filterValues2 = new LinkedHashMap<String, Object>();

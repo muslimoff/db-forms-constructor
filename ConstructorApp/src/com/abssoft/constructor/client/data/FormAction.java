@@ -6,10 +6,18 @@ import com.abssoft.constructor.client.form.MainForm;
 import com.abssoft.constructor.client.form.MainFormContainer;
 import com.abssoft.constructor.client.form.MainFormPane;
 import com.abssoft.constructor.common.metadata.FormActionMD;
+import com.abssoft.constructor.common.metadata.FormTabMD;
 import com.google.gwt.core.client.GWT;
+import com.smartgwt.client.data.DSCallback;
+import com.smartgwt.client.data.DSRequest;
+import com.smartgwt.client.data.DSResponse;
+import com.smartgwt.client.data.DataSource;
+import com.smartgwt.client.data.Record;
+import com.smartgwt.client.rpc.RPCResponse;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.types.Visibility;
 import com.smartgwt.client.util.BooleanCallback;
+import com.smartgwt.client.util.JSOHelper;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.CloseClickEvent;
@@ -19,9 +27,9 @@ import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.RichTextItem;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
-import com.smartgwt.client.widgets.grid.events.EditorEnterEvent;
-import com.smartgwt.client.widgets.grid.events.RowEditorEnterEvent;
 import com.smartgwt.client.widgets.tab.Tab;
+import com.smartgwt.client.widgets.tree.TreeGrid;
+import com.smartgwt.client.widgets.tree.TreeNode;
 
 public class FormAction {
 
@@ -98,7 +106,7 @@ public class FormAction {
 	}
 
 	/********************************************************************/
-	//Походу избавился от нее. Удалить после выгрузки в SVN 
+	// Походу избавился от нее. Удалить после выгрузки в SVN
 	@SuppressWarnings("unused")
 	private void doExecuteCustomPLSQL(Integer recordIndex) {
 		Utils.debug("Custom PL/SQL - start execution...");
@@ -136,7 +144,62 @@ public class FormAction {
 		// ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		grid.deselectAllRecords();
 		grid.startEditingNew();
-//		TODO grid.getRecordList().addAt(record, pos);
+		// TODO grid.getRecordList().addAt(record, pos);
+	}
+
+	private void doAddNewRecordInPos(int currRecSelected) {
+		Utils.debugAlert("zz1: " + grid.getResultSet().getLength());
+		final DataSource ds = grid.getDataSource(); // = mainFormPane.getDataSource();
+		final Record prototypeRec = ds.copyRecord(grid.getRecord(currRecSelected));
+		final Record r = new Record();
+		JSOHelper.apply(prototypeRec.getJsObj(), r.getJsObj());
+		r.setAttribute("NM", r.getAttribute("NM") + "#");
+		Utils.debugRecord(prototypeRec, "XXXXXXXXXXXXXX");
+		Utils.debugRecord(r, "XXXXXXXXXXXXXX");
+		grid.addData(r, new DSCallback() {
+
+			@Override
+			public void execute(DSResponse response, Object rawData, DSRequest request) {
+				response.setData(new Record[] { r });
+				response.setStatus(RPCResponse.STATUS_VALIDATION_ERROR);
+				// ds.processResponse(request.getRequestId(), response);
+				doExistingRecordStartEditing(grid.getRecordIndex(r));
+			}
+		});
+		Utils.debugAlert("zz2: " + grid.getResultSet().getLength() + "; r:" + r);
+	}
+
+	private void doAddNewRecordInPosLocalOld() {
+		// ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
+		// grid.deselectAllRecords();
+		int currRecSelected = mainFormPane.getMainForm().getSelectedRecord();
+		// Если нет записей - создаем по старому, как раньше.
+		if (-1 == currRecSelected) {
+			doAddNewRecord();
+		} else {
+			Utils.debugAlert("AAA1:" + currRecSelected);
+			// 2012 12 09 - нифига не раобтает...
+			// com.google.gwt.core.client.JavaScriptException: (TypeError): this.addAt is not a function
+			// козлы - только для локальных (не результсетных операций.
+			// Единственный пока вариант
+			// а) PL/SQL для создания заготовки на сервере,
+			// б) потом рефреш
+			// в) потом - позиционирование на первую запись и редачиться.
+			Record r = grid.getResultSet().addAt(grid.getRecord(currRecSelected), currRecSelected);
+			grid.getRecordList().add(grid.getRecord(currRecSelected));
+			Utils.debugAlert("AAA2:" + currRecSelected);
+			// grid.getRecordList().addAt(((Record) grid.getRecord(currRecSelected)), currRecSelected);
+		}
+		Utils.debugAlert("AAA3:" + currRecSelected);
+
+		// Создание новой записи (Record) для дальнейшего автозаполнения
+		// TreeNode result = new TreeNode();
+		//		
+		// for (int c = 0; null != row && c < row.size(); c++) {
+		//			
+		// }
+		// grid.startEditingNew();
+		// TODO grid.getRecordList().addAt(record, pos);
 	}
 
 	/********************************************************************/
@@ -156,6 +219,7 @@ public class FormAction {
 
 	/********************************************************************/
 	private void doRefreshFormData() {
+		mainFormPane.setPrevParentFormCriteria(MainFormPane.INTITAL_PREV_CRIT);
 		mainFormPane.filterData();
 	}
 
@@ -182,24 +246,12 @@ public class FormAction {
 	}
 
 	/********************************************************************/
-	private void doExistingRecordStartEditing() {
-		// ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
-		int currRecSelected = mainFormPane.getMainForm().getSelectedRecord();
-		// TODO - Смарты сломали редактирование в Режиме скрипта. В режиме хостед - все работает
-		Utils.debug("New Record - start execution...");
-		// /mm20110508 grid.startEditing(mainFormPane.getSelectedRow(), 0, false);
-		{
-			grid.fireEvent(new EditorEnterEvent(grid.getRecord(currRecSelected).getJsObj()));
-			grid.fireEvent(new RowEditorEnterEvent(grid.getJsObj()));
-			grid.startEditing(mainFormPane.getSelectedRow(), 0, false);
-		}
-
-		Utils.debug("New Record - end execution...");
+	private void doExistingRecordStartEditing(int currRecSelected) {
+		grid.startEditing(currRecSelected, Boolean.TRUE.equals(grid.getShowRowNumbers()) ? 1 : 0, false);
 	}
 
 	/********************************************************************/
 	private void doShowHideFilter() {
-		// ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		grid.setShowFilterEditor(!grid.getShowFilterEditor());
 	}
 
@@ -215,8 +267,8 @@ public class FormAction {
 		}
 		title = mainFormPane.getFormMetadata().getFormName() + " - " + title;
 		TabSet t = mainFormPane.getMainFormContainer().getParentTabSet();
-		new MainFormContainer(FormTab.TabType.MAIN, t, formActionMD.getChildFormCode(), false, true, true, mainFormPane, title,
-				mainFormPane.getFormMetadata().getIconId(), true);
+		new MainFormContainer(new FormTabMD(), FormTab.TabType.MAIN, t, formActionMD.getChildFormCode(), false, true, true, mainFormPane,
+				title, mainFormPane.getFormMetadata().getIconId(), true);
 	}
 
 	/********************************************************************/
@@ -232,8 +284,8 @@ public class FormAction {
 		title = mainFormPane.getFormMetadata().getFormName() + " - " + title;
 		final TabSet t = new TabSet();
 		t.setTabBarPosition(Side.BOTTOM);
-		new MainFormContainer(FormTab.TabType.MAIN, t, formActionMD.getChildFormCode(), false, false, true, mainFormPane, title,
-				mainFormPane.getFormMetadata().getIconId(), true);
+		new MainFormContainer(new FormTabMD(), FormTab.TabType.MAIN, t, formActionMD.getChildFormCode(), false, false, true, mainFormPane,
+				title, mainFormPane.getFormMetadata().getIconId(), true);
 		final Window w = new Window();
 		w.setWidth("80%");
 		w.setHeight("80%");
@@ -276,6 +328,28 @@ public class FormAction {
 	}
 
 	/********************************************************************/
+	private void doRefreshTreeNode( // Integer recordIndex
+	) {
+		if (grid instanceof TreeGrid) {
+			TreeGrid treeGrid = (TreeGrid) grid;
+			for (ListGridRecord lr : treeGrid.getSelectedRecords()) {
+				TreeNode node = (TreeNode) lr;
+				// Boolean isOpen = treeGrid.getData().isOpen(node);
+				treeGrid.getData().unloadChildren(node);
+				treeGrid.getData().closeFolder(node);
+				// Нифига не заработало. Потом.
+				// if (isOpen) {
+				// 
+				// // treeGrid.getTree().reloadChildren(treeNode);
+				// // treeGrid.getTree().openFolder(treeNode);
+				// treeGrid.getData().openFolder(node);
+
+				// }
+			}
+		}
+	}
+
+	/********************************************************************/
 	private void doAction(Integer recordIndex) {
 		final ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		mainFormPane.setCurrentAction(formActionMD);
@@ -296,6 +370,8 @@ public class FormAction {
 		Utils.debug("doAction-8:" + actionType + "; currRecSelected:" + currRecSelected + "; recordIndex:" + recordIndex);
 		// New Record
 		if ("1".equals(actionType)) {
+			// doAddNewRecord();
+			// doAddNewRecordInPos(currRecSelected);
 			doAddNewRecord();
 		}
 		// updateData/saveAllEdits
@@ -327,7 +403,7 @@ public class FormAction {
 		}
 		// StartEditingExistingRecord
 		else if ("8".equals(actionType)) {
-			doExistingRecordStartEditing();
+			doExistingRecordStartEditing(currRecSelected);
 		}
 		// Filter
 		else if ("9".equals(actionType)) {
@@ -379,6 +455,10 @@ public class FormAction {
 					Utils.debug("Action 17.9");
 				}
 			}
+		}
+		// Refresh Tree Node
+		else if ("18".equals(actionType)) {
+			doRefreshTreeNode();
 		}
 		// /TEST ACTION 99
 		else if ("99".equals(actionType)) {

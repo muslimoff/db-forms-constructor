@@ -9,6 +9,7 @@ public class FormInstanceIdentifier implements IsSerializable {
 	private int gridHashCode;
 	private Boolean isDrillDownForm = false;
 	private Boolean isDebugEnabled = false;
+	private String parentFormTabCode;
 
 	public FormInstanceIdentifier() {
 	}
@@ -44,7 +45,7 @@ public class FormInstanceIdentifier implements IsSerializable {
 	}
 
 	public String getKey() {
-		return formCode + "." + parentFormCode + (isDrillDownForm ? ".Y" : "");
+		return formCode + "." + parentFormCode + (isDrillDownForm ? ".Y." : ".N." + parentFormTabCode);
 	}
 
 	public String getParentFormCode() {
@@ -81,6 +82,15 @@ public class FormInstanceIdentifier implements IsSerializable {
 
 	public Boolean getIsDebugEnabled() {
 		return isDebugEnabled;
+	}
+
+	public void setParentFormTabCode(String parentFormTabCode) {
+		System.out.println("FormInstanceIdentifier.setParentFormTabCode. parentFormTabCode:" + parentFormTabCode);
+		this.parentFormTabCode = parentFormTabCode;
+	}
+
+	public String getParentFormTabCode() {
+		return parentFormTabCode;
 	}
 
 }

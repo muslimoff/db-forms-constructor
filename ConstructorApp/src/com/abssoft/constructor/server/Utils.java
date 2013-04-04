@@ -13,7 +13,6 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,6 +27,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.abssoft.constructor.common.Attribute;
+import com.abssoft.constructor.common.FormInstanceIdentifier;
 import com.abssoft.constructor.common.metadata.ServerInfoMD;
 
 public class Utils {
@@ -38,30 +38,37 @@ public class Utils {
 	}
 
 	public static String bindVarsToLowerCase(Session session, String text, String regExp, String addStartChars, String addEndChars) {
-		if (null != text) {
-			// "(?i):" + columnName.toLowerCase() + "(?=\\b)"
-			session.debug("bindVarsToLowerCase. 1>" + text);
-
-			Vector<Integer> startPos = new Vector<Integer>();
-			Vector<Integer> endPos = new Vector<Integer>();
+		String result = text;
+		if (null != result) {
+			session.debug("@bindVarsToLowerCase. 1>" + result + "\n >>addStartChars:" + addStartChars + "; addEndChars:" + addEndChars
+					+ "; regExp:" + regExp + "  ************************************************");
+			// TODO Почему-то не сработало потом разобраться
+			// result = result.replaceAll("(" + regExp + ")", addStartChars + "$1".substring(addStartChars.length()).toLowerCase()
+			// + addEndChars);
+			//
+			// return result;
 			{
+				int i = 0;
 				Matcher m = Pattern.compile(regExp).matcher(text);
 				while (m.find()) {
-					startPos.add(m.start());
-					endPos.add(m.end());
+					Integer startPos = m.start();
+					Integer endPos = m.end();
+
+					String strForReplace = text.substring(startPos, endPos);
+					session.debug("bindVarsToLowerCase. 2." + i + "> startPos:" + startPos + "; endPos:" + endPos + "; strForReplace:"
+							+ strForReplace);
+					String replacement = addStartChars + strForReplace.substring(addStartChars.length()).toLowerCase() + addEndChars;
+					session.debug("bindVarsToLowerCase. 3." + i + "> replacement:" + replacement);
+					session.debug("bindVarsToLowerCase. 4." + i + "> strForReplace:" + strForReplace);
+					result = result.replaceAll(Matcher.quoteReplacement(strForReplace), Matcher.quoteReplacement(replacement));
+					session.debug("bindVarsToLowerCase. 5." + i + "> result:" + result);
+					i++;
 				}
 			}
-			for (int i = startPos.size() - 1; i >= 0; i--) {
-				int strt = startPos.get(i);
-				int end = endPos.get(i);
-				session.debug(i + "bindVarsToLowerCase. 2>" + text.substring(strt, end));
-				String strForReplace = text.substring(strt, end);
-				session.debug("bindVarsToLowerCase. 3> strt=" + strt + "; end=" + end + " >> " + strForReplace);
-				text = text.replaceAll(strForReplace, addStartChars + strForReplace.substring(1).toLowerCase() + addEndChars);
-			}
-			session.debug("bindVarsToLowerCase. 4:" + text);
+			session.debug("bindVarsToLowerCase. 7>" + result + "  ************************************************");
 		}
-		return text;
+
+		return result;
 	}
 
 	public static void spoolOut(String text) {
@@ -112,7 +119,7 @@ public class Utils {
 		} else if ("D".equals(formColDataType)) {
 			DATE dt = isCalStmnt ? cs.getDATE(colInt) : null;
 			Date dateVal = isCalStmnt ? (cs.wasNull() ? null : dt.dateValue()) : rs.getDate(colStr);
-			//dateVal = changeTimezone(dateVal);
+			// dateVal = changeTimezone(dateVal);
 			attr = new Attribute(dateVal);
 		} else if ("B".equals(formColDataType)) {
 			val = isCalStmnt ? cs.getString(colInt) : rs.getString(colStr);
@@ -196,16 +203,17 @@ public class Utils {
 				Object valueObj = filterValues.get(mapKey);
 				Utils.setParameterValue(session, statement, mapKey.toLowerCase(), valueObj);
 			}
+			// setFormMDParams1(session, statement, formCode, parentFormCode, isDrillDownForm, parentFormTabCode);
 		} catch (Exception e) {
 			session.printErrorStackTrace(e);
 		}
 	}
 
-	public static void setFormMDParams(Session session, OraclePreparedStatement statement, String formCode, String parentFormCode,
-			Boolean isDrillDownForm) {
-		Utils.setParameterValue(session, statement, "p_form_code", formCode);
-		Utils.setParameterValue(session, statement, "p_master_form_code", parentFormCode);
-		Utils.setParameterValue(session, statement, "p_drilldown_flag", isDrillDownForm ? "Y" : "N");
+	public static void setFormMDParams(Session session, OraclePreparedStatement statement, FormInstanceIdentifier fi) {
+		Utils.setParameterValue(session, statement, "p_form_code", fi.getFormCode());
+		Utils.setParameterValue(session, statement, "p_master_form_code", fi.getParentFormCode());
+		Utils.setParameterValue(session, statement, "p_drilldown_flag", fi.getIsDrillDownForm() ? "Y" : "N");
+		Utils.setParameterValue(session, statement, "p_master_form_tab_code", fi.getParentFormTabCode());
 	}
 
 	public static void setParameterValue(Session session, OraclePreparedStatement statement, String name, Object value) {

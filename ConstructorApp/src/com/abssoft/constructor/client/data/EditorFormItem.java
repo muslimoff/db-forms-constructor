@@ -8,12 +8,13 @@ import com.abssoft.constructor.client.widgets.CodeEditorItem;
 import com.abssoft.constructor.client.widgets.FormPickTreeItem;
 import com.abssoft.constructor.client.widgets.GridComboBoxItem;
 import com.abssoft.constructor.client.widgets.HTMLPaneItem;
+import com.abssoft.constructor.client.widgets.MyComboBoxItem;
 import com.abssoft.constructor.common.metadata.ColumnAction;
 import com.abssoft.constructor.common.metadata.FormColumnMD;
+import com.abssoft.constructor.common.metadata.FormMD;
 import com.smartgwt.client.types.TitleOrientation;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.form.fields.BooleanItem;
-import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.DateItem;
 import com.smartgwt.client.widgets.form.fields.FloatItem;
 import com.smartgwt.client.widgets.form.fields.FormItem;
@@ -34,6 +35,7 @@ import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 
 public class EditorFormItem extends FormItem {
 	public static FormItem createItem(final FormColumnMD c, final MainFormPane mainFormPane) {
+		FormMD fmd = mainFormPane.getFormMetadata();
 		final FormItem item;
 		// LinkedHashMap
 		// boolean showHint = true;
@@ -63,7 +65,8 @@ public class EditorFormItem extends FormItem {
 			item = new HTMLPaneItem();
 		} else if (("8".equals(c.getFieldType()) || "10".equals(c.getFieldType())) && null != lookupCode
 				&& ConstructorApp.staticLookupsArr.containsKey(lookupCode)) {
-			item = new ComboBoxItem();
+			item = new MyComboBoxItem();
+			((MyComboBoxItem) item).setLookupSize(c.getLookupWidth(), c.getLookupHeight(), fmd.getLookupWidth(), fmd.getLookupHeight());
 			LinkedHashMap<String, String> lhm = Utils.createStrSortedLinkedHashMap(ConstructorApp.staticLookupsArr.get(lookupCode), !"8"
 					.equals(c.getFieldType()));
 			item.setValueMap(lhm);

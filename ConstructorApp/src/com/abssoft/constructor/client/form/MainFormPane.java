@@ -26,7 +26,6 @@ import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
-import com.smartgwt.client.widgets.tree.TreeGrid;
 
 public class MainFormPane extends Canvas {
 	public class FormValuesManager extends ValuesManager {
@@ -120,7 +119,7 @@ public class MainFormPane extends Canvas {
 	private FormMD formMetadata;
 	private FormColumns formColumns;
 	private MainForm mainForm;
-	private Criteria initialFilter = null;
+	// private Criteria initialFilter = null;
 	private boolean isMasterForm;
 	private MainFormContainer mainFormContainer;
 	private FormToolbar buttonsToolBar;
@@ -136,12 +135,20 @@ public class MainFormPane extends Canvas {
 	private SectionStackSection detailsSection;
 	SectionStack sections;
 
+	public static final Criteria INTITAL_CRITERIA = new Criteria("++++", "++++");
+	public static final Criteria INTITAL_PREV_CRIT = new Criteria("----", "----");
+	// Сохранение предыдущего фильтра для определения автообновления табиков
+	private Criteria prevParentFormCriteria = INTITAL_PREV_CRIT;
+	private Criteria parentFormCriteria = INTITAL_CRITERIA;
+	private Criteria thisFormCriteria = INTITAL_CRITERIA;
+
 	public MainFormPane() {
 	}
 
 	public MainFormPane(final String formCode, boolean isMasterForm, final boolean isLookup, final MainFormPane parentFormPane,
-			Boolean isDrillDownForm) {
+			Boolean isDrillDownForm, String parentFormTabCode) {
 		this.setFormCode(formCode);
+
 		if (!ConstructorApp.formNameArr.containsKey(formCode)) {
 			MenuMD menu = new MenuMD();
 			menu.setFormCode(formCode);
@@ -156,10 +163,13 @@ public class MainFormPane extends Canvas {
 		this.setMasterForm(isMasterForm);
 		this.buttonsToolBar = new FormToolbar(this);
 		String parentFormCode = (null != parentFormPane) ? parentFormPane.getFormCode() : null;
+		setParentFormCriteria((null != parentFormPane) ? parentFormPane.getThisFormCriteria() : INTITAL_CRITERIA);
 		instanceIdentifier.setFormCode(formCode);
 		instanceIdentifier.setParentFormCode(parentFormCode);
 		instanceIdentifier.setGridHashCode(-999);
 		instanceIdentifier.setIsDrillDownForm(isDrillDownForm);
+		instanceIdentifier.setParentFormTabCode(parentFormTabCode);
+
 		Utils.createQueryService("MainFormPane.getFormMetaData").getFormMetaData(instanceIdentifier, new DSAsyncCallback<FormMD>() {
 			public void onSuccess(FormMD result) {
 				// TODO Error NullPointerException...
@@ -182,11 +192,12 @@ public class MainFormPane extends Canvas {
 					System.out.println(formCode + " 2isLookup:" + isLookup);
 					grid.setFields(formColumns.createGridFields());
 					System.out.println(formCode + " 3isLookup:" + isLookup);
-					filterData();
+					// /// filterData();
 					buttonsToolBar.createButtons();
 					createDetailForms();
 					if (isMasterForm()) {
 						ConstructorApp.mainToolBar.setForm(MainFormPane.this);
+						filterData();
 					}
 				}
 				Utils.debug("MainFormPane created");
@@ -283,30 +294,22 @@ public class MainFormPane extends Canvas {
 	}
 
 	public void filterData() {
-		setForceFetch(true);
-		System.out.println(this.formCode + " @@@@@@@@@ " + this.getMainForm());
-		if (null != this.getMainForm()) {
-			ListGrid grid = this.getMainForm().getTreeGrid();
-			// Отличие TreeGrid от ListGrid в том, что при TreeGrid.invalidateCache выполняется запрос к БД
-			if (!(grid instanceof TreeGrid)) {
-				// TODO - Появилась ошибка в SmartGWT 2.2 от 11.06
+		if (!getPrevParentFormCriteria().getValues().equals(getParentFormCriteria().getValues())) {
+			setForceFetch(true);
+			Utils.debug(this.formCode + " @@@@@@@@@ " + this.getMainForm());
+			if (null != this.getMainForm()) {
+				ListGrid grid = this.getMainForm().getTreeGrid();
 				try {
 					grid.invalidateCache();
 				} catch (Exception e) {
+					Utils.debug("MainFormPane.filterData error 1:" + e.getMessage());
 					e.printStackTrace();
 				}
+				grid.filterData(getParentFormCriteria());
 			}
-			Criteria criteria = new Criteria();
-			Utils.debug("isMasterForm() => " + isMasterForm());
-			if (isMasterForm()) {
-			} else {
-				if (null != getParentFormPane())
-					criteria = getParentFormPane().getInitialFilter();
-			}
-			grid.filterData(criteria);
+			setForceFetch(false);
+			this.setPrevParentFormCriteria(getParentFormCriteria());
 		}
-		setForceFetch(false);
-
 	}
 
 	public void filterDetailData(Record record, ListGrid treeGrid, int selectedRecordIndex) {
@@ -317,11 +320,14 @@ public class MainFormPane extends Canvas {
 			boolean filterDynamicSingleDetails, boolean filterStaticDetails) {
 		Utils.debug("filterDetailData.... record:" + record);
 		setSelectedRow(selectedRecordIndex);
-		setInitialFilter(Utils.getCriteriaFromListGridRecord(this, record, this.getFormCode()));
-		System.out.println("filterDetailData.... BottomDetailFormsContainer:" + getBottomDetailFormsContainer());
-		System.out.println("filterDetailData.... SideDetailFormsContainer:" + getSideDetailFormsContainer());
-		getBottomDetailFormsContainer().filterData(filterDynamicMultiDetails, filterDynamicSingleDetails, filterStaticDetails);
-		getSideDetailFormsContainer().filterData(filterDynamicMultiDetails, filterDynamicSingleDetails, filterStaticDetails);
+		// Лишнее?
+		// setThisFormCriteria(record);
+		Utils.debug("filterDetailData.... BottomDetailFormsContainer:" + getBottomDetailFormsContainer());
+		Utils.debug("filterDetailData.... SideDetailFormsContainer:" + getSideDetailFormsContainer());
+		getBottomDetailFormsContainer().filterDetailContainerData(getThisFormCriteria(), filterDynamicMultiDetails,
+				filterDynamicSingleDetails, filterStaticDetails);
+		getSideDetailFormsContainer().filterDetailContainerData(getThisFormCriteria(), filterDynamicMultiDetails,
+				filterDynamicSingleDetails, filterStaticDetails);
 		valuesManager.editRecord2();
 		buttonsToolBar.setActionsStatuses();
 	}
@@ -408,14 +414,6 @@ public class MainFormPane extends Canvas {
 		return form;
 	}
 
-	/**
-	 * @return the initialFilter
-	 */
-	public Criteria getInitialFilter() {
-		Utils.debug("execute getInitialFilter..." + getFormCode());
-		return initialFilter;
-	}
-
 	public FormInstanceIdentifier getInstanceIdentifier() {
 		instanceIdentifier.setIsDebugEnabled(ConstructorApp.debugEnabled);
 		return instanceIdentifier;
@@ -485,14 +483,14 @@ public class MainFormPane extends Canvas {
 	}
 
 	public void releaseDetailsFocus() {
-		Utils.debug("MainFormPane.releaseDetailsFocus");
+		// Utils.debug("MainFormPane.releaseDetailsFocus");
 		if (null != this.getBottomDetailFormsContainer()) {
 			this.getBottomDetailFormsContainer().releaseFocus();
-			Utils.debug("MainFormPane.BottomDetailFormsContainer.releaseFocus. Processed...");
+			// Utils.debug("MainFormPane.BottomDetailFormsContainer.releaseFocus. Processed...");
 		}
 		if (null != this.getSideDetailFormsContainer()) {
 			this.getSideDetailFormsContainer().releaseFocus();
-			Utils.debug("MainFormPane.SideDetailFormsContainer.releaseFocus. Processed...");
+			// Utils.debug("MainFormPane.SideDetailFormsContainer.releaseFocus. Processed...");
 		}
 	}
 
@@ -581,15 +579,6 @@ public class MainFormPane extends Canvas {
 		this.formMetadata = formMetadata;
 	}
 
-	/**
-	 * @param initialFilter
-	 *            the initialFilter to set
-	 */
-	public void setInitialFilter(Criteria initialFilter) {
-		Utils.debug("setInitialFilter executed..." + getFormCode());
-		this.initialFilter = initialFilter;
-	}
-
 	public void setInstanceIdentifier(FormInstanceIdentifier instanceIdentifier) {
 		this.instanceIdentifier = instanceIdentifier;
 	}
@@ -659,5 +648,57 @@ public class MainFormPane extends Canvas {
 
 	public boolean isFromUrl() {
 		return fromUrl;
+	}
+
+	public void setParentFormCriteria(Criteria parentFormCriteria) {
+		if (null == parentFormCriteria) {
+			Utils.debugAlert("setParentFormCriteria: " + null);
+			this.parentFormCriteria = INTITAL_CRITERIA;
+		} else {
+			// Utils.debugAlert("setParentFormCriteria formCode:" + this.formCode + "; crit:" + parentFormCriteria + ";\n"
+			// + parentFormCriteria.getValues());
+			this.parentFormCriteria = parentFormCriteria;
+		}
+	}
+
+	public void setPrevParentFormCriteria(Criteria prevParentFormCriteria) {
+		if (null == prevParentFormCriteria) {
+			Utils.debugAlert("setPrevParentFormCriteria: " + null);
+			this.prevParentFormCriteria = INTITAL_PREV_CRIT;
+		} else {
+			Utils.debug(": setPrevParentFormCriteria formCode:" + this.formCode + "; crit:" + prevParentFormCriteria //
+					+ ";\n" + (prevParentFormCriteria.equals(null) ? null : prevParentFormCriteria.getValues()));
+			this.prevParentFormCriteria = prevParentFormCriteria;
+		}
+	}
+
+	public void setThisFormCriteria(Criteria thisFormCriteria) {
+		if (null == thisFormCriteria) {
+			Utils.debugAlert("setThisFormCriteria: " + null);
+			this.thisFormCriteria = INTITAL_CRITERIA;
+		} else {
+			// Utils.debugAlert("setThisFormCriteria formCode:" + this.formCode + "; crit:" + thisFormCriteria + ";\n"
+			// + thisFormCriteria.getValues());
+			this.thisFormCriteria = thisFormCriteria;
+		}
+	}
+
+	public void setThisFormCriteria(Record record) {
+		Criteria thisFormCriteria = Utils.getCriteriaFromListGridRecord(this, record);
+		// Utils.debugAlert("setThisFormCriteria2 formCode:" + this.formCode + "; crit:" + thisFormCriteria + ";\n"
+		// + thisFormCriteria.getValues());
+		this.setThisFormCriteria(thisFormCriteria);
+	}
+
+	public Criteria getParentFormCriteria() {
+		return parentFormCriteria;
+	}
+
+	public Criteria getPrevParentFormCriteria() {
+		return prevParentFormCriteria;
+	}
+
+	public Criteria getThisFormCriteria() {
+		return thisFormCriteria;
 	}
 }

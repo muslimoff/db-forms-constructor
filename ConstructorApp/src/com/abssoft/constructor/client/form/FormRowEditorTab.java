@@ -28,7 +28,7 @@ public class FormRowEditorTab extends FormTab {
 	private ArrayList<FormItem> fieldsList = new ArrayList<FormItem>();
 
 	FormRowEditorTab(FormTabMD editorTab, MainFormPane mainFormPane) {
-		super(FormTab.TabType.EDITOR, mainFormPane.getFormCode());
+		super(editorTab, FormTab.TabType.EDITOR, mainFormPane.getFormCode());
 		this.setMainFormPane(mainFormPane);
 		final FormMD formMetadata = getMainFormPane().getFormMetadata();
 		final FormColumnsArr columns = formMetadata.getColumns();
@@ -44,6 +44,14 @@ public class FormRowEditorTab extends FormTab {
 			}
 		}
 		form = new DynamicForm();
+		// TODO Абсолютное позиционирование айтемов на форме.
+		// Для абсолютного позиционирования необходимо включить айтем в контейнер, который будет
+		// содержать заголовок и собственно поле (айтем).
+		// Предусмотреть возможность drag&drop контейнера с сохранением позиции.
+		// Или вообще - контейнером сделать форму с ItemLayout = FormLayoutType.TABLE, содержащую одно поле.
+		// И все это подключить к ValuesManager
+		// form.setItemLayout(FormLayoutType.ABSOLUTE);
+		// form.setItemLayout(FormLayoutType.TABLE);
 
 		// TODO Дизейбл формы при отсутствии изменений сделать.
 		// form.setDisabled(!formMetadata.getActions().isUpdateAllowed());

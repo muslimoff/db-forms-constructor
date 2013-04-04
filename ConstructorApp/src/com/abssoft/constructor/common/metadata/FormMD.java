@@ -27,7 +27,8 @@ public class FormMD implements IsSerializable {
 	private String sideTabsPosition;
 	private boolean showBottomToolBar;
 	private String doubleClickActionCode;
-	private String lookupWidth;
+	private Integer lookupWidth;
+	private Integer lookupHeight;
 	private FormColumnsArr columns;
 	private FormTabsArr tabs;
 	private FormActionsArr actions;
@@ -35,6 +36,9 @@ public class FormMD implements IsSerializable {
 	private FormsArr lookupsArr = new FormsArr();
 	// TODO вынести в интерфейс
 	private ActionStatus status = new ActionStatus();
+	private String dragAndDropActionCode;
+
+	// private boolean metadataComplete = false;
 
 	/**
 	 * 
@@ -96,10 +100,6 @@ public class FormMD implements IsSerializable {
 
 	public FormsArr getLookupsArr() {
 		return lookupsArr;
-	}
-
-	public String getLookupWidth() {
-		return lookupWidth;
 	}
 
 	/**
@@ -220,10 +220,6 @@ public class FormMD implements IsSerializable {
 		this.lookupsArr = lookupsArr;
 	}
 
-	public void setLookupWidth(String lookupWidth) {
-		this.lookupWidth = lookupWidth;
-	}
-
 	/**
 	 * @param objectVersionNumber
 	 *            the objectVersionNumber to set
@@ -278,4 +274,37 @@ public class FormMD implements IsSerializable {
 	public ActionStatus getStatus() {
 		return status;
 	}
+
+	public void setLookupWidth(Integer lookupWidth) {
+		this.lookupWidth = lookupWidth;
+	}
+
+	public Integer getLookupWidth() {
+		return lookupWidth;
+	}
+
+	public void setLookupHeight(Integer lookupHeight) {
+		this.lookupHeight = lookupHeight;
+	}
+
+	public Integer getLookupHeight() {
+		return lookupHeight;
+	}
+
+	public void setDragAndDropActionCode(String dragAndDropActionCode) {
+		this.dragAndDropActionCode = dragAndDropActionCode;
+	}
+
+	public String getDragAndDropActionCode() {
+		return dragAndDropActionCode;
+	}
+
+	// public void setMetadataComplete(boolean metadataComplete) {
+	// this.metadataComplete = metadataComplete;
+	// }
+	//
+	// public boolean isMetadataComplete() {
+	// return metadataComplete;
+	// }
+
 }

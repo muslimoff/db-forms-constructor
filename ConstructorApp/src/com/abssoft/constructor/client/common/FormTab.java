@@ -2,14 +2,15 @@ package com.abssoft.constructor.client.common;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.form.MainFormPane;
+import com.abssoft.constructor.common.metadata.FormTabMD;
 import com.smartgwt.client.types.ValueEnum;
 import com.smartgwt.client.widgets.Canvas;
 
 public class FormTab extends com.smartgwt.client.widgets.tab.Tab {
 	protected MainFormPane mainFormPane;
 
+	private FormTabMD tabMetaData;
 	private String formCode;
-
 	private TabType tabType;
 
 	public enum TabType implements ValueEnum {
@@ -54,22 +55,24 @@ public class FormTab extends com.smartgwt.client.widgets.tab.Tab {
 	public FormTab() {
 	}
 
-	public FormTab(TabType tabType, String formCode) {
+	public FormTab(FormTabMD tabMetaData, TabType tabType, String formCode) {
 		super();
 		this.tabType = tabType;
 		this.formCode = formCode;
+		this.tabMetaData = tabMetaData;
 
 	}
 
-	public FormTab(TabType tabType, String formCode, String title) {
+	public FormTab(FormTabMD tabMetaData, TabType tabType, String formCode, String title) {
 		super(title);
 		this.tabType = tabType;
 		this.formCode = formCode;
+		this.tabMetaData = tabMetaData;
 
 	}
 
-	public FormTab(TabType tabType, String formCode, String title, int iconId) {
-		this(tabType, formCode);
+	public FormTab(FormTabMD tabMetaData, TabType tabType, String formCode, String title, int iconId) {
+		this(tabMetaData, tabType, formCode);
 		setTitle(getIconTitle(title, iconId));
 
 	}
@@ -117,6 +120,14 @@ public class FormTab extends com.smartgwt.client.widgets.tab.Tab {
 	 */
 	public void setTabType(TabType tabType) {
 		this.tabType = tabType;
+	}
+
+	protected void setTabMetaData(FormTabMD tabMetaData) {
+		this.tabMetaData = tabMetaData;
+	}
+
+	public FormTabMD getTabMetaData() {
+		return tabMetaData;
 	}
 
 }

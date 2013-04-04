@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.TabSet;
+import com.abssoft.constructor.client.data.ActionItem;
 import com.abssoft.constructor.client.data.DMLProcExecution;
 import com.abssoft.constructor.client.data.FormDataSourceField;
 import com.abssoft.constructor.client.data.FormTreeGridField;
@@ -45,6 +46,8 @@ import com.smartgwt.client.widgets.grid.events.RowEditorEnterHandler;
 import com.smartgwt.client.widgets.tree.Tree;
 import com.smartgwt.client.widgets.tree.TreeGrid;
 import com.smartgwt.client.widgets.tree.TreeNode;
+import com.smartgwt.client.widgets.tree.events.FolderDropEvent;
+import com.smartgwt.client.widgets.tree.events.FolderDropHandler;
 import com.smartgwt.client.widgets.tree.events.FolderOpenedEvent;
 import com.smartgwt.client.widgets.tree.events.FolderOpenedHandler;
 import com.smartgwt.client.widgets.tree.events.NodeClickEvent;
@@ -84,18 +87,28 @@ class MainForm extends Canvas {
 			});
 		}
 
-		// 20121004-3.1d test. Commented
-		// @Override
-		// public Boolean startEditing(int rowNum, int colNum, boolean suppressFocus) {
-		// Utils.debug("FormListGrid.startEditing: " + this.getJsObj().toString());
-		// return super.startEditing(rowNum, colNum, suppressFocus);
+		// // 20121210 - косяк редактирования
+		// public native Boolean startEditingInt(int rowNum, int colNum, Boolean suppressFocus) /*-{
+		// $wnd.alert("1xxxxx "+rowNum+";"+colNum);
+		// var self = this.@com.smartgwt.client.widgets.BaseWidget::getOrCreateJsObj()();
+		// $wnd.alert("2xxxxx "+self);
+		// var retVal =self.startEditing(rowNum, colNum, suppressFocus);
+		// $wnd.alert("3xxxxx "+retVal);
+		// if(retVal == null || retVal === undefined) {
+		// return null;
+		// } else {
+		// return @com.smartgwt.client.util.JSOHelper::toBoolean(Z)(retVal);
 		// }
-
-		@Override
-		public Boolean startEditing(Integer rowNum, Integer colNum, Boolean suppressFocus) {
-			Utils.debug("FormListGrid.startEditing: " + this.getJsObj().toString());
-			return super.startEditing(rowNum, colNum, suppressFocus);
-		}
+		// }-*/;
+		//
+		// @Override
+		// public Boolean startEditing(Integer rowNum, Integer colNum, Boolean suppressFocus) {
+		// Utils.debug("FormListGrid.startEditing: " + this.getJsObj().toString());
+		// // return super.startEditing(rowNum, colNum, suppressFocus);
+		// // 20121210 - косяк редактирования - com.google.gwt.dev.shell.HostedModeException: invoke arguments: JS value of type Java
+		// // Object com.google.gwt.dev.shell.JsValueOOPHM$DispatchObjectOOPHM, expected int
+		// return startEditingInt(rowNum, colNum, suppressFocus);
+		// }
 
 		public native boolean saveAllEdits(int[] rows)
 		/*-{
@@ -142,8 +155,14 @@ class MainForm extends Canvas {
 					}
 
 					for (TreeNode nn : parentNodes) {
-						if (!t.getTitle(nn).equals("root"))
-							titlePath = t.getTitle(nn) + "/" + titlePath;
+						String title = "";
+						try {
+							t.getTitle(nn);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						if (!"root".equals(title))
+							titlePath = title + "/" + titlePath;
 					}
 					bottomToolBar.setStatus(titlePath);
 				}
@@ -157,6 +176,41 @@ class MainForm extends Canvas {
 					System.out.println("@@" + FormTreeGrid.this.getOpenState());
 				}
 			});
+			this.setCanReorderRecords(true);
+			this.setCanAcceptDroppedRecords(true);
+
+			// this.setDragDataAction(DragDataAction.COPY);
+			// this.setAttribute("dragRecategorize", false, false);
+			// this.setCanDropOnLeaves(true);
+			// this.setCanReparentNodes(true);
+			// this.setDragDataAction(DragDataAction.MOVE) ;
+
+			// { //Пытаюсь обработать out параметр isFolder
+			// ResultTree configTree = new ResultTree();
+			// configTree.setDefaultIsFolder(true);
+			// configTree.setUpdateCacheFromRequest(true);
+			// this.setDataProperties(configTree);
+			// }
+
+			{ // TODO - Дерево с возможностью частичного выбора
+				// this.setSelectionAppearance(SelectionAppearance.CHECKBOX);
+				// this.setShowSelectedStyle(false);
+				// this.setShowPartialSelection(true);
+				// this.setCascadeSelection(true);
+			}
+
+			this.addFolderDropHandler(new FolderDropHandler() {
+
+				@Override
+				public void onFolderDrop(FolderDropEvent event) {
+					// Очищаем код действия формы в случае перетаскивания грида
+					// Прийдется тут ловить действие, которое привязать к форме
+					ActionItem dragAndDropActItem = mainFormPane.getButtonsToolBar().getDragAndDropActItem();
+					FormActionMD faMD = (null != dragAndDropActItem) ? dragAndDropActItem.getFormActionMD() : new FormActionMD();
+					mainFormPane.setCurrentAction(faMD);
+				}
+			});
+			// this.startEditingNew();
 		}
 	}
 
@@ -169,11 +223,7 @@ class MainForm extends Canvas {
 				r = ((ListGrid) event.getSource()).getEditedRecord(event.getRecordNum());
 				Utils.debug("2. GridRecordClickHandler.onRecordClick. r:" + r);
 			}
-			if (treeGrid instanceof TreeGrid) {
-				treeGrid.deselectAllRecords();
-				treeGrid.selectRecord(event.getRecordNum());
-			}
-			// 20120902 mainFormPane.filterDetailData((ListGridRecord) r, treeGrid, event.getRecordNum());
+			mainFormPane.setThisFormCriteria(r);
 			mainFormPane.filterDetailData(r, treeGrid, event.getRecordNum());
 		}
 	}
@@ -187,6 +237,7 @@ class MainForm extends Canvas {
 			if (null == r) {
 				r = ((ListGrid) event.getSource()).getEditedRecord(event.getRowNum());
 			}
+			mainFormPane.setThisFormCriteria(r);
 			mainFormPane.filterDetailData((ListGridRecord) r, treeGrid, event.getRowNum(), false, false, false);
 		}
 	}
@@ -351,6 +402,12 @@ class MainForm extends Canvas {
 		// }
 		// });
 		treeGrid.addRowEditorEnterHandler(new RowEditorEnterHandler() {
+			// @Override
+			// public void onRowEditorEnter2(RowEditorEnterEvent event) {
+			// // TODO Auto-generated method stub
+			//
+			// }
+
 			@Override
 			public void onRowEditorEnter(RowEditorEnterEvent event) {
 				Utils.debug("treeGrid.onRowEditorEnter started... event:" + event);
@@ -383,6 +440,7 @@ class MainForm extends Canvas {
 				}
 				Utils.debug("treeGrid.onRowEditorEnter ended...");
 			}
+
 		});
 
 		// mm20110508 - for debug purposes
@@ -602,6 +660,7 @@ class MainForm extends Canvas {
 		ResultSet rs = treeGrid.getResultSet();
 		// TODO least(100, dataLen)
 		int dataLen = rs.getLength(); // 100;
+		// TODO - Проблема в Firefox - для больших диапазонов (данных более 32К) падает с ошибкой
 		if (!rs.rangeIsLoaded(0, dataLen)) {
 			rs.getRange(0, dataLen);
 		} else {

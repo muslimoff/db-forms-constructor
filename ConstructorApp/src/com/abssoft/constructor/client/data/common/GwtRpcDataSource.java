@@ -77,6 +77,7 @@ public abstract class GwtRpcDataSource extends DataSource {
 			break;
 		default:
 			// Operation not implemented.
+			Utils.debugAlert("GWT RPC DS Unknown operation: " + request.getOperationType());
 			break;
 		}
 		return request.getData();

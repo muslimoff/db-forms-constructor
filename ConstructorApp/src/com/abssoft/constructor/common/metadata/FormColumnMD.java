@@ -41,6 +41,8 @@ public class FormColumnMD implements IsSerializable {
 	private String editorColsSpan;
 	private String lookupDisplayValue;
 	private String editorOnEnterKeyAction;
+	private Integer lookupWidth;
+	private Integer lookupHeight;
 
 	private HashMap<String, String> lookupAttributes = new HashMap<String, String>();
 
@@ -420,5 +422,21 @@ public class FormColumnMD implements IsSerializable {
 
 	public ArrayList<ColumnAction> getColActions() {
 		return colActions;
+	}
+
+	public void setLookupWidth(Integer lookupWidth) {
+		this.lookupWidth = lookupWidth;
+	}
+
+	public Integer getLookupWidth() {
+		return lookupWidth;
+	}
+
+	public void setLookupHeight(Integer lookupHeight) {
+		this.lookupHeight = lookupHeight;
+	}
+
+	public Integer getLookupHeight() {
+		return lookupHeight;
 	}
 }
