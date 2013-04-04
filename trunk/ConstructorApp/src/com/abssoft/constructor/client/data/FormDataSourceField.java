@@ -1,6 +1,7 @@
 package com.abssoft.constructor.client.data;
 
 import com.abssoft.constructor.client.form.MainFormPane;
+import com.abssoft.constructor.common.FormColumnsArr;
 import com.abssoft.constructor.common.metadata.FormColumnMD;
 import com.abssoft.constructor.common.metadata.FormMD;
 import com.smartgwt.client.types.FieldType;
@@ -14,11 +15,16 @@ public class FormDataSourceField extends com.smartgwt.client.data.DataSourceFiel
 	private FormMD formMetadata;
 	private int colNum;
 	private boolean isTreeFolder = false;
+	private boolean canAcceptDrop = false;
+	private boolean canDrag = false;
+	private MainFormPane mainFormPane;
 
 	public FormDataSourceField(int colNum, MainFormPane mainFormContainer) {
 		this.colNum = colNum;
+		this.setMainFormPane(mainFormContainer);
 		this.formMetadata = mainFormContainer.getFormMetadata();
-		this.columnMD = formMetadata.getColumns().get(colNum);
+		FormColumnsArr columnsArr = formMetadata.getColumns();
+		this.columnMD = columnsArr.get(colNum);
 		this.formType = formMetadata.getFormType();
 
 		this.setColumnMD(columnMD);
@@ -52,12 +58,21 @@ public class FormDataSourceField extends com.smartgwt.client.data.DataSourceFiel
 			if ("1".equals(treeFieldType)) {
 				this.setPrimaryKey(true);
 			} else if ("2".equals(treeFieldType)) {
-				this.setForeignKey("ID");
+				// this.setForeignKey("ID");
+				for (int i = 0; i < columnsArr.size(); i++) {
+					if ("1".equals(columnsArr.get(i).getTreeFieldType())) {
+						this.setForeignKey(columnsArr.get(i).getName());
+					}
+				}
 			} else if ("3".equals(treeFieldType)) {
 				setTreeFolder(true);
 				type = FieldType.BOOLEAN;
 			} else if ("4".equals(treeFieldType) && null != mainFormContainer.getMainForm()) {
 				((TreeGrid) mainFormContainer.getMainForm().getTreeGrid()).setCustomIconProperty(colName);
+			} else if ("6".equals(treeFieldType)) {
+				setCanAcceptDrop(true);
+			} else if ("7".equals(treeFieldType)) {
+				setCanDrag(true);
 			}
 		}
 		if ("11".equals(columnMD.getFieldType())) {
@@ -154,6 +169,30 @@ public class FormDataSourceField extends com.smartgwt.client.data.DataSourceFiel
 	 */
 	public boolean isTreeFolder() {
 		return isTreeFolder;
+	}
+
+	public void setCanAcceptDrop(boolean canAcceptDrop) {
+		this.canAcceptDrop = canAcceptDrop;
+	}
+
+	public boolean isCanAcceptDrop() {
+		return canAcceptDrop;
+	}
+
+	public void setCanDrag(boolean canDrag) {
+		this.canDrag = canDrag;
+	}
+
+	public boolean isCanDrag() {
+		return canDrag;
+	}
+
+	private void setMainFormPane(MainFormPane mainFormPane) {
+		this.mainFormPane = mainFormPane;
+	}
+
+	public MainFormPane getMainFormPane() {
+		return mainFormPane;
 	}
 
 }

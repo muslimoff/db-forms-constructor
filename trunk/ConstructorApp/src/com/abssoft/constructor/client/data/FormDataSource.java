@@ -15,12 +15,14 @@ import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.form.ValuesManager;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.tree.TreeGrid;
 import com.smartgwt.client.widgets.tree.TreeNode;
 
 public class FormDataSource extends GwtRpcDataSource {
 
 	private FormDataSourceField[] dsFields;
 	private String formCode;
+	// private String formTabCode;
 	private int gridHashCode;
 	private int editedRecordIndex = -1; // 20120319 Для масс-обновления...
 
@@ -48,6 +50,15 @@ public class FormDataSource extends GwtRpcDataSource {
 		this.dsFields = mainFormPane.getFormColumns().createDSFields();
 		this.formCode = mainFormPane.getFormCode();
 		this.gridHashCode = mainFormPane.getInstanceIdentifier().getGridHashCode();
+
+		// try {
+		// this.formTabCode = mainFormPane.getMainFormContainer().getTabMetaData().getTabCode();
+		//
+		// } catch (Exception e) {
+		// this.formTabCode = e.getMessage();
+		//
+		// }
+
 		System.out.println("setMainFormPane:" + formCode + "; ID:" + this.getID());
 		setFields(dsFields);
 	}
@@ -70,12 +81,14 @@ public class FormDataSource extends GwtRpcDataSource {
 
 		Criteria cr;
 		// TODO Фильтры - передача на сервер так же строк вида "&field_name"="and field_name like 'Val%'"
-		if (grid instanceof com.smartgwt.client.widgets.tree.TreeGrid) {
+		if (grid instanceof TreeGrid) {
 			Criteria treeCriteria = new Criteria();
 			if (!mainFormPane.isForceFetch()) {
 				int gridEventRow = (0 != grid.getTotalRows()) ? grid.getEventRow() : -2;
 				if (-2 != gridEventRow) {
-					treeCriteria = Utils.getCriteriaFromListGridRecord(mainFormPane, grid.getRecord(grid.getEventRow()), formCode);
+					treeCriteria = Utils.getCriteriaFromListGridRecord(mainFormPane, grid.getRecord(grid.getEventRow())
+					// , formCode,formTabCode
+							);
 				}
 			}
 			cr = request.getCriteria();
@@ -112,23 +125,33 @@ public class FormDataSource extends GwtRpcDataSource {
 						totalRows = result.getTotalRows();
 						response.setTotalRows(totalRows);
 						response.setData(records);
+						// response.getData()
+						// ((TreeGrid) grid).getTree();
 						processResponse(requestId, response);
 						mainFormPane.getMainForm().getBottomToolBar().setRowsCount(totalRows + "");
 						ValuesManager vm = mainFormPane.getValuesManager();
 						int dynFormsCount = vm.getMembers().length;
 						if (0 != rowsCount) {
 							if (0 == startRow) {
-								mainFormPane.setInitialFilter(Utils.getCriteriaFromListGridRecord(mainFormPane, records[0], formCode));
+								// Criteria thisFormCriteria = Utils.getCriteriaFromListGridRecord(mainFormPane, records[0]);
+								// mainFormPane.setThisFormCriteria(thisFormCriteria);
+								mainFormPane.setThisFormCriteria(records[0]);
 								if (mainFormPane.isMasterForm()) {
 									grid.focus();
 								}
-								grid.selectRecord(0);
-								mainFormPane.setSelectedRow(0);
-								// Refresh только для static detail
-								mainFormPane.filterDetailData(grid.getSelectedRecord(), grid, 0, false, true, true);
-								Utils.debug("vm.getMembers().length=" + dynFormsCount);
-								if (0 != dynFormsCount) {
-									vm.editRecord(records[0]);
+
+								// 20130315 - Добавлена проверка выбранной ранее записи - для дерева актуально в случае развертывания узла.
+								if (null == grid.getSelectedRecord()) {
+									grid.selectRecord(0);
+									mainFormPane.setSelectedRow(0);
+									// Refresh только для static detail
+									mainFormPane.filterDetailData(
+									// initialFilter,
+											grid.getSelectedRecord(), grid, 0, false, true, true);
+									Utils.debug("vm.getMembers().length=" + dynFormsCount);
+									if (0 != dynFormsCount) {
+										vm.editRecord(records[0]);
+									}
 								}
 
 							}

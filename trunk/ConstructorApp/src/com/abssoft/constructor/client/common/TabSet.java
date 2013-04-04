@@ -1,6 +1,7 @@
 package com.abssoft.constructor.client.common;
 
 import com.abssoft.constructor.client.ConstructorApp;
+import com.abssoft.constructor.client.common.FormTab.TabType;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.form.MainFormContainer;
 import com.abssoft.constructor.client.form.MainFormPane;
@@ -207,8 +208,19 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 			@Override
 			public void onTabSelected(TabSelectedEvent event) {
 				if (event.getTab() instanceof FormTab) {
-					Utils.debug(((FormTab) event.getTab()).getFormCode() + "<<");
-					ConstructorApp.mainToolBar.setForm(((FormTab) event.getTab()).getMainFormPane());
+					FormTab ft = ((FormTab) event.getTab());
+					Utils.debug(ft.getFormCode() + "<<");
+
+					MainFormPane mfp = ft.getMainFormPane();
+
+					String tabType = ft.getTabMetaData().getTabType();
+					String tabCode = ft.getTabMetaData().getTabCode();
+					if (TabType.DETAIL.getValue().equals(tabType) || TabType.DYNAMIC_DETAIL_SINGLE.getValue().equals(tabType)) {
+						// Utils.debugAlert("2. TabSet: " + this + "; TabCode:" + tabCode + "; TabType:" + tabType);
+						// mfp.filterData();
+					}
+
+					ConstructorApp.mainToolBar.setForm(mfp);
 				}
 			}
 		});
@@ -226,6 +238,17 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 
 			@Override
 			public void onTabContextMenu(TabContextMenuEvent event) {
+				//
+				MainFormPane mfp = (event.getTab() instanceof FormTab) ? ((FormTab) event.getTab()).getMainFormPane() : null;
+				if (null != mfp) {
+					Utils.debugAlert("TabContextMenuHandler:" //
+							+ "\nThisFormCriteria:" + mfp.getThisFormCriteria().getValues() //
+							+ "\nParentFormCriteria:" + mfp.getParentFormCriteria().getValues() //
+							+ "\nPrevParentFormCriteria" + mfp.getPrevParentFormCriteria().getValues() //
+					);
+				}
+				//
+
 				try {
 					TabSet.this.setContextMenu(event.getTab().getPane().getContextMenu());
 					// Utils.debugAlert("!" + TabSet.this.getContextMenu());

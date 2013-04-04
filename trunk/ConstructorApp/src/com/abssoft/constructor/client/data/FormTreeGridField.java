@@ -8,6 +8,7 @@ import com.abssoft.constructor.client.widgets.GridComboBoxItem;
 import com.abssoft.constructor.client.widgets.MyComboBoxItem;
 import com.abssoft.constructor.common.metadata.ColumnAction;
 import com.abssoft.constructor.common.metadata.FormColumnMD;
+import com.abssoft.constructor.common.metadata.FormMD;
 import com.smartgwt.client.types.ListGridFieldType;
 import com.smartgwt.client.types.TextMatchStyle;
 import com.smartgwt.client.widgets.form.fields.TextAreaItem;
@@ -168,6 +169,8 @@ public class FormTreeGridField extends TreeGridField {
 		else if (("8".equals(c.getFieldType()) || "10".equals(c.getFieldType())) && null != lookupCode
 				&& ConstructorApp.staticLookupsArr.containsKey(lookupCode)) {
 			cmbxItem = new MyComboBoxItem();
+			FormMD fmd = mainFormPane.getFormMetadata();
+			((MyComboBoxItem) cmbxItem).setLookupSize(c.getLookupWidth(), c.getLookupHeight(), fmd.getLookupWidth(), fmd.getLookupHeight());
 			final LinkedHashMap<String, String> lhm = Utils.createStrSortedLinkedHashMap(ConstructorApp.staticLookupsArr.get(lookupCode),
 					!"8".equals(c.getFieldType()));
 			cmbxItem.setValueMap(lhm);

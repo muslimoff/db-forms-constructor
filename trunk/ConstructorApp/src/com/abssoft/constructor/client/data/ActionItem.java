@@ -14,6 +14,7 @@ import com.smartgwt.client.widgets.menu.MenuItemIfFunction;
 import com.smartgwt.client.widgets.menu.MenuItemStringFunction;
 import com.smartgwt.client.widgets.menu.events.ClickHandler;
 import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
+import com.smartgwt.client.widgets.tree.TreeGrid;
 
 public class ActionItem extends MenuItem {
 	private FormActionMD formActionMD;
@@ -53,9 +54,9 @@ public class ActionItem extends MenuItem {
 		this.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(MenuItemClickEvent event) {
-				//Так надо - по всем строкам.
-				//doActionWithConfirm(mainFormPane.getSelectedRow());
-				//TODO - теперь проблема - не выполняется openUrl
+				// Так надо - по всем строкам.
+				// doActionWithConfirm(mainFormPane.getSelectedRow());
+				// TODO - теперь проблема - не выполняется openUrl
 				doActionWithConfirm(null);
 			}
 		});
@@ -67,7 +68,7 @@ public class ActionItem extends MenuItem {
 			button.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					//doActionWithConfirm(mainFormPane.getSelectedRow());
+					// doActionWithConfirm(mainFormPane.getSelectedRow());
 					doActionWithConfirm(null);
 				}
 			});
@@ -94,7 +95,9 @@ public class ActionItem extends MenuItem {
 					String actionType = ActionItem.this.formActionMD.getType();
 					ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 					int currRow = mainFormPane.getMainForm().getSelectedRecord();
-					if ("2".equals(actionType)) {
+					// Убрал пока для дерева дизейбл потому, что drag&drop чудно работает.
+					// См. описание com.smartgwt.client.widgets.tree.TreeGrid.startEditingNew
+					if ("2".equals(actionType) && !(grid instanceof TreeGrid)) {
 						result = currRow == grid.getEditRow() || 0 != grid.getAllEditRows().length;
 					}
 					if ("5".equals(actionType)) {

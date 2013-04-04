@@ -27,6 +27,7 @@ public class FormToolbar extends DynamicForm {
 	private ToolbarItem btnToolbar = new ToolbarItem();
 	private IButton[] btns;
 	private ActionItem doubleClickActItem;
+	private ActionItem dragAndDropActItem;
 
 	private class CtxMenu extends Menu {
 		CtxMenu(ArrayList<MenuItem> menuItemsArr, MainFormPane mainFormPane) {
@@ -90,6 +91,11 @@ public class FormToolbar extends DynamicForm {
 			if (formActionMD.getCode().equals(mainFormPane.getFormMetadata().getDoubleClickActionCode())) {
 				doubleClickActItem = actionItem;
 			}
+
+			if (formActionMD.getCode().equals(mainFormPane.getFormMetadata().getDragAndDropActionCode())) {
+				dragAndDropActItem = actionItem;
+			}
+
 		}
 		/*****************/
 		ctxMenu = new CtxMenu(actionMenuItemsArr, mainFormPane);
@@ -102,7 +108,7 @@ public class FormToolbar extends DynamicForm {
 		btnToolbar.setButtons(btns);
 		this.setContextMenu(ctxMenu);
 		mainFormPane.setContextMenu(ctxMenu);
-		if (null != mainFormPane.getMainFormContainer()) { //20120824 была ошибка для одиночных динамических форм
+		if (null != mainFormPane.getMainFormContainer()) { // 20120824 была ошибка для одиночных динамических форм
 			mainFormPane.getMainFormContainer().setContextMenu(ctxMenu);
 		}
 		btnToolbar.setStartRow(false);
@@ -138,5 +144,13 @@ public class FormToolbar extends DynamicForm {
 
 	public ActionItem getDoubleClickActItem() {
 		return doubleClickActItem;
+	}
+
+	public void setDragAndDropActItem(ActionItem dragAndDropActItem) {
+		this.dragAndDropActItem = dragAndDropActItem;
+	}
+
+	public ActionItem getDragAndDropActItem() {
+		return dragAndDropActItem;
 	}
 }

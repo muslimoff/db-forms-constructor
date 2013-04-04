@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import com.abssoft.constructor.client.ConstructorApp;
+import com.abssoft.constructor.client.common.Constants;
 import com.abssoft.constructor.client.data.FormDataSourceField;
 import com.abssoft.constructor.client.data.FormTreeGridField;
 import com.abssoft.constructor.client.data.Utils;
@@ -36,8 +37,6 @@ import com.smartgwt.client.widgets.tree.TreeNode;
 //TODO - Отображать при выборке записи до текущей... остальные фетчить по требованию
 //TODO - Завязать на Debug показку "Прочие" меню
 public class GridComboBoxItem extends MyComboBoxItem {
-	private final String userTypedVarName = "p$lookup_entered_value"; // То, что вводит пользователь с клавиатуры
-	private final String selectedValueVarName = "p$lookup_selected_value"; // идентификатор того, что пользователь ввел/выбрал (если есть)
 	private String userTypedValue = null;
 	private String userSelectedValue = null;
 
@@ -79,9 +78,9 @@ public class GridComboBoxItem extends MyComboBoxItem {
 			Utils.debug("ComboBoxDataSource.executeFetch 10:" + userTypedValue);
 			LinkedHashMap<String, Object> crMap = Utils.getHashMapFromCriteria(cr);
 			Utils.debug("ComboBoxDataSource.executeFetch 11");
-			crMap.put(userTypedVarName, userTypedValue);
+			crMap.put(Constants.lookupUserTypedVarName, userTypedValue);
 			Utils.debug("ComboBoxDataSource.executeFetch 12");
-			crMap.put(selectedValueVarName, userSelectedValue);
+			crMap.put(Constants.lookupSelectedValueVarName, userSelectedValue);
 			Utils.debug("ComboBoxDataSource.executeFetch 13");
 			// TODO вынести в XML параметров endRow - фактически размер лова.
 			Utils.createQueryService("GridComboBoxItem.fetch").fetch(instanceIdentifier, sortBy, startRow, endRow, crMap, false,
@@ -151,7 +150,6 @@ public class GridComboBoxItem extends MyComboBoxItem {
 	}
 
 	public GridComboBoxItem(final FormColumnMD columnMD, final MainFormPane mainFormPane, FormTreeGridField formTreeGridField) {
-
 		this.columnMD = columnMD;
 		this.mainFormPane = mainFormPane;
 		lookupCode = columnMD.getLookupCode();
@@ -197,12 +195,21 @@ public class GridComboBoxItem extends MyComboBoxItem {
 		}
 		GridComboBoxItem.this.setValueField(valueFieldName);
 		GridComboBoxItem.this.setDisplayField(displayFieldName);
-		try {
-			String lookupWidth = fmd.getLookupWidth();
-			lookupWidth = (null == lookupWidth || "".equals(lookupWidth)) ? fmd.getWidth() : lookupWidth;
-			GridComboBoxItem.this.setPickListWidth(Integer.decode(lookupWidth));
-		} catch (Exception e) {
-		}
+		// try {
+		// String lookupWidth = fmd.getLookupWidth();
+		// lookupWidth = (null == lookupWidth || "".equals(lookupWidth)) ? fmd.getWidth() : lookupWidth;
+		// GridComboBoxItem.this.setPickListWidth(Integer.decode(lookupWidth));
+		// String lookupHeight = fmd.getLookupHeight();
+		// if (null != lookupHeight && !"".equals(lookupHeight)) {
+		// GridComboBoxItem.this.setPickListHeight(Integer.decode(lookupHeight));
+		// }
+
+		// } catch (Exception e) {
+		// }
+
+		GridComboBoxItem.this.setLookupSize(columnMD.getLookupWidth(), columnMD.getLookupHeight(), fmd.getLookupWidth(), fmd
+				.getLookupHeight());
+
 		GridComboBoxItem.this.setPickListFields(gridFields);
 		lookupDataSource.setValueFieldNum(valueFieldNum);
 		lookupDataSource.setFields(mfp.getFormColumns().createDSFields());
@@ -294,31 +301,17 @@ public class GridComboBoxItem extends MyComboBoxItem {
 					}
 				});
 				// e20121107
-/*				
-				this.setEditorValueFormatter(new FormItemValueFormatter() {
-					@Override
-					public String formatValue(Object value, Record record, DynamicForm form, FormItem i) {
-						// 20121107 String result = (String) value;
-						String result = null == value ? null : ((String) value); // "" + value;
-						try {
-							int currRow = GridComboBoxItem.this.mainFormPane.getSelectedRow();
-							ListGrid grig = GridComboBoxItem.this.mainFormPane.getMainForm().getTreeGrid();
-							ListGridRecord rec = grig.getRecord(currRow);
-							String colName = GridComboBoxItem.this.columnMD.getName();
-							// System.out.println("##$@@" + result);
-							if (null != value) {
-								result = value.equals(rec.getAttribute(colName)) ? rec.getAttribute(lookupDisplValFld) : result;
-							} else {
-								result = null;
-							}
-						} catch (Exception e) {
-							Utils.debug(e.getMessage());
-							e.printStackTrace();
-						}
-						return result;
-					}
-				});
-*/				
+				/*
+				 * this.setEditorValueFormatter(new FormItemValueFormatter() {
+				 * 
+				 * @Override public String formatValue(Object value, Record record, DynamicForm form, FormItem i) { // 20121107 String
+				 * result = (String) value; String result = null == value ? null : ((String) value); // "" + value; try { int currRow =
+				 * GridComboBoxItem.this.mainFormPane.getSelectedRow(); ListGrid grig =
+				 * GridComboBoxItem.this.mainFormPane.getMainForm().getTreeGrid(); ListGridRecord rec = grig.getRecord(currRow); String
+				 * colName = GridComboBoxItem.this.columnMD.getName(); // System.out.println("##$@@" + result); if (null != value) { result
+				 * = value.equals(rec.getAttribute(colName)) ? rec.getAttribute(lookupDisplValFld) : result; } else { result = null; } }
+				 * catch (Exception e) { Utils.debug(e.getMessage()); e.printStackTrace(); } return result; } });
+				 */
 			}
 		} else {
 			//
@@ -379,8 +372,9 @@ public class GridComboBoxItem extends MyComboBoxItem {
 	public Criteria getMainFormCriteria() {
 		Utils.debug("getMainFormCriteria start");
 		Record record = Utils.getEditedRecord(GridComboBoxItem.this.mainFormPane);
-		Criteria criteria = Utils.getCriteriaFromListGridRecord(GridComboBoxItem.this.mainFormPane, record, "GridComboBoxItem:"
-				+ GridComboBoxItem.this.getName());
+		Criteria criteria = Utils.getCriteriaFromListGridRecord(GridComboBoxItem.this.mainFormPane, record
+		// , "GridComboBoxItem:" + GridComboBoxItem.this.getName(), null
+				);
 		HashMap<String, String> lookupAttributes = columnMD.getLookupAttributes();
 		Iterator<String> attrs = lookupAttributes.keySet().iterator();
 		while (attrs.hasNext()) {

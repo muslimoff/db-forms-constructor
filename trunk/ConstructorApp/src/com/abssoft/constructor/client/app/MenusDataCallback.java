@@ -12,6 +12,7 @@ import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.form.MainFormContainer;
 import com.abssoft.constructor.client.widgets.MenuWithHover;
 import com.abssoft.constructor.common.MenusArr;
+import com.abssoft.constructor.common.metadata.FormTabMD;
 import com.abssoft.constructor.common.metadata.MenuMD;
 import com.smartgwt.client.widgets.menu.MenuButton;
 import com.smartgwt.client.widgets.menu.MenuItem;
@@ -51,7 +52,7 @@ public class MenusDataCallback extends DSAsyncCallback<MenusArr> {
 			this.addClickHandler(new ClickHandler() {
 				public void onClick(MenuItemClickEvent event) {
 					Utils.debug("FormMenus onClick: " + menuMetadata.getFormCode());
-					new MainFormContainer(FormTab.TabType.MAIN, ConstructorApp.tabSet, menuMetadata.getFormCode());
+					new MainFormContainer(new FormTabMD(), FormTab.TabType.MAIN, ConstructorApp.tabSet, menuMetadata.getFormCode());
 					Utils.debug("FormMenus onClick2: " + menuMetadata.getFormCode());
 				}
 			});
@@ -123,7 +124,8 @@ public class MenusDataCallback extends DSAsyncCallback<MenusArr> {
 				Utils.debug("Form, that will be open (" + i + "): \"" + formCode + "\"");
 				if (formCode != null && ConstructorApp.formNameArr.containsKey(formCode)) {
 					Utils.debug("Form opening (" + i + "):" + formCode);
-					MainFormContainer mfc = new MainFormContainer(FormTab.TabType.MAIN, ConstructorApp.tabSet, formCode, true, false, true);
+					MainFormContainer mfc = new MainFormContainer(new FormTabMD(), FormTab.TabType.MAIN, ConstructorApp.tabSet, formCode,
+							true, false, true);
 					mfc.getMainFormPane().setFromUrl(true);
 				}
 			}

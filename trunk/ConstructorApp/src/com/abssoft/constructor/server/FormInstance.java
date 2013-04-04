@@ -1,5 +1,6 @@
 package com.abssoft.constructor.server;
 
+import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -17,7 +18,11 @@ import com.abssoft.constructor.common.Row;
 import com.abssoft.constructor.common.RowsArr;
 import com.abssoft.constructor.common.metadata.FormColumnMD;
 
-public class FormInstance {
+public class FormInstance implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5522796409440448143L;
 	private FormColumnsArr columnsArr = new FormColumnsArr();
 	private Form form;
 	private ResultSet rs;
@@ -96,7 +101,7 @@ public class FormInstance {
 				{
 					String totalRowsSqlText = "select count(*) cnt from (" + sqlText + "\n)";
 					OraclePreparedStatement rowCntStmnt = (OraclePreparedStatement) connection.prepareStatement(totalRowsSqlText); // statement
-					Utils.setFilterValues(session, rowCntStmnt, filterValues);
+					form.setFilterValues(session, rowCntStmnt, filterValues);
 					session.debug("totalRowsSqlText:\n" + totalRowsSqlText);
 					ResultSet rowCntRS = rowCntStmnt.executeQuery();
 					rowCntRS.next();
@@ -107,7 +112,7 @@ public class FormInstance {
 					rowCntStmnt.close();
 				}
 				statement = (OraclePreparedStatement) connection.prepareStatement(sqlText);
-				Utils.setFilterValues(session, statement, filterValues);
+				form.setFilterValues(session, statement, filterValues);
 				session.debug("sqlText:\n" + sqlText);
 				// 20100928
 				// if (statement.isClosed()) {

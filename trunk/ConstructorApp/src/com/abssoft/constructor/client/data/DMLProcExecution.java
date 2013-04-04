@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.form.MainFormPane;
+import com.abssoft.constructor.client.form.MainForm.FormTreeGrid;
 import com.abssoft.constructor.common.ActionStatus;
 import com.abssoft.constructor.common.FormInstanceIdentifier;
 import com.abssoft.constructor.common.Row;
@@ -162,11 +163,15 @@ public class DMLProcExecution {
 
 		// 20110824 - вернул кусок кода - походу была попытка избавиться от фильтрации обновленной записи - ее исчезновения
 		try {
-			ResultSet rs = grid.getResultSet();
-			for (String s : rs.getCriteria().getAttributes()) {
-				Utils.debug("DMLProcExecution... Criteria " + s + ": " + rs.getCriteria().getAttribute(s));
+			if (grid instanceof FormTreeGrid) {
+				// ((FormTreeGrid) grid).getTree().getData();
+			} else {
+				ResultSet rs = grid.getResultSet();
+				for (String s : rs.getCriteria().getAttributes()) {
+					Utils.debug("DMLProcExecution... Criteria " + s + ": " + rs.getCriteria().getAttribute(s));
+				}
+				rs.setCriteria(new Criteria());
 			}
-			rs.setCriteria(new Criteria());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -185,9 +190,14 @@ public class DMLProcExecution {
 		Utils.openURL(formActionMD, resultRecord, mainFormPane);
 
 		// Вызов подчиненных действий
-		for (FormActionMD act : mainFormPane.getFormMetadata().getActions()) {
-			if (formActionMD.getCode().equals(act.getParentActionCode())) {
-				mainFormPane.getButtonsToolBar().actionItemsMap.get(act.getCode()).doActionWithConfirm(recordIndex);
+		if (null != formActionMD.getCode()) {
+			for (FormActionMD act : mainFormPane.getFormMetadata().getActions()) {
+				Utils.debug("formActionMD:" + formActionMD);
+				Utils.debug("formActionMD.getCode():" + formActionMD.getCode());
+				Utils.debug("act.getParentActionCode():" + act.getParentActionCode());
+				if (null != act.getParentActionCode() && formActionMD.getCode().equals(act.getParentActionCode())) {
+					mainFormPane.getButtonsToolBar().actionItemsMap.get(act.getCode()).doActionWithConfirm(recordIndex);
+				}
 			}
 		}
 	};

@@ -3,6 +3,7 @@ package com.abssoft.constructor.server;
 //TODO Google Authentification: 
 //http://code.google.com/intl/ru-RU/apis/accounts/
 //https://www.google.com/accounts/AuthSubRequest?next=http%3A%2F%2Feu.bas.kz%3A8000%2FConstructorApp%2F&&scope=http%3A%2F%2Fwww.google.com%2Fcalendar%2Ffeeds%2F
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,8 +35,9 @@ import com.abssoft.constructor.common.metadata.StaticLookup;
  * @author amuslimov
  * 
  */
-public class Session {
+public class Session implements Serializable {
 
+	private static final long serialVersionUID = 8497777456570432919L;
 	private OracleConnection connection;
 	private String fcSchemaOwner;
 	private HashMap<String, Form> formDataHashMap = new HashMap<String, Form>();
@@ -67,7 +69,7 @@ public class Session {
 	public void debug(String text) {
 		// Timer t = new Timer();
 		if (isDebugEnabled) {
-//			Utils.spoolOut(text);
+			Utils.spoolOut(text);
 		}
 	};
 
@@ -126,7 +128,7 @@ public class Session {
 	public FormMD getFormMetaData(FormInstanceIdentifier fi, boolean isNonLookupForm) throws SQLException {
 		// String formMapKey = (null == parentFormCode) ? formCode : formCode + "." + parentFormCode;
 		if (!formDataHashMap.containsKey(fi.getKey())) {
-			Form form = new Form(connection, fi.getFormCode(), fi.getParentFormCode(), fi.getIsDrillDownForm(), this);
+			Form form = new Form(connection, this, fi);
 			form.setFcSchemaOwner(fcSchemaOwner);
 			formDataHashMap.put(fi.getKey(), form);
 		}

@@ -378,9 +378,36 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 		}
 	}
 
+	// Тест сериализации сессий: http://habrahabr.ru/post/60317/
+	// private void SerializeSession(Session session) {
+	//
+	// try {
+	// FileOutputStream fos;
+	// fos = new FileOutputStream("session-" + session.getClass().toString() + ".serialization");
+	// ObjectOutputStream oos = new ObjectOutputStream(fos);
+	// oos.writeObject(session);
+	// oos.flush();
+	// oos.close();
+	// } catch (FileNotFoundException e1) {
+	// // TODO Auto-generated catch block
+	// e1.printStackTrace();
+	// } catch (IOException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// } catch (Exception e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	//
+	// }
+
 	public void sessionClose(int sessionId) {
 		if (sessionData.containsKey(sessionId)) {
 			Session session = getSessionData(sessionId);
+			// Тест сериализации сессий: http://habrahabr.ru/post/60317/
+			// Вообще - нужна периодическая пробежка по сессиям, которые давно не использовались (по таймауту мочим).
+			// Нифира не заработало из-за: java.io.NotSerializableException: oracle.jdbc.driver.T4CConnection
+			// SerializeSession(session);
 			try {
 				Connection connection = getSessionData(sessionId).getConnection();
 				session.debug("Close connection:" + connection);
