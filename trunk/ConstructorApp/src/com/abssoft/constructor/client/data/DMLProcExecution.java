@@ -137,6 +137,7 @@ public class DMLProcExecution {
 						if (null != selectedRec) {
 							grid.selectRecord(selectedRec);
 							int selectedRecIdx = grid.getRecordIndex(selectedRec);
+							Utils.debug("DMLProcExecution.executeDML.onSuccess.UPDATE. Before mainFormPane.filterDetailData");
 							mainFormPane.filterDetailData(selectedRec, grid, selectedRecIdx);
 						}
 					} catch (Exception e) {

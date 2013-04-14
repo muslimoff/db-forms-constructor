@@ -219,8 +219,9 @@ public class FormAction {
 
 	/********************************************************************/
 	private void doRefreshFormData() {
-		mainFormPane.setPrevParentFormCriteria(MainFormPane.INTITAL_PREV_CRIT);
-		mainFormPane.filterData();
+		// mainFormPane.setPrevParentFormCriteria1();
+		Utils.debug("FormAction.doRefreshFormData. Before filterData 1.");
+		mainFormPane.filterData(mainFormPane.getParentFormCriteria(), true);
 	}
 
 	/********************************************************************/
@@ -230,6 +231,7 @@ public class FormAction {
 		// int currRecSelected = grid.getRecordIndex(grid.getSelectedRecord());
 		if (currRecSelected > 0) {
 			grid.selectSingleRecord(--currRecSelected);
+			Utils.debug("FormAction.doGoToPrevRow. Before mainFormPane.filterDetailData");
 			mainFormPane.filterDetailData(grid.getRecord(currRecSelected), grid, currRecSelected);
 		}
 	}
@@ -241,6 +243,7 @@ public class FormAction {
 		// int currRecSelected = grid.getRecordIndex(grid.getSelectedRecord());
 		if (currRecSelected + 1 < grid.getTotalRows()) {
 			grid.selectSingleRecord(++currRecSelected);
+			Utils.debug("FormAction.doGoToNextRow. Before mainFormPane.filterDetailData");
 			mainFormPane.filterDetailData(grid.getRecord(currRecSelected), grid, currRecSelected);
 		}
 	}
@@ -267,8 +270,8 @@ public class FormAction {
 		}
 		title = mainFormPane.getFormMetadata().getFormName() + " - " + title;
 		TabSet t = mainFormPane.getMainFormContainer().getParentTabSet();
-		new MainFormContainer(new FormTabMD(), FormTab.TabType.MAIN, t, formActionMD.getChildFormCode(), false, true, true, mainFormPane,
-				title, mainFormPane.getFormMetadata().getIconId(), true);
+		new MainFormContainer(mainFormPane.getThisFormCriteria(), new FormTabMD(), FormTab.TabType.MAIN, t,
+				formActionMD.getChildFormCode(), false, true, true, mainFormPane, title, mainFormPane.getFormMetadata().getIconId(), true);
 	}
 
 	/********************************************************************/
@@ -284,8 +287,8 @@ public class FormAction {
 		title = mainFormPane.getFormMetadata().getFormName() + " - " + title;
 		final TabSet t = new TabSet();
 		t.setTabBarPosition(Side.BOTTOM);
-		new MainFormContainer(new FormTabMD(), FormTab.TabType.MAIN, t, formActionMD.getChildFormCode(), false, false, true, mainFormPane,
-				title, mainFormPane.getFormMetadata().getIconId(), true);
+		new MainFormContainer(mainFormPane.getThisFormCriteria(), new FormTabMD(), FormTab.TabType.MAIN, t,
+				formActionMD.getChildFormCode(), false, false, true, mainFormPane, title, mainFormPane.getFormMetadata().getIconId(), true);
 		final Window w = new Window();
 		w.setWidth("80%");
 		w.setHeight("80%");

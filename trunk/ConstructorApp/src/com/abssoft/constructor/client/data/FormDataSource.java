@@ -77,7 +77,7 @@ public class FormDataSource extends GwtRpcDataSource {
 		final Integer startRow = (null == request.getStartRow()) ? 0 : request.getStartRow();
 		final Integer endRow = (null == request.getEndRow()) ? 1000 : request.getEndRow();
 		final ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
-		Utils.debug("ListGrid: " + grid);
+		// Utils.debug("ListGrid: " + grid);
 
 		Criteria cr;
 		// TODO Фильтры - передача на сервер так же строк вида "&field_name"="and field_name like 'Val%'"
@@ -125,9 +125,8 @@ public class FormDataSource extends GwtRpcDataSource {
 						totalRows = result.getTotalRows();
 						response.setTotalRows(totalRows);
 						response.setData(records);
-						// response.getData()
-						// ((TreeGrid) grid).getTree();
 						processResponse(requestId, response);
+						Utils.debug("BBBBBBBBBBBBBBBBBBBB>>>>>>" + mainFormPane.getFormCode());
 						mainFormPane.getMainForm().getBottomToolBar().setRowsCount(totalRows + "");
 						ValuesManager vm = mainFormPane.getValuesManager();
 						int dynFormsCount = vm.getMembers().length;
@@ -135,7 +134,7 @@ public class FormDataSource extends GwtRpcDataSource {
 							if (0 == startRow) {
 								// Criteria thisFormCriteria = Utils.getCriteriaFromListGridRecord(mainFormPane, records[0]);
 								// mainFormPane.setThisFormCriteria(thisFormCriteria);
-								mainFormPane.setThisFormCriteria(records[0]);
+
 								if (mainFormPane.isMasterForm()) {
 									grid.focus();
 								}
@@ -144,11 +143,11 @@ public class FormDataSource extends GwtRpcDataSource {
 								if (null == grid.getSelectedRecord()) {
 									grid.selectRecord(0);
 									mainFormPane.setSelectedRow(0);
+									Utils.debug("FormDatasource.fetch. before mainFormPane.filterDetailData.1:" + grid.getSelectedRecord());
 									// Refresh только для static detail
-									mainFormPane.filterDetailData(
-									// initialFilter,
-											grid.getSelectedRecord(), grid, 0, false, true, true);
-									Utils.debug("vm.getMembers().length=" + dynFormsCount);
+									mainFormPane.filterDetailData(records[0]// grid.getSelectedRecord()
+											, grid, 0, false, true, true);
+									Utils.debug("vm.getMembers().length=" + dynFormsCount + "; FormCode:" + mainFormPane.getFormCode());
 									if (0 != dynFormsCount) {
 										vm.editRecord(records[0]);
 									}
@@ -159,6 +158,7 @@ public class FormDataSource extends GwtRpcDataSource {
 							// mainFormPane.getMainForm().exportData();
 							// }
 						} else {
+							Utils.debug("FormDatasource.fetch. before mainFormPane.filterDetailData.2:");
 							mainFormPane.filterDetailData(null, grid, -1);
 							if (0 != dynFormsCount) {
 								vm.editNewRecord();

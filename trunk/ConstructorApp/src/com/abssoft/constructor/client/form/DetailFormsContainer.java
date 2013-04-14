@@ -18,6 +18,8 @@ import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.events.CloseClickHandler;
 import com.smartgwt.client.widgets.tab.events.TabCloseClickEvent;
+import com.smartgwt.client.widgets.tab.events.TabSelectedEvent;
+import com.smartgwt.client.widgets.tab.events.TabSelectedHandler;
 
 public class DetailFormsContainer extends TabSet {
 	class DetailTabsArr extends HashMap<String, MainFormPane> {
@@ -219,8 +221,9 @@ public class DetailFormsContainer extends TabSet {
 
 	}
 
-	DetailFormsContainer(MainFormPane mainFormPane, Orientation orientation) {
+	DetailFormsContainer(Criteria parentFormCriteria, MainFormPane mainFormPane, Orientation orientation) {
 		Utils.debug("DetailFormsContainer... orientation:" + orientation);
+		Utils.debug("DetailFormsContainer... parentFormCriteria:" + parentFormCriteria.getValues());
 		this.setDestroyPanes(false);
 		this.mainFormPane = mainFormPane;
 		this.orientation = orientation;
@@ -253,8 +256,8 @@ public class DetailFormsContainer extends TabSet {
 			String tabTypeMD = m.getTabType();
 			if (orientation == (m.getTabPosition().equals("B") ? Orientation.VERTICAL : Orientation.HORIZONTAL)) {
 				if (null != m.getChildFormCode() && FormTab.TabType.DETAIL.getValue().equals(tabTypeMD)) {
-					new MainFormContainer(m, FormTab.TabType.DETAIL, this, m.getChildFormCode(), false, false, false, mainFormPane, m
-							.getTabName(), m.getIconId(), false);
+					new MainFormContainer(parentFormCriteria, m, FormTab.TabType.DETAIL, this, m.getChildFormCode(), false, false, false,
+							mainFormPane, m.getTabName(), m.getIconId(), false);
 					tabCounter++;
 				} else if (FormTab.TabType.EDITOR.getValue().equals(tabTypeMD)) {
 					FormRowEditorTab t = new FormRowEditorTab(m, mainFormPane);
@@ -308,11 +311,12 @@ public class DetailFormsContainer extends TabSet {
 
 		if (0 == tabCounter) {
 			this.hide();
-		}
-		Utils.debug("DetailFormsContainer.filterDetailContainerData() start...");
-		if (!mainFormPane.getThisFormCriteria().equals(MainFormPane.INTITAL_CRITERIA)) {
-			filterDetailContainerData(mainFormPane.getThisFormCriteria(), true, true, true);
-			Utils.debug("DetailFormsContainer.filterDetailContainerData() executed...");
+		} else {
+			Utils.debug("DetailFormsContainer before filterDetailContainerData() start...");
+			if (!mainFormPane.getThisFormCriteria().equals(MainFormPane.INTITAL_CRITERIA)) {
+				filterDetailContainerData(mainFormPane.getThisFormCriteria(), true, true, true);
+				Utils.debug("DetailFormsContainer. after filterDetailContainerData() execution...");
+			}
 		}
 
 		addCloseClickHandler(new CloseClickHandler() {
@@ -323,6 +327,19 @@ public class DetailFormsContainer extends TabSet {
 				}
 			}
 		});
+
+		this.addTabSelectedHandler(new TabSelectedHandler() {
+
+			@Override
+			public void onTabSelected(TabSelectedEvent event) {
+				// event.getTab()
+				MainFormPane mfp = (event.getTab() instanceof FormTab) ? ((FormTab) event.getTab()).getMainFormPane() : null;
+				if (null != mfp) {
+					mfp.filterData(DetailFormsContainer.this.parentFormCriteriaIntrn, false);
+				}
+			}
+		});
+
 		// this.hideTabBar();
 	}
 
@@ -343,12 +360,14 @@ public class DetailFormsContainer extends TabSet {
 			// не создавать.
 			if (filterDynamicMultiDetails && "2".equals(c.getFieldType()) && dynamicDetailTabs.containsKey(tabCode)) {
 				DynamicDetailTab dynamicDetailTab = dynamicDetailTabs.get(tabCode);
-				createDynamicMultiDetails(dynamicDetailTab, detFormCode);
+				createDynamicMultiDetails(parentFormCriteria, dynamicDetailTab, detFormCode);
 			}
 		}
 	}
 
-	public void createDynamicMultiDetails(DynamicDetailTab dynamicDetailTab, String detFormCode) {
+	public void createDynamicMultiDetails(Criteria parentFormCriteria, DynamicDetailTab dynamicDetailTab, String detFormCode) {
+		Utils.debug("DetailFormsContainer.createDynamicMultiDetails. parentFormCriteria:"
+				+ (null == parentFormCriteria ? null : parentFormCriteria.getValues()));
 		dynMultiDetailTabsArr = dynamicDetailTab.getDynSingleDetailTabsArr();
 		if (dynMultiDetailTabsArr.containsKey(detFormCode)) {
 			// TODO - Как-то разрулить - не всегда необходимо переводить фокус на уже существующий детейл.
@@ -357,9 +376,11 @@ public class DetailFormsContainer extends TabSet {
 			this.selectTab(dynMultiDetailTabsArr.get(detFormCode));
 		} else {
 			if (null != detFormCode) {
-				boolean isMasterForm = true;
+				boolean isMasterForm = false; // true;
 				MainFormPane mfp = new MainFormPane(detFormCode, isMasterForm, false, mainFormPane, false, dynamicDetailTab.getFormTabMD()
-						.getTabCode());
+						.getTabCode(), parentFormCriteria
+				// mainFormPane.getThisFormCriteria()
+				);
 				dynMultiDetailTabsArr.put(detFormCode, mfp);
 				new MainFormContainer(dynamicDetailTab.getFormTabMD(), FormTab.TabType.DYNAMIC_DETAIL_MULTI, this, mfp, detFormCode,
 						isMasterForm, true, true, mainFormPane, dynamicDetailTab.getTitle(), dynamicDetailTab.getIconId());
@@ -381,13 +402,15 @@ public class DetailFormsContainer extends TabSet {
 		}
 	}
 
-	// @@@@ Не доделал
-	public void filterDetailContainerData(Criteria parentFormCriteria, boolean filterDynamicMultiDetails,
-			boolean filterDynamicSingleDetails, boolean filterStaticDetails) {
+	private Criteria parentFormCriteriaIntrn = new Criteria();
 
+	// @@@@ Не доделал
+	public void filterDetailContainerData(Criteria parentFormCriteriaExt, boolean filterDynamicMultiDetails,
+			boolean filterDynamicSingleDetails, boolean filterStaticDetails) {
+		this.parentFormCriteriaIntrn = parentFormCriteriaExt;
 		if (0 != tabCounter) {
 			Utils.debug("DetailFormsContainer.filterDetailContainerData. tabCounter:" + tabCounter + "; parentFormCriteria:"
-					+ parentFormCriteria.getValues());
+					+ this.parentFormCriteriaIntrn.getValues());
 			Utils.debug("DetailFormsContainer[" + orientation + "] - filterData");
 			for (Tab t : this.getTabs()) {
 				Utils.debug("GridRecordClickHandler.onRecordClick. Tab: " + t.getID());
@@ -395,18 +418,18 @@ public class DetailFormsContainer extends TabSet {
 				Utils.debug("Tab " + ft.getFormCode() + ": " + ft.getTabType() + "; " + ft.getClass());
 				if (filterStaticDetails && ft.getTabType().equals(FormTab.TabType.DETAIL) && ft instanceof MainFormContainer) {
 					MainFormPane mfp = ((MainFormContainer) ft).getMainFormPane();
-
-					//
 					mfp.getInstanceIdentifier().setParentFormTabCode(((MainFormContainer) ft).getTabMetaData().getTabCode());
-					// mfp.setThisFormCrit(initialFilter);
-					mfp.setParentFormCriteria(parentFormCriteria);
-					mfp.filterData();
+					if (this.getSelectedTab().equals(t)) {
+						// Utils.debugAlert("xxxxxxxx:" + parentFormCriteria.getValues());
+						Utils.debug("DetailFormsContainer.filterDetailContainerData. Before filterData 1.");
+						mfp.filterData(this.parentFormCriteriaIntrn, false);
+					}
 				}
 				if (ft.getTabType().equals(FormTab.TabType.EDITOR) && ft instanceof FormRowEditorTab) {
 					Utils.debug("FormRowEditorTab>>" + ((FormRowEditorTab) ft).getForm().getID());
 				}
 			}
-			createDynamicDetails(parentFormCriteria, filterDynamicMultiDetails, filterDynamicSingleDetails);
+			createDynamicDetails(this.parentFormCriteriaIntrn, filterDynamicMultiDetails, filterDynamicSingleDetails);
 		}
 	}
 
