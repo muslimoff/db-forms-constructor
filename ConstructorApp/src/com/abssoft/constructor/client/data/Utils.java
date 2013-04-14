@@ -422,7 +422,8 @@ public class Utils {
 		// // criteria.addCriteria(new Criteria(Constants.formMasterFormTabCode, e.getMessage()));
 		// // // Utils.debugAlert("6: Err");
 		// // }
-		Utils.debug("getCriteriaFromListGridRecord executed... mainFormPane: " + mainFormPane);
+		Utils.debug("getCriteriaFromListGridRecord executed... mainFormPane: " // + mainFormPane
+				);
 		return criteria;
 
 	}

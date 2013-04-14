@@ -218,12 +218,12 @@ class MainForm extends Canvas {
 		@Override
 		public void onRecordClick(RecordClickEvent event) {
 			Record r = event.getRecord();
-			Utils.debug("1. GridRecordClickHandler.onRecordClick. r:" + r);
+			Utils.debug("MainForm.GridRecordClickHandler.onRecordClick.1. r:" + r);
 			if (null == r) {
 				r = ((ListGrid) event.getSource()).getEditedRecord(event.getRecordNum());
-				Utils.debug("2. GridRecordClickHandler.onRecordClick. r:" + r);
+				Utils.debug("MainForm.GridRecordClickHandler.onRecordClick.2. r:" + r);
 			}
-			mainFormPane.setThisFormCriteria(r);
+			// mainFormPane.setThisFormCriteria(r);
 			mainFormPane.filterDetailData(r, treeGrid, event.getRecordNum());
 		}
 	}
@@ -237,7 +237,7 @@ class MainForm extends Canvas {
 			if (null == r) {
 				r = ((ListGrid) event.getSource()).getEditedRecord(event.getRowNum());
 			}
-			mainFormPane.setThisFormCriteria(r);
+			// mainFormPane.setThisFormCriteria(r);
 			mainFormPane.filterDetailData((ListGridRecord) r, treeGrid, event.getRowNum(), false, false, false);
 		}
 	}
@@ -375,6 +375,7 @@ class MainForm extends Canvas {
 					grid.deselectAllRecords();
 					grid.selectRecord(nextRecord);
 					mainFormPane.setSelectedRow(nextRecord);
+					Utils.debug("treeGrid.onEditorExit. before mainFormPane.filterDetailData");
 					mainFormPane.filterDetailData(grid.getRecord(nextRecord), treeGrid, nextRecord);
 				}
 				Utils.debug("treeGrid.onEditorExit ended...");
@@ -490,6 +491,7 @@ class MainForm extends Canvas {
 			treeGrid.setEditValues(rowNum, rowMap);
 		}
 		if (null == actMD.getDmlProcText()) {
+			Utils.debug("MainForm.setNewRecDefaultValues. Before mainFormPane.filterDetailData 1");
 			mainFormPane.filterDetailData(null, treeGrid, rowNum);
 		} else {
 			DMLProcExecution procExec = new DMLProcExecution(mainFormPane) {
@@ -498,6 +500,7 @@ class MainForm extends Canvas {
 					Utils.debug("MainForm.setNewRecDefaultValues: DMLProcExecution.executeSuccessSubProc() start...");
 					Map<String, Object> resultMap = Utils.getMapFromRow(dsFields, getResultRow());
 					treeGrid.setEditValues(rowNum, resultMap);
+					Utils.debug("MainForm.setNewRecDefaultValues. Before mainFormPane.filterDetailData 2");
 					mainFormPane.filterDetailData(null, treeGrid, rowNum);
 				}
 			};

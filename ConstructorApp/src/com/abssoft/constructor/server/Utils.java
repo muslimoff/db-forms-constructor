@@ -72,7 +72,7 @@ public class Utils {
 	}
 
 	public static void spoolOut(String text) {
-		System.out.println("SRV:" + text);
+		//System.out.println("SRV:" + text);
 	}
 
 	/**
