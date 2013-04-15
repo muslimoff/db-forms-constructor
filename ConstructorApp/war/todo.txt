@@ -1,4 +1,29 @@
-﻿20120901 SMA|SOS.
+﻿Изменения:
+forms2_pkg
++MENUS_PKG
++FORM_TAB_CHILDS_ALLOWED_PKG
+form_tab_parent_exclns_pkg
++FORM_UTILS
++FORM_COLUMNS_PKG
++FORMS_PKG
++forms_v
+
+Формы:
++FORM_ACTIONS
++FORM_COLUMNS
++FORM_TABS
++FORMS
++MENUS
++FORM_TAB_CHILDS_ALLOWED
++FORM_TAB_PARENT_EXCLNS
++LOOKUPS
+
+Лукапы:
+FORM_COLUMNS.TREE_FIELD_TYPE
+
+
+
+20120901 SMA|SOS.
 	-1. Доделать кнопочки на табсете: меню с наименованием, хинты для скрыть/показать.
 	-2. Цвет выбранной записи - сделать мегаярким.
 
@@ -148,7 +173,7 @@ http://127.0.0.1:8888/ConstructorApp.html?gwt.codesvr=127.0.0.1:9997&app.serverI
        +в) ширина, в т.ч. и "*".
   	   +г) дата
   	   +д) длинный текст, разворачивать на весь таб 
-  		е) длинный текст с подсветкой синтаксиса
+  	  -+е) длинный текст с подсветкой синтаксиса .201210 - пока только для PL/SQL. После перехода на структуру свойств в виде дерева - вернуться к вопросу (параметр - какой синтаксис) 
 	   +з) Лукапы простые
   	   *и) Лукапы SQL - перенесено в п. 20
   	   +к) Иконка
