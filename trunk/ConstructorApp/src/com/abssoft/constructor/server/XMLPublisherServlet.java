@@ -386,6 +386,12 @@ public class XMLPublisherServlet extends HttpServlet // implements javax.servlet
 		if ("application/vnd.ms-excel".equals(ContentType)) {
 			format = FOProcessor.FORMAT_EXCEL;
 			extention = "xls";
+		} else if ("application/pdf".equals(ContentType)) {
+			format = FOProcessor.FORMAT_PDF;
+			extention = "pdf";
+		} else if ("text/html".equals(ContentType)) {
+			format = FOProcessor.FORMAT_HTML;
+			extention = "html";
 		}
 		try {
 			ByteArrayOutputStream rtfOS = new ByteArrayOutputStream();
@@ -407,7 +413,15 @@ public class XMLPublisherServlet extends HttpServlet // implements javax.servlet
 
 			processor.setOutputFormat(format);
 			processor.setOutput(respOS);
+			processor.setConfig(getServletContext().getRealPath("/WEB-INF") + "/xdo.cfg");
 			processor.generate();
+			// oracle.apps.xdo.common.font.Font
+			// if (0 != processor.getRunException().getStackTrace().length) {
+			// Utils.spoolOut("XMLPublisherServlet.processXMLP. RunException: ");
+			// for (StackTraceElement e : processor.getRunException().getStackTrace()) {
+			// Utils.spoolOut("" + e);
+			// }
+			// }
 			foIS.close();
 			Utils
 					.spoolOut("xx" + resp.getLocale() + "; zz:" + resp.getContentType() + "; " + resp.getCharacterEncoding()
