@@ -2,16 +2,12 @@
 <project name="ConstructorApp_V2" default="build" basedir=".">
 	<property file="war/WEB-INF/application.properties" />
 	<!-- Configure path to GWT SDK -->
-	<property name="gwt.sdk" 				location="D:/GWT/lib/gwt-2.3.0" />
-<!--
-	<property name="smartgwt" 				location="D:/GWT/lib/smartgwt-2.5" />
-	<property name="smartgwt" 				location="D:/GWT/lib/smartgwt-3.0p" />
--->
-	<property name="smartgwt" 				location="D:/GWT/lib/smartgwt-3.1d-20121004" />
-	<property name="ofcgwt" 				location="D:/GWT/lib/ofcgwt.2.0.1.b" />
-	<property name="xmlp" 					location="D:/GWT/lib/xmlp" />
-	<property name="catalina.home" 			location="D:/Tomcat60/Tomcat 6.0" />
-	<property name="catalina.servicename" 	value="Tomcat6" />
+	<property name="gwt.sdk" location="D:/GWT/lib/gwt-2.3.0" />
+	<property name="smartgwt" location="D:/GWT/lib/smartgwt-3.1p-20121210" />
+	<property name="ofcgwt" location="D:/GWT/lib/ofcgwt.2.0.1.b" />
+	<property name="xmlp" location="D:/GWT/lib/xmlp" />
+	<property name="catalina.home" location="D:/Tomcat60/Tomcat 6.0" />
+	<property name="catalina.servicename" value="Tomcat6" />
 
 	<path id="project.class.path">
 		<pathelement location="war/WEB-INF/classes" />
@@ -20,7 +16,7 @@
 		<pathelement location="${smartgwt}/smartgwt-skins.jar" />
 		<pathelement location="${ofcgwt}/ofcgwt.jar" />
 		<pathelement location="${gwt.sdk}/gwt-user.jar" />
-<!--		<pathelement location="${gwt.sdk}/gwt-bikeshed.jar" />   -->
+		<!--		<pathelement location="${gwt.sdk}/gwt-bikeshed.jar" />   -->
 		<pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
 		<pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
 		<pathelement location="${xmlp}/*.jar" />
@@ -36,7 +32,7 @@
 		<property name="app.version" value="${major.minor}.${build.number}" />
 		<echo message="Generated version: ${app.version}" />
 	</target>
-	
+
 	<target name="libs" depends="build_number" description="Copy libs to WEB-INF/lib">
 		<mkdir dir="war/WEB-INF/lib" />
 		<copy todir="war/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet.jar" />
@@ -71,21 +67,24 @@
 
 
 	<target name="copyFiles" depends="build" description="Create a war file">
+		<copy todir="war/src">
+			<fileset dir="src" includes="**/*.java" />
+		</copy>
 		<copy todir="war/constructorapp/sc/resources">
 			<fileset dir="resources" excludes="**/.svn" />
 		</copy>
-		
+
 		<copy todir="war/constructorapp">
-					<fileset dir="externalJS/" excludes="**/.svn" />
+			<fileset dir="externalJS/" excludes="**/.svn" />
 		</copy>
-		
+
 		<copy file="war/ConstructorApp.html" tofile="war/ConstructorApp_war.html" overwrite="true">
 			<filterchain>
 				<replacetokens>
 					<token key="version" value="${app.version}" />
 				</replacetokens>
 				<tokenfilter>
-				    <replacestring from="var isomorphicDir = &quot;constructorapp/sc/&quot;;" to="var isomorphicDir = &quot;../../sc/&quot;;"/>
+					<replacestring from="var isomorphicDir = &quot;constructorapp/sc/&quot;;" to="var isomorphicDir = &quot;../../sc/&quot;;" />
 				</tokenfilter>
 			</filterchain>
 		</copy>
@@ -97,25 +96,25 @@
 			</filterchain>
 		</copy>
 	</target>
-<!--
+	<!--
 	<target name="war" depends="copyFiles" description="Create a war file">
 		<zip destfile="ConstructorApp_w_libs.war" basedir="war" excludes="**/.svn" />
 		<zip destfile="ConstructorApp.war" basedir="war" excludes="**/.svn, **/WEB-INF/lib/**, **/constructorapp/sc/**" />
 	</target>
 -->
 	<target name="war" depends="copyFiles" description="Create a war file">
-<!-- -->		
+		<!-- - ->
 		<zip destfile="ConstructorApp_w_libs.war">
 			<zipfileset dir="war" excludes="**/.svn, ConstructorApp*.html, **/.air" />
-			<zipfileset dir="war" includes="ConstructorApp_war.html" fullpath="ConstructorApp.html"/>
+			<zipfileset dir="war" includes="ConstructorApp_war.html" fullpath="ConstructorApp.html" />
 		</zip>
-<!-- -->
+		< !- - -->
 		<zip destfile="ConstructorApp.war">
 			<zipfileset dir="war" excludes="**/.svn, **/WEB-INF/lib/**, **/constructorapp/sc/**, ConstructorApp*.html, **/.air" />
-			<zipfileset dir="war" includes="ConstructorApp_war.html" fullpath="ConstructorApp.html"/>
+			<zipfileset dir="war" includes="ConstructorApp_war.html" fullpath="ConstructorApp.html" />
 		</zip>
 	</target>
-		
+
 	<target name="StopTomcat" depends="war" description="Stop Tomcat">
 		<exec executable="net">
 			<arg value="stop" />
