@@ -67,9 +67,14 @@
 
 
 	<target name="copyFiles" depends="build" description="Create a war file">
-		<copy todir="war/src">
+<!--		<copy todir="war/src">
 			<fileset dir="src" includes="**/*.java" />
 		</copy>
+-->		
+		<zip destfile="war/src.zip">
+			<zipfileset dir="src" includes="**/*.java" />
+		</zip>
+				
 		<copy todir="war/constructorapp/sc/resources">
 			<fileset dir="resources" excludes="**/.svn" />
 		</copy>
