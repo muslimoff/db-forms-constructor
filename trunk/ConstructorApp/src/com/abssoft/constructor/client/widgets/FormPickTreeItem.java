@@ -83,8 +83,9 @@ public class FormPickTreeItem extends IPickTreeItem {
 		this.lookupCode = columnMD.getLookupCode();
 		this.columnMD = columnMD;
 		int gridHashCode = 10000 + FormPickTreeItem.this.columnMD.getDisplayNum();
-		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, lookupCode, null, gridHashCode,
-				ConstructorApp.debugEnabled);
+		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, lookupCode, ConstructorApp.debugEnabled, true, false,
+				mainFormPane.getFormCode(), null);
+		instanceIdentifier.setGridHashCode(gridHashCode);
 		FormMD fmd = mainFormPane.getFormMetadata().getLookupsArr().get(lookupCode);
 		Utils.debug("PickDataSource ******** " + fmd.getFormName());
 		final MainFormPane mfp = new MainFormPane();

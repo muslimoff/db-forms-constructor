@@ -48,14 +48,171 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 //@SuppressWarnings("serial")
 public class QueryServiceImpl extends RemoteServiceServlet implements QueryService {
 
-	private static final long serialVersionUID = 9137729400867519828L;
 	public static final HashMap<String, String> queryMap1 = new HashMap<String, String>();
-	private ServerInfoArr serverInfoArr = new ServerInfoArr();
+	private static final long serialVersionUID = 9137729400867519828L;
 	private static final HashMap<Integer, Session> sessionData = new HashMap<Integer, Session>();
+
+	public static Session getSessionData(FormInstanceIdentifier fi) {
+		Session s = getSessionData(fi.getSessionId());
+		s.setIsDebugEnabled(fi.getIsDebugEnabled());
+		return s;
+	}
 
 	// private String appServerVersion = "";
 
-	public String getAppServerVersion(String webinfPath) {
+	public static Session getSessionData(Integer sessionID) {
+		Session s = sessionData.get(sessionID);
+		return s;
+	}
+
+	private ServerInfoArr serverInfoArr = new ServerInfoArr();
+
+	// public static String SERVER_WEB_INF;
+	private static String webinfPath;
+
+	public QueryServiceImpl() {
+	}
+
+	public void closeForm(FormInstanceIdentifier fi, FormMD formState) {
+		Session session = getSessionData(fi);
+		session.debug("service " + fi.getInfo() + " before close...");
+		session.closeForm(fi, formState);
+		session.debug("service form " + fi.getInfo() + " closed...");
+	}
+
+	public ConnectionInfo connect(int ServerIdx, String user, String password, boolean isScript, String urlParams, Boolean isDebugEnabled) {
+
+		// ServletContext x = getServletContext();
+
+		// String jSessionId = httpSession.getId();
+		// //////////////////////////////////
+		Session session = Session.getEmptySession(isDebugEnabled);
+
+		try {
+			HttpSession httpSession = this.getThreadLocalRequest().getSession();
+			this.getThreadLocalResponse().addCookie(new Cookie("xxx", "yyy"));
+			session.debug("jSessionId: " + httpSession.getId());
+			for (Cookie c : this.getThreadLocalRequest().getCookies()) {
+				session.debug("Cookie:" + c.getName() + "=\"" + c.getValue() + "\"");
+			}
+		} catch (Exception e) {
+			session.debug("httpSession error 1:");
+			e.printStackTrace();
+		}
+
+		session.debug("QueryServiceImpl.connect. urlParams:" + urlParams);
+		String errMsg = "";
+		int sessionId = -1;
+		try {
+			session.debug("QueryServiceImpl.connect. Before connect...");
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			ServerInfoMD serverInfoMD = serverInfoArr.get(ServerIdx);
+			session.debug("serverInfoMD:" + serverInfoMD);
+			String userName = serverInfoMD.isTransferPassToClient() ? user : serverInfoMD.getDbUsername();
+			String userPass = serverInfoMD.isTransferPassToClient() ? password : serverInfoMD.getDbPassword();
+			Locale.setDefault(Locale.ENGLISH);
+			Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@" + serverInfoMD.getDbUrl(), userName, userPass);
+			session.debug("Connected..");
+			{
+				String nlsLangSQL = "alter session set nls_language='AMERICAN'";
+				OraclePreparedStatement nlsStmnt = (OraclePreparedStatement) connection.prepareStatement(nlsLangSQL);
+				nlsStmnt.execute();
+				nlsStmnt.close();
+			}
+			{
+				String sessionSQL = "Select USERENV ('sessionid') as sessionid From DUAL";
+				Statement sessionStmnt = connection.createStatement();
+				ResultSet sessionidRS = sessionStmnt.executeQuery(sessionSQL);
+				sessionidRS.next();
+				sessionId = sessionidRS.getBigDecimal(1).intValue();
+				sessionidRS.close();
+				sessionStmnt.close();
+			}
+			// mm20110724 Выключил автокоммит сессии для управления комитом на уровне действий (FormActionMD.autoCommit)
+			connection.setAutoCommit(false);
+			session = new Session(connection, serverInfoMD, isDebugEnabled, isScript);
+			// Custom Login Validation
+			Utils.spoolOut("serverInfoMD.isTransferPassToClient():" + serverInfoMD.isTransferPassToClient());
+			if (!serverInfoMD.isTransferPassToClient()) {
+				session.debug("QueryServiceImpl.connect. Custom Login.");
+				session.debug("user:" + user + "; password:" + password + "; userName:" + userName + "; userPass:" + userPass);
+				String validateLoginSQL = Utils.getSQLQueryFromXML("customLoginValidationSQL", session);
+				session.debug("@@@validateLoginSQL:\n" + validateLoginSQL);
+				OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(validateLoginSQL);
+				session.debug("Parameters: ");
+				Utils.setParameterValue(session, statement, "p_username", user);
+				Utils.setParameterValue(session, statement, "p_password", password);
+				Utils.setParameterValue(session, statement, "p_url_params", urlParams);
+				ResultSet loginRS = statement.executeQuery();
+				loginRS.next();
+				Boolean isLoginValid = "Y".equals(loginRS.getString("isValid"));
+				loginRS.close();
+				if (!isLoginValid) {
+					connection.close();
+					sessionId = -1;
+					throw new Exception("Пароль не тот...");
+				}
+			}
+			sessionData.put(sessionId, session);
+			try {
+				this.getThreadLocalRequest().getSession(true).setAttribute(Utils.sessionIdentifier, sessionId);
+
+			} catch (Exception e) {
+				session.debug("httpSession error 2:");
+				e.printStackTrace();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			errMsg = e.toString();
+			sessionId = -1;
+		}
+		ConnectionInfo c = new ConnectionInfo(errMsg, sessionId);
+		c.setDbServerVersion("bla-bla-bla...");
+		session.debug("sessionId: " + sessionId + "; " + errMsg);
+		return c;
+	}
+
+	public Row executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow, FormActionMD actMD) {
+		Session session = getSessionData(fi);
+		try {
+			return session.executeDML(fi, oldRow, newRow, actMD);
+		} catch (Exception e) {
+			e.printStackTrace();
+			session.debug("QueryServiceImpl.executeDML... oldRow:" + oldRow + "; newRow:" + newRow);
+			Row r;
+			if (!"3".equals(actMD.getType())
+			// !ClientActionType.DEL.equals(clientActionType)
+			) {
+
+				r = newRow;
+			} else {
+				r = oldRow;
+			}
+			ActionStatus actionStatus = r.getStatus();
+			actionStatus.setStatusType(ActionStatus.StatusType.ERROR);
+			String longMessageText = actionStatus.getLongMessageText();
+			longMessageText = e.getMessage() + "\n-------------------------\n" + longMessageText;
+			actionStatus.setLongMessageText(longMessageText);
+			r.setStatus(actionStatus);
+			return r;
+		}
+	}
+
+	public RowsArr fetch(FormInstanceIdentifier fi, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch) {
+		RowsArr result = new RowsArr();
+		Session session = getSessionData(fi);
+		session.debug("QueryServiceImpl.fetch. start");
+		try {
+			result = session.fetch(fi, sortBy, startRow, endRow, criteria, forceFetch);
+		} catch (SQLException e) {
+			result.setStatus(new ActionStatus(Utils.getExceptionStackIntoString(e), ActionStatus.StatusType.ERROR));
+		}
+		session.debug("QueryServiceImpl.fetch. end");
+		return result;
+	}
+
+	public String getAppServerVersion() {
 		String appServerVersion = "";
 		Properties prop = new Properties();
 		try {
@@ -67,23 +224,85 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 		return appServerVersion;
 	}
 
-	public static Session getSessionData(Integer sessionID) {
-		Session s = sessionData.get(sessionID);
-		return s;
+	// TODO DownloadFileTest
+	public String getFile() {
+		return "DownloadFileTest@";
 	}
 
-	public static Session getSessionData(FormInstanceIdentifier fi) {
-		Session s = getSessionData(fi.getSessionId());
-		s.setIsDebugEnabled(fi.getIsDebugEnabled());
-		return s;
+	public FormMD getFormMetaData(FormInstanceIdentifier fi) {
+		FormMD result = new FormMD();
+		Session session = getSessionData(fi);
+		try {
+			result = session.getFormMetaData(fi);
+		} catch (Exception e) {
+			String errMsg = Utils.getExceptionStackIntoString(e);
+			errMsg = "FormCode:" + fi.getFormCode() + "\n" + errMsg;
+			result.setStatus(new ActionStatus(errMsg, ActionStatus.StatusType.ERROR));
+		}
+		return result;
 	}
 
-	// public static String SERVER_WEB_INF;
+	public MenusArr getMenusArr(int sessionId) {
+		return getSessionData(sessionId).getMenusArrOld();
+	}
+
+	/**
+	 * @return the serverInfoArr
+	 */
+	public ServerInfoArr getServerInfoArrWithoutPassword() {
+		ServerInfoArr result = new ServerInfoArr();
+		for (int i = 0; i < serverInfoArr.size(); i++) {
+			ServerInfoMD x = (ServerInfoMD) serverInfoArr.get(i).clone();
+			x.setDbUrl(null);
+			if (!x.isTransferPassToClient()) {
+				x.setDbPassword(null);
+				x.setDbUsername(null);
+			}
+			result.add(x);
+		}
+
+		result.setSkinsList(serverInfoArr.getSkinsList());
+		result.setAppServerVersion(serverInfoArr.getAppServerVersion());
+		Utils.spoolOut("serverInfoArr:" + serverInfoArr);
+		Utils.spoolOut("result:" + result);
+		return result;
+	}
+
+	public StaticLookupsArr getStaticLookupsArr(int sessionId) {
+		return getSessionData(sessionId).getStaticLookupsArr();
+	}
+
+	public static String getWebinfPath() {
+		return webinfPath;
+	}
+
+	// Тест сериализации сессий: http://habrahabr.ru/post/60317/
+	// private void SerializeSession(Session session) {
+	//
+	// try {
+	// FileOutputStream fos;
+	// fos = new FileOutputStream("session-" + session.getClass().toString() + ".serialization");
+	// ObjectOutputStream oos = new ObjectOutputStream(fos);
+	// oos.writeObject(session);
+	// oos.flush();
+	// oos.close();
+	// } catch (FileNotFoundException e1) {
+	// // TODO Auto-generated catch block
+	// e1.printStackTrace();
+	// } catch (IOException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// } catch (Exception e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	//
+	// }
 
 	@Override
 	public void init() throws ServletException {
 		super.init();
-		String webinfPath = getServletContext().getRealPath("/WEB-INF");
+		webinfPath = getServletContext().getRealPath("/WEB-INF");
 		String filename = webinfPath + "/" + "constructorapp.connections.xml";
 		Utils.spoolOut("filename: " + filename);
 		Utils.spoolOut("Middle tier service '" + this.getClass() + "' started...");
@@ -93,11 +312,8 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 		}
 
 		this.serverInfoArr = ReadSettingsXML(filename);
-		this.serverInfoArr.setAppServerVersion(getAppServerVersion(webinfPath));
+		this.serverInfoArr.setAppServerVersion(getAppServerVersion());
 		Utils.spoolOut("appServerVersion3:" + this.serverInfoArr.getAppServerVersion());
-	}
-
-	public QueryServiceImpl() {
 	}
 
 	private ServerInfoArr ReadSettingsXML(String filename) {
@@ -203,204 +419,6 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 		return result;
 	}
 
-	/**
-	 * @return the serverInfoArr
-	 */
-	public ServerInfoArr getServerInfoArrWithoutPassword() {
-		ServerInfoArr result = new ServerInfoArr();
-		for (int i = 0; i < serverInfoArr.size(); i++) {
-			ServerInfoMD x = (ServerInfoMD) serverInfoArr.get(i).clone();
-			x.setDbUrl(null);
-			if (!x.isTransferPassToClient()) {
-				x.setDbPassword(null);
-				x.setDbUsername(null);
-			}
-			result.add(x);
-		}
-
-		result.setSkinsList(serverInfoArr.getSkinsList());
-		result.setAppServerVersion(serverInfoArr.getAppServerVersion());
-		Utils.spoolOut("serverInfoArr:" + serverInfoArr);
-		Utils.spoolOut("result:" + result);
-		return result;
-	}
-
-	public ConnectionInfo connect(int ServerIdx, String user, String password, boolean isScript, String urlParams, Boolean isDebugEnabled) {
-
-		// ServletContext x = getServletContext();
-
-		// String jSessionId = httpSession.getId();
-		// //////////////////////////////////
-		Session session = Session.getEmptySession(isDebugEnabled);
-
-		try {
-			HttpSession httpSession = this.getThreadLocalRequest().getSession();
-			this.getThreadLocalResponse().addCookie(new Cookie("xxx", "yyy"));
-			session.debug("jSessionId: " + httpSession.getId());
-			for (Cookie c : this.getThreadLocalRequest().getCookies()) {
-				session.debug("Cookie:" + c.getName() + "=\"" + c.getValue() + "\"");
-			}
-		} catch (Exception e) {
-			session.debug("httpSession error 1:");
-			e.printStackTrace();
-		}
-
-		session.debug("QueryServiceImpl.connect. urlParams:" + urlParams);
-		String errMsg = "";
-		int sessionId = -1;
-		try {
-			session.debug("QueryServiceImpl.connect. Before connect...");
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			ServerInfoMD serverInfoMD = serverInfoArr.get(ServerIdx);
-			session.debug("serverInfoMD:" + serverInfoMD);
-			String userName = serverInfoMD.isTransferPassToClient() ? user : serverInfoMD.getDbUsername();
-			String userPass = serverInfoMD.isTransferPassToClient() ? password : serverInfoMD.getDbPassword();
-			Locale.setDefault(Locale.ENGLISH);
-			Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@" + serverInfoMD.getDbUrl(), userName, userPass);
-			session.debug("Connected..");
-			{
-				String nlsLangSQL = "alter session set nls_language='AMERICAN'";
-				OraclePreparedStatement nlsStmnt = (OraclePreparedStatement) connection.prepareStatement(nlsLangSQL);
-				nlsStmnt.execute();
-				nlsStmnt.close();
-			}
-			{
-				String sessionSQL = "Select USERENV ('sessionid') as sessionid From DUAL";
-				Statement sessionStmnt = connection.createStatement();
-				ResultSet sessionidRS = sessionStmnt.executeQuery(sessionSQL);
-				sessionidRS.next();
-				sessionId = sessionidRS.getBigDecimal(1).intValue();
-				sessionidRS.close();
-				sessionStmnt.close();
-			}
-			// mm20110724 Выключил автокоммит сессии для управления комитом на уровне действий (FormActionMD.autoCommit)
-			connection.setAutoCommit(false);
-			session = new Session(connection, serverInfoMD, isDebugEnabled, isScript);
-			// Custom Login Validation
-			Utils.spoolOut("serverInfoMD.isTransferPassToClient():" + serverInfoMD.isTransferPassToClient());
-			if (!serverInfoMD.isTransferPassToClient()) {
-				session.debug("QueryServiceImpl.connect. Custom Login.");
-				session.debug("user:" + user + "; password:" + password + "; userName:" + userName + "; userPass:" + userPass);
-				String validateLoginSQL = Utils.getSQLQueryFromXML("customLoginValidationSQL", session);
-				session.debug("@@@validateLoginSQL:\n" + validateLoginSQL);
-				OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(validateLoginSQL);
-				session.debug("Parameters: ");
-				Utils.setParameterValue(session, statement, "p_username", user);
-				Utils.setParameterValue(session, statement, "p_password", password);
-				Utils.setParameterValue(session, statement, "p_url_params", urlParams);
-				ResultSet loginRS = statement.executeQuery();
-				loginRS.next();
-				Boolean isLoginValid = "Y".equals(loginRS.getString("isValid"));
-				loginRS.close();
-				if (!isLoginValid) {
-					connection.close();
-					sessionId = -1;
-					throw new Exception("Пароль не тот...");
-				}
-			}
-			sessionData.put(sessionId, session);
-			try {
-				this.getThreadLocalRequest().getSession(true).setAttribute(Utils.sessionIdentifier, sessionId);
-
-			} catch (Exception e) {
-				session.debug("httpSession error 2:");
-				e.printStackTrace();
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			errMsg = e.toString();
-			sessionId = -1;
-		}
-		ConnectionInfo c = new ConnectionInfo(errMsg, sessionId);
-		c.setDbServerVersion("bla-bla-bla...");
-		session.debug("sessionId: " + sessionId + "; " + errMsg);
-		return c;
-	}
-
-	public MenusArr getMenusArr(int sessionId) {
-		return getSessionData(sessionId).getMenusArrOld();
-	}
-
-	public StaticLookupsArr getStaticLookupsArr(int sessionId) {
-		return getSessionData(sessionId).getStaticLookupsArr();
-	}
-
-	public FormMD getFormMetaData(FormInstanceIdentifier fi) {
-		FormMD result = new FormMD();
-		Session session = getSessionData(fi);
-		try {
-			result = session.getFormMetaData(fi);
-		} catch (Exception e) {
-			String errMsg = Utils.getExceptionStackIntoString(e);
-			errMsg = "FormCode:" + fi.getFormCode() + "\n" + errMsg;
-			result.setStatus(new ActionStatus(errMsg, ActionStatus.StatusType.ERROR));
-		}
-		return result;
-	}
-
-	public RowsArr fetch(FormInstanceIdentifier fi, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch) {
-		RowsArr result = new RowsArr();
-		Session session = getSessionData(fi);
-		session.debug("QueryServiceImpl.fetch. start");
-		try {
-			result = session.fetch(fi, sortBy, startRow, endRow, criteria, forceFetch);
-		} catch (SQLException e) {
-			result.setStatus(new ActionStatus(Utils.getExceptionStackIntoString(e), ActionStatus.StatusType.ERROR));
-		}
-		session.debug("QueryServiceImpl.fetch. end");
-		return result;
-	}
-
-	public Row executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow, FormActionMD actMD) {
-		Session session = getSessionData(fi);
-		try {
-			return session.executeDML(fi, oldRow, newRow, actMD);
-		} catch (Exception e) {
-			e.printStackTrace();
-			session.debug("QueryServiceImpl.executeDML... oldRow:" + oldRow + "; newRow:" + newRow);
-			Row r;
-			if (!"3".equals(actMD.getType())
-			// !ClientActionType.DEL.equals(clientActionType)
-			) {
-
-				r = newRow;
-			} else {
-				r = oldRow;
-			}
-			ActionStatus actionStatus = r.getStatus();
-			actionStatus.setStatusType(ActionStatus.StatusType.ERROR);
-			String longMessageText = actionStatus.getLongMessageText();
-			longMessageText = e.getMessage() + "\n-------------------------\n" + longMessageText;
-			actionStatus.setLongMessageText(longMessageText);
-			r.setStatus(actionStatus);
-			return r;
-		}
-	}
-
-	// Тест сериализации сессий: http://habrahabr.ru/post/60317/
-	// private void SerializeSession(Session session) {
-	//
-	// try {
-	// FileOutputStream fos;
-	// fos = new FileOutputStream("session-" + session.getClass().toString() + ".serialization");
-	// ObjectOutputStream oos = new ObjectOutputStream(fos);
-	// oos.writeObject(session);
-	// oos.flush();
-	// oos.close();
-	// } catch (FileNotFoundException e1) {
-	// // TODO Auto-generated catch block
-	// e1.printStackTrace();
-	// } catch (IOException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// } catch (Exception e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	//
-	// }
-
 	public void sessionClose(int sessionId) {
 		if (sessionData.containsKey(sessionId)) {
 			Session session = getSessionData(sessionId);
@@ -419,23 +437,11 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 		}
 	}
 
-	public void closeForm(FormInstanceIdentifier fi, FormMD formState) {
-		Session session = getSessionData(fi);
-		session.debug("service " + fi.getInfo() + " before close...");
-		session.closeForm(fi, formState);
-		session.debug("service form " + fi.getInfo() + " closed...");
-	}
-
 	public Integer setExportData(FormInstanceIdentifier fi, ExportData exportData) {
 		Session session = getSessionData(fi);
 		session.debug("service " + fi.getInfo() + " before close...");
 		Integer result = session.setExportData(fi, exportData);
 		session.debug("service form " + fi.getInfo() + " closed...");
 		return result;
-	}
-
-	// TODO DownloadFileTest
-	public String getFile() {
-		return "DownloadFileTest@";
 	}
 }

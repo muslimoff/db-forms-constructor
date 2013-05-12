@@ -21,6 +21,7 @@ import com.abssoft.constructor.common.FormActionsArr;
 import com.abssoft.constructor.common.FormColumnsArr;
 import com.abssoft.constructor.common.FormInstanceIdentifier;
 import com.abssoft.constructor.common.FormTabsArr;
+import com.abssoft.constructor.common.FormsArr;
 import com.abssoft.constructor.common.Row;
 import com.abssoft.constructor.common.RowsArr;
 import com.abssoft.constructor.common.metadata.ColumnAction;
@@ -432,11 +433,13 @@ public class Form implements Serializable {
 		return result;
 	}
 
-	public FormMD getFormMetaData() throws SQLException {
-		return getFormMetaData(true);
-	}
+	// public FormMD getFormMetaData() throws SQLException {
+	// return getFormMetaData(true);
+	// }
 
-	public FormMD getFormMetaData(boolean isNonLookupForm) throws SQLException {
+	public FormMD getFormMetaData(
+	// boolean isNonLookupForm
+	) throws SQLException {
 		String formSQL = Utils.getSQLQueryFromXML("formSQL", session);
 		Integer ovn = -1; // Несуществующий ovn.
 		OraclePreparedStatement statement = (OraclePreparedStatement) getConnection().prepareStatement(formSQL);
@@ -456,6 +459,7 @@ public class Form implements Serializable {
 				return formMetaData;
 			}
 			formMetaData = new FormMD();
+			formMetaData.setFormInstanceIdentifier(fi);
 			session.debug("Reading Metadata for " + getFormCode());
 			formMetaData.setFormCode(getFormCode());
 			formMetaData.setHotKey(rs.getString("hot_key"));
@@ -477,11 +481,6 @@ public class Form implements Serializable {
 			formMetaData.setLookupHeight(null != integerString ? Integer.decode(integerString) : null);
 			formMetaData.setColumns(getColumns());
 
-			if (isNonLookupForm) {
-				formMetaData.setTabs(getFormTabsArr());
-				formMetaData.setActions(getFormActionsArr());
-			}
-
 		}
 		rs.close();
 		statement.close();
@@ -491,23 +490,54 @@ public class Form implements Serializable {
 			FormColumnMD cmd = formMetaData.getColumns().get(formLookupsIdx.get(i));
 			String formLookupCode = cmd.getLookupCode();
 			if ("9".equals(cmd.getFieldType()) || "99".equals(cmd.getFieldType())) {
-				FormInstanceIdentifier fi = new FormInstanceIdentifier();
-				fi.setFormCode(formLookupCode);
-				FormMD fmd = session.getFormMetaData(fi, false);
-				if (null != fmd) {
-					formMetaData.getLookupsArr().put(formLookupCode, fmd);
-					session.debug("***: " + formMetaData.getLookupsArr().get(formLookupCode).getFormCode());
-				}
+				setChildForms(formLookupCode, true, formMetaData.getLookupsArr(), null);
 			}
 			if ("8".equals(cmd.getFieldType())) {
 				// TODO Static Lookups - вычитывать для формы
 			}
 		}
+
+		if (!fi.getIsLookupForm()) {
+			formMetaData.setTabs(getFormTabsArr());
+			formMetaData.setActions(getFormActionsArr());
+			formMetaData.setChildForms(getChildForms());
+		} else {
+			formMetaData.setTabs(new FormTabsArr());
+			formMetaData.setActions(new FormActionsArr());
+			formMetaData.setChildForms(new FormsArr());
+		}
 		session.debug("Form: Lookups Metadata finished...");
 		// formMetaData.setMetadataComplete(true);
 		formMetaData.setObjectVersionNumber(ovn);
 		session.debug("Form: getFormMetaData(" + getFormCode() + ") executed...");
+		// TODO - 20130512 Сериализация для работ по переводу класса Form на сторону БД
+		if (!fi.getIsLookupForm() && null == fi.getParentFormCode()) {
+			AppLayerTestClass.Serialize(fi.getKey(), formMetaData);
+		}
 		return formMetaData;
+	}
+
+	private FormsArr getChildForms() throws SQLException {
+		FormsArr result = formMetaData.getChildForms();
+		for (int i = 0; i < formMetaData.getTabs().size(); i++) {
+			FormTabMD ftmd = formMetaData.getTabs().get(i);
+			String formCode = ftmd.getChildFormCode();
+			if (null != formCode && !"".equals(formCode)) {
+				setChildForms(formCode, false, result, ftmd.getTabCode());
+			}
+		}
+		return result;
+	}
+
+	private void setChildForms(String formCode, boolean isLookupForm, FormsArr childFormsArr, String parentFormTabCode) throws SQLException {
+		FormInstanceIdentifier fi = //
+		new FormInstanceIdentifier(this.fi.getSessionId(), formCode, this.fi.getIsDebugEnabled(), isLookupForm, false, getFormCode(),
+				parentFormTabCode);
+		// fi.setParentFormTabCode1(parentFormTabCode);
+		FormMD fmd = session.getFormMetaData(fi);
+		if (null != fmd) {
+			childFormsArr.put(fi.getKey(), fmd);
+		}
 	}
 
 	private FormTabsArr getFormTabsArr() {
@@ -521,6 +551,7 @@ public class Form implements Serializable {
 			ResultSet detRs = statement.executeQuery();
 			while (detRs.next()) {
 				FormTabMD tabData = new FormTabMD();
+				tabData.setFormCode(detRs.getString("form_code"));
 				tabData.setTabCode(detRs.getString("tab_code"));
 				tabData.setChildFormCode(detRs.getString("child_form_code"));
 				tabData.setTabPosition(detRs.getString("tab_position"));

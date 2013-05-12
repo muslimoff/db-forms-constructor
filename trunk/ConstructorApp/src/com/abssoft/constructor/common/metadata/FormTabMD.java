@@ -1,7 +1,10 @@
 package com.abssoft.constructor.common.metadata;
 
+import org.simpleframework.xml.Default;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+@Default(required = false)
 public class FormTabMD implements IsSerializable {
 	private String formCode;
 	private String tabCode;

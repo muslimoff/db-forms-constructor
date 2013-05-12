@@ -418,7 +418,9 @@ public class DetailFormsContainer extends TabSet {
 				Utils.debug("Tab " + ft.getFormCode() + ": " + ft.getTabType() + "; " + ft.getClass());
 				if (filterStaticDetails && ft.getTabType().equals(FormTab.TabType.DETAIL) && ft instanceof MainFormContainer) {
 					MainFormPane mfp = ((MainFormContainer) ft).getMainFormPane();
-					mfp.getInstanceIdentifier().setParentFormTabCode(((MainFormContainer) ft).getTabMetaData().getTabCode());
+					// TODO 20130512 -- InstanceIdentifier.setParentFormTabCode - почему здесь? А InstanceIdentifier.setParentFormCode в
+					// конструкторе MainFormPane??
+					// mfp.getInstanceIdentifier().setParentFormTabCode1(((MainFormContainer) ft).getTabMetaData().getTabCode());
 					if (this.getSelectedTab().equals(t)) {
 						// Utils.debugAlert("xxxxxxxx:" + parentFormCriteria.getValues());
 						Utils.debug("DetailFormsContainer.filterDetailContainerData. Before filterData 1.");

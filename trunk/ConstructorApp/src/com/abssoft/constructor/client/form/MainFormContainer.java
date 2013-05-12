@@ -74,7 +74,10 @@ public class MainFormContainer extends FormTab {
 
 	public MainFormContainer(Criteria parentFormCriteria, FormTabMD tabMetaData, FormTab.TabType tabType, TabSet parentTabSet,
 			String formCode, boolean isMasterForm, boolean canClose, boolean selectAfterCreation, final MainFormPane parentFormPane,
-			String title, int iconId, Boolean isDrillDownForm) {
+			String title, int iconId
+			// TODO 20130512 Заменить на код действия
+			, Boolean isDrillDownForm
+			) {
 		this(tabMetaData, tabType, parentTabSet, new MainFormPane(formCode, isMasterForm, false, parentFormPane, isDrillDownForm,
 				tabMetaData.getTabCode(), parentFormCriteria) {
 			// this.setParentFormCriteria(parentFormPane.getThisFormCriteria());

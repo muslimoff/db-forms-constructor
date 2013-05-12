@@ -2,8 +2,12 @@ package com.abssoft.constructor.common.metadata;
 
 import java.util.HashMap;
 
+import org.simpleframework.xml.Default;
+import org.simpleframework.xml.ElementMap;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+@Default(required = false)
 public class FormActionMD implements IsSerializable {
 
 	private String code;
@@ -25,18 +29,21 @@ public class FormActionMD implements IsSerializable {
 	private String statusMsgLevelParam;
 	private String statusMsgTxtParam;
 
+	@ElementMap(inline = true, entry = "inputs", required = false, keyType = Integer.class, valueType = String.class)
 	private HashMap<Integer, String> inputs = new HashMap<Integer, String>();
 
+	@ElementMap(inline = true, entry = "outputs", required = false, keyType = Integer.class, valueType = String.class)
 	private HashMap<Integer, String> outputs = new HashMap<Integer, String>();
 
+	@ElementMap(inline = true, entry = "allArgs", required = false, keyType = Integer.class, valueType = String.class)
 	private HashMap<Integer, String> allArgs = new HashMap<Integer, String>();
+
+	@ElementMap(inline = true, entry = "allDataTypes", required = false, keyType = Integer.class, valueType = String.class)
 	private HashMap<Integer, String> allDataTypes = new HashMap<Integer, String>();
 
+	@ElementMap(inline = true, entry = "outputsByName", required = false, keyType = String.class, valueType = Integer.class)
 	private HashMap<String, Integer> outputsByName = new HashMap<String, Integer>();
 
-	/**
-	 * @return the allArgs
-	 */
 	public HashMap<Integer, String> getAllArgs() {
 		return allArgs;
 	}
