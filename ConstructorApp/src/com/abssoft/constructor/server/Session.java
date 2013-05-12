@@ -121,11 +121,13 @@ public class Session implements Serializable {
 		return formDataHashMap;
 	}
 
-	public FormMD getFormMetaData(FormInstanceIdentifier formIdentifier) throws SQLException {
-		return getFormMetaData(formIdentifier, true);
-	}
+	// public FormMD getFormMetaData(FormInstanceIdentifier formIdentifier) throws SQLException {
+	// return getFormMetaData(formIdentifier, true);
+	// }
 
-	public FormMD getFormMetaData(FormInstanceIdentifier fi, boolean isNonLookupForm) throws SQLException {
+	public FormMD getFormMetaData(FormInstanceIdentifier fi
+	// , boolean isNonLookupForm
+	) throws SQLException {
 		// String formMapKey = (null == parentFormCode) ? formCode : formCode + "." + parentFormCode;
 		if (!formDataHashMap.containsKey(fi.getKey())) {
 			Form form = new Form(connection, this, fi);

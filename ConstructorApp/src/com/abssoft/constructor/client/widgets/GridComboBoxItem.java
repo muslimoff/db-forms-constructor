@@ -154,8 +154,9 @@ public class GridComboBoxItem extends MyComboBoxItem {
 		this.mainFormPane = mainFormPane;
 		lookupCode = columnMD.getLookupCode();
 		int gridHashCode = 10000 + GridComboBoxItem.this.columnMD.getDisplayNum();
-		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, lookupCode, null, gridHashCode,
-				ConstructorApp.debugEnabled);
+		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, lookupCode, ConstructorApp.debugEnabled, true, false,
+				this.mainFormPane.getFormCode(), null);
+		instanceIdentifier.setGridHashCode(gridHashCode);
 		lookupDisplValFld = columnMD.getLookupDisplayValue();
 		GridComboBoxItem.this.setShowOptionsFromDataSource(true);
 		this.setFetchDelay(1000);
@@ -164,7 +165,8 @@ public class GridComboBoxItem extends MyComboBoxItem {
 		this.setRejectInvalidValueOnChange(true);
 		this.setCompleteOnTab(true);
 		// this.setHideEmptyPickList(true);
-		FormMD fmd = mainFormPane.getFormMetadata().getLookupsArr().get(lookupCode);
+		FormMD fmd = mainFormPane.getFormMetadata().getLookupsArr().get(instanceIdentifier.getKey());
+		// Utils.debugAlert("GridComboBoxItem: "+fmd);
 		final ComboBoxDataSource lookupDataSource = new ComboBoxDataSource();
 		MainFormPane mfp = new MainFormPane();
 		mfp.setFormCode(lookupCode);

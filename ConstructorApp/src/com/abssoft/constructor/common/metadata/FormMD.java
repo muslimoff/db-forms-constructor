@@ -1,8 +1,13 @@
 package com.abssoft.constructor.common.metadata;
 
+import org.simpleframework.xml.Default;
+import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.ElementMap;
+
 import com.abssoft.constructor.common.ActionStatus;
 import com.abssoft.constructor.common.FormActionsArr;
 import com.abssoft.constructor.common.FormColumnsArr;
+import com.abssoft.constructor.common.FormInstanceIdentifier;
 import com.abssoft.constructor.common.FormTabsArr;
 import com.abssoft.constructor.common.FormsArr;
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -13,8 +18,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author User
  * 
  */
+@Default(required = false)
 public class FormMD implements IsSerializable {
-
 	private String formCode;
 	private String hotKey;
 	private String formName;
@@ -29,16 +34,28 @@ public class FormMD implements IsSerializable {
 	private String doubleClickActionCode;
 	private Integer lookupWidth;
 	private Integer lookupHeight;
+
+	@ElementMap(required = false, entry = "column", keyType = Integer.class, valueType = FormColumnMD.class)
 	private FormColumnsArr columns;
-	private FormTabsArr tabs;
-	private FormActionsArr actions;
-	private Integer objectVersionNumber;
+
+	@ElementList(required = false, entry = "tab", type = FormTabMD.class)
+	private FormTabsArr tabs = new FormTabsArr();
+
+	@ElementList(required = false, entry = "action", type = FormActionMD.class)
+	private FormActionsArr actions = new FormActionsArr();
+
+	@ElementMap(required = false, entry = "formLookup", attribute = true, key = "lookupInstanceIdentifierKey", keyType = String.class, valueType = FormMD.class)
 	private FormsArr lookupsArr = new FormsArr();
+
+	@ElementMap(required = false, entry = "childForm", attribute = true, key = "childInstanceIdentifierKey", keyType = String.class, valueType = FormMD.class)
+	private FormsArr childForms = new FormsArr();
+
+	private Integer objectVersionNumber;
+
 	// TODO вынести в интерфейс
 	private ActionStatus status = new ActionStatus();
 	private String dragAndDropActionCode;
-
-	// private boolean metadataComplete = false;
+	private FormInstanceIdentifier formInstanceIdentifier;
 
 	/**
 	 * 
@@ -297,6 +314,22 @@ public class FormMD implements IsSerializable {
 
 	public String getDragAndDropActionCode() {
 		return dragAndDropActionCode;
+	}
+
+	public void setChildForms(FormsArr childForms) {
+		this.childForms = childForms;
+	}
+
+	public FormsArr getChildForms() {
+		return childForms;
+	}
+
+	public void setFormInstanceIdentifier(FormInstanceIdentifier formInstanceIdentifier) {
+		this.formInstanceIdentifier = formInstanceIdentifier;
+	}
+
+	public FormInstanceIdentifier getFormInstanceIdentifier() {
+		return formInstanceIdentifier;
 	}
 
 	// public void setMetadataComplete(boolean metadataComplete) {

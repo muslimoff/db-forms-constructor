@@ -32,7 +32,9 @@ public class MainFormPane extends Canvas {
 		public FormValuesManager() {
 			super();
 		}
+
 		com.smartgwt.client.util.LogicalDate x;
+
 		@Override
 		public void setValue(String fieldName, String value) {
 			super.setValue(fieldName, value);
@@ -129,7 +131,8 @@ public class MainFormPane extends Canvas {
 	private FormValuesManager valuesManager = new FormValuesManager();
 	private FormDataSource dataSource;
 	private FormActionMD currentAction = new FormActionMD();
-	private FormInstanceIdentifier instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, ConstructorApp.debugEnabled);
+	private FormInstanceIdentifier instanceIdentifier; // = new FormInstanceIdentifier(ConstructorApp.sessionId,
+	// ConstructorApp.debugEnabled,false);
 	private boolean fromUrl = false;
 	private SectionStackSection summarySection;
 	private SectionStackSection detailsSection;
@@ -167,11 +170,16 @@ public class MainFormPane extends Canvas {
 		// final Criteria parentFormCriteria = (null != parentFormPane) ? parentFormPane.getThisFormCriteria() : INTITAL_CRITERIA;
 		// setParentFormCriteria(parentFormCriteria);
 
-		instanceIdentifier.setFormCode(formCode);
-		instanceIdentifier.setParentFormCode(parentFormCode);
+		// instanceIdentifier.setFormCode(formCode);
+		// instanceIdentifier.setParentFormCode(parentFormCode);
+		// instanceIdentifier.setIsDrillDownForm(isDrillDownForm);
+
+		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, formCode, ConstructorApp.debugEnabled, false // isLookupForm
+				, isDrillDownForm, parentFormCode, parentFormTabCode);
+
 		instanceIdentifier.setGridHashCode(-999);
-		instanceIdentifier.setIsDrillDownForm(isDrillDownForm);
-		instanceIdentifier.setParentFormTabCode(parentFormTabCode);
+		// instanceIdentifier.setParentFormCode(parentFormCode);
+		// instanceIdentifier.setParentFormTabCode1(parentFormTabCode);
 
 		Utils.createQueryService("MainFormPane.getFormMetaData").getFormMetaData(instanceIdentifier, new DSAsyncCallback<FormMD>() {
 			public void onSuccess(FormMD result) {
