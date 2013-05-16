@@ -48,8 +48,9 @@ public class FormAction {
 	private void doSaveEditedData(Integer recordIndex) {
 		Utils.debug("doSaveEditedData1");
 
-		// ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
-		// int currRecSelected = mainFormPane.getMainForm().getSelectedRecord();
+		// 20130514 - обнаружнен косяк - при создании новой записи - сброс сортировки в гриде
+		mainFormPane.setSortState(grid.getSortState());
+
 		// TODO Проблема с DynamicForm.ItemChangedHandler в хроме - приходится сохранять данные RichTextItem не по событию, а по кнопке
 		// сохранения
 		if (Utils.isChrome()) {

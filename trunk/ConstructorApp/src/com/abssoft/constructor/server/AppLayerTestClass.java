@@ -2,6 +2,10 @@ package com.abssoft.constructor.server;
 
 import java.io.File;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.stream.CamelCaseStyle;
@@ -26,6 +30,20 @@ public class AppLayerTestClass {
 		}
 	}
 
+	public static void SerializeJAXB(String fileNamePart, Form f) {
+		try {
+			JAXBContext jc = JAXBContext.newInstance(f.getClass());
+
+			Marshaller marshaller = jc.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+			marshaller.marshal(f.getClass(), System.out);
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public static void main(String[] args) {
 
 		FormMD m = new FormMD();
@@ -35,13 +53,7 @@ public class AppLayerTestClass {
 		a.add(new FormActionMD());
 		a.get(1).setHotKey("zzzz");
 		m.setActions(a);
-		Serializer serializer = new Persister();
-		File result = new File("lure2.xml");
-		try {
-			serializer.write(m, result);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		AppLayerTestClass.Serialize("test1", m);
 	}
 }
