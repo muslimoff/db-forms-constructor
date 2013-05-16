@@ -37,7 +37,9 @@ public class AppLayerTestClass {
 			Marshaller marshaller = jc.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-			marshaller.marshal(f.getClass(), System.out);
+			File result = new File(QueryServiceImpl.getWebinfPath() + "/tmp/serialization/FORM@serialized." + fileNamePart + ".xml");
+			marshaller.marshal(f.getClass(), result);
+			// marshaller.marshal(f.getClass(), System.out);
 		} catch (JAXBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -55,5 +57,7 @@ public class AppLayerTestClass {
 		m.setActions(a);
 
 		AppLayerTestClass.Serialize("test1", m);
+
+		// AppLayerTestClass.SerializeJAXB("test2", this);
 	}
 }
