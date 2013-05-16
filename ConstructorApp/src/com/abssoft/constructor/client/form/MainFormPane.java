@@ -137,6 +137,7 @@ public class MainFormPane extends Canvas {
 	private SectionStackSection summarySection;
 	private SectionStackSection detailsSection;
 	SectionStack sections;
+	private int parentFormsCount = 0;
 
 	public static final Criteria INTITAL_CRITERIA = new Criteria("++++", "++++");
 	public static final Criteria INTITAL_PREV_CRIT = new Criteria("----", "----");
@@ -174,7 +175,9 @@ public class MainFormPane extends Canvas {
 		}
 		dataSource = new FormDataSource();
 		System.out.println(formCode + " isLookup:" + isLookup);
-		this.setParentFormPane(parentFormPane);
+		// this.setParentFormPane(parentFormPane);
+		this.parentFormPane = parentFormPane;
+		this.parentFormsCount = null == parentFormPane ? 0 : parentFormPane.parentFormsCount + 1;
 		this.setMasterForm(isMasterForm);
 		this.buttonsToolBar = new FormToolbar(this);
 		String parentFormCode = (null != parentFormPane) ? parentFormPane.getFormCode() : null;
@@ -184,19 +187,22 @@ public class MainFormPane extends Canvas {
 		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, formCode, ConstructorApp.debugEnabled, false // isLookupForm
 				, isDrillDownForm, parentFormCode, parentFormTabCode);
 		instanceIdentifier.setGridHashCode(-999);
-
-		if (null != parentFormPane && parentFormPane.getFormMetadata().getChildForms().containsKey(instanceIdentifier.getKey())) {
-			processFormMetadata(parentFormPane.getFormMetadata().getChildForms().get(instanceIdentifier.getKey()), isLookup,
-					parentFormCriteria1);
-		} else {
-			Utils.createQueryService("MainFormPane.getFormMetaData").getFormMetaData(instanceIdentifier, new DSAsyncCallback<FormMD>() {
-				public void onSuccess(FormMD result) {
-					// TODO Error NullPointerException...
-					result.getStatus().showActionStatus();
-					processFormMetadata(result, isLookup, parentFormCriteria1);
-					// Utils.debug("MainFormPane.getFormMetaData. QueryService:" + result);
-				}
-			});
+		// Запрет вложенности форм более чем...
+		if (20 >= this.parentFormsCount
+				&& !instanceIdentifier.getKey().equals(null == parentFormPane ? "" : parentFormPane.getInstanceIdentifier().getKey())) {
+			if (null != parentFormPane && parentFormPane.getFormMetadata().getChildForms().containsKey(instanceIdentifier.getKey())) {
+				processFormMetadata(parentFormPane.getFormMetadata().getChildForms().get(instanceIdentifier.getKey()), isLookup,
+						parentFormCriteria1);
+			} else {
+				Utils.createQueryService("MainFormPane.getFormMetaData").getFormMetaData(instanceIdentifier, new DSAsyncCallback<FormMD>() {
+					public void onSuccess(FormMD result) {
+						// TODO Error NullPointerException...
+						result.getStatus().showActionStatus();
+						processFormMetadata(result, isLookup, parentFormCriteria1);
+						// Utils.debug("MainFormPane.getFormMetaData. QueryService:" + result);
+					}
+				});
+			}
 		}
 
 	}
@@ -665,13 +671,13 @@ public class MainFormPane extends Canvas {
 		this.isMasterForm = isMasterForm;
 	}
 
-	/**
-	 * @param parentFormPane
-	 *            the parentFormPane to set
-	 */
-	public void setParentFormPane(MainFormPane parentFormPane) {
-		this.parentFormPane = parentFormPane;
-	}
+	// /**
+	// * @param parentFormPane
+	// * the parentFormPane to set
+	// */
+	// public void setParentFormPane1(MainFormPane parentFormPane) {
+	// this.parentFormPane = parentFormPane;
+	// }
 
 	/**
 	 * @param selectedRow

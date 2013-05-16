@@ -85,6 +85,9 @@ public class Form implements Serializable {
 
 	}
 
+	public Form() {
+	}
+
 	public Form(OracleConnection connection, Session session, FormInstanceIdentifier fi) {
 		this.fi = fi;
 		this.setConnection(connection);
@@ -440,6 +443,7 @@ public class Form implements Serializable {
 	public FormMD getFormMetaData(
 	// boolean isNonLookupForm
 	) throws SQLException {
+		System.out.println("xxx10" + formMetaData);
 		String formSQL = Utils.getSQLQueryFromXML("formSQL", session);
 		Integer ovn = -1; // Несуществующий ovn.
 		OraclePreparedStatement statement = (OraclePreparedStatement) getConnection().prepareStatement(formSQL);
@@ -458,8 +462,12 @@ public class Form implements Serializable {
 				statement.close();
 				return formMetaData;
 			}
+			System.out.println("xxx10.1");
 			formMetaData = new FormMD();
+			formMetaData.setObjectVersionNumber(ovn);
+			System.out.println("xxx10.2");
 			formMetaData.setFormInstanceIdentifier(fi);
+			System.out.println("xxx10.3");
 			session.debug("Reading Metadata for " + getFormCode());
 			formMetaData.setFormCode(getFormCode());
 			formMetaData.setHotKey(rs.getString("hot_key"));
@@ -496,10 +504,12 @@ public class Form implements Serializable {
 				// TODO Static Lookups - вычитывать для формы
 			}
 		}
+		System.out.println("xxx11");
 
 		if (!fi.getIsLookupForm()) {
 			formMetaData.setTabs(getFormTabsArr());
 			formMetaData.setActions(getFormActionsArr());
+			System.out.println("xxx12");
 			formMetaData.setChildForms(getChildForms());
 		} else {
 			formMetaData.setTabs(new FormTabsArr());
@@ -508,18 +518,19 @@ public class Form implements Serializable {
 		}
 		session.debug("Form: Lookups Metadata finished...");
 		// formMetaData.setMetadataComplete(true);
-		formMetaData.setObjectVersionNumber(ovn);
+		// formMetaData.setObjectVersionNumber(ovn);
 		session.debug("Form: getFormMetaData(" + getFormCode() + ") executed...");
 		// TODO - 20130512 Сериализация для работ по переводу класса Form на сторону БД
 		if (!fi.getIsLookupForm() && null == fi.getParentFormCode()) {
 			AppLayerTestClass.Serialize(fi.getKey(), formMetaData);
 		}
 
-		AppLayerTestClass.SerializeJAXB("FORM@"+fi.getKey(), this);
+		// AppLayerTestClass.SerializeJAXB(fi.getKey(), this);
 		return formMetaData;
 	}
 
 	private FormsArr getChildForms() throws SQLException {
+		System.out.println("xxx13");
 		FormsArr result = formMetaData.getChildForms();
 		for (int i = 0; i < formMetaData.getTabs().size(); i++) {
 			FormTabMD ftmd = formMetaData.getTabs().get(i);
@@ -536,8 +547,12 @@ public class Form implements Serializable {
 		new FormInstanceIdentifier(this.fi.getSessionId(), formCode, this.fi.getIsDebugEnabled(), isLookupForm, false, getFormCode(),
 				parentFormTabCode);
 		// fi.setParentFormTabCode1(parentFormTabCode);
+		System.out.println("xxx1");
 		FormMD fmd = session.getFormMetaData(fi);
-		if (null != fmd) {
+		System.out.println("xxx2");
+		if (null != fmd
+		// Для предотвращения рекурсии
+				&& !this.fi.getKey().equals(fi.getKey())) {
 			childFormsArr.put(fi.getKey(), fmd);
 		}
 	}
