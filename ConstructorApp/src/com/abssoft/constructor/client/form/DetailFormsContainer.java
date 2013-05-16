@@ -18,8 +18,6 @@ import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.events.CloseClickHandler;
 import com.smartgwt.client.widgets.tab.events.TabCloseClickEvent;
-import com.smartgwt.client.widgets.tab.events.TabSelectedEvent;
-import com.smartgwt.client.widgets.tab.events.TabSelectedHandler;
 
 public class DetailFormsContainer extends TabSet {
 	class DetailTabsArr extends HashMap<String, MainFormPane> {
@@ -327,20 +325,6 @@ public class DetailFormsContainer extends TabSet {
 				}
 			}
 		});
-
-		this.addTabSelectedHandler(new TabSelectedHandler() {
-
-			@Override
-			public void onTabSelected(TabSelectedEvent event) {
-				// event.getTab()
-				MainFormPane mfp = (event.getTab() instanceof FormTab) ? ((FormTab) event.getTab()).getMainFormPane() : null;
-				if (null != mfp) {
-					mfp.filterData(DetailFormsContainer.this.parentFormCriteriaIntrn, false);
-				}
-			}
-		});
-
-		// this.hideTabBar();
 	}
 
 	public void createDynamicDetails(Criteria parentFormCriteria, boolean filterDynamicMultiDetails, boolean filterDynamicSingleDetails) {
@@ -401,8 +385,6 @@ public class DetailFormsContainer extends TabSet {
 			}
 		}
 	}
-
-	private Criteria parentFormCriteriaIntrn = new Criteria();
 
 	// @@@@ Не доделал
 	public void filterDetailContainerData(Criteria parentFormCriteriaExt, boolean filterDynamicMultiDetails,

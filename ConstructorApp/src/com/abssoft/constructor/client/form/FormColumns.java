@@ -23,6 +23,7 @@ public class FormColumns {
 	FormTreeGridField[] gridFields;
 	FormDataSourceField[] dataSourceFields;
 	FormItem[] editorFormItems;
+	SortSpecifier[] defaultSort = null;
 
 	public FormItem[] getEditorFormItems() {
 		return editorFormItems;
@@ -80,6 +81,9 @@ public class FormColumns {
 
 	public SortSpecifier[] getDefaultSort() {
 		Utils.debug("getDefaultSort.columns:" + columns);
+		if (null != defaultSort) {
+			return defaultSort;
+		}
 		HashMap<String, String> x = new HashMap<String, String>();
 		Iterator<Integer> itr = columns.keySet().iterator();
 		while (itr.hasNext()) {
@@ -89,7 +93,7 @@ public class FormColumns {
 				x.put(cmd.getDefaultOrderByNumber(), cmd.getName());
 			}
 		}
-		SortSpecifier[] result = null;
+		SortSpecifier[] result = new SortSpecifier[] {};
 		if (0 != x.size()) {
 			Vector<String> v = new Vector<String>(x.keySet());
 			Collections.sort(v);

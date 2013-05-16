@@ -514,6 +514,8 @@ public class Form implements Serializable {
 		if (!fi.getIsLookupForm() && null == fi.getParentFormCode()) {
 			AppLayerTestClass.Serialize(fi.getKey(), formMetaData);
 		}
+
+		AppLayerTestClass.SerializeJAXB("FORM@"+fi.getKey(), this);
 		return formMetaData;
 	}
 

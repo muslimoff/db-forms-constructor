@@ -13,11 +13,13 @@ import java.util.Vector;
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.MapPair;
 import com.abssoft.constructor.client.form.MainFormPane;
+import com.abssoft.constructor.client.widgets.ActionStatusWindow;
 import com.abssoft.constructor.client.widgets.GridComboBoxItem;
 import com.abssoft.constructor.common.Attribute;
 import com.abssoft.constructor.common.FormColumnsArr;
 import com.abssoft.constructor.common.IconsArr;
 import com.abssoft.constructor.common.Row;
+import com.abssoft.constructor.common.ActionStatus.StatusType;
 import com.abssoft.constructor.common.metadata.FormActionMD;
 import com.abssoft.constructor.common.metadata.FormColumnMD;
 import com.google.gwt.core.client.GWT;
@@ -444,9 +446,14 @@ public class Utils {
 			}
 			if (withAlert) {
 				try {
-					Window.alert(text);
+					String shortMsg = (text.length() > 100) ? text.substring(0, 100) : text;
+					ActionStatusWindow.createActionStatusWindow("DebugAlert", shortMsg, text, StatusType.WARNING, null, "OK");
 				} catch (Exception e) {
-					e.printStackTrace();
+					try {
+						Window.alert(e.getMessage() + "\n" + text);
+					} catch (Exception ee) {
+						ee.printStackTrace();
+					}
 				}
 			}
 		}

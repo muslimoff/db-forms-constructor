@@ -96,6 +96,8 @@ public class EditorFormItem extends FormItem {
 				item = new BooleanItem();
 			} else if ("N".equals(c.getDataType())) {
 				item = new FloatItem();
+				//20130514 - Добавлено выравнивание по правому краю для чисел
+				item.setAlign(com.smartgwt.client.types.Alignment.RIGHT);
 			} else {
 				item = new TextItem();
 

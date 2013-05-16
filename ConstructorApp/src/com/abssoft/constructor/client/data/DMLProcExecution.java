@@ -145,6 +145,7 @@ public class DMLProcExecution {
 						Utils.logException(e, "DMLProcExecution.executeDML.onSuccess. grid.selectRecord...");
 					}
 				}
+
 			}
 		});
 	}
@@ -177,7 +178,20 @@ public class DMLProcExecution {
 			e.printStackTrace();
 		}
 		response.setStatus(RPCResponse.STATUS_SUCCESS);
+
+		// 20130514 - обнаружнен косяк - при создании новой записи - сброс сортировки в гриде
+		// SortSpecifier[] sort = grid.getSort();
+		// String sortState = grid.getSortState();
+		// Utils.debugAlert("1sortState:" + sortState + "; sort:" + sort);
+
 		formDataSource.processResponse(requestId, response);
+
+		// 20130514 - обнаружнен косяк - при создании новой записи - сброс сортировки в гриде
+		if (ExecutionType.ADD.equals(executionType)) {
+			grid.setSortState(mainFormPane.getSortState());
+			//Utils.debugAlert("1sortState:" + grid.getSortState());
+
+		}
 
 		// Почему-то после предупреждения остается состояние редактирования. Приходится делать так для корректной работы
 		grid.discardAllEdits(new int[] { recordIndex }, false);

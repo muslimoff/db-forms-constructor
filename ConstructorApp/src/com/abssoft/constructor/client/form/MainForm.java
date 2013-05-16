@@ -18,6 +18,7 @@ import com.abssoft.constructor.common.metadata.FormMD;
 import com.google.gwt.user.client.Window;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.ResultSet;
+import com.smartgwt.client.types.AnimationEffect;
 import com.smartgwt.client.types.EditCompletionEvent;
 import com.smartgwt.client.types.ListGridComponent;
 import com.smartgwt.client.types.ListGridEditEvent;
@@ -279,6 +280,9 @@ class MainForm extends Canvas {
 		} else {
 			treeGrid = new FormListGrid();
 		}
+
+		// 20130514 setSelectionColors(treeGrid);
+
 		// 20120501 - См. TODO ниже
 		bottomToolBar = new FormBottomToolBar();
 		bottomToolBar.setWidth100();
@@ -340,6 +344,7 @@ class MainForm extends Canvas {
 		treeGrid.setHoverWidth(300);
 
 		treeGrid.setInitialSort(mainFormPane.getFormColumns().getDefaultSort());
+		// Utils.debugAlert("treeGrid.InitialSort:" + treeGrid.getInitialSort());
 		// 20120501 - Переделал то, что закоменчено в скобках на то, что ниже - появился ListGridComponent.SUMMARY_ROW
 		// {
 		// VLayout mainLayout = new VLayout();
@@ -481,6 +486,33 @@ class MainForm extends Canvas {
 		// treeGrid.addEditFailedHandler(handler)
 
 		// TODO SmartGWT 2.2. - сделали сохранение состояния грида и дерева
+	}
+
+	// 20130514 - Для выделения цветом выбранной записи. Не взлетело. Вызов закоменчен вверху.
+	// TODO - вывести в настройки формы для возможности переопределения (BackgroundColor)
+	public static void setSelectionColors(ListGrid listGrid) {
+
+		listGrid.setBaseStyle("simpleCell");
+		listGrid.setShowRollOverCanvas(true);
+		listGrid.setAnimateRollUnder(true);
+
+		Canvas rollUnderCanvasProperties = new Canvas();
+		rollUnderCanvasProperties.setAnimateFadeTime(1000);
+		rollUnderCanvasProperties.setAnimateShowEffect(AnimationEffect.FADE);
+		rollUnderCanvasProperties.setBackgroundColor("#00ffff");
+		rollUnderCanvasProperties.setOpacity(50);
+		// can also override ListGrid.getRollUnderCanvas(int rowNum, int colNum)
+		listGrid.setRollUnderCanvasProperties(rollUnderCanvasProperties);
+
+		listGrid.setShowSelectionCanvas(true);
+		listGrid.setAnimateSelectionUnder(true);
+
+		Canvas selectionUnderCanvasProperties = new Canvas();
+		selectionUnderCanvasProperties.setAnimateShowEffect(AnimationEffect.FADE);
+		selectionUnderCanvasProperties.setAnimateFadeTime(1000);
+		selectionUnderCanvasProperties.setBackgroundColor("#ffff40");
+		listGrid.setSelectionUnderCanvasProperties(selectionUnderCanvasProperties);
+
 	}
 
 	public void setNewRecDefaultValues(final int rowNum, boolean isFromDefaultVals) {

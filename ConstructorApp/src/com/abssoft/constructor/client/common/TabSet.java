@@ -3,8 +3,10 @@ package com.abssoft.constructor.client.common;
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.FormTab.TabType;
 import com.abssoft.constructor.client.data.Utils;
+import com.abssoft.constructor.client.form.DetailFormsContainer;
 import com.abssoft.constructor.client.form.MainFormContainer;
 import com.abssoft.constructor.client.form.MainFormPane;
+import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.widgets.Canvas;
@@ -27,6 +29,7 @@ import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 
 public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 
+	protected Criteria parentFormCriteriaIntrn = new Criteria();
 	protected final String hideTabsetPanesButtonIconTemplate = "[SKIN]/headerIcons/double_arrow_&direction&_Over.png";
 	private final int toolstripSize = 110;
 	private Menu menu = new Menu();
@@ -214,10 +217,15 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 					MainFormPane mfp = ft.getMainFormPane();
 
 					String tabType = ft.getTabMetaData().getTabType();
-					String tabCode = ft.getTabMetaData().getTabCode();
-					if (TabType.DETAIL.getValue().equals(tabType) || TabType.DYNAMIC_DETAIL_SINGLE.getValue().equals(tabType)) {
+					// String tabCode = ft.getTabMetaData().getTabCode();
+					if ((TabType.DETAIL.getValue().equals(tabType) || TabType.DYNAMIC_DETAIL_SINGLE.getValue().equals(tabType))
+							&& TabSet.this instanceof DetailFormsContainer
+
+					) {
 						// Utils.debugAlert("2. TabSet: " + this + "; TabCode:" + tabCode + "; TabType:" + tabType);
 						// mfp.filterData();
+						// if (TabSet.this instanceof DetailFormsContainer)
+						mfp.filterData(((DetailFormsContainer) TabSet.this).parentFormCriteriaIntrn, false);
 					}
 
 					ConstructorApp.mainToolBar.setForm(mfp);

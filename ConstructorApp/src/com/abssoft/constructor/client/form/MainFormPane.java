@@ -145,6 +145,17 @@ public class MainFormPane extends Canvas {
 	private Criteria parentFormCriteria = INTITAL_CRITERIA;
 	private Criteria thisFormCriteria = INTITAL_CRITERIA;
 
+	// 20130514 - обнаружнен косяк - при создании новой записи - сброс сортировки в гриде
+	private String sortState;
+
+	public void setSortState(String sortState) {
+		this.sortState = sortState;
+	}
+
+	public String getSortState() {
+		return sortState;
+	}
+
 	public MainFormPane() {
 	}
 
@@ -170,61 +181,58 @@ public class MainFormPane extends Canvas {
 		// final Criteria parentFormCriteria = (null != parentFormPane) ? parentFormPane.getThisFormCriteria() : INTITAL_CRITERIA;
 		// setParentFormCriteria(parentFormCriteria);
 
-		// instanceIdentifier.setFormCode(formCode);
-		// instanceIdentifier.setParentFormCode(parentFormCode);
-		// instanceIdentifier.setIsDrillDownForm(isDrillDownForm);
-
 		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, formCode, ConstructorApp.debugEnabled, false // isLookupForm
 				, isDrillDownForm, parentFormCode, parentFormTabCode);
-
 		instanceIdentifier.setGridHashCode(-999);
-		// instanceIdentifier.setParentFormCode(parentFormCode);
-		// instanceIdentifier.setParentFormTabCode1(parentFormTabCode);
 
-		Utils.createQueryService("MainFormPane.getFormMetaData").getFormMetaData(instanceIdentifier, new DSAsyncCallback<FormMD>() {
-			public void onSuccess(FormMD result) {
-				// TODO Error NullPointerException...
-				result.getStatus().showActionStatus();
-				setFormMetadata(result);
-				setFormColumns(new FormColumns(MainFormPane.this));
-				if (!isLookup) {
-					mainForm = new MainForm(MainFormPane.this, formColumns.hasSideTabsCount);
+		if (null != parentFormPane && parentFormPane.getFormMetadata().getChildForms().containsKey(instanceIdentifier.getKey())) {
+			processFormMetadata(parentFormPane.getFormMetadata().getChildForms().get(instanceIdentifier.getKey()), isLookup,
+					parentFormCriteria1);
+		} else {
+			Utils.createQueryService("MainFormPane.getFormMetaData").getFormMetaData(instanceIdentifier, new DSAsyncCallback<FormMD>() {
+				public void onSuccess(FormMD result) {
+					// TODO Error NullPointerException...
+					result.getStatus().showActionStatus();
+					processFormMetadata(result, isLookup, parentFormCriteria1);
+					// Utils.debug("MainFormPane.getFormMetaData. QueryService:" + result);
 				}
-				System.out.println("z1");
-				if (!isLookup) {
-					instanceIdentifier.setGridHashCode(mainForm.getHashCode());
-				}
-				dataSource.setMainFormPane(MainFormPane.this);
-				System.out.println("z2:" + dataSource);
-				if (!isLookup) {
-					ListGrid grid = mainForm.getTreeGrid();
-					grid.setDataSource(dataSource);
-					valuesManager.setDataSource(dataSource);
-					System.out.println(formCode + " 2isLookup:" + isLookup);
-					grid.setFields(formColumns.createGridFields());
-					System.out.println(formCode + " 3isLookup:" + isLookup);
-					// /// filterData();
-					// filterData(parentFormCriteria, true);
-					buttonsToolBar.createButtons();
-					createDetailForms(parentFormCriteria1);
-					// createDetailForms(thisFormCriteria);
-					if (isMasterForm()) {
-						ConstructorApp.mainToolBar.setForm(MainFormPane.this);
-						Utils.debug("MainFormPane.onSuccess. Before filterData 1.");
-						// filterData(parentFormCriteria, false);
-					} else {
-						// Utils.debug(text);
-						// MainFormPane.this.setPrevParentFormCriteria(INTITAL_PREV_CRIT);
-						// Utils.debugAlert("MainFormPane.onSuccess. Before filterData 2.");
-						// filterData(parentFormCriteria, true);
-					}
-					Utils.debug("MainFormPane.onSuccess. Before filterData 3.");
-					filterData(parentFormCriteria1, true);
-				}
-				Utils.debug("MainFormPane created");
+			});
+		}
+
+	}
+
+	public void processFormMetadata(FormMD formMetaData, boolean isLookup, Criteria parentFormCriteria1) {
+		setFormMetadata(formMetaData);
+		setFormColumns(new FormColumns(MainFormPane.this));
+		if (!isLookup) {
+			mainForm = new MainForm(MainFormPane.this, formColumns.hasSideTabsCount);
+			instanceIdentifier.setGridHashCode(mainForm.getHashCode());
+		}
+		dataSource.setMainFormPane(MainFormPane.this);
+		// System.out.println("z2:" + dataSource);
+		if (!isLookup) {
+			ListGrid grid = mainForm.getTreeGrid();
+			grid.setDataSource(dataSource);
+			valuesManager.setDataSource(dataSource);
+			System.out.println(formCode + " 2isLookup:" + isLookup);
+			grid.setFields(formColumns.createGridFields());
+			System.out.println(formCode + " 3isLookup:" + isLookup);
+			buttonsToolBar.createButtons();
+			createDetailForms(parentFormCriteria1);
+			if (isMasterForm()) {
+				ConstructorApp.mainToolBar.setForm(MainFormPane.this);
+				Utils.debug("MainFormPane.onSuccess. Before filterData 1.");
+				// filterData(parentFormCriteria, false);
+			} else {
+				// Utils.debug(text);
+				// MainFormPane.this.setPrevParentFormCriteria(INTITAL_PREV_CRIT);
+				// Utils.debugAlert("MainFormPane.onSuccess. Before filterData 2.");
+				// filterData(parentFormCriteria, true);
 			}
-		});
-
+			Utils.debug("MainFormPane.onSuccess. Before filterData 3.");
+			filterData(parentFormCriteria1, true);
+		}
+		Utils.debug("MainFormPane created");
 	}
 
 	// public void hideTabBar() {
