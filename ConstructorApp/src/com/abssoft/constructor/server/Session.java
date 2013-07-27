@@ -129,16 +129,13 @@ public class Session implements Serializable {
 	// , boolean isNonLookupForm
 	) throws SQLException {
 		// String formMapKey = (null == parentFormCode) ? formCode : formCode + "." + parentFormCode;
-		System.out.println("xxx3");
 		if (!formDataHashMap.containsKey(fi.getKey())) {
-			System.out.println("xxx4");
 			// 20130516 - Вставка пустой записи для предотвращения рекурсии в случае, если родительская форма равна текущей
 			// formDataHashMap.put(fi.getKey(), null);
 			Form form = new Form(connection, this, fi);
 			form.setFcSchemaOwner(fcSchemaOwner);
 			formDataHashMap.put(fi.getKey(), form);
 		}
-		System.out.println("xxx5");
 		return formDataHashMap.get(fi.getKey()).getFormMetaData();
 	}
 

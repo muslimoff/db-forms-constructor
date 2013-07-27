@@ -279,6 +279,11 @@ class MainForm extends Canvas {
 			treeGrid = new FormTreeGrid();
 		} else {
 			treeGrid = new FormListGrid();
+			// 20130604 - Для ListGrid добавлена возможность управления размером страницы. Для дерева не нужно - само умное
+			Integer dataPageSize = formMetadata.getDataPageSize();
+			if (null != dataPageSize && 0 != dataPageSize) {
+				treeGrid.setDataPageSize(formMetadata.getDataPageSize());
+			}
 		}
 
 		// 20130514 setSelectionColors(treeGrid);
@@ -345,20 +350,6 @@ class MainForm extends Canvas {
 
 		treeGrid.setInitialSort(mainFormPane.getFormColumns().getDefaultSort());
 		// Utils.debugAlert("treeGrid.InitialSort:" + treeGrid.getInitialSort());
-		// 20120501 - Переделал то, что закоменчено в скобках на то, что ниже - появился ListGridComponent.SUMMARY_ROW
-		// {
-		// VLayout mainLayout = new VLayout();
-		// mainLayout.setWidth100();
-		// mainLayout.setHeight100();
-		// mainLayout.addMember(treeGrid);
-		// // ///////
-		// bottomToolBar = new FormBottomToolBar();
-		// bottomToolBar.setWidth100();
-		// mainLayout.addMember(bottomToolBar);
-		// if (!formMetadata.isShowBottomToolBar())
-		// bottomToolBar.hide();
-		// this.addChild(mainLayout);
-		// }
 		{
 			treeGrid.setHeight100();
 			this.addChild(treeGrid);

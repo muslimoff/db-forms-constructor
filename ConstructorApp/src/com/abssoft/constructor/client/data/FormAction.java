@@ -106,40 +106,7 @@ public class FormAction {
 		Utils.debug("doSaveEditedData4");
 	}
 
-	/********************************************************************/
-	// Походу избавился от нее. Удалить после выгрузки в SVN
-	@SuppressWarnings("unused")
-	private void doExecuteCustomPLSQL(Integer recordIndex) {
-		Utils.debug("Custom PL/SQL - start execution...");
-		// Если указан recordIndex - то обновляем только эту запись. Иначе - все подряд
-		ListGridRecord[] selRecArr = (null != recordIndex && -1 != recordIndex) ? new ListGridRecord[] { grid.getRecord(recordIndex) }
-				: grid.getSelectedRecords();
-		Utils.debug("Custom PL/SQL - 1. selRecArr.length:" + selRecArr.length);
-		for (ListGridRecord r : selRecArr) {
-			int idx = grid.getRecordIndex(r);
-			Utils.debug("Custom PL/SQL - 4. idx:" + idx);
-			mainFormPane.getDataSource().setEditedRecordIndex(idx);
-			grid.updateData(grid.getRecord(idx));
-		}
-		// if (null != recordIndex && -1 != recordIndex) {
-		// Utils.debug("Custom PL/SQL - 1...");
-		// grid.updateData(grid.getRecord(recordIndex));
-		// Utils.debug("Custom PL/SQL - 2...");
-		// } else {
-		// Utils.debug("Custom PL/SQL - 3...");
-		// for (ListGridRecord r : grid.getSelectedRecords()) {
-		//
-		// int idx = grid.getRecordIndex(r);
-		//
-		// Utils.debug("Custom PL/SQL - 4. idx:" + idx);
-		// // mainFormPane.getDataSource().setEditedRecordIndex(idx);
-		// grid.updateData(grid.getRecord(idx));
-		// }
-		// Utils.debug("Custom PL/SQL - 5...");
-		// }
-		Utils.debug("Custom PL/SQL - end execution...");
-	}
-
+	
 	/********************************************************************/
 	private void doAddNewRecord() {
 		// ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
@@ -271,8 +238,9 @@ public class FormAction {
 		}
 		title = mainFormPane.getFormMetadata().getFormName() + " - " + title;
 		TabSet t = mainFormPane.getMainFormContainer().getParentTabSet();
-		new MainFormContainer(mainFormPane.getThisFormCriteria(), new FormTabMD(), FormTab.TabType.MAIN, t,
-				formActionMD.getChildFormCode(), false, true, true, mainFormPane, title, mainFormPane.getFormMetadata().getIconId(), true);
+		new MainFormContainer(mainFormPane.getThisFormCriteria(), new FormTabMD(), FormTab.TabType.MAIN, t, formActionMD.getChildFormCode() // ,
+				// false
+				, true, true, mainFormPane, title, mainFormPane.getFormMetadata().getIconId(), true);
 	}
 
 	/********************************************************************/
@@ -288,8 +256,9 @@ public class FormAction {
 		title = mainFormPane.getFormMetadata().getFormName() + " - " + title;
 		final TabSet t = new TabSet();
 		t.setTabBarPosition(Side.BOTTOM);
-		new MainFormContainer(mainFormPane.getThisFormCriteria(), new FormTabMD(), FormTab.TabType.MAIN, t,
-				formActionMD.getChildFormCode(), false, false, true, mainFormPane, title, mainFormPane.getFormMetadata().getIconId(), true);
+		new MainFormContainer(mainFormPane.getThisFormCriteria(), new FormTabMD(), FormTab.TabType.MAIN, t, formActionMD.getChildFormCode() // ,
+																																			// false
+				, false, true, mainFormPane, title, mainFormPane.getFormMetadata().getIconId(), true);
 		final Window w = new Window();
 		w.setWidth("80%");
 		w.setHeight("80%");

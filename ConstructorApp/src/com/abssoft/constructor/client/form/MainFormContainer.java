@@ -41,8 +41,8 @@ public class MainFormContainer extends FormTab {
 			}
 		} else {
 			Utils.debug("MainFormContainer.updateTab.5");
-			mfp = (null == formCode) ? defaultFormPane : new MainFormPane(formCode, false, false, parentFormPane, false, getTabMetaData()
-					.getTabCode(), parentFormCriteria);
+			mfp = (null == formCode) ? defaultFormPane : new MainFormPane(formCode // , false
+					, false, parentFormPane, false, getTabMetaData().getTabCode(), parentFormCriteria);
 			Utils.debug("MainFormContainer.updateTab.6");
 			detailTabsArr.put(formCode, mfp);
 			Utils.debug("MainFormContainer.updateTab.7");
@@ -58,38 +58,44 @@ public class MainFormContainer extends FormTab {
 
 	public MainFormContainer(Criteria parentFormCriteria, FormTabMD tabMetaData, FormTab.TabType tabType, TabSet parentTabSet,
 			final String formCode) {
-		this(parentFormCriteria, tabMetaData, tabType, parentTabSet, formCode, true, true, true);
+		this(parentFormCriteria, tabMetaData, tabType, parentTabSet, formCode// , true
+				, true, true);
 	}
 
 	public MainFormContainer(Criteria parentFormCriteria, FormTabMD tabMetaData, FormTab.TabType tabType, TabSet parentTabSet,
-			String formCode, boolean isMasterForm, boolean canClose, boolean selectAfterCreation) {
-		this(parentFormCriteria, tabMetaData, tabType, parentTabSet, formCode, isMasterForm, canClose, selectAfterCreation, null);
+			String formCode // , boolean isMasterForm
+			, boolean canClose, boolean selectAfterCreation) {
+		this(parentFormCriteria, tabMetaData, tabType, parentTabSet, formCode // , isMasterForm
+				, canClose, selectAfterCreation, null);
 	}
 
 	public MainFormContainer(Criteria parentFormCriteria, FormTabMD tabMetaData, FormTab.TabType tabType, TabSet parentTabSet,
-			String formCode, boolean isMasterForm, boolean canClose, boolean selectAfterCreation, MainFormPane parentFormPane) {
-		this(tabMetaData, tabType, parentTabSet, new MainFormPane(formCode, isMasterForm, false, parentFormPane, false, tabMetaData
-				.getTabCode(), parentFormCriteria), formCode, isMasterForm, canClose, selectAfterCreation, parentFormPane, null, 0);
+			String formCode // , boolean isMasterForm
+			, boolean canClose, boolean selectAfterCreation, MainFormPane parentFormPane) {
+		this(tabMetaData, tabType, parentTabSet, new MainFormPane(formCode // , isMasterForm
+				, false, parentFormPane, false, tabMetaData.getTabCode(), parentFormCriteria), formCode // , isMasterForm
+				, canClose, selectAfterCreation, parentFormPane, null, 0);
 	}
 
 	public MainFormContainer(Criteria parentFormCriteria, FormTabMD tabMetaData, FormTab.TabType tabType, TabSet parentTabSet,
-			String formCode, boolean isMasterForm, boolean canClose, boolean selectAfterCreation, final MainFormPane parentFormPane,
-			String title, int iconId
+			String formCode // , boolean isMasterForm
+			, boolean canClose, boolean selectAfterCreation, final MainFormPane parentFormPane, String title, int iconId
 			// TODO 20130512 Заменить на код действия
-			, Boolean isDrillDownForm
-			) {
-		this(tabMetaData, tabType, parentTabSet, new MainFormPane(formCode, isMasterForm, false, parentFormPane, isDrillDownForm,
-				tabMetaData.getTabCode(), parentFormCriteria) {
+			, Boolean isDrillDownForm) {
+		this(tabMetaData, tabType, parentTabSet, new MainFormPane(formCode // , isMasterForm
+				, false, parentFormPane, isDrillDownForm, tabMetaData.getTabCode(), parentFormCriteria) {
 			// this.setParentFormCriteria(parentFormPane.getThisFormCriteria());
 		}
 
-		, formCode, isMasterForm, canClose, selectAfterCreation, parentFormPane, title, iconId);
+		, formCode // , isMasterForm
+				, canClose, selectAfterCreation, parentFormPane, title, iconId);
 
 	}
 
-	public MainFormContainer(FormTabMD tabMetaData, FormTab.TabType tabType, TabSet parentTabSet, MainFormPane mainFormPane,
-			String formCode, boolean isMasterForm, boolean canClose, boolean selectAfterCreation, MainFormPane parentFormPane,
-			String title, int iconId) {
+	public MainFormContainer(FormTabMD tabMetaData, FormTab.TabType tabType, TabSet parentTabSet, MainFormPane mainFormPane, String formCode // ,
+			// boolean
+			// isMasterForm
+			, boolean canClose, boolean selectAfterCreation, MainFormPane parentFormPane, String title, int iconId) {
 		super(tabMetaData, tabType, formCode);
 		this.setTabMetaData(tabMetaData);
 		this.setMainFormPane(mainFormPane);

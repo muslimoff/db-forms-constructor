@@ -34,9 +34,10 @@ public class FormMD implements IsSerializable {
 	private String doubleClickActionCode;
 	private Integer lookupWidth;
 	private Integer lookupHeight;
+	private Integer dataPageSize;
 
 	@ElementMap(required = false, entry = "column", keyType = Integer.class, valueType = FormColumnMD.class)
-	private FormColumnsArr columns;
+	private FormColumnsArr columns = new FormColumnsArr();
 
 	@ElementList(required = false, entry = "tab", type = FormTabMD.class)
 	private FormTabsArr tabs = new FormTabsArr();
@@ -330,6 +331,14 @@ public class FormMD implements IsSerializable {
 
 	public FormInstanceIdentifier getFormInstanceIdentifier() {
 		return formInstanceIdentifier;
+	}
+
+	public void setDataPageSize(Integer dataPageSize) {
+		this.dataPageSize = dataPageSize;
+	}
+
+	public Integer getDataPageSize() {
+		return dataPageSize;
 	}
 
 	// public void setMetadataComplete(boolean metadataComplete) {

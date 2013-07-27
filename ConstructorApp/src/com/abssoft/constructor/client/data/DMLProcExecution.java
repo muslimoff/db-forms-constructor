@@ -13,8 +13,10 @@ import com.abssoft.constructor.common.metadata.FormActionMD;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
+import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.ResultSet;
 import com.smartgwt.client.rpc.RPCResponse;
+import com.smartgwt.client.util.JSOHelper;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
@@ -189,7 +191,7 @@ public class DMLProcExecution {
 		// 20130514 - обнаружнен косяк - при создании новой записи - сброс сортировки в гриде
 		if (ExecutionType.ADD.equals(executionType)) {
 			grid.setSortState(mainFormPane.getSortState());
-			//Utils.debugAlert("1sortState:" + grid.getSortState());
+			// Utils.debugAlert("1sortState:" + grid.getSortState());
 
 		}
 
@@ -251,12 +253,22 @@ public class DMLProcExecution {
 
 	public void executeErrorSubProc() {
 		Utils.debug("DMLProcExecution.executeErrorSubProc:\n" + result.getStatus().getLongMessageText());
-
 		request.setWillHandleError(true);
-		setSQLReturnedValues();
-		response.setStatus(RPCResponse.STATUS_FAILURE);
-		response.setErrors(getErrors(result, formDataSource));
-		formDataSource.processResponse(request.getRequestId(), response);
+		if ( // 20130520 - RaiseApplicationError - сброс состояния как будто не удаляли
+		ExecutionType.DELETE.equals(executionType)) {
+			Record r = new Record();
+			JSOHelper.apply(request.getData(), r.getJsObj());
+			// response.setStatus(RPCResponse.STATUS_SUCCESS);
+			response.setStatus(RPCResponse.STATUS_FAILURE);
+			response.setData(r);
+			formDataSource.processResponse(request.getRequestId(), response);
+
+		} else {
+			setSQLReturnedValues();
+			response.setStatus(RPCResponse.STATUS_FAILURE);
+			response.setErrors(getErrors(result, formDataSource));
+			formDataSource.processResponse(request.getRequestId(), response);
+		}
 
 		// Вывод значений,которые вернулись из PL/SQL процедуры.
 		// Вместо processResponse, которое не отображает этих данных для неуспешных статусов

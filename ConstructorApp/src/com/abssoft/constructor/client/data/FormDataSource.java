@@ -78,7 +78,6 @@ public class FormDataSource extends GwtRpcDataSource {
 		final Integer endRow = (null == request.getEndRow()) ? 1000 : request.getEndRow();
 		final ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		// Utils.debug("ListGrid: " + grid);
-
 		Criteria cr;
 		// TODO Фильтры - передача на сервер так же строк вида "&field_name"="and field_name like 'Val%'"
 		if (grid instanceof TreeGrid) {
@@ -98,7 +97,8 @@ public class FormDataSource extends GwtRpcDataSource {
 			cr = request.getCriteria();
 		}
 		// TODO только для форм из урл
-		if (mainFormPane.isMasterForm() && mainFormPane.isFromUrl()) {
+		if ( // mainFormPane.isMasterForm()
+		null == mainFormPane.getParentFormPane() && mainFormPane.isFromUrl()) {
 			cr.addCriteria(ConstructorApp.urlParamsCriteria);
 		}
 		String sortBy = request.getAttribute("sortBy");
@@ -135,8 +135,11 @@ public class FormDataSource extends GwtRpcDataSource {
 								// Criteria thisFormCriteria = Utils.getCriteriaFromListGridRecord(mainFormPane, records[0]);
 								// mainFormPane.setThisFormCriteria(thisFormCriteria);
 
-								if (mainFormPane.isMasterForm()) {
-									grid.focus();
+								if ( // mainFormPane.isMasterForm()
+								null == mainFormPane.getParentFormPane()) {
+									// mainFormPane.isMasterForm();
+									// grid.focus();
+									mainFormPane.focus();
 								}
 
 								// 20130315 - Добавлена проверка выбранной ранее записи - для дерева актуально в случае развертывания узла.

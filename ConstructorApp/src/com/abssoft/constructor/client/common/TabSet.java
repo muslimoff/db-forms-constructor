@@ -217,14 +217,8 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 					MainFormPane mfp = ft.getMainFormPane();
 
 					String tabType = ft.getTabMetaData().getTabType();
-					// String tabCode = ft.getTabMetaData().getTabCode();
 					if ((TabType.DETAIL.getValue().equals(tabType) || TabType.DYNAMIC_DETAIL_SINGLE.getValue().equals(tabType))
-							&& TabSet.this instanceof DetailFormsContainer
-
-					) {
-						// Utils.debugAlert("2. TabSet: " + this + "; TabCode:" + tabCode + "; TabType:" + tabType);
-						// mfp.filterData();
-						// if (TabSet.this instanceof DetailFormsContainer)
+							&& TabSet.this instanceof DetailFormsContainer) {
 						mfp.filterData(((DetailFormsContainer) TabSet.this).parentFormCriteriaIntrn, false);
 					}
 

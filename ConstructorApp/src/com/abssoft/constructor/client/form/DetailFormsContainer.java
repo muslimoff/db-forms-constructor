@@ -233,11 +233,11 @@ public class DetailFormsContainer extends TabSet {
 			tabsOrientStr = formMetadata.getSideTabsPosition();
 		}
 		Side tabsOrient;
-		if (tabsOrientStr.equals("L")) {
+		if ("L".equals(tabsOrientStr)) {
 			tabsOrient = Side.LEFT;
-		} else if (tabsOrientStr.equals("R")) {
+		} else if ("R".equals(tabsOrientStr)) {
 			tabsOrient = Side.RIGHT;
-		} else if (tabsOrientStr.equals("B")) {
+		} else if ("B".equals(tabsOrientStr)) {
 			tabsOrient = Side.BOTTOM;
 		} else {
 			tabsOrient = Side.TOP;
@@ -252,10 +252,10 @@ public class DetailFormsContainer extends TabSet {
 		for (int i = 0; i < tabs.size(); i++) {
 			FormTabMD m = tabs.get(i);
 			String tabTypeMD = m.getTabType();
-			if (orientation == (m.getTabPosition().equals("B") ? Orientation.VERTICAL : Orientation.HORIZONTAL)) {
+			if (orientation == ("B".equals(m.getTabPosition()) ? Orientation.VERTICAL : Orientation.HORIZONTAL)) {
 				if (null != m.getChildFormCode() && FormTab.TabType.DETAIL.getValue().equals(tabTypeMD)) {
-					new MainFormContainer(parentFormCriteria, m, FormTab.TabType.DETAIL, this, m.getChildFormCode(), false, false, false,
-							mainFormPane, m.getTabName(), m.getIconId(), false);
+					new MainFormContainer(parentFormCriteria, m, FormTab.TabType.DETAIL, this, m.getChildFormCode() // , false
+							, false, false, mainFormPane, m.getTabName(), m.getIconId(), false);
 					tabCounter++;
 				} else if (FormTab.TabType.EDITOR.getValue().equals(tabTypeMD)) {
 					FormRowEditorTab t = new FormRowEditorTab(m, mainFormPane);
@@ -296,8 +296,9 @@ public class DetailFormsContainer extends TabSet {
 						MainFormPane mfp = new MainFormPane();
 						mfp.setContents(c.getDescription());
 						mfp.setButtonsToolBar(new FormToolbar(mfp));
-						singleDetailTab = new MainFormContainer(m, FormTab.TabType.DYNAMIC_DETAIL_SINGLE, this, (MainFormPane) mfp,
-								tabCode, false, false, true, mainFormPane, tabName, iconId);
+						singleDetailTab = new MainFormContainer(m, FormTab.TabType.DYNAMIC_DETAIL_SINGLE, this, (MainFormPane) mfp, tabCode // ,
+								// false
+								, false, true, mainFormPane, tabName, iconId);
 						singleDetailTab.setDefaultFormPane(mfp);
 					}
 					DynamicDetailTab dt = new DynamicDetailTab(m, tabType, singleDetailTab, tabName, iconId);
@@ -360,14 +361,16 @@ public class DetailFormsContainer extends TabSet {
 			this.selectTab(dynMultiDetailTabsArr.get(detFormCode));
 		} else {
 			if (null != detFormCode) {
-				boolean isMasterForm = false; // true;
-				MainFormPane mfp = new MainFormPane(detFormCode, isMasterForm, false, mainFormPane, false, dynamicDetailTab.getFormTabMD()
-						.getTabCode(), parentFormCriteria
+				// boolean isMasterForm = false; // true;
+				MainFormPane mfp = new MainFormPane(detFormCode
+				// , isMasterForm
+						, false, mainFormPane, false, dynamicDetailTab.getFormTabMD().getTabCode(), parentFormCriteria
 				// mainFormPane.getThisFormCriteria()
 				);
 				dynMultiDetailTabsArr.put(detFormCode, mfp);
-				new MainFormContainer(dynamicDetailTab.getFormTabMD(), FormTab.TabType.DYNAMIC_DETAIL_MULTI, this, mfp, detFormCode,
-						isMasterForm, true, true, mainFormPane, dynamicDetailTab.getTitle(), dynamicDetailTab.getIconId());
+				new MainFormContainer(dynamicDetailTab.getFormTabMD(), FormTab.TabType.DYNAMIC_DETAIL_MULTI, this, mfp, detFormCode
+				// ,isMasterForm
+						, true, true, mainFormPane, dynamicDetailTab.getTitle(), dynamicDetailTab.getIconId());
 			}
 		}
 	}

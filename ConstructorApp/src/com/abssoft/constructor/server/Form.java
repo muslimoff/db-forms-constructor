@@ -99,8 +99,13 @@ public class Form implements Serializable {
 
 	public void closeForm(int gridHashCode, FormMD formState) {
 		session.debug("form " + getFormCode() + " - gridHashCode:" + gridHashCode + " before close...");
-		formInstance.get(gridHashCode).closeForm();
-		formInstance.remove(gridHashCode);
+		if (formInstance.containsKey(gridHashCode)) {
+			formInstance.get(gridHashCode).closeForm();
+			formInstance.remove(gridHashCode);
+
+		} else {
+			// formInstance для табов с отложенным запросом не успел создаться - ничего не делаем
+		}
 		if (0 == getInstancesCount()) {
 			session.debug("form " + getFormCode() + " - gridHashCode:" + gridHashCode + " save current state for User...");
 			session.debug("formState:" + formState + "; FormCode:" + formState.getFormCode());
@@ -482,6 +487,7 @@ public class Form implements Serializable {
 			formMetaData.setShowBottomToolBar(rs.getString("show_bottom_toolbar").equals("Y") ? true : false);
 			formMetaData.setDoubleClickActionCode(rs.getString("double_click_action_code"));
 			formMetaData.setDragAndDropActionCode(rs.getString("dragdrop_action_code"));
+			formMetaData.setDataPageSize(rs.getInt("data_page_size"));
 
 			String integerString = rs.getString("lookup_width");
 			formMetaData.setLookupWidth(null != integerString ? Integer.decode(integerString) : null);
@@ -493,12 +499,16 @@ public class Form implements Serializable {
 		rs.close();
 		statement.close();
 
+		// 20130519 - В случае указания ошибочного кода формы - возникает проблема...
+		if (null == formMetaData) {
+			formMetaData = new FormMD();
+		}
 		session.debug("Form: Lookups Metadata...\n" + getFormSQLText());
 		for (int i = 0; i < formLookupsIdx.size(); i++) {
 			FormColumnMD cmd = formMetaData.getColumns().get(formLookupsIdx.get(i));
 			String formLookupCode = cmd.getLookupCode();
 			if ("9".equals(cmd.getFieldType()) || "99".equals(cmd.getFieldType())) {
-				setChildForms(formLookupCode, true, formMetaData.getLookupsArr(), null);
+				putChildFormToFormsArr(formLookupCode, true, formMetaData.getLookupsArr(), null);
 			}
 			if ("8".equals(cmd.getFieldType())) {
 				// TODO Static Lookups - вычитывать для формы
@@ -536,13 +546,14 @@ public class Form implements Serializable {
 			FormTabMD ftmd = formMetaData.getTabs().get(i);
 			String formCode = ftmd.getChildFormCode();
 			if (null != formCode && !"".equals(formCode)) {
-				setChildForms(formCode, false, result, ftmd.getTabCode());
+				putChildFormToFormsArr(formCode, false, result, ftmd.getTabCode());
 			}
 		}
 		return result;
 	}
 
-	private void setChildForms(String formCode, boolean isLookupForm, FormsArr childFormsArr, String parentFormTabCode) throws SQLException {
+	private void putChildFormToFormsArr(String formCode, boolean isLookupForm, FormsArr childFormsArr, String parentFormTabCode)
+			throws SQLException {
 		FormInstanceIdentifier fi = //
 		new FormInstanceIdentifier(this.fi.getSessionId(), formCode, this.fi.getIsDebugEnabled(), isLookupForm, false, getFormCode(),
 				parentFormTabCode);
