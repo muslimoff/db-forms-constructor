@@ -127,7 +127,8 @@ public class MenusDataCallback extends DSAsyncCallback<MenusArr> {
 				if (formCode != null && ConstructorApp.formNameArr.containsKey(formCode)) {
 					Utils.debug("Form opening (" + i + "):" + formCode);
 					MainFormContainer mfc = new MainFormContainer(new Criteria(), new FormTabMD(), FormTab.TabType.MAIN,
-							ConstructorApp.tabSet, formCode, true, false, true);
+							ConstructorApp.tabSet, formCode // , true
+							, false, true);
 					mfc.getMainFormPane().setFromUrl(true);
 				}
 			}

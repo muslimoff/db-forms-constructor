@@ -346,9 +346,10 @@ public class Utils {
 			}
 		}
 		// ------
-		Utils.debug("UrlCriteria. mainFormPane.isMasterForm():" + mainFormPane.isMasterForm());
+		Utils.debug("UrlCriteria. mainFormPane.isMasterForm():" + (null == mainFormPane.getParentFormPane()));
 		Utils.debug("UrlCriteria. mainFormPane.isFromUrl():" + mainFormPane.isFromUrl());
-		if (mainFormPane.isMasterForm() && mainFormPane.isFromUrl()) {
+		if (// mainFormPane.isMasterForm()
+		null == mainFormPane.getParentFormPane() && mainFormPane.isFromUrl()) {
 			// result.putAll(ConstructorApp.urlParamsCriteria.getValues());
 			// ///////////////
 			Iterator<String> i = ConstructorApp.urlParamsCriteria.getValues().keySet().iterator();
