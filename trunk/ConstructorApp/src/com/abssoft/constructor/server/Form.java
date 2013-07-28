@@ -316,6 +316,17 @@ public class Form implements Serializable {
 					integerString = rs.getString("lookup_height");
 					cmd.setLookupHeight(null != integerString ? Integer.decode(integerString) : null);
 
+					{// 20130727 HeaderSpans.
+						String fName = cmd.getDisplayName();
+						String hdrSeparator = "|";
+						// Разбивка DisplayName на displayName и headerName по hdrSeparator
+						if (null != fName && fName.contains(hdrSeparator)) {
+							String[] fNameSplitArr = fName.split("\\" + hdrSeparator); // Разбиваем на фрагменты наименование
+							cmd.setHeaderName(fNameSplitArr[0]);
+							cmd.setDisplayName(fNameSplitArr[1]);
+						}
+					}
+
 					metadata.put(colNum, cmd);
 					if (null != cmd.getLookupCode()) {
 						formLookupsIdx.add(colNum);

@@ -3,6 +3,7 @@ package com.abssoft.constructor.client.form;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Vector;
 
 import com.abssoft.constructor.client.data.FormDataSourceField;
@@ -13,8 +14,10 @@ import com.abssoft.constructor.common.metadata.FormColumnMD;
 import com.abssoft.constructor.common.metadata.FormMD;
 import com.abssoft.constructor.common.metadata.FormTabMD;
 import com.smartgwt.client.data.SortSpecifier;
+import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.SortDirection;
 import com.smartgwt.client.widgets.form.fields.FormItem;
+import com.smartgwt.client.widgets.grid.HeaderSpan;
 
 public class FormColumns {
 	int columnsCount;
@@ -24,6 +27,7 @@ public class FormColumns {
 	FormDataSourceField[] dataSourceFields;
 	FormItem[] editorFormItems;
 	SortSpecifier[] defaultSort = null;
+	private LinkedHashMap<String, HeaderSpan> gridHeaderSpansMap = new LinkedHashMap<String, HeaderSpan>();
 
 	public FormItem[] getEditorFormItems() {
 		return editorFormItems;
@@ -71,8 +75,53 @@ public class FormColumns {
 			FormColumnMD m = columns.get(i);
 			gridFields[i] = new FormTreeGridField(mainFormPane, i, m);
 			gridFields[i].setPrompt(m.getDescription());
+			gridFields[i].setAlign(Alignment.CENTER);
+
+			String fieldDataType = m.getDataType();
+			if ("N".equalsIgnoreCase(fieldDataType) || "D".equalsIgnoreCase(fieldDataType)) {
+				gridFields[i].setCellAlign(Alignment.RIGHT);
+			} else if ("S".equalsIgnoreCase(fieldDataType)) {
+				gridFields[i].setCellAlign(Alignment.LEFT);
+			}
+
+			{// 20130727 HeaderSpans. Разбивка перенесена на серверную часть (Form.getColumns)
+				HeaderSpan hs = null;
+				String headerName = m.getHeaderName();
+				if (null != headerName) {
+					if (gridHeaderSpansMap.containsKey(headerName)) {
+						hs = gridHeaderSpansMap.get(headerName);
+						String[] srcArr = hs.getFields();
+						int srcArrLength = srcArr.length;
+						String[] destArr = new String[srcArrLength + 1];
+						System.arraycopy(srcArr, 0, destArr, 0, srcArrLength);
+						destArr[srcArrLength] = gridFields[i].getName();
+						hs.setFields(destArr);
+						// for (int ddd = 0; ddd < destArr.length; ddd++) {
+						// System.out.println(">>> ddd[" + ddd + "]=" + destArr[ddd]);
+						// }
+
+					} else {
+						hs = new HeaderSpan(headerName, new String[] { gridFields[i].getName() });
+						gridHeaderSpansMap.put(headerName, hs);
+					}
+				}
+			}
 		}
 		return gridFields;
+	}
+
+	public HeaderSpan[] getHeaderSpans() {
+
+		HeaderSpan[] result = new HeaderSpan[gridHeaderSpansMap.size()];
+		Iterator<String> mmIt = gridHeaderSpansMap.keySet().iterator();
+		int i = 0;
+		while (mmIt.hasNext()) {
+			String key1 = mmIt.next();
+			result[i] = gridHeaderSpansMap.get(key1);
+			i++;
+		}
+
+		return result;
 	}
 
 	public FormDataSourceField[] getDataSourceFields() {

@@ -61,10 +61,13 @@ public class ActionItem extends MenuItem {
 			}
 		});
 		if (formActionMD.getDisplayOnToolbar()) {
-			button = new IButton(formActionMD.getDisplayName());
+			// button = new IButton(formActionMD.getDisplayName());
+			button = new IButton(ConstructorApp.showToolbarButtonNames ? formActionMD.getDisplayName() : "");
+			button.setAutoFit(true); // button.setWidth(24);
 			button.setShowDisabledIcon(false);
 			button.setPrompt(displayName);
 			button.setIcon(iconPath);
+
 			button.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {

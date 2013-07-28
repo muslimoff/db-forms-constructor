@@ -67,9 +67,10 @@ public class EditorFormItem extends FormItem {
 				&& ConstructorApp.staticLookupsArr.containsKey(lookupCode)) {
 			item = new MyComboBoxItem();
 			((MyComboBoxItem) item).setLookupSize(c.getLookupWidth(), c.getLookupHeight(), fmd.getLookupWidth(), fmd.getLookupHeight());
-			LinkedHashMap<String, String> lhm = Utils.createStrSortedLinkedHashMap(ConstructorApp.staticLookupsArr.get(lookupCode), !"8"
-					.equals(c.getFieldType()));
-			item.setValueMap(lhm);
+			// LinkedHashMap<String, String> lhm = Utils.createStrSortedLinkedHashMap(ConstructorApp.staticLookupsArr.get(lookupCode), !"8"
+			// .equals(c.getFieldType()));
+			// ((MyComboBoxItem) item).setValueMap(lhm);
+			((MyComboBoxItem) item).setValueMap(lookupCode);
 		} else if ("9".equals(c.getFieldType()) && null != lookupCode) {
 			item = new GridComboBoxItem(c, mainFormPane);
 		} else if ("11".equals(c.getFieldType())) {
@@ -96,7 +97,7 @@ public class EditorFormItem extends FormItem {
 				item = new BooleanItem();
 			} else if ("N".equals(c.getDataType())) {
 				item = new FloatItem();
-				//20130514 - Добавлено выравнивание по правому краю для чисел
+				// 20130514 - Добавлено выравнивание по правому краю для чисел
 				item.setAlign(com.smartgwt.client.types.Alignment.RIGHT);
 			} else {
 				item = new TextItem();

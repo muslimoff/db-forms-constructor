@@ -227,6 +227,7 @@ public class Session implements Serializable {
 		} catch (java.sql.SQLException e) {
 			printErrorStackTrace(e);
 		}
+		this.debug("lookupsArr:" + lookupsArr);
 		return lookupsArr;
 	}
 

@@ -23,6 +23,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.ClosingEvent;
 import com.smartgwt.client.data.Criteria;
@@ -79,6 +80,8 @@ public class ConstructorApp implements EntryPoint {
 	public static String dbServerVersion = "";
 	// public static QueryServiceAsync queryService; // = (QueryServiceAsync) GWT.create(QueryService.class);
 	// private static ServiceDefTarget queryServiceDefTarget = (ServiceDefTarget) queryService;
+	public static boolean showToolbar = true;
+	public static boolean showToolbarButtonNames = true;
 
 	ConnectWindow connectWindow;
 
@@ -165,76 +168,127 @@ public class ConstructorApp implements EntryPoint {
 		tabSet.setTabBarAlign(Side.LEFT);
 		tabSet.setHeight("92%");
 		tabSet.setAccessKey("Q");
-		// -----------
+		final VStack vStack = new VStack();
+		// Connect
 		MenuItem connMI = new MenuItem("Connect");
-		connMI.setIcon("[ISOMORPHIC]/resources/icons/database_connect.png");
-		connMI.addClickHandler(new ClickHandler() {
+		{
+			connMI.setIcon("[ISOMORPHIC]/resources/icons/database_connect.png");
+			connMI.addClickHandler(new ClickHandler() {
 
-			@Override
-			public void onClick(MenuItemClickEvent event) {
-				if (null == connectWindow) {
-					connectWindow = new ConnectWindow(ConstructorApp.this);
+				@Override
+				public void onClick(MenuItemClickEvent event) {
+					if (null == connectWindow) {
+						connectWindow = new ConnectWindow(ConstructorApp.this);
+					}
+					connectWindow.show();
+
 				}
-				connectWindow.show();
+			});
+		}
 
-			}
-		});
-		//
-		final MenuItem debugMI = new MenuItem("Debug@");
-		debugMI.setIcon("[ISOMORPHIC]/resources/icons/" + "bug.png");
-		debugMI.setCheckIfCondition(new MenuItemIfFunction() {
-			public boolean execute(Canvas target, Menu menu, MenuItem item) {
-				return ConstructorApp.debugEnabled;
-			}
-		});
-		debugMI.addClickHandler(new ClickHandler() {
-			public void onClick(MenuItemClickEvent event) {
-				ConstructorApp.debugEnabled = !ConstructorApp.debugEnabled;
-			}
-		});
+		// Debug
+		final MenuItem debugMI = new MenuItem("Debug");
+		{
+			debugMI.setIcon("[ISOMORPHIC]/resources/icons/" + "bug.png");
+			debugMI.setCheckIfCondition(new MenuItemIfFunction() {
+				public boolean execute(Canvas target, Menu menu, MenuItem item) {
+					return ConstructorApp.debugEnabled;
+				}
+			});
+			debugMI.addClickHandler(new ClickHandler() {
+				public void onClick(MenuItemClickEvent event) {
+					ConstructorApp.debugEnabled = !ConstructorApp.debugEnabled;
+				}
+			});
+		}
 
+		// Skin
 		Menu mm = new Menu();
 		skinSelectorMenu = new SkinSelectorMenu();
+
 		mm.setData(connMI, debugMI, new MenuItemSeparator(), skinSelectorMenu);
 		fileMenuBtn.setMenu(mm);
 		// -----------
+
+		// ShowToolbar
+		final MenuItem showToolbarMI = new MenuItem("Верхн.панель");
+		{
+			showToolbarMI.setIcon("[ISOMORPHIC]/resources/icons/" + "bug.png");
+			showToolbarMI.setCheckIfCondition(new MenuItemIfFunction() {
+				public boolean execute(Canvas target, Menu menu, MenuItem item) {
+					return ConstructorApp.showToolbar;
+				}
+			});
+			showToolbarMI.addClickHandler(new ClickHandler() {
+				public void onClick(MenuItemClickEvent event) {
+					ConstructorApp.showToolbar = !ConstructorApp.showToolbar;
+					mainToolBar.showOrHide(ConstructorApp.showToolbar);
+					// vStack.setHeight100();
+				}
+			});
+		}
+
+		// ShowToolbarButtonNames
+		final MenuItem showToolbarButtonNamesMI = new MenuItem("Назв.кнопок");
+		{
+			showToolbarButtonNamesMI.setIcon("[ISOMORPHIC]/resources/icons/" + "bug.png");
+			showToolbarButtonNamesMI.setCheckIfCondition(new MenuItemIfFunction() {
+				public boolean execute(Canvas target, Menu menu, MenuItem item) {
+					return ConstructorApp.showToolbarButtonNames;
+				}
+			});
+			showToolbarButtonNamesMI.addClickHandler(new ClickHandler() {
+				public void onClick(MenuItemClickEvent event) {
+					ConstructorApp.showToolbarButtonNames = !ConstructorApp.showToolbarButtonNames;
+					// mainToolBar
+				}
+			});
+		}
+		// Test
 		MenuItem testMI = new MenuItem("Test");
-		testMI.addClickHandler(new ClickHandler() {
+		{
+			testMI.addClickHandler(new ClickHandler() {
 
-			@Override
-			public void onClick(MenuItemClickEvent event) {
-				System.out.println("XXXXXXXXXXXX TESTw");
-				new TestWindow();
-			}
-		});
-		// /////////////
+				@Override
+				public void onClick(MenuItemClickEvent event) {
+					System.out.println("XXXXXXXXXXXX TESTw");
+					new TestWindow();
+				}
+			});
+		}
+		// Закрыть форму
 		MenuItem closeFormMI = new MenuItem("Закрыть форму");
-		KeyIdentifier key = new KeyIdentifier("ctrl+alt+shift+4");
-		closeFormMI.setKeys(key);
-		closeFormMI.setKeyTitle(key.getTitle());
-		closeFormMI.addClickHandler(new ClickHandler() {
+		{
+			KeyIdentifier key = new KeyIdentifier("ctrl+alt+shift+4");
+			closeFormMI.setKeys(key);
+			closeFormMI.setKeyTitle(key.getTitle());
+			closeFormMI.addClickHandler(new ClickHandler() {
 
-			@Override
-			public void onClick(MenuItemClickEvent event) {
-				tabSet.removeMainFormContainerTab(tabSet.getSelectedTab(), false);
-			}
-		});
+				@Override
+				public void onClick(MenuItemClickEvent event) {
+					tabSet.removeMainFormContainerTab(tabSet.getSelectedTab(), false);
+				}
+			});
+		}
+		// TestActWnd
 		MenuItem downloadMI = new MenuItem("TestActWnd");
-		downloadMI.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(MenuItemClickEvent event) {
-				ActionStatusWindow.createActionStatusWindow("wwwwwwww", this.getClass().getName(), this.toString(),
-						ActionStatus.StatusType.SUCCESS, null, "Ok");
-				// new RestfulDataSourceSample();
-			}
-		});
+		{
+			downloadMI.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(MenuItemClickEvent event) {
+					ActionStatusWindow.createActionStatusWindow("wwwwwwww", this.getClass().getName(), this.toString(),
+							ActionStatus.StatusType.SUCCESS, null, "Ok");
+					// new RestfulDataSourceSample();
+				}
+			});
+		}
 		// /////////////
 		Menu smm = new Menu();
-		smm.setData(closeFormMI, testMI, downloadMI);
+		smm.setData(showToolbarMI, showToolbarButtonNamesMI, closeFormMI, testMI, downloadMI);
 		serviceMenuBtn.setMenu(smm);
 		// -----connect();
 		menuBar.addMembers(fileMenuBtn, serviceMenuBtn);
-		VStack vStack = new VStack();
+
 		vStack.addMember(menuBar);
 		vStack.addMember(mainToolBar);
 		vStack.addMember(tabSet);
@@ -261,6 +315,7 @@ public class ConstructorApp implements EntryPoint {
 		}
 		Utils.debug("QueryString:" + com.google.gwt.user.client.Window.Location.getQueryString());
 		canvas.draw();
+		mainToolBar.showOrHide(ConstructorApp.showToolbar);
 
 		connectWindow = new ConnectWindow(ConstructorApp.this);
 	}
