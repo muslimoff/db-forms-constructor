@@ -197,6 +197,11 @@ public class DMLProcExecution {
 
 		// Почему-то после предупреждения остается состояние редактирования. Приходится делать так для корректной работы
 		grid.discardAllEdits(new int[] { recordIndex }, false);
+		// 20130727 Для дерева - выделяется следующая запись после перенесенной (есть подозрение, что из-за строки выше.
+		// Поэтому - очищаем все выделенные строки во избежание ошибочных перетаскиваний
+		if (ExecutionType.UPDATE.equals(executionType) && grid instanceof FormTreeGrid) {
+			grid.deselectAllRecords();
+		}
 
 		formDataSource.setTotalRows(formDataSource.getTotalRows() + rowsAdded);
 		mainFormPane.getMainForm().getBottomToolBar().setRowsCount(formDataSource.getTotalRows() + "");

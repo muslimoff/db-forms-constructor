@@ -16,6 +16,7 @@ public class FormColumnMD implements IsSerializable {
 	private String dataType;
 	private String description;
 	private String displayName;
+	private String headerName;
 	private int displayNum;
 	private String displaySize;
 	private String EditorTabCode;
@@ -438,5 +439,13 @@ public class FormColumnMD implements IsSerializable {
 
 	public Integer getLookupHeight() {
 		return lookupHeight;
+	}
+
+	public void setHeaderName(String headerName) {
+		this.headerName = headerName;
+	}
+
+	public String getHeaderName() {
+		return headerName;
 	}
 }

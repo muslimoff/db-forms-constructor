@@ -9,6 +9,7 @@ import com.abssoft.constructor.client.widgets.MyComboBoxItem;
 import com.abssoft.constructor.common.metadata.ColumnAction;
 import com.abssoft.constructor.common.metadata.FormColumnMD;
 import com.abssoft.constructor.common.metadata.FormMD;
+import com.abssoft.constructor.common.metadata.StaticLookup;
 import com.smartgwt.client.types.ListGridFieldType;
 import com.smartgwt.client.types.TextMatchStyle;
 import com.smartgwt.client.widgets.form.fields.TextAreaItem;
@@ -171,16 +172,17 @@ public class FormTreeGridField extends TreeGridField {
 			cmbxItem = new MyComboBoxItem();
 			FormMD fmd = mainFormPane.getFormMetadata();
 			((MyComboBoxItem) cmbxItem).setLookupSize(c.getLookupWidth(), c.getLookupHeight(), fmd.getLookupWidth(), fmd.getLookupHeight());
-			final LinkedHashMap<String, String> lhm = Utils.createStrSortedLinkedHashMap(ConstructorApp.staticLookupsArr.get(lookupCode),
-					!"8".equals(c.getFieldType()));
-			cmbxItem.setValueMap(lhm);
-			// s.setPickListFields(pickListFields);
+			// final LinkedHashMap<String, String> lhm = Utils.createStrSortedLinkedHashMap(ConstructorApp.staticLookupsArr.get(lookupCode),
+			// !"8".equals(c.getFieldType()));
+			// ((MyComboBoxItem) cmbxItem).setValueMap(lhm);
+			((MyComboBoxItem) cmbxItem).setValueMap(lookupCode);
 			this.setCellFormatter(new CellFormatter() {
 				@Override
 				public String format(Object value, ListGridRecord record, int rowNum, int colNum) {
 					String result;
 					try {
-						result = lhm.get(value);
+						// result = staticLookup.get(value);
+						result = ((MyComboBoxItem) cmbxItem).getValueMap().get(value);
 					} catch (Exception e) {
 						result = e.toString();
 					}

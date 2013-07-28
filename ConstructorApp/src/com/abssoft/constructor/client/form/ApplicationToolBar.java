@@ -41,4 +41,13 @@ public class ApplicationToolBar extends ToolStrip {
 		return getAttribute("backgroundColor");
 
 	}
+
+	public void showOrHide(boolean show) {
+		if (show) {
+			this.show();
+		} else {
+			this.hide();
+		}
+		//this.getParentElement().redraw();
+	}
 }

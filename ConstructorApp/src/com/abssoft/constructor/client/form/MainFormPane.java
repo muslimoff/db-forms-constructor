@@ -200,8 +200,13 @@ public class MainFormPane extends Canvas {
 	public void processFormMetadata(FormMD formMetaData, boolean isLookup, Criteria parentFormCriteria, boolean isAutoFetch) {
 		setFormMetadata(formMetaData);
 		setFormColumns(new FormColumns(MainFormPane.this));
+
+		// 1
+		FormTreeGridField[] gridFields = null;
+
 		if (!isLookup) {
-			mainForm = new MainForm(MainFormPane.this, formColumns.hasSideTabsCount);
+			gridFields = formColumns.createGridFields();
+			mainForm = new MainForm(MainFormPane.this, formColumns.hasSideTabsCount, formColumns.getHeaderSpans());
 			instanceIdentifier.setGridHashCode(mainForm.getHashCode());
 		}
 		dataSource.setMainFormPane(MainFormPane.this);
@@ -210,7 +215,9 @@ public class MainFormPane extends Canvas {
 			grid.setDataSource(dataSource);
 			valuesManager.setDataSource(dataSource);
 			System.out.println(formCode + " 2isLookup:" + isLookup);
-			grid.setFields(formColumns.createGridFields());
+
+			grid.setFields(gridFields);
+
 			System.out.println(formCode + " 3isLookup:" + isLookup);
 			buttonsToolBar.createButtons();
 			createDetailForms(parentFormCriteria);

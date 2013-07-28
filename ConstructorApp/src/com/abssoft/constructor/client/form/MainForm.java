@@ -28,6 +28,7 @@ import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.events.ResizedEvent;
 import com.smartgwt.client.widgets.events.ResizedHandler;
+import com.smartgwt.client.widgets.grid.HeaderSpan;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.grid.events.DataArrivedEvent;
@@ -262,7 +263,7 @@ class MainForm extends Canvas {
 		return currRow;
 	}
 
-	MainForm(final MainFormPane mainFormPane, final boolean showResizeBar) {
+	MainForm(final MainFormPane mainFormPane, final boolean showResizeBar, HeaderSpan[] headerSpans) {
 		Utils.debug("Constructor MainForm");
 		this.setMargin(0);
 		this.mainFormPane = mainFormPane;
@@ -284,6 +285,11 @@ class MainForm extends Canvas {
 			if (null != dataPageSize && 0 != dataPageSize) {
 				treeGrid.setDataPageSize(formMetadata.getDataPageSize());
 			}
+		}
+		// 20130727 HeaderSpans
+		if (0 != headerSpans.length) {
+			treeGrid.setHeaderHeight(40);
+			treeGrid.setHeaderSpans(headerSpans);
 		}
 
 		// 20130514 setSelectionColors(treeGrid);
