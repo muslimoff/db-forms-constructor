@@ -11,7 +11,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author User
  * 
  */
-public class FormColumnMD implements IsSerializable {
+public class FormColumnMD implements IsSerializable, Cloneable {
 
 	private String dataType;
 	private String description;
@@ -49,7 +49,50 @@ public class FormColumnMD implements IsSerializable {
 
 	private ArrayList<ColumnAction> colActions = new ArrayList<ColumnAction>();
 
+	private ArrayList<FormColumnLookupMappingMD> columnLookupMappingArr = new ArrayList<FormColumnLookupMappingMD>();
+
 	public FormColumnMD() {
+	}
+
+	public FormColumnMD clone() {
+		FormColumnMD clone = new FormColumnMD();
+
+		clone.setDataType(this.dataType);
+		clone.setDescription(this.description);
+		clone.setDisplayName(this.displayName);
+		clone.setHeaderName(this.headerName);
+		clone.setDisplayNum(this.displayNum);
+		clone.setDisplaySize(this.displaySize);
+		clone.setEditorTabCode(this.EditorTabCode);
+		clone.setFieldType(this.fieldType);
+		clone.setFrozen(this.isFrozen);
+		clone.setPrimaryKey(this.isPrimaryKey);
+		clone.setLookupCode(this.lookupCode);
+		clone.setLookupFieldType(this.lookupFieldType);
+		clone.setName(this.name);
+		clone.setShowHover(this.showHover);
+		clone.setShowOnGrid(this.showOnGrid);
+		clone.setTreeFieldType(this.treeFieldType);
+		clone.setTreeInitializationValue(this.treeInitializationValue);
+		clone.setHoverСolumnСode(this.hoverСolumnСode);
+		clone.setEditorHeight(this.editorHeight);
+		clone.setHelpText(this.helpText);
+		clone.setTextMask(this.textMask);
+		clone.setValidationRegexp(this.validationRegexp);
+		clone.setDefaultOrderByNumber(this.defaultOrderByNumber);
+		clone.setDefaultValue(this.defaultValue);
+		clone.setEditorTitleOrientation(this.editorTitleOrientation);
+		clone.setEditorEndRow(this.editorEndRow);
+		clone.setEditorColsSpan(this.editorColsSpan);
+		clone.setLookupDisplayValue(this.lookupDisplayValue);
+		clone.setEditorOnEnterKeyAction(this.editorOnEnterKeyAction);
+		clone.setLookupWidth(this.lookupWidth);
+		clone.setLookupHeight(this.lookupHeight);
+		// тут сфилонил - нужно и в тех методах писать клонирование. Или общий метод...
+		clone.setLookupAttributes(this.lookupAttributes);
+		clone.setColActions(this.colActions);
+
+		return clone;
 	}
 
 	/**
@@ -448,4 +491,9 @@ public class FormColumnMD implements IsSerializable {
 	public String getHeaderName() {
 		return headerName;
 	}
+
+	public ArrayList<FormColumnLookupMappingMD> getColumnLookupMappingArr() {
+		return columnLookupMappingArr;
+	}
+
 }

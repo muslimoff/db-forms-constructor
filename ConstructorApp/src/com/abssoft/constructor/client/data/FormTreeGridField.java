@@ -1,17 +1,17 @@
 package com.abssoft.constructor.client.data;
 
-import java.util.LinkedHashMap;
-
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.form.MainFormPane;
+import com.abssoft.constructor.client.widgets.FormLookupComboboxItem;
 import com.abssoft.constructor.client.widgets.GridComboBoxItem;
 import com.abssoft.constructor.client.widgets.MyComboBoxItem;
 import com.abssoft.constructor.common.metadata.ColumnAction;
 import com.abssoft.constructor.common.metadata.FormColumnMD;
 import com.abssoft.constructor.common.metadata.FormMD;
-import com.abssoft.constructor.common.metadata.StaticLookup;
+import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.ListGridFieldType;
 import com.smartgwt.client.types.TextMatchStyle;
+import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.grid.CellFormatter;
 import com.smartgwt.client.widgets.grid.HoverCustomizer;
@@ -169,7 +169,19 @@ public class FormTreeGridField extends TreeGridField {
 		// TODO вывести одинаковый код
 		else if (("8".equals(c.getFieldType()) || "10".equals(c.getFieldType())) && null != lookupCode
 				&& ConstructorApp.staticLookupsArr.containsKey(lookupCode)) {
-			cmbxItem = new MyComboBoxItem();
+			cmbxItem = new MyComboBoxItem(c, mainFormPane) {
+
+				@Override
+				public void onSelectValue(FormItem item, Record rec) {
+					// TODO Auto-generated method stub
+				}
+
+				@Override
+				public void onClearValue(FormItem item) {
+					// TODO Auto-generated method stub
+
+				}
+			};
 			FormMD fmd = mainFormPane.getFormMetadata();
 			((MyComboBoxItem) cmbxItem).setLookupSize(c.getLookupWidth(), c.getLookupHeight(), fmd.getLookupWidth(), fmd.getLookupHeight());
 			// final LinkedHashMap<String, String> lhm = Utils.createStrSortedLinkedHashMap(ConstructorApp.staticLookupsArr.get(lookupCode),
@@ -199,6 +211,11 @@ public class FormTreeGridField extends TreeGridField {
 		else if ("Y".equals(c.getShowOnGrid()) && null != lookupCode && ("9".equals(c.getFieldType()))) {
 			cmbxItem = new GridComboBoxItem(c, mainFormPane, this);
 			// cbi.addChangedHandler(handler);
+		}
+
+		else if ("Y".equals(c.getShowOnGrid()) && "16".equals(c.getFieldType()) && null != lookupCode) {
+			cmbxItem = new FormLookupComboboxItem(c, mainFormPane);
+			this.setEditorType(cmbxItem);
 		}
 
 		// 20101005-Перенос из GridComboBoxItem CellFormatter для накрываемых полей. Пофиг, даже если не лукап
@@ -246,39 +263,14 @@ public class FormTreeGridField extends TreeGridField {
 					}
 				});
 			}
-			if ("4".equals(actionType) && null != cmbxItem) {
+			// TODO Убрать - см. MyComboBoxItem.doOnRecordSelectedAction
+			if (1 == 2 && "4".equals(actionType) && null != cmbxItem && "9".equals(c.getFieldType())
 
+			// ("8".equals(c.getFieldType()) || "9".equals(c.getFieldType()) || "10".equals(c.getFieldType()))
+			) {
 				this.addChangedHandler(new ChangedHandler() {
 					@Override
 					public void onChanged(ChangedEvent event) {
-						// System.out.println("01 >>>>>>>>>>>>>>>>>>>>");
-						// System.out.println("02 event.getValue():" + event.getValue());
-						// System.out.println("03 event.getClass():" + event.getClass());
-						// System.out.println("04 event.getItem().getJsObj():" + event.getItem().getJsObj());
-						// System.out.println("05 event.getColNum():" + event.getColNum());
-						// System.out.println("06 event.getRowNum():" + event.getRowNum());
-						// System.out.println("07 getEditedCell:"
-						// + mainFormPane.getMainForm().getTreeGrid().getEditedCell(event.getRowNum(), event.getColNum()));
-						// System.out.println("08 >>>" + mainFormPane.getMainForm().getTreeGrid().getField(event.getColNum()).getType());
-						//						
-						// MyComboBoxItem cb = new MyComboBoxItem();
-						// JSOHelper.apply(event.getItem().getJsObj(), cb.getJsObj());
-						//						
-						// System.out.println("09 cmbxItem.getType():" + cmbxItem.getType());
-						// System.out.println("10 event.getItem().getType():" + event.getItem().getType());
-						// System.out.println("10a cb.getJsObj().toSource():" + cb.getJsObj().toSource());
-						// System.out.println("11 cb.getType():" + cb.getType());
-						// System.out.println("12 cmbxItem.getJsObj():" + cmbxItem.getJsObj());
-						// System.out.println("13 cb.getJsObj():" + cb.getJsObj());
-						// System.out.println("14 cb.getSelectedRecord():" + cb.getSelectedRecord());
-						// System.out.println("15 getDisplayValue():" + cb.getDisplayValue());
-						// System.out.println("15 getDisplayValue():" + event.getItem().getDisplayValue());
-						// if (!cb.isRecordSelected()) {
-						// System.out.println("16 keypress");
-						// } else {
-						// System.out.println("17 select !!!!!!!!!!!!!!!!!!!" + cb.getValue() + cb.getDisplayValue());
-						//						
-						// }
 						try {
 							// TODO пока не разрулилось различие между выбором из лукапа и
 							// см. http://forums.smartclient.com/showthread.php?t=16067&highlight=ComboBoxItem+onChanged
@@ -294,21 +286,6 @@ public class FormTreeGridField extends TreeGridField {
 					}
 				});
 			}
-			// Простановка значений лукапов
-			// if (null != cmbxItem && null != lookupDisplValFld) {
-			// this.addEditorExitHandler(new EditorExitHandler() {
-			// @Override
-			// public void onEditorExit(EditorExitEvent event) {
-			// try {
-			// mainFormPane.getMainForm().getTreeGrid().setEditValue(event.getRowNum(), lookupDisplValFld,
-			// ((FormItem) event.getSource()).getDisplayValue());
-			// } catch (Exception e) {
-			// e.printStackTrace();
-			// Utils.debug(e.getMessage());
-			// }
-			// }
-			// });
-			// }
 		}
 	}
 

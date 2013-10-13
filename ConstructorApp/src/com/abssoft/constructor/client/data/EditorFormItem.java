@@ -1,10 +1,9 @@
 package com.abssoft.constructor.client.data;
 
-import java.util.LinkedHashMap;
-
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.form.MainFormPane;
 import com.abssoft.constructor.client.widgets.CodeEditorItem;
+import com.abssoft.constructor.client.widgets.FormLookupComboboxItem;
 import com.abssoft.constructor.client.widgets.FormPickTreeItem;
 import com.abssoft.constructor.client.widgets.GridComboBoxItem;
 import com.abssoft.constructor.client.widgets.HTMLPaneItem;
@@ -12,6 +11,7 @@ import com.abssoft.constructor.client.widgets.MyComboBoxItem;
 import com.abssoft.constructor.common.metadata.ColumnAction;
 import com.abssoft.constructor.common.metadata.FormColumnMD;
 import com.abssoft.constructor.common.metadata.FormMD;
+import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.TitleOrientation;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.form.fields.BooleanItem;
@@ -65,7 +65,19 @@ public class EditorFormItem extends FormItem {
 			item = new HTMLPaneItem();
 		} else if (("8".equals(c.getFieldType()) || "10".equals(c.getFieldType())) && null != lookupCode
 				&& ConstructorApp.staticLookupsArr.containsKey(lookupCode)) {
-			item = new MyComboBoxItem();
+			item = new MyComboBoxItem(c, mainFormPane) {
+
+				@Override
+				public void onSelectValue(FormItem item, Record rec) {
+					// TODO Auto-generated method stub
+				}
+
+				@Override
+				public void onClearValue(FormItem item) {
+					// TODO Auto-generated method stub
+
+				}
+			};
 			((MyComboBoxItem) item).setLookupSize(c.getLookupWidth(), c.getLookupHeight(), fmd.getLookupWidth(), fmd.getLookupHeight());
 			// LinkedHashMap<String, String> lhm = Utils.createStrSortedLinkedHashMap(ConstructorApp.staticLookupsArr.get(lookupCode), !"8"
 			// .equals(c.getFieldType()));
@@ -77,6 +89,8 @@ public class EditorFormItem extends FormItem {
 			item = new LinkItem();
 		} else if ("15".equals(c.getFieldType())) {
 			item = new CodeEditorItem(); // c + mainFormPane.getJsObj().toString() // просто ID
+		} else if ("16".equals(c.getFieldType()) && null != lookupCode) {
+			item = new FormLookupComboboxItem(c, mainFormPane);
 		}
 		// TODO PickTreeItem
 		else if ("99".equals(c.getFieldType())) {

@@ -85,7 +85,7 @@ public class FormDataSource extends GwtRpcDataSource {
 			if (!mainFormPane.isForceFetch()) {
 				int gridEventRow = (0 != grid.getTotalRows()) ? grid.getEventRow() : -2;
 				if (-2 != gridEventRow) {
-					treeCriteria = Utils.getCriteriaFromListGridRecord(mainFormPane, grid.getRecord(grid.getEventRow())
+					treeCriteria = Utils.getCriteriaFromListGridRecord2(mainFormPane, grid.getRecord(grid.getEventRow())
 					// , formCode,formTabCode
 							);
 				}

@@ -421,6 +421,7 @@ class MainForm extends Canvas {
 				int rowNum;
 				try {
 					rowNum = event.getRowNum();
+					//Utils.debugAlert("treeGrid.onRowEditorEnter. rowNum:" + rowNum);
 				} catch (Exception e) {
 					Utils.debug(e.getMessage());
 					e.printStackTrace();
