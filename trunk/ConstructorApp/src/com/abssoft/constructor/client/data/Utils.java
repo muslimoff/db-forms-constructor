@@ -366,7 +366,7 @@ public class Utils {
 
 	}
 
-	private static Criteria getCriteriaFromListGridRecord(FormDataSourceField[] dsFields, Record record) {
+	private static Criteria getCriteriaFromListGridRecord1(FormDataSourceField[] dsFields, Record record) {
 		Utils.debug("getCriteriaFromListGridRecord start");
 		Criteria criteria = new Criteria();
 		if (null != record) {
@@ -396,11 +396,11 @@ public class Utils {
 
 	}
 
-	public static Criteria getCriteriaFromListGridRecord(MainFormPane mainFormPane, Record record
+	public static Criteria getCriteriaFromListGridRecord2(MainFormPane mainFormPane, Record record
 	// , String masterFormCode,String masterFormTabCode
 	) {
 		//
-		Criteria criteria = getCriteriaFromListGridRecord(mainFormPane.getDataSource().getFormDSFields(), record);
+		Criteria criteria = getCriteriaFromListGridRecord1(mainFormPane.getDataSource().getFormDSFields(), record);
 		// //criteria.addCriteria(new Criteria(Constants.formMasterFormCode, masterFormCode));
 		// // criteria.addCriteria(new Criteria(Constants.formMasterFormTabCode, masterFormTabCode));
 		// // try {

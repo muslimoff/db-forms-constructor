@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import com.abssoft.constructor.client.ConstructorApp;
-import com.abssoft.constructor.client.common.Constants;
 import com.abssoft.constructor.client.data.FormDataSourceField;
 import com.abssoft.constructor.client.data.FormTreeGridField;
 import com.abssoft.constructor.client.data.Utils;
@@ -39,6 +38,8 @@ import com.smartgwt.client.widgets.tree.TreeNode;
 public class GridComboBoxItem extends MyComboBoxItem {
 	private String userTypedValue = null;
 	private String userSelectedValue = null;
+	public static final String lookupUserTypedVarName = "p$lookup_entered_value"; // То, что вводит пользователь с клавиатуры
+	public static final String lookupSelectedValueVarName = "p$lookup_selected_value"; // идентификатор того, что пользователь ввел/выбрал
 
 	public class ComboBoxDataSource extends GwtRpcDataSource {
 		private FormDataSourceField[] dsFields;
@@ -78,9 +79,9 @@ public class GridComboBoxItem extends MyComboBoxItem {
 			Utils.debug("ComboBoxDataSource.executeFetch 10:" + userTypedValue);
 			LinkedHashMap<String, Object> crMap = Utils.getHashMapFromCriteria(cr);
 			Utils.debug("ComboBoxDataSource.executeFetch 11");
-			crMap.put(Constants.lookupUserTypedVarName, userTypedValue);
+			crMap.put(lookupUserTypedVarName, userTypedValue);
 			Utils.debug("ComboBoxDataSource.executeFetch 12");
-			crMap.put(Constants.lookupSelectedValueVarName, userSelectedValue);
+			crMap.put(lookupSelectedValueVarName, userSelectedValue);
 			Utils.debug("ComboBoxDataSource.executeFetch 13");
 			// TODO вынести в XML параметров endRow - фактически размер лова.
 			Utils.createQueryService("GridComboBoxItem.fetch").fetch(instanceIdentifier, sortBy, startRow, endRow, crMap, false,
@@ -135,13 +136,10 @@ public class GridComboBoxItem extends MyComboBoxItem {
 		}
 	}
 
-	private FormColumnMD columnMD;
-
 	private String displayFieldName = null;
 	private FormInstanceIdentifier instanceIdentifier;
 	private String lookupCode;
 	private String lookupDisplValFld;
-	private MainFormPane mainFormPane;
 	private String valueFieldName = null;
 	public LinkedHashMap<Object, TreeNode> values = new LinkedHashMap<Object, TreeNode>();
 
@@ -149,15 +147,16 @@ public class GridComboBoxItem extends MyComboBoxItem {
 		this(columnMD, mainFormPane, null);
 	}
 
-	public GridComboBoxItem(final FormColumnMD columnMD, final MainFormPane mainFormPane, FormTreeGridField formTreeGridField) {
-		this.columnMD = columnMD;
-		this.mainFormPane = mainFormPane;
-		lookupCode = columnMD.getLookupCode();
-		int gridHashCode = 10000 + GridComboBoxItem.this.columnMD.getDisplayNum();
+	public GridComboBoxItem(final FormColumnMD parentColumnMD, final MainFormPane parentFormPane, FormTreeGridField formTreeGridField) {
+		super(parentColumnMD, parentFormPane);
+		this.parentColumnMD = parentColumnMD;
+		this.parentFormPane = parentFormPane;
+		lookupCode = parentColumnMD.getLookupCode();
+		int gridHashCode = 10000 + GridComboBoxItem.this.parentColumnMD.getDisplayNum();
 		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, lookupCode, ConstructorApp.debugEnabled, true, false,
-				this.mainFormPane.getFormCode(), null);
+				this.parentFormPane.getFormCode(), null);
 		instanceIdentifier.setGridHashCode(gridHashCode);
-		lookupDisplValFld = columnMD.getLookupDisplayValue();
+		lookupDisplValFld = parentColumnMD.getLookupDisplayValue();
 		GridComboBoxItem.this.setShowOptionsFromDataSource(true);
 		this.setFetchDelay(1000);
 		this.setValidateOnChange(true);
@@ -165,7 +164,7 @@ public class GridComboBoxItem extends MyComboBoxItem {
 		this.setRejectInvalidValueOnChange(true);
 		this.setCompleteOnTab(true);
 		// this.setHideEmptyPickList(true);
-		FormMD fmd = mainFormPane.getFormMetadata().getLookupsArr().get(instanceIdentifier.getKey());
+		FormMD fmd = parentFormPane.getFormMetadata().getLookupsArr().get(instanceIdentifier.getKey());
 		// Utils.debugAlert("GridComboBoxItem: "+fmd);
 		final ComboBoxDataSource lookupDataSource = new ComboBoxDataSource();
 		MainFormPane mfp = new MainFormPane();
@@ -209,7 +208,7 @@ public class GridComboBoxItem extends MyComboBoxItem {
 		// } catch (Exception e) {
 		// }
 
-		GridComboBoxItem.this.setLookupSize(columnMD.getLookupWidth(), columnMD.getLookupHeight(), fmd.getLookupWidth(), fmd
+		GridComboBoxItem.this.setLookupSize(parentColumnMD.getLookupWidth(), parentColumnMD.getLookupHeight(), fmd.getLookupWidth(), fmd
 				.getLookupHeight());
 
 		GridComboBoxItem.this.setPickListFields(gridFields);
@@ -259,8 +258,8 @@ public class GridComboBoxItem extends MyComboBoxItem {
 				} catch (Exception e) {
 					Utils.debug("setPickListFilterCriteriaFunction 8:" + e.getMessage());
 					// e.printStackTrace();
-					ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
-					internalEnteredValue = grid.getEditedCell(grid.getEditRow(), columnMD.getName());
+					ListGrid grid = parentFormPane.getMainForm().getTreeGrid();
+					internalEnteredValue = grid.getEditedCell(grid.getEditRow(), parentColumnMD.getName());
 					Utils.debug("setPickListFilterCriteriaFunction 9");
 				}
 				Utils.debug("setPickListFilterCriteriaFunction 10");
@@ -285,10 +284,10 @@ public class GridComboBoxItem extends MyComboBoxItem {
 						// 20121107 String result = (String) value;
 						String result = null == value ? null : ((String) value); // "" + value;
 						try {
-							int currRow = GridComboBoxItem.this.mainFormPane.getSelectedRow();
-							ListGrid grig = GridComboBoxItem.this.mainFormPane.getMainForm().getTreeGrid();
+							int currRow = GridComboBoxItem.this.parentFormPane.getSelectedRow();
+							ListGrid grig = GridComboBoxItem.this.parentFormPane.getMainForm().getTreeGrid();
 							ListGridRecord rec = grig.getRecord(currRow);
-							String colName = GridComboBoxItem.this.columnMD.getName();
+							String colName = GridComboBoxItem.this.parentColumnMD.getName();
 							// System.out.println("##$@@" + result);
 							if (null != value) {
 								result = value.equals(rec.getAttribute(colName)) ? rec.getAttribute(lookupDisplValFld) : result;
@@ -373,11 +372,11 @@ public class GridComboBoxItem extends MyComboBoxItem {
 
 	public Criteria getMainFormCriteria() {
 		Utils.debug("getMainFormCriteria start");
-		Record record = Utils.getEditedRecord(GridComboBoxItem.this.mainFormPane);
-		Criteria criteria = Utils.getCriteriaFromListGridRecord(GridComboBoxItem.this.mainFormPane, record
+		Record record = Utils.getEditedRecord(GridComboBoxItem.this.parentFormPane);
+		Criteria criteria = Utils.getCriteriaFromListGridRecord2(GridComboBoxItem.this.parentFormPane, record
 		// , "GridComboBoxItem:" + GridComboBoxItem.this.getName(), null
 				);
-		HashMap<String, String> lookupAttributes = columnMD.getLookupAttributes();
+		HashMap<String, String> lookupAttributes = parentColumnMD.getLookupAttributes();
 		Iterator<String> attrs = lookupAttributes.keySet().iterator();
 		while (attrs.hasNext()) {
 			String attrName = attrs.next();
@@ -386,4 +385,16 @@ public class GridComboBoxItem extends MyComboBoxItem {
 		Utils.debug("getMainFormCriteria end");
 		return criteria;
 	}
+
+	@Override
+	public void onSelectValue(FormItem item, Record rec) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void onClearValue(FormItem item) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

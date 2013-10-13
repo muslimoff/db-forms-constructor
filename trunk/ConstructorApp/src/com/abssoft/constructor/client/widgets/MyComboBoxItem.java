@@ -1,43 +1,80 @@
 package com.abssoft.constructor.client.widgets;
 
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.Vector;
 
 import com.abssoft.constructor.client.ConstructorApp;
+import com.abssoft.constructor.client.data.Utils;
+import com.abssoft.constructor.client.form.MainFormPane;
+import com.abssoft.constructor.common.metadata.ColumnAction;
+import com.abssoft.constructor.common.metadata.FormColumnMD;
 import com.abssoft.constructor.common.metadata.StaticLookup;
-import com.google.gwt.core.client.JavaScriptObject;
 import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.types.TextMatchStyle;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
+import com.smartgwt.client.widgets.form.fields.FormItem;
+import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
+import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.grid.ListGridField;
+import com.smartgwt.client.widgets.grid.ListGridRecord;
 
-public class MyComboBoxItem extends ComboBoxItem {
+public abstract class MyComboBoxItem extends ComboBoxItem {
 	private Integer lookupWidth;
 	private Integer lookupHeight;
 	private StaticLookup valueMap = new StaticLookup();
+	protected FormColumnMD parentColumnMD;
+	protected MainFormPane parentFormPane;
+	private DataSource lookupDataSource;
 
-	public MyComboBoxItem() {
-		setType("ComboBoxItem");
+	public MyComboBoxItem(FormColumnMD parentColumnMD, MainFormPane parentFormPane) {
+		super();
+		this.parentColumnMD = parentColumnMD;
+		this.parentFormPane = parentFormPane;
+
+		this.addChangedHandler(new ChangedHandler() {
+
+			@Override
+			public void onChanged(ChangedEvent event) {
+				FormItem item = event.getItem();
+				Utils.debug("MyComboBoxItem.onChanged." + item.getName());
+				// Определяем, введена ли пользователем часть значения для поиска (null=rec) или пользователь выбрал запись (null!=rec)
+				// Такой способ нашел где-то на форуме
+				Record rec = new ComboBoxItem(item.getJsObj()).getSelectedRecord();
+				if (null != rec) {
+					onSelectValue(item, rec);
+					doOnRecordSelectedAction();
+				} else if (null == item.getValue()) {
+					onClearValue(item);
+				}
+
+			}
+		});
 	}
 
-	public MyComboBoxItem(final JavaScriptObject jsObj) {
-		super(jsObj);
-	}
+	public abstract void onSelectValue(FormItem item, Record rec);
 
-	public MyComboBoxItem(final String name) {
-		setName(name);
-		setType("ComboBoxItem");
-	}
+	public abstract void onClearValue(FormItem item);
 
-	public native Boolean isRecordSelected()
-	/*-{
-		var self = this.@com.smartgwt.client.core.DataClass::getJsObj()();
-		var isRecordSelected =  ( self.getSelectedRecord() ) ? true : false;
-		return @com.smartgwt.client.util.JSOHelper::toBoolean(Z)(isRecordSelected);
-	}-*/;
+	public void doOnRecordSelectedAction() {
+		//
+
+		// Обработка действия 4 (послевыбора из списка)
+		for (int j = 0; j < parentColumnMD.getColActions().size(); j++) {
+			final ColumnAction ca = parentColumnMD.getColActions().get(j);
+			String actionType = ca.getColActionTypeCode();
+			if ("4".equals(actionType)) {
+				try {
+					parentFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm(
+							parentFormPane.getSelectedRow());
+				} catch (Exception e) {
+					e.printStackTrace();
+					Utils.debug(e.getMessage());
+				}
+			}
+		}
+
+	}
 
 	public void setLookupWidth(Integer lookupWidth) {
 		if (null != lookupWidth) {
@@ -77,7 +114,7 @@ public class MyComboBoxItem extends ComboBoxItem {
 
 	public void setValueMap(String lookupCode) {
 		valueMap = ConstructorApp.staticLookupsArr.get(lookupCode);
-		DataSource ds = new DataSource() {
+		lookupDataSource = new DataSource() {
 			{
 				DataSourceTextField key = new DataSourceTextField("key");
 				DataSourceTextField val = new DataSourceTextField("val");
@@ -97,7 +134,7 @@ public class MyComboBoxItem extends ComboBoxItem {
 				this.setTestData(rs);
 			}
 		};
-		this.setOptionDataSource(ds);
+		this.setOptionDataSource(lookupDataSource);
 		this.setValueField("key");
 		this.setDisplayField("val");
 		this.setTextMatchStyle(TextMatchStyle.SUBSTRING);

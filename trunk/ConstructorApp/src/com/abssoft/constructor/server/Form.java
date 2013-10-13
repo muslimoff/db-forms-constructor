@@ -26,6 +26,7 @@ import com.abssoft.constructor.common.Row;
 import com.abssoft.constructor.common.RowsArr;
 import com.abssoft.constructor.common.metadata.ColumnAction;
 import com.abssoft.constructor.common.metadata.FormActionMD;
+import com.abssoft.constructor.common.metadata.FormColumnLookupMappingMD;
 import com.abssoft.constructor.common.metadata.FormColumnMD;
 import com.abssoft.constructor.common.metadata.FormMD;
 import com.abssoft.constructor.common.metadata.FormTabMD;
@@ -368,6 +369,29 @@ public class Form implements Serializable {
 				colActsRS.close();
 				actStmnt.close();
 			}
+
+			{
+
+				// get Column - Lookup Fields Mapping
+				String columnLookupMappingSQL = Utils.getSQLQueryFromXML("columnLookupMappingSQL", session);
+				OraclePreparedStatement mapStmnt = (OraclePreparedStatement) getConnection().prepareStatement(columnLookupMappingSQL);
+				setFormMDParams(mapStmnt);
+				ResultSet mapRS = mapStmnt.executeQuery();
+				while (mapRS.next()) {
+
+					FormColumnLookupMappingMD lookupMapping = new FormColumnLookupMappingMD();
+					String colName = mapRS.getString("column_code");
+					lookupMapping.setLookupFormColumnCode(mapRS.getString("lookup_form_column_code"));
+					lookupMapping.setColumnUserName(mapRS.getString("column_user_name"));
+					lookupMapping.setColumnDisplaySize(mapRS.getString("column_display_size"));
+					lookupMapping.setColumnDisplayNumber(mapRS.getInt("column_display_number"));
+					lookupMapping.setShowOnGrid(mapRS.getString("show_on_grid"));
+					lookupMapping.setColumnCodeToMapping(mapRS.getString("column_code_to_mapping"));
+					metadata.get(colName).getColumnLookupMappingArr().add(lookupMapping);
+				}
+				mapRS.close();
+				mapStmnt.close();
+			}
 		} catch (java.sql.SQLException e) {
 			session.printErrorStackTrace(e);
 		}
@@ -518,7 +542,7 @@ public class Form implements Serializable {
 		for (int i = 0; i < formLookupsIdx.size(); i++) {
 			FormColumnMD cmd = formMetaData.getColumns().get(formLookupsIdx.get(i));
 			String formLookupCode = cmd.getLookupCode();
-			if ("9".equals(cmd.getFieldType()) || "99".equals(cmd.getFieldType())) {
+			if ("9".equals(cmd.getFieldType()) || "99".equals(cmd.getFieldType()) || "16".equals(cmd.getFieldType())) {
 				putChildFormToFormsArr(formLookupCode, true, formMetaData.getLookupsArr(), null);
 			}
 			if ("8".equals(cmd.getFieldType())) {

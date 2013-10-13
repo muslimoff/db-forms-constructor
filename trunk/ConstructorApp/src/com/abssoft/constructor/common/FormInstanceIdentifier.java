@@ -32,6 +32,7 @@ public class FormInstanceIdentifier implements IsSerializable {
 		this.isDrillDownForm = isDrillDownForm;
 		this.parentFormCode = parentFormCode;
 		this.parentFormTabCode = parentFormTabCode;
+
 	}
 
 	public String getFormCode() {
@@ -61,7 +62,7 @@ public class FormInstanceIdentifier implements IsSerializable {
 	public String getKey() {
 		String res = formCode + "." + parentFormCode + (isLookupForm ? ".Y." : ".N.")
 				+ (isDrillDownForm ? ".Y." : ".N." + parentFormTabCode);
-		//System.out.println("FormInstanceIdentifier key:" + res);
+		// System.out.println("FormInstanceIdentifier key:" + res);
 		return res;
 	}
 
@@ -85,10 +86,4 @@ public class FormInstanceIdentifier implements IsSerializable {
 	public void setIsDebugEnabled(Boolean isDebugEnabled) {
 		this.isDebugEnabled = isDebugEnabled;
 	}
-
-	// public void setParentFormTabCode(String parentFormTabCode) {
-	// System.out.println("FormInstanceIdentifier.setParentFormTabCode. parentFormTabCode:" + parentFormTabCode);
-	// this.parentFormTabCode = parentFormTabCode;
-	// }
-
 }

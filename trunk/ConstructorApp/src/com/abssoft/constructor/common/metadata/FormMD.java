@@ -19,7 +19,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  */
 @Default(required = false)
-public class FormMD implements IsSerializable {
+public class FormMD implements IsSerializable, Cloneable {
 	private String formCode;
 	private String hotKey;
 	private String formName;
@@ -35,6 +35,11 @@ public class FormMD implements IsSerializable {
 	private Integer lookupWidth;
 	private Integer lookupHeight;
 	private Integer dataPageSize;
+
+	// TODO вынести в интерфейс
+	private ActionStatus status = new ActionStatus();
+	private String dragAndDropActionCode;
+	private FormInstanceIdentifier formInstanceIdentifier;
 
 	@ElementMap(required = false, entry = "column", keyType = Integer.class, valueType = FormColumnMD.class)
 	private FormColumnsArr columns = new FormColumnsArr();
@@ -53,14 +58,37 @@ public class FormMD implements IsSerializable {
 
 	private Integer objectVersionNumber;
 
-	// TODO вынести в интерфейс
-	private ActionStatus status = new ActionStatus();
-	private String dragAndDropActionCode;
-	private FormInstanceIdentifier formInstanceIdentifier;
+	public FormMD clone() {
+		FormMD clone = new FormMD();
+		clone.setFormCode(this.formCode);
+		clone.setHotKey(this.hotKey);
+		clone.setFormName(this.formName);
+		clone.setFormType(this.formType);
+		clone.setShowTreeRootNode(this.showTreeRootNode);
+		clone.setIconId(this.iconId);
+		clone.setWidth(this.width);
+		clone.setHeight(this.height);
+		clone.setBottomTabsPosition(this.bottomTabsPosition);
+		clone.setSideTabsPosition(this.sideTabsPosition);
+		clone.setShowBottomToolBar(this.showBottomToolBar);
+		clone.setDoubleClickActionCode(this.doubleClickActionCode);
+		clone.setLookupWidth(this.lookupWidth);
+		clone.setLookupHeight(this.lookupHeight);
+		clone.setDataPageSize(this.dataPageSize);
+		clone.setDragAndDropActionCode(this.dragAndDropActionCode);
+		clone.setFormInstanceIdentifier(this.formInstanceIdentifier);
+		clone.setObjectVersionNumber(this.objectVersionNumber);
 
-	/**
-	 * 
-	 */
+		clone.setColumns(this.columns.clone());
+		// TODO Клонирование для остальных полей не доделал..
+		// status
+		// tabs
+		// actions
+		// lookupsArr
+		// childForms
+		return clone;
+	}
+
 	public FormMD() {
 	}
 

@@ -1,5 +1,8 @@
 package com.abssoft.constructor.client.form;
 
+import java.util.Iterator;
+import java.util.Map;
+
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.FormTab;
 import com.abssoft.constructor.client.data.FormDataSource;
@@ -17,6 +20,7 @@ import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.Orientation;
 import com.smartgwt.client.types.VisibilityMode;
+import com.smartgwt.client.util.JSOHelper;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.ValuesManager;
@@ -499,11 +503,21 @@ public class MainFormPane extends Canvas {
 		return parentFormPane;
 	}
 
-	public String getPath() {
+	public String getTitlePath() {
 		String path = "";
 		MainFormPane mfp = this;
 		while (null != mfp && ConstructorApp.formNameArr.containsKey(mfp.getFormCode())) {
 			path = ConstructorApp.formNameArr.get(mfp.getFormCode()) + "-" + path;
+			mfp = mfp.getParentFormPane();
+		}
+		return path;
+	}
+
+	public String getInstanceKeyPath() {
+		String path = "";
+		MainFormPane mfp = this;
+		while (null != mfp) {
+			path = mfp.getInstanceIdentifier().getKey() + "-" + path;
 			mfp = mfp.getParentFormPane();
 		}
 		return path;
@@ -596,8 +610,9 @@ public class MainFormPane extends Canvas {
 	}
 
 	public void setFocus() {
-		Utils.debug("Path: " + this.getPath());
-		ConstructorApp.setPageTitle(this.getPath());
+		String path = getInstanceKeyPath(); // this.getTitlePath();
+		Utils.debug("Path: " + path);
+		ConstructorApp.setPageTitle(path);
 
 		MainFormPane parentFP = this.getParentFormPane();
 		while (null != parentFP) {
@@ -722,7 +737,7 @@ public class MainFormPane extends Canvas {
 	}
 
 	public void setThisFormCriteria(Record record) {
-		Criteria thisFormCriteria = Utils.getCriteriaFromListGridRecord(this, record);
+		Criteria thisFormCriteria = Utils.getCriteriaFromListGridRecord2(this, record);
 		Utils.debug("setThisFormCriteria2 formCode:" + this.formCode + "; crit:" + thisFormCriteria + ":" + thisFormCriteria.getValues());
 		this.setThisFormCriteria(thisFormCriteria);
 	}
@@ -737,5 +752,21 @@ public class MainFormPane extends Canvas {
 
 	public Criteria getThisFormCriteria() {
 		return thisFormCriteria;
+	}
+
+	@SuppressWarnings("unchecked")
+	public void setEditValues(Map valuesMap) {
+		setEditValues(getSelectedRow(), valuesMap);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void setEditValues(int rowNum, Map valuesMap) {
+		ListGrid g = getMainForm().getTreeGrid();
+		// Получаем значения записи с учетом несохраненных изменений
+		Map<String, Object> map = JSOHelper.convertToMap(g.getEditedRecord(rowNum).getJsObj());
+		map.putAll(valuesMap);
+		g.setEditValues(rowNum, map);
+		getValuesManager().setValues(map);
+		filterDetailData(g.getRecord(rowNum), g, rowNum);
 	}
 }
