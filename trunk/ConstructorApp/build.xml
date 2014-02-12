@@ -2,11 +2,13 @@
 <project name="ConstructorApp_V2" default="build" basedir=".">
 	<property file="war/WEB-INF/application.properties" />
 	<!-- Configure path to GWT SDK -->
-	<property name="gwt.sdk" location="D:/GWT/lib/gwt-2.3.0" />
-	<property name="smartgwt" location="D:/GWT/lib/smartgwt-3.1p-20121210" />
-	<property name="ofcgwt" location="D:/GWT/lib/ofcgwt.2.0.1.b" />
-	<property name="xmlp" location="D:/GWT/lib/xmlp" />
-	<property name="catalina.home" location="D:/Tomcat60/Tomcat 6.0" />
+	<property name="gwt.sdk" location="C:/GWT/lib/gwt-2.3.0" />
+	<!-- <property name="smartgwt" location="C:/GWT/lib/smartgwt-3.1p-20121210" /> -->
+	<property name="smartgwt" location="C:/GWT/lib/smartgwt-4.0p-20130725" />
+	<property name="simplexml" location="C:/GWT/lib/simple-xml-2.7" />
+	<property name="ofcgwt" location="C:/GWT/lib/ofcgwt.2.0.1.b" />
+	<property name="xmlp" location="C:/GWT/lib/xmlp" />
+	<property name="catalina.home" location="C:/Tomcat60/Tomcat 6.0" />
 	<property name="catalina.servicename" value="Tomcat6" />
 
 	<path id="project.class.path">
@@ -14,6 +16,7 @@
 		<pathelement location="${smartgwt}/smartgwt.jar" />
 		<pathelement location="${smartgwt}/smartgwt-skins-add.jar" />
 		<pathelement location="${smartgwt}/smartgwt-skins.jar" />
+		<pathelement location="${simplexml}/jar/simple-xml-2.7.jar" />
 		<pathelement location="${ofcgwt}/ofcgwt.jar" />
 		<pathelement location="${gwt.sdk}/gwt-user.jar" />
 		<!--		<pathelement location="${gwt.sdk}/gwt-bikeshed.jar" />   -->
@@ -36,6 +39,7 @@
 	<target name="libs" depends="build_number" description="Copy libs to WEB-INF/lib">
 		<mkdir dir="war/WEB-INF/lib" />
 		<copy todir="war/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet.jar" />
+		<copy todir="war/WEB-INF/lib" file="${simplexml}/jar/simple-xml-2.7.jar" />
 		<!-- Add any additional server libs that need to be copied -->
 	</target>
 
@@ -47,6 +51,13 @@
 		<copy todir="war/WEB-INF/classes">
 			<fileset dir="src" excludes="**/*.java" />
 		</copy>
+		<!-- Косяк в SmartGWT 3... теперь на сервере нужен LogicalDate*... -->
+		<unzip dest="war/WEB-INF/classes">
+			<patternset>
+				<include name="/com/smartgwt/client/util/LogicalDate*.class" />
+			</patternset>
+			<fileset file="${smartgwt}/smartgwt.jar" />
+		</unzip>
 	</target>
 
 	<target name="gwtc" depends="javac" description="GWT compile to JavaScript">
@@ -65,16 +76,13 @@
 
 	<target name="build" depends="gwtc" description="Build this project" />
 
-
-	<target name="copyFiles" depends="build" description="Create a war file">
-<!--		<copy todir="war/src">
-			<fileset dir="src" includes="**/*.java" />
-		</copy>
--->		
-		<zip destfile="war/src.zip">
-			<zipfileset dir="src" includes="**/*.java" />
+	<target name="copyFiles" depends="build" description="Copy files">
+		<!--  -->
+		<delete file="war/src.zip" />
+		<zip destfile="war/src.zip" update="true">
+			<zipfileset dir="src" includes="**/*.java, **/*.xml" />
 		</zip>
-				
+
 		<copy todir="war/constructorapp/sc/resources">
 			<fileset dir="resources" excludes="**/.svn" />
 		</copy>
@@ -108,14 +116,14 @@
 	</target>
 -->
 	<target name="war" depends="copyFiles" description="Create a war file">
-		<!-- - ->
+		<!-- -->
 		<zip destfile="ConstructorApp_w_libs.war">
 			<zipfileset dir="war" excludes="**/.svn, ConstructorApp*.html, **/.air" />
 			<zipfileset dir="war" includes="ConstructorApp_war.html" fullpath="ConstructorApp.html" />
 		</zip>
-		< !- - -->
+		<!-- -->
 		<zip destfile="ConstructorApp.war">
-			<zipfileset dir="war" excludes="**/.svn, **/WEB-INF/lib/**, **/constructorapp/sc/**, ConstructorApp*.html, **/.air" />
+			<zipfileset dir="war" excludes="**/.svn, **/WEB-INF/lib/**, **/WEB-INF/tmp/serialization/*.xml, **/constructorapp/sc/**, ConstructorApp*.html, **/.air" />
 			<zipfileset dir="war" includes="ConstructorApp_war.html" fullpath="ConstructorApp.html" />
 		</zip>
 	</target>
