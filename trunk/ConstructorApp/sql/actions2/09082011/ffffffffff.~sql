@@ -1,0 +1,3 @@
+-- detailFormSQL form_utils.get_form_tabs (:p_form_code, :p_master_form_code))
+-- columnActionsSQL -- form_column_actions a
+-- menusSQL -- apps_role_menus_pkg.get_menu_list
