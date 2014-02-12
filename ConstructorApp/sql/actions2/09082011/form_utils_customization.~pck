@@ -1,0 +1,119 @@
+CREATE OR REPLACE Package form_utils_customization As
+  Type t_form_action_tbl Is Table Of form_actions%Rowtype;
+  Procedure customize_column_metadata(p_column_number    Number
+                                     ,p_column_data      In Out form_utils.column_rec
+                                     ,p_master_form_code Varchar2 Default Null);
+  -- 
+  Function customize_form_action(p_form_code        In Varchar2
+                                ,p_master_form_code In Varchar2 Default Null)
+    Return t_form_action_tbl
+    Pipelined;
+End form_utils_customization;
+/
+CREATE OR REPLACE Package Body form_utils_customization As
+  
+  g_resp_id Number;
+  
+  Procedure customize_column_metadata(p_column_number    Number
+                                     ,p_column_data      In Out form_utils.column_rec
+                                     ,p_master_form_code Varchar2 Default Null) Is
+  Begin
+    If (p_column_data.form_code = 'MZ_DIMENSION_DEMO1') Then
+      matrix_rep_demo_pkg.customize_column_metadata(p_column_number,
+                                                    p_column_data);
+    End If;
+  
+    Case
+      When p_column_data.form_code = 'FORM_COLUMN_ACTIONS' And
+           p_master_form_code = 'FORM_ACTIONS' And
+           p_column_data.column_code In ('FORM_CODE', 'ACTION_CODE') Then
+        p_column_data.show_on_grid := 'N';
+      When p_column_data.form_code = 'FORM_COLUMN_ACTIONS' And
+           p_master_form_code = 'FORM_COLUMNS' And
+           p_column_data.column_code In ('FORM_CODE', 'COLUMN_CODE') Then
+        p_column_data.show_on_grid := 'N';
+        --
+      When p_column_data.form_code = 'FORM_COLUMN_ACTIONS' And
+           p_master_form_code = 'FORM_COLUMNS' And
+           p_column_data.column_code In ('FORM_CODE', 'COLUMN_CODE') Then
+        p_column_data.show_on_grid := 'N';
+      Else
+        Null;
+    End Case;
+    --
+    Begin
+      Select t.enabled_flag, nvl(t.display_name, p_column_data.column_user_name)
+        Into p_column_data.show_on_grid, p_column_data.column_user_name
+        From apps_role_menus t
+       Where t.entity_type In ('COLUMN')
+         And nvl(t.master_form_code, '#') = nvl(p_master_form_code, '#')
+         And t.parent_form_code = p_column_data.form_code
+         And t.menu_code = p_column_data.column_code
+       Start With t.parent_menu_code =
+                  (Select r.root_menu_code
+                     From apps_roles r
+                    Where r.external_role_id = apps.fnd_global.resp_id)
+      Connect By Prior t.menu_code = t.parent_menu_code;
+    Exception
+      When Others Then
+        Null;
+    End;
+    --
+    Begin
+      Select decode(t.enabled_flag, 'N', Null, p_column_data.editor_tab_code),
+             nvl(t.display_name, p_column_data.column_user_name)
+        Into p_column_data.editor_tab_code, p_column_data.column_user_name
+        From apps_role_menus t
+       Where t.entity_type In ('EDIT_COL')
+         And nvl(t.master_form_code, '#') = nvl(p_master_form_code, '#')
+         And t.parent_form_code = p_column_data.form_code
+         And t.menu_code = p_column_data.column_code
+       Start With t.parent_menu_code =
+                  (Select r.root_menu_code
+                     From apps_roles r
+                    Where r.external_role_id = apps.fnd_global.resp_id)
+      Connect By Prior t.menu_code = t.parent_menu_code;
+    Exception
+      When Others Then
+        Null;
+    End;
+  End;
+  -- 
+  Function customize_form_action(p_form_code        In Varchar2
+                                ,p_master_form_code In Varchar2 Default Null)
+    Return t_form_action_tbl
+    Pipelined Is
+    l_enabled      Varchar2(240);
+    l_rec          form_actions%Rowtype;
+  Begin
+    For cr In (Select * From form_actions Where form_code = p_form_code) Loop
+      l_rec     := cr;
+      l_enabled := 'Y';
+      Begin
+        Select t.enabled_flag, nvl(t.display_name, l_rec.action_display_name)
+          Into l_enabled, l_rec.action_display_name
+          From apps_role_menus t
+         Where t.entity_type In ('ACTION')
+           And (p_master_form_code Is Null Or
+               t.master_form_code = p_master_form_code)
+           And t.form_code = cr.form_code
+           And t.menu_code = cr.action_code
+         Start With t.parent_menu_code =
+                    (Select r.root_menu_code
+                       From apps_roles r
+                      Where r.external_role_id = g_resp_id)
+        Connect By Prior t.menu_code = t.parent_menu_code;
+      Exception
+        When Others Then
+          l_enabled := 'Y';
+      End;
+      If l_enabled = 'Y' Then
+        Pipe Row(l_rec);
+      End If;
+    End Loop;
+    Return;
+  End;
+Begin
+  g_resp_id := apps.fnd_global.resp_id;
+End form_utils_customization;
+/

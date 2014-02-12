@@ -1,0 +1,1 @@
+sqlplus /nolog @00_install.sql

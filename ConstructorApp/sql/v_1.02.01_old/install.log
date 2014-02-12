@@ -1,0 +1,171 @@
+instance (default XE): 
+Enter DBA Username(default SYS). If not SYS - grant privileges on SYS Objects manualy by starting script "sys_grants.sql "
+DBA Username: 
+FC Username (default FC30): 
+FC Tablespace (default HP_DATA): 
+Connected.
+Press Enter to start
+
+Create user
+old   1: Drop User &fc_user Cascade
+new   1: Drop User FC30 Cascade
+Drop User FC30 Cascade
+          *
+ERROR at line 1:
+ORA-01918: user 'FC30' does not exist 
+
+
+old   1: Create User &fc_user
+new   1: Create User FC30
+old   2: Identified By &fc_user_pass
+new   2: Identified By FC
+old   3: Default Tablespace &fc_user_ts
+new   3: Default Tablespace HP_DATA
+
+User created.
+
+old   1: Grant CREATE ANY PROCEDURE To &fc_user
+new   1: Grant CREATE ANY PROCEDURE To FC30
+
+Grant succeeded.
+
+old   1: Grant CREATE ANY TABLE To &fc_user
+new   1: Grant CREATE ANY TABLE To FC30
+
+Grant succeeded.
+
+old   1: Grant DROP ANY TABLE To &fc_user
+new   1: Grant DROP ANY TABLE To FC30
+
+Grant succeeded.
+
+old   1: Grant SELECT ANY TABLE To &fc_user
+new   1: Grant SELECT ANY TABLE To FC30
+
+Grant succeeded.
+
+old   1: Grant UNLIMITED TABLESPACE To &fc_user
+new   1: Grant UNLIMITED TABLESPACE To FC30
+
+Grant succeeded.
+
+old   1: Grant CONNECT To &fc_user
+new   1: Grant CONNECT To FC30
+
+Grant succeeded.
+
+old   1: Grant DBA To &fc_user
+new   1: Grant DBA To FC30
+
+Grant succeeded.
+
+old   1: Grant RESOURCE To &fc_user
+new   1: Grant RESOURCE To FC30
+
+Grant succeeded.
+
+old   1: Alter User &fc_user Default Role All
+new   1: Alter User FC30 Default Role All
+
+User altered.
+
+old   1: Grant SELECT On dba_data_files To &fc_user
+new   1: Grant SELECT On dba_data_files To FC30
+
+Grant succeeded.
+
+old   1: Grant SELECT On dba_objects To &fc_user
+new   1: Grant SELECT On dba_objects To FC30
+
+Grant succeeded.
+
+old   1: Grant SELECT On dba_role_privs To &fc_user
+new   1: Grant SELECT On dba_role_privs To FC30
+
+Grant succeeded.
+
+old   1: Grant SELECT On dba_source To &fc_user
+new   1: Grant SELECT On dba_source To FC30
+
+Grant succeeded.
+
+old   1: Grant SELECT On dba_sys_privs To &fc_user
+new   1: Grant SELECT On dba_sys_privs To FC30
+
+Grant succeeded.
+
+old   1: Grant SELECT On dba_tab_columns To &fc_user
+new   1: Grant SELECT On dba_tab_columns To FC30
+
+Grant succeeded.
+
+old   1: Grant SELECT On dba_users To &fc_user
+new   1: Grant SELECT On dba_users To FC30
+
+Grant succeeded.
+
+End of "FC30" user creation.
+Connected.
+Create FC30 Objects
+SP2-0310: unable to open file "0201_tables\forms.sql"
+SP2-0310: unable to open file "0201_tables\form_tabs.sql"
+SP2-0310: unable to open file "0201_tables\form_actions.sql"
+SP2-0310: unable to open file "0201_tables\form_columns$.sql"
+SP2-0310: unable to open file "0201_tables\form_columns.sql"
+SP2-0310: unable to open file "0201_tables\applications.sql"
+SP2-0310: unable to open file "0201_tables\apps_privs.sql"
+SP2-0310: unable to open file "0201_tables\global_params.sql"
+SP2-0310: unable to open file "0201_tables\icons.sql"
+SP2-0310: unable to open file "0201_tables\lookups.sql"
+SP2-0310: unable to open file "0201_tables\lookup_values.sql"
+SP2-0310: unable to open file "0201_tables\menus.sql"
+SP2-0310: unable to open file "0202_views\binds_v.sql"
+SP2-0310: unable to open file "0202_views\forms_v.sql"
+SP2-0310: unable to open file "0202_views\form_tabs_v.sql"
+SP2-0310: unable to open file "0203_storedproc\menu_sq.sql"
+SP2-0310: unable to open file "0203_storedproc\stragg.sql"
+SP2-0310: unable to open file "0203_storedproc\args_t.sql"
+SP2-0310: unable to open file "0203_storedproc\forms2_pkg.sql"
+SP2-0310: unable to open file "0203_storedproc\forms_pkg.sql"
+SP2-0310: unable to open file "0203_storedproc\form_actions_pkg.sql"
+SP2-0310: unable to open file "0203_storedproc\form_columns_pkg.sql"
+SP2-0310: unable to open file "0203_storedproc\form_dml_utils.sql"
+SP2-0310: unable to open file "0203_storedproc\form_tabs_pkg.sql"
+SP2-0310: unable to open file "0203_storedproc\form_utils.sql"
+SP2-0310: unable to open file "0203_storedproc\form_utils_customization.sql"
+SP2-0310: unable to open file "0203_storedproc\icons_pkg.sql"
+SP2-0310: unable to open file "0203_storedproc\lookups_pkg.sql"
+SP2-0310: unable to open file "0203_storedproc\lookup_values_pkg.sql"
+SP2-0310: unable to open file "0203_storedproc\matrix_rep_demo_pkg.sql"
+SP2-0310: unable to open file "0203_storedproc\menus_pkg.sql"
+SP2-0310: unable to open file "0203_storedproc\text_utils.sql"
+alter table forms disable all triggers
+*
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+SP2-0310: unable to open file "0204_data\lookups.sql"
+SP2-0310: unable to open file "0204_data\lookup_values.sql"
+SP2-0310: unable to open file "0204_data\menus.sql"
+SP2-0310: unable to open file "0204_data\icons.sql"
+SP2-0310: unable to open file "0204_data\global_params.sql"
+SP2-0310: unable to open file "data\forms\_forms.sql"
+
+Commit complete.
+
+alter table forms enable all triggers
+*
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+
+PL/SQL procedure successfully completed.
+
+Select invalid Objects....
+
+no rows selected
+
+Completed... Press Enter to exit
+
