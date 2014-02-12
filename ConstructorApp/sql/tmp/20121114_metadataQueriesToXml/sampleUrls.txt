@@ -1,0 +1,5 @@
+D:\GWT\Projects\ConstructorApp_V2\sql\tmp\20121114_metadataQueriesToXml\xml2json.xslt
+http://localhost:8080/oradb/FC22/FORMS?transform=/public/xml2json.xslt&contenttype=text
+http://localhost:8080/oradb/FC22/FORMS/ROW[FORM_CODE=%22MENUS%22]
+http://localhost:8080/oradb/FC22/FORM_COLUMNS/ROW[FORM_CODE='FORMS'%20and%20COLUMN_CODE='SQL_TEXT']
+http://localhost:8080/oradb/FC22/FORM_COLUMNS/ROW[FORM_CODE='FORMS'%20and%20COLUMN_CODE='SQL_TEXT']?transform=/public/xml2json.xslt&contenttype=text
