@@ -576,11 +576,12 @@ public class Utils {
 		return record;
 	}
 
+	// см com.abssoft.constructor.server.Utils.getExceptionStackIntoString
 	public static String getExceptionStack(Throwable caught) {
-		String result = "";
+		String result = caught.toString() + "\n"; // .getMessage();
 		StackTraceElement[] elements = caught.getStackTrace();
 		for (StackTraceElement e : elements) {
-			result = result + e.toString() + "\n";
+			result = result + "at " + e.toString()+"\n";
 		}
 		return result;
 	}

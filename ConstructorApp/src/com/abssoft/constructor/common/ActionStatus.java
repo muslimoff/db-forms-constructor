@@ -91,6 +91,8 @@ public class ActionStatus implements IsSerializable {
 				shortMsg = (msg.length() > 200) ? msg.substring(0, 200) : msg;
 				shortMsg = (2 > strArr.length) ? msg : strArr[1];
 
+				shortMsg = ((null == shortMsg || "".equals(shortMsg)) && strArr.length >= 3) ? strArr[2] : shortMsg;
+
 				shortMsg = (shortMsg.length() > 200) ? shortMsg.substring(0, 200) : shortMsg;
 				ActionStatusWindow.createActionStatusWindow(statusName, shortMsg, fullMsg, status.getStatusType(), dmlData, "Cancel");
 			}

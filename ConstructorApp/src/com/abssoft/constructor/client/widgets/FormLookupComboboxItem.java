@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import com.abssoft.constructor.client.ConstructorApp;
+import com.abssoft.constructor.client.common.Constants;
 import com.abssoft.constructor.client.data.FormDataSourceField;
 import com.abssoft.constructor.client.data.FormTreeGridField;
 import com.abssoft.constructor.client.data.Utils;
@@ -33,15 +34,17 @@ import com.smartgwt.client.widgets.tree.TreeNode;
 //TODO 20130805
 //1+. Меппинг лукап - поля грида. Решил, что всегда нужно делать явный меппинг
 //2+. В меппинге - флаг "Показывать", + поле "DisplayField"
-//3-. При очистке поля лукапа - очищать все смепленные поля
+//3+. При очистке поля лукапа - очищать все смепленные поля
 //4+. После выбора значения лукапа - вызывать действие по событию "после выхода из списка". Возможно перенести в MyComboboxItem
 //		см. onRecordSelected
 //5+. не работает invalidateCashe. при первом наборе строки поиска фильтруется нормально
 //6-. Освободить на сервере память (кеш) после выбора из списка
 //7+. Для новых записей не работает. См. MainFormPane.setEditValues (putAll)
+//8-. Не работает переопределение порядка столбцов
 public class FormLookupComboboxItem extends MyComboBoxItem {
 	public static final String lookupUserTypedVarName = "p$lookup_entered_value"; // То, что вводит пользователь с клавиатуры
-	public static final String lookupSelectedValueVarName = "p$lookup_selected_value"; // идентификатор того, что пользователь ввел/выбрал
+	// public static final String lookupSelectedValueVarName = "p$lookup_selected_value"; // идентификатор того, что пользователь
+	// ввел/выбрал
 
 	private FormInstanceIdentifier instanceIdentifier;
 	private String lookupCode;
@@ -158,14 +161,14 @@ public class FormLookupComboboxItem extends MyComboBoxItem {
 
 					String newName = mmd.getColumnCodeToMapping(); // это куда
 					// newName = (null == newName) ? oldName : newName;
-					newName = (null == newName) ? "$$WithoutMapping_" + oldName : newName;
+					newName = (null == newName) ? "$$" + Constants.lokupWithoutMappingPrefix + oldName : newName;
 					cmd.setName(newName);
 					// Переопределение видимости, наименований и др. характеристик для лукапа
 					cmd.setDisplayName(mmd.getColumnUserName());
 					cmd.setDisplaySize(mmd.getColumnDisplaySize());
 					cmd.setShowOnGrid(mmd.getShowOnGrid());
 
-					// TODO - не работает переопределение порядка столбцов
+					// TODO - 8. не работает переопределение порядка столбцов
 					cmd.setDisplayNum(mmd.getColumnDisplayNumber());
 
 					x.put(idx, cmd);

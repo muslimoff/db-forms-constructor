@@ -1,6 +1,5 @@
 package com.abssoft.constructor.client.form;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import com.abssoft.constructor.client.ConstructorApp;
@@ -133,7 +132,7 @@ public class MainFormPane extends Canvas {
 	private FormValuesManager valuesManager = new FormValuesManager();
 	private FormDataSource dataSource;
 	private FormActionMD currentAction = new FormActionMD();
-	private FormInstanceIdentifier instanceIdentifier;
+	private FormInstanceIdentifier instanceIdentifier = new FormInstanceIdentifier();
 	private boolean fromUrl = false;
 	private SectionStackSection summarySection;
 	private SectionStackSection detailsSection;
@@ -344,15 +343,22 @@ public class MainFormPane extends Canvas {
 				Utils.debug("MainFormPane.filterData. 4");
 				ListGrid grid = this.getMainForm().getTreeGrid();
 				Utils.debug("MainFormPane.filterData. 5");
-				try {
-					grid.invalidateCache();
-					Utils.debug("MainFormPane.filterData. 6");
-				} catch (Exception e) {
-					Utils.debug("MainFormPane.filterData. 7:" + e.getMessage());
-					e.printStackTrace();
-				}
-				Utils.debug("MainFormPane.filterData. 8");
+				// try {
+				// if (grid instanceof TreeGrid || 1 == 1) {
+				// grid.setData(new Record[0]);
+				// } else {
+				// grid.invalidateCache();
+				// }
+				// Utils.debug("MainFormPane.filterData. 6. grid:" + grid);
+				// } catch (Exception e) {
+				// Utils.debug("MainFormPane.filterData. 7:" + e.getMessage());
+				// e.printStackTrace();
+				// }
+
+				grid.setData(new Record[0]); // grid.invalidateCache(); // http://forums.smartclient.com/showthread.php?t=15572
+				Utils.debug("MainFormPane.filterData. 8. isRefresh:" + isRefresh);
 				grid.filterData(parentFormCriteria);
+
 				Utils.debug("MainFormPane.filterData. 9");
 				setParentFormCriteria(parentFormCriteria);
 				Utils.debug("MainFormPane.filterData. 10");
