@@ -45,7 +45,9 @@ public class ActionStatusWindow extends Window {
 
 			TextAreaItem detailTextItem2 = new TextAreaItem();
 			detailTextItem2.setShowTitle(false);
-			detailTextItem2.setWidth(width);
+			// detailTextItem2.setWidth("*");
+			detailTextItem2.setWidth(width*2);
+			detailTextItem2.setColSpan("*");
 			detailTextItem2.setHeight(200);
 			detailTextItem2.setValue(longText);
 			detailTextItem2.setShowIfCondition(new FormItemIfFunction() {
@@ -83,6 +85,7 @@ public class ActionStatusWindow extends Window {
 				buttons[i] = b;
 			}
 			// toolbar.setButtons(b);
+			this.setColWidths("*");
 			toolbar.setButtons(buttons);
 			this.setMargin(10);
 			this.setFields(shortTextItem, toolbar, detailTextItem2);
@@ -93,7 +96,7 @@ public class ActionStatusWindow extends Window {
 
 	public static ActionStatusWindow createActionStatusWindow(String title, String shortMsg, String longText, StatusType statusType,
 			DMLProcExecution dmlData, String... buttonNames) {
-		Utils.debug("ActionStatusWindow.createActionStatusWindow: "+title + ": " + shortMsg);
+		Utils.debug("ActionStatusWindow.createActionStatusWindow: " + title + ": " + shortMsg);
 		Utils.debug(longText);
 		return new ActionStatusWindow(title, shortMsg, longText, statusType, dmlData, buttonNames);
 	}
@@ -130,7 +133,8 @@ public class ActionStatusWindow extends Window {
 			@Override
 			public void onClick(ClickEvent event) {
 				detailsDisplayed = !detailsDisplayed;
-				f.markForRedraw();
+				// f.markForRedraw();
+				f.redraw();
 			}
 		});
 		this.setHeaderControls(HeaderControls.HEADER_LABEL, comment, HeaderControls.CLOSE_BUTTON);

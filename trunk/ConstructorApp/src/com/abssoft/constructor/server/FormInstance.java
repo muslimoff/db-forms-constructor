@@ -10,6 +10,7 @@ import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 import oracle.sql.CLOB;
 
+import com.abssoft.constructor.client.common.Constants;
 import com.abssoft.constructor.common.ActionStatus;
 import com.abssoft.constructor.common.Attribute;
 import com.abssoft.constructor.common.ExportData;
@@ -82,6 +83,7 @@ public class FormInstance implements Serializable {
 				// System.out.println("######>" + ss);
 				sortBy = sortBy + ("".equals(sortBy) ? "" : ", ") + ss.replaceAll("-", "") + (ss.contains("-") ? " desc" : "");
 			}
+			sortBy = sortBy.replaceAll("\\$\\$" + Constants.lokupWithoutMappingPrefix, "");
 			sortBy = "\n" + "order by " + sortBy;
 			session.debug("sortBy:" + sortBy);
 		}

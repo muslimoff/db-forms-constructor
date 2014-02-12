@@ -106,7 +106,6 @@ public class FormAction {
 		Utils.debug("doSaveEditedData4");
 	}
 
-	
 	/********************************************************************/
 	private void doAddNewRecord() {
 		// ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
@@ -257,7 +256,7 @@ public class FormAction {
 		final TabSet t = new TabSet();
 		t.setTabBarPosition(Side.BOTTOM);
 		new MainFormContainer(mainFormPane.getThisFormCriteria(), new FormTabMD(), FormTab.TabType.MAIN, t, formActionMD.getChildFormCode() // ,
-																																			// false
+				// false
 				, false, true, mainFormPane, title, mainFormPane.getFormMetadata().getIconId(), true);
 		final Window w = new Window();
 		w.setWidth("80%");
@@ -316,7 +315,7 @@ public class FormAction {
 				// // treeGrid.getTree().reloadChildren(treeNode);
 				// // treeGrid.getTree().openFolder(treeNode);
 				// treeGrid.getData().openFolder(node);
-
+				// treeGrid.getData().reloadChildren(node);
 				// }
 			}
 		}

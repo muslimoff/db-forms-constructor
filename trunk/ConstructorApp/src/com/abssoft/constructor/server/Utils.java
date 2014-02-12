@@ -1,8 +1,5 @@
 package com.abssoft.constructor.server;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -237,11 +234,14 @@ public class Utils {
 		}
 	}
 
+	// см com.abssoft.constructor.client.data.Utils.getExceptionStack
 	public static String getExceptionStackIntoString(Throwable e) {
-		Writer writer = new StringWriter();
-		PrintWriter printWriter = new PrintWriter(writer);
-		e.printStackTrace(printWriter);
-		return writer.toString();
+
+		return com.abssoft.constructor.client.data.Utils.getExceptionStack(e);
+		// java.io.Writer writer = new java.io.StringWriter();
+		// java.io.PrintWriter printWriter = new java.io.PrintWriter(writer);
+		// e.printStackTrace(printWriter);
+		// return writer.toString();
 	}
 
 	public static String getSQLwUserVarsReplaced(String sqlText, Session session) {

@@ -380,6 +380,7 @@ public class XMLPublisherServlet extends HttpServlet // implements javax.servlet
 	public void processXMLP(HttpServletRequest req, HttpServletResponse resp, Session session, String contentDisposition,
 			String ContentType, String template, Integer docId, String filename) throws IOException {
 		Utils.spoolOut("XMLPublisherServlet.processXMLP");
+		resp.setCharacterEncoding("UTF-8"); //mm20131028
 		ServletOutputStream respOS = resp.getOutputStream();
 		byte format = FOProcessor.FORMAT_RTF;
 		String extention = "rtf";
