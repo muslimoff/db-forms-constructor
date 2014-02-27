@@ -9,6 +9,7 @@ import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.Constants;
 import com.abssoft.constructor.client.data.FormDataSourceField;
 import com.abssoft.constructor.client.data.FormTreeGridField;
+import com.abssoft.constructor.client.data.TimeoutException;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.data.common.GwtRpcDataSource;
@@ -42,8 +43,14 @@ import com.smartgwt.client.widgets.tree.TreeNode;
 //7+. Для новых записей не работает. См. MainFormPane.setEditValues (putAll)
 //8-. Не работает переопределение порядка столбцов
 public class FormLookupComboboxItem extends MyComboBoxItem {
-	public static final String lookupUserTypedVarName = "p$lookup_entered_value"; // То, что вводит пользователь с клавиатуры
-	// public static final String lookupSelectedValueVarName = "p$lookup_selected_value"; // идентификатор того, что пользователь
+	public static final String lookupUserTypedVarName = "p$lookup_entered_value"; // То,
+																					// что
+																					// вводит
+																					// пользователь
+																					// с
+																					// клавиатуры
+	// public static final String lookupSelectedValueVarName =
+	// "p$lookup_selected_value"; // идентификатор того, что пользователь
 	// ввел/выбрал
 
 	private FormInstanceIdentifier instanceIdentifier;
@@ -56,7 +63,8 @@ public class FormLookupComboboxItem extends MyComboBoxItem {
 	public class ComboBoxDataSource extends GwtRpcDataSource {
 		private FormDataSourceField[] dsFields;
 
-		protected void executeFetch(final String requestId, DSRequest request, final DSResponse response) {
+		protected void executeFetch(final String requestId, DSRequest request,
+				final DSResponse response) throws TimeoutException {
 			Utils.debug("FormLookupComboboxItem.ComboBoxDataSource.executeFetch 1");
 
 			Criteria cr = getDSRequestCriteria(request);
@@ -64,15 +72,18 @@ public class FormLookupComboboxItem extends MyComboBoxItem {
 			int endRow = request.getEndRow();
 			String sortBy = request.getAttribute("sortBy");
 
-			LinkedHashMap<String, Object> crMap = Utils.getHashMapFromCriteria(cr);
-			Utils.createQueryService("GridComboBoxItem.fetch").fetch(instanceIdentifier, sortBy, startRow, endRow, crMap, false,
+			LinkedHashMap<String, Object> crMap = Utils
+					.getHashMapFromCriteria(cr);
+			Utils.createQueryService("GridComboBoxItem.fetch").fetch(
+					instanceIdentifier, sortBy, startRow, endRow, crMap, false,
 					new DSAsyncCallback<RowsArr>(requestId, response, this) {
 						public void onSuccess(RowsArr result) {
 							TreeNode[] records = new TreeNode[result.size()];
 							for (int r = 0; r < result.size(); r++) {
 								try {
 									Row row = result.get(r);
-									records[r] = Utils.getTreeNodeFromRow(dsFields, row);
+									records[r] = Utils.getTreeNodeFromRow(
+											dsFields, row);
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
@@ -107,15 +118,18 @@ public class FormLookupComboboxItem extends MyComboBoxItem {
 	}
 
 	// Отрабатывает после набора части наименования в поле
-	public Criteria getPickListFilterCriteria(FormItemFunctionContext itemContext) {
+	public Criteria getPickListFilterCriteria(
+			FormItemFunctionContext itemContext) {
 		Utils.debug("FormLookupComboboxItem.getPickListFilterCriteria start");
 		Criteria cr = getMainFormCriteria(parentFormPane);
 
-		// Object value = getValue();// Для грида не работает корректно. нужно всегда itemContext
+		// Object value = getValue();// Для грида не работает корректно. нужно
+		// всегда itemContext
 		Object value = itemContext.getFormItem().getValue();
 		String strValue = (null != value) ? value.toString() : null;
 
-		// Для совместимости с разработанными ранее лукапами: lookupUserTypedVarName
+		// Для совместимости с разработанными ранее лукапами:
+		// lookupUserTypedVarName
 		cr.addCriteria(lookupUserTypedVarName, strValue);
 		cr.addCriteria(parentColumnMD.getName(), strValue);
 		Utils.debug("FormLookupComboboxItem.getPickListFilterCriteria end");
@@ -126,9 +140,11 @@ public class FormLookupComboboxItem extends MyComboBoxItem {
 	public Criteria getMainFormCriteria(MainFormPane mainFormPane) {
 		Utils.debug("FormLookupComboboxItem.getMainFormCriteria start");
 		Record record = Utils.getEditedRecord(mainFormPane);
-		Criteria cr = Utils.getCriteriaFromListGridRecord2(mainFormPane, record);
+		Criteria cr = Utils
+				.getCriteriaFromListGridRecord2(mainFormPane, record);
 		// Добавление атрибутов колонки
-		HashMap<String, String> lookupAttributes = parentColumnMD.getLookupAttributes();
+		HashMap<String, String> lookupAttributes = parentColumnMD
+				.getLookupAttributes();
 		Iterator<String> attrs = lookupAttributes.keySet().iterator();
 		while (attrs.hasNext()) {
 			String attrName = attrs.next();
@@ -138,32 +154,43 @@ public class FormLookupComboboxItem extends MyComboBoxItem {
 		return cr;
 	}
 
-	public FormLookupComboboxItem(FormColumnMD parentColumnMD, MainFormPane parentFormPane) {
+	public FormLookupComboboxItem(FormColumnMD parentColumnMD,
+			MainFormPane parentFormPane) {
 		super(parentColumnMD, parentFormPane);
 		lookupDataSource = new ComboBoxDataSource();
-		lookupCode = parentColumnMD.getLookupCode(); // + "_" + columnMD.getName();
-		int gridHashCode = 10000 + FormLookupComboboxItem.this.parentColumnMD.getDisplayNum();
-		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, lookupCode, ConstructorApp.debugEnabled, true, false,
+		lookupCode = parentColumnMD.getLookupCode(); // + "_" +
+														// columnMD.getName();
+		int gridHashCode = 10000 + FormLookupComboboxItem.this.parentColumnMD
+				.getDisplayNum();
+		instanceIdentifier = new FormInstanceIdentifier(
+				ConstructorApp.sessionId, lookupCode,
+				ConstructorApp.debugEnabled, true, false,
 				this.parentFormPane.getFormCode(), null);
 		instanceIdentifier.setGridHashCode(gridHashCode);
-		lookupFormMD = parentFormPane.getFormMetadata().getLookupsArr().get(instanceIdentifier.getKey());
+		lookupFormMD = parentFormPane.getFormMetadata().getLookupsArr()
+				.get(instanceIdentifier.getKey());
 
 		{// mm20130929 меппинг полей лукапа
-			ArrayList<FormColumnLookupMappingMD> mappingArr = parentColumnMD.getColumnLookupMappingArr();
+			ArrayList<FormColumnLookupMappingMD> mappingArr = parentColumnMD
+					.getColumnLookupMappingArr();
 			if (mappingArr.size() > 0) {
 				lookupFormMD = lookupFormMD.clone();
 				FormColumnsArr x = lookupFormMD.getColumns();
 				for (int i = 0; i < mappingArr.size(); i++) {
 					FormColumnLookupMappingMD mmd = mappingArr.get(i);
-					String oldName = mmd.getLookupFormColumnCode(); // это откуда
+					String oldName = mmd.getLookupFormColumnCode(); // это
+																	// откуда
 					int idx = x.getColIndex(oldName);
 					FormColumnMD cmd = x.get(idx);
 
 					String newName = mmd.getColumnCodeToMapping(); // это куда
 					// newName = (null == newName) ? oldName : newName;
-					newName = (null == newName) ? "$$" + Constants.lokupWithoutMappingPrefix + oldName : newName;
+					newName = (null == newName) ? "$$"
+							+ Constants.lokupWithoutMappingPrefix + oldName
+							: newName;
 					cmd.setName(newName);
-					// Переопределение видимости, наименований и др. характеристик для лукапа
+					// Переопределение видимости, наименований и др.
+					// характеристик для лукапа
 					cmd.setDisplayName(mmd.getColumnUserName());
 					cmd.setDisplaySize(mmd.getColumnDisplaySize());
 					cmd.setShowOnGrid(mmd.getShowOnGrid());
@@ -182,10 +209,12 @@ public class FormLookupComboboxItem extends MyComboBoxItem {
 		mfp.setFormMetadata(lookupFormMD);
 
 		mfp.setFormColumns(new FormColumns(mfp));
-		FormTreeGridField[] gridFields = mfp.getFormColumns().createGridFields();
+		FormTreeGridField[] gridFields = mfp.getFormColumns()
+				.createGridFields();
 
-		this.setLookupSize(parentColumnMD.getLookupWidth(), parentColumnMD.getLookupHeight(), lookupFormMD.getLookupWidth(), lookupFormMD
-				.getLookupHeight());
+		this.setLookupSize(parentColumnMD.getLookupWidth(),
+				parentColumnMD.getLookupHeight(),
+				lookupFormMD.getLookupWidth(), lookupFormMD.getLookupHeight());
 		this.setPickListFields(gridFields);
 		lookupDataSource.setFields(mfp.getFormColumns().createDSFields());
 		this.setShowOptionsFromDataSource(true);
@@ -193,7 +222,7 @@ public class FormLookupComboboxItem extends MyComboBoxItem {
 		this.setFetchDelay(1000);
 		this.setCompleteOnTab(true);
 		this.setCachePickListResults(false);
-		this.setUseClientFiltering(false);
+		// this.setUseClientFiltering(false);
 
 		// Отрабатывает после набора части наименования в поле
 		this.setPickListFilterCriteriaFunction(new FormItemCriteriaFunction() {

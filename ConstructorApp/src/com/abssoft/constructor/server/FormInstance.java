@@ -71,8 +71,10 @@ public class FormInstance implements Serializable {
 		// showReferencedObjects(this);
 	}
 
-	public RowsArr fetch(String sortBy, int startRow, int endRow, Map<?, ?> filterValues, boolean forceFetch) {
-		// TODO Обработка признака больших табличек - не выполнять запрос с TotalRows
+	public RowsArr fetch(String sortBy, int startRow, int endRow,
+			Map<?, ?> filterValues, boolean forceFetch) {
+		// TODO Обработка признака больших табличек - не выполнять запрос с
+		// TotalRows
 
 		RowsArr currentData = new RowsArr();
 		// /////////////////////////
@@ -81,9 +83,12 @@ public class FormInstance implements Serializable {
 			sortBy = "";
 			for (String ss : sortByArr) {
 				// System.out.println("######>" + ss);
-				sortBy = sortBy + ("".equals(sortBy) ? "" : ", ") + ss.replaceAll("-", "") + (ss.contains("-") ? " desc" : "");
+				sortBy = sortBy + ("".equals(sortBy) ? "" : ", ")
+						+ ss.replaceAll("-", "")
+						+ (ss.contains("-") ? " desc" : "");
 			}
-			sortBy = sortBy.replaceAll("\\$\\$" + Constants.lokupWithoutMappingPrefix, "");
+			sortBy = sortBy.replaceAll("\\$\\$"
+					+ Constants.lokupWithoutMappingPrefix, "");
 			sortBy = "\n" + "order by " + sortBy;
 			session.debug("sortBy:" + sortBy);
 		}
@@ -92,17 +97,22 @@ public class FormInstance implements Serializable {
 		String sqlText = null;
 		boolean isStmntClosedErr = false;
 		try {
-			// Первый вызов DataSource или изменение сортировки, фильтров, а также принудительно
-			if (forceFetch || -1 == currentEndRow || currentSortBy != sortBy || !currentFilterValues.equals(filterValues)) {
+			// Первый вызов DataSource или изменение сортировки, фильтров, а
+			// также принудительно
+			if (forceFetch || -1 == currentEndRow || currentSortBy != sortBy
+					|| !currentFilterValues.equals(filterValues)) {
 				OracleConnection connection = form.getConnection();
 				session.debug("Erase ResultSetData....");
 				currentEndRow = -1;
 				resultData = new RowsArr();
 				ClobHM.clear();
-				sqlText = form.getFormSQLText() + ((sortBy != null) ? sortBy : "");
+				sqlText = form.getFormSQLText()
+						+ ((sortBy != null) ? sortBy : "");
 				{
-					String totalRowsSqlText = "select count(*) cnt from (" + sqlText + "\n)";
-					OraclePreparedStatement rowCntStmnt = (OraclePreparedStatement) connection.prepareStatement(totalRowsSqlText); // statement
+					String totalRowsSqlText = "select count(*) cnt from ("
+							+ sqlText + "\n)";
+					OraclePreparedStatement rowCntStmnt = (OraclePreparedStatement) connection
+							.prepareStatement(totalRowsSqlText); // statement
 					form.setFilterValues(session, rowCntStmnt, filterValues);
 					session.debug("totalRowsSqlText:\n" + totalRowsSqlText);
 					ResultSet rowCntRS = rowCntStmnt.executeQuery();
@@ -113,7 +123,8 @@ public class FormInstance implements Serializable {
 					rowCntRS.close();
 					rowCntStmnt.close();
 				}
-				statement = (OraclePreparedStatement) connection.prepareStatement(sqlText);
+				statement = (OraclePreparedStatement) connection
+						.prepareStatement(sqlText);
 				form.setFilterValues(session, statement, filterValues);
 				session.debug("sqlText:\n" + sqlText);
 				// 20100928
@@ -128,17 +139,22 @@ public class FormInstance implements Serializable {
 				currentFilterValues = filterValues;
 
 			}
-			session.debug("currentEndRow before: " + currentEndRow + "; Cashe: " + resultData.size() + "; startRow: " + startRow
-					+ "; endRow: " + endRow + "; gridHashCode: " + "; sortBy: " + sortBy + "; forceFetch: " + forceFetch);
-			// Пробегаем по ResultSet от последней строки, считанной при предыдущем вызове (currentEndRow),
-			// до конца текущего диапазона (endRow) или до оконца ResultSet. Если currentEndRow>endRow -
+			session.debug("currentEndRow before: " + currentEndRow
+					+ "; Cashe: " + resultData.size() + "; startRow: "
+					+ startRow + "; endRow: " + endRow + "; gridHashCode: "
+					+ "; sortBy: " + sortBy + "; forceFetch: " + forceFetch);
+			// Пробегаем по ResultSet от последней строки, считанной при
+			// предыдущем вызове (currentEndRow),
+			// до конца текущего диапазона (endRow) или до оконца ResultSet.
+			// Если currentEndRow>endRow -
 			// цикл не выполняется - данные уже считаны.
 			for (int rowNum = currentEndRow + 1; rowNum <= endRow; rowNum++) {
 				boolean isRSclosed = false;
 				try {
 					if (!rs.next() // !rs.isAfterLast() //!rs.isClosed() &&
 					) {
-						session.debug("FormInstance. ResultSet ended. rowNum:" + rowNum);
+						session.debug("FormInstance. ResultSet ended. rowNum:"
+								+ rowNum);
 						rs.close();
 						statement.close();
 						isRSclosed = true;
@@ -156,10 +172,12 @@ public class FormInstance implements Serializable {
 						FormColumnMD cmd = columnsArr.get(colNum);
 						String colName = cmd.getName();
 						String formColDataType = cmd.getDataType();
-						r.put(colNum, Utils.getAttribute(colName, formColDataType, rs, this));
+						r.put(colNum, Utils.getAttribute(colName,
+								formColDataType, rs, this));
 					} catch (Exception e) {
 						r.put(colNum, new Attribute(e.getMessage()));
-						session.debug("Error on column: " + columnsArr.get(colNum).getName());
+						session.debug("Error on column: "
+								+ columnsArr.get(colNum).getName());
 						session.printErrorStackTrace(e);
 					}
 
@@ -169,8 +187,10 @@ public class FormInstance implements Serializable {
 			}
 
 			session.debug("currentEndRow after:" + currentEndRow);
-			// пробегаем по resultData и возвращаем только данные в требуемом диапазоне: startRow и endRow.
-			// Очищаем ранее передаваемые данные из resultData для экономии памяти. Остаются только записи,
+			// пробегаем по resultData и возвращаем только данные в требуемом
+			// диапазоне: startRow и endRow.
+			// Очищаем ранее передаваемые данные из resultData для экономии
+			// памяти. Остаются только записи,
 			// считанные из курсора rs, но невостребованные ранее.
 
 			for (int i = 0; i <= Math.min(endRow, currentEndRow) - startRow; i++) {
@@ -180,21 +200,24 @@ public class FormInstance implements Serializable {
 				// System.out.println("col:" + i + "; data1:" + r.get(0));
 			}
 			currentData.setTotalRows(resultData.getTotalRows());
-			session.debug("currentData.TotalRows setted" + resultData.getTotalRows());
+			session.debug("currentData.TotalRows setted"
+					+ resultData.getTotalRows());
 		} catch (Exception e) {
-
-			String errText = Utils.getExceptionStackIntoString(e) + "\n";
+			String errText = Messages.getMessage(e);
+			if (!isStmntClosedErr) {
+				currentData.setStatus(new ActionStatus(errText,
+						ActionStatus.StatusType.ERROR));
+			} else {
+				currentData.setStatus(new ActionStatus(errText,
+						ActionStatus.StatusType.SUCCESS));
+			}
 			errText = errText + "Form:" + form.getFormCode() + "\n";
 			errText = errText + "SQL:" + sqlText + "\n";
 			session.debug(errText);
-			if (!isStmntClosedErr) {
-				currentData.setStatus(new ActionStatus(errText, ActionStatus.StatusType.ERROR));
-			} else {
-				currentData.setStatus(new ActionStatus(errText, ActionStatus.StatusType.SUCCESS));
-			}
 		}
 		currentSortBy = sortBy;
-		session.debug("FormInstance.fetch... return.." + this.form.getFormCode());
+		session.debug("FormInstance.fetch... return.."
+				+ this.form.getFormCode());
 		return currentData;
 	}
 

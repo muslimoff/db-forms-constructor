@@ -25,24 +25,32 @@ public interface QueryService extends RemoteService {
 	 * @param password
 	 * @return <code>ConnectionInfo</code> Результаты подключения
 	 */
-	public ConnectionInfo connect(int ServerIdx, String user, String password, boolean isScript, String urlParams, Boolean isDebugEnabled);
+	public ConnectionInfo connect(int ServerIdx, String user, String password,
+			boolean isScript, String urlParams, Boolean isDebugEnabled);
+
+	public void relogin(int sessionID, String user, String password,
+			String urlParams) throws Exception;
 
 	/**
-	 * Получение метаданных формы (наименований столбцов и их типов и характеристик)
+	 * Получение метаданных формы (наименований столбцов и их типов и
+	 * характеристик)
 	 * 
 	 * @param sessionId
 	 * @param formCode
 	 * @return <code>ArrayList<ColumnMetaData></code> метаданные...
+	 * @throws TimeoutException
 	 */
-	public FormMD getFormMetaData(FormInstanceIdentifier fi);
+	public FormMD getFormMetaData(FormInstanceIdentifier fi)
+			throws TimeoutException;
 
 	/**
 	 * Получение данных о доступных формах (Название, горячая клавиша вызова...)
 	 * 
 	 * @param sessionId
 	 * @return <code>MenusArr</code> данные доступных форм для построения меню
+	 * @throws TimeoutException
 	 */
-	public MenusArr getMenusArr(int sessionId);
+	public MenusArr getMenusArr(int sessionId) throws TimeoutException;
 
 	/**
 	 * Получение части результата запроса
@@ -54,8 +62,11 @@ public interface QueryService extends RemoteService {
 	 * @param startRow
 	 * @param endRow
 	 * @return <code>RowsArr</code>
+	 * @throws TimeoutException
 	 */
-	public RowsArr fetch(FormInstanceIdentifier fi, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch);
+	public RowsArr fetch(FormInstanceIdentifier fi, String sortBy,
+			int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch)
+			throws TimeoutException;
 
 	/**
 	 * Выполнение DML на сервере
@@ -64,9 +75,11 @@ public interface QueryService extends RemoteService {
 	 * @param formCode
 	 * @param gridHashCode
 	 * @return Возвращает измененные на сервере данные;
+	 * @throws TimeoutException
 	 */
 
-	public Row executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow, FormActionMD actMD);
+	public Row executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow,
+			FormActionMD actMD) throws TimeoutException;
 
 	/**
 	 * Закрывает текущую сессию (перед выходом из приложения).
@@ -84,11 +97,13 @@ public interface QueryService extends RemoteService {
 	 */
 	public void closeForm(FormInstanceIdentifier fi, FormMD formState);
 
-	public StaticLookupsArr getStaticLookupsArr(int sessionId);
+	public StaticLookupsArr getStaticLookupsArr(int sessionId)
+			throws TimeoutException;
 
 	public ServerInfoArr getServerInfoArrWithoutPassword();
 
 	public String getFile();
 
-	public Integer setExportData(FormInstanceIdentifier fi, ExportData exportData);
+	public Integer setExportData(FormInstanceIdentifier fi,
+			ExportData exportData) throws TimeoutException;
 }

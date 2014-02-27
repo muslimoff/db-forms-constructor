@@ -5,12 +5,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.abssoft.constructor.client.app.ConnectWindow;
+import com.abssoft.constructor.client.app.ReloginWindow;
 import com.abssoft.constructor.client.app.SkinSelectorMenu;
 import com.abssoft.constructor.client.common.KeyIdentifier;
 import com.abssoft.constructor.client.common.TabSet;
 import com.abssoft.constructor.client.common.ToolBar;
+import com.abssoft.constructor.client.data.TimeoutEvent;
+import com.abssoft.constructor.client.data.TimeoutEventHandler;
+import com.abssoft.constructor.client.data.TimeoutException.TimeoutType;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.form.ApplicationToolBar;
@@ -23,7 +28,8 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.user.client.Cookies;
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.ClosingEvent;
 import com.smartgwt.client.data.Criteria;
@@ -46,13 +52,14 @@ import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
 import com.smartgwt.client.widgets.tab.Tab;
 
 /**
- *ConstructorApp - GUI-generator, based on SQL-queries
+ * ConstructorApp - GUI-generator, based on SQL-queries
  * 
  * @author Muslimoff
  * @version 0.0.0.1
  */
 public class ConstructorApp implements EntryPoint {
-
+	public static final Logger log = Logger.getLogger("");
+	public static final EventBus eb = GWT.create(SimpleEventBus.class);
 	public static TabSet tabSet = new TabSet();
 	public static final String queryServiceRelativePath = "query";
 	public static int sessionId = -1;
@@ -78,8 +85,10 @@ public class ConstructorApp implements EntryPoint {
 	public static String clientVersion = Utils.getClientVersion();
 	public static String appServerVersion = "";
 	public static String dbServerVersion = "";
-	// public static QueryServiceAsync queryService; // = (QueryServiceAsync) GWT.create(QueryService.class);
-	// private static ServiceDefTarget queryServiceDefTarget = (ServiceDefTarget) queryService;
+	// public static QueryServiceAsync queryService; // = (QueryServiceAsync)
+	// GWT.create(QueryService.class);
+	// private static ServiceDefTarget queryServiceDefTarget =
+	// (ServiceDefTarget) queryService;
 	public static boolean showToolbar = true;
 	public static boolean showToolbarButtonNames = true;
 
@@ -87,15 +96,17 @@ public class ConstructorApp implements EntryPoint {
 
 	private void doBeforeClose(final String msg) {
 		if (-1 != sessionId) {
-			Utils.createQueryService("ConstructorApp.sessionClose").sessionClose(sessionId, new DSAsyncCallback<Void>() {
-				@Override
-				public void onSuccess(Void result) {
-					String msg2 = msg + ": DB session " + sessionId + " closed...";
-					sessionId = -1;
-					// Utils.debug(msg2);
-					System.out.println(msg2);
-				}
-			});
+			Utils.createQueryService("ConstructorApp.sessionClose")
+					.sessionClose(sessionId, new DSAsyncCallback<Void>() {
+						@Override
+						public void onSuccess(Void result) {
+							String msg2 = msg + ": DB session " + sessionId
+									+ " closed...";
+							sessionId = -1;
+							// Utils.debug(msg2);
+							System.out.println(msg2);
+						}
+					});
 			for (Tab t : tabSet.getTabs()) {
 				tabSet.removeTab(t);
 			}
@@ -109,7 +120,8 @@ public class ConstructorApp implements EntryPoint {
 			doBeforeClose("ConnectWindow:");
 
 			for (Canvas cc : menuBar.getMembers()) {
-				if (cc instanceof MenuButton && !cc.equals(serviceMenuBtn) && !cc.equals(fileMenuBtn)) {
+				if (cc instanceof MenuButton && !cc.equals(serviceMenuBtn)
+						&& !cc.equals(fileMenuBtn)) {
 					((MenuButton) cc).getMenu().destroy();
 					cc.destroy();
 				}
@@ -144,10 +156,12 @@ public class ConstructorApp implements EntryPoint {
 		Window.addWindowClosingHandler(new Window.ClosingHandler() {
 			@Override
 			public void onWindowClosing(ClosingEvent event) {
-				// TODO Научиться не перечитывать, если приложение уже открыто и передается только идентификатор новой формы (OEBS URL
+				// TODO Научиться не перечитывать, если приложение уже открыто и
+				// передается только идентификатор новой формы (OEBS URL
 				// например)
 				if (debugEnabled)
-					event.setMessage(com.google.gwt.user.client.Window.Location.getHref());
+					event.setMessage(com.google.gwt.user.client.Window.Location
+							.getHref());
 			}
 		});
 
@@ -231,12 +245,15 @@ public class ConstructorApp implements EntryPoint {
 		// ShowToolbarButtonNames
 		final MenuItem showToolbarButtonNamesMI = new MenuItem("Назв.кнопок");
 		{
-			showToolbarButtonNamesMI.setIcon("[ISOMORPHIC]/resources/icons/" + "bug.png");
-			showToolbarButtonNamesMI.setCheckIfCondition(new MenuItemIfFunction() {
-				public boolean execute(Canvas target, Menu menu, MenuItem item) {
-					return ConstructorApp.showToolbarButtonNames;
-				}
-			});
+			showToolbarButtonNamesMI.setIcon("[ISOMORPHIC]/resources/icons/"
+					+ "bug.png");
+			showToolbarButtonNamesMI
+					.setCheckIfCondition(new MenuItemIfFunction() {
+						public boolean execute(Canvas target, Menu menu,
+								MenuItem item) {
+							return ConstructorApp.showToolbarButtonNames;
+						}
+					});
 			showToolbarButtonNamesMI.addClickHandler(new ClickHandler() {
 				public void onClick(MenuItemClickEvent event) {
 					ConstructorApp.showToolbarButtonNames = !ConstructorApp.showToolbarButtonNames;
@@ -266,7 +283,8 @@ public class ConstructorApp implements EntryPoint {
 
 				@Override
 				public void onClick(MenuItemClickEvent event) {
-					tabSet.removeMainFormContainerTab(tabSet.getSelectedTab(), false);
+					tabSet.removeMainFormContainerTab(tabSet.getSelectedTab(),
+							false);
 				}
 			});
 		}
@@ -276,7 +294,8 @@ public class ConstructorApp implements EntryPoint {
 			downloadMI.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(MenuItemClickEvent event) {
-					ActionStatusWindow.createActionStatusWindow("wwwwwwww", this.getClass().getName(), this.toString(),
+					ActionStatusWindow.createActionStatusWindow("wwwwwwww",
+							this.getClass().getName(), this.toString(),
 							ActionStatus.StatusType.SUCCESS, null, "Ok");
 					// new RestfulDataSourceSample();
 				}
@@ -284,7 +303,8 @@ public class ConstructorApp implements EntryPoint {
 		}
 		// /////////////
 		Menu smm = new Menu();
-		smm.setData(showToolbarMI, showToolbarButtonNamesMI, closeFormMI, testMI, downloadMI);
+		smm.setData(showToolbarMI, showToolbarButtonNamesMI, closeFormMI,
+				testMI, downloadMI);
 		serviceMenuBtn.setMenu(smm);
 		// -----connect();
 		menuBar.addMembers(fileMenuBtn, serviceMenuBtn);
@@ -295,9 +315,11 @@ public class ConstructorApp implements EntryPoint {
 		vStack.setWidth100();
 		vStack.setHeight100();
 		canvas.addChild(vStack);
-		urlParams = com.google.gwt.user.client.Window.Location.getParameterMap();
+		urlParams = com.google.gwt.user.client.Window.Location
+				.getParameterMap();
 		{
-			Map<String, List<String>> urlParams = com.google.gwt.user.client.Window.Location.getParameterMap();
+			Map<String, List<String>> urlParams = com.google.gwt.user.client.Window.Location
+					.getParameterMap();
 			Iterator<String> i = urlParams.keySet().iterator();
 			Utils.debug("%%%%%%%%%%%%%%%%%%%PARAMETERS%%%%%%%%%%%%%%%%%");
 			while (i.hasNext()) {
@@ -313,20 +335,23 @@ public class ConstructorApp implements EntryPoint {
 			}
 
 		}
-		Utils.debug("QueryString:" + com.google.gwt.user.client.Window.Location.getQueryString());
+
+		Utils.debug("QueryString:"
+				+ com.google.gwt.user.client.Window.Location.getQueryString());
 		canvas.draw();
 		mainToolBar.showOrHide(ConstructorApp.showToolbar);
-
+		addTimeoutHandler();
 		connectWindow = new ConnectWindow(ConstructorApp.this);
 	}
 
 	public void add_debug_console() {
-		if (!GWT.isScript() || 1 == 1) {
-			Page.registerKey(new KeyIdentifier("Ctrl+Alt+Shift+D"), new KeyCallback() {
-				public void execute(String keyName) {
-					SC.showConsole();
-				}
-			});
+		if (!GWT.isScript() || true) {
+			Page.registerKey(new KeyIdentifier("Ctrl+Alt+Shift+D"),
+					new KeyCallback() {
+						public void execute(String keyName) {
+							SC.showConsole();
+						}
+					});
 		}
 	}
 
@@ -337,6 +362,25 @@ public class ConstructorApp implements EntryPoint {
 
 	public native void setDataChoserDayOfWeek()
 	/*-{
-		$wnd.isc.DateChooser.addProperties({firstDayOfWeek:1})
+		$wnd.isc.DateChooser.addProperties({
+			firstDayOfWeek : 1
+		})
 	}-*/;
+
+	private void addTimeoutHandler() {
+		eb.addHandler(TimeoutEvent.getType(), new TimeoutEventHandler() {
+
+			@Override
+			public void onTimeout(TimeoutType timeoutType) {
+				if (timeoutType == TimeoutType.APPLICATION) {
+					ConstructorApp.log.info("Application session timed out");
+					ReloginWindow.getInstance().show();
+				} else {
+					ConstructorApp.log.info("Database session timed out");
+					connectWindow.show();
+				}
+
+			}
+		});
+	}
 }

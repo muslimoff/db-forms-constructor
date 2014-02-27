@@ -66,7 +66,8 @@ public class MainFormPane extends Canvas {
 			try {
 				super.editRecord(record);
 			} catch (Exception e) {
-				Utils.logException(e, "MainFormPane.FormValuesManager.editRecord() 1");
+				Utils.logException(e,
+						"MainFormPane.FormValuesManager.editRecord() 1");
 			}
 			// Пробежка по CanvasItem c HTMLPane
 			try {
@@ -77,15 +78,18 @@ public class MainFormPane extends Canvas {
 						// Window.alert("d:" + d + "; f:" + f);
 
 						FormItem ff = d.getField(fieldName);
-						// В SmartGWT 1.3 поломали super.editRecord еще и для HeaderItem
+						// В SmartGWT 1.3 поломали super.editRecord еще и для
+						// HeaderItem
 						if (ff instanceof HeaderItem) {
 							((HeaderItem) ff).setValue(fieldValue);
 						}
 
 						// вот так вот потому что: Проблемы с CanvasItem
 						// http://code.google.com/p/smartgwt/issues/detail?id=266
-						// Updated: http://code.google.com/p/smartgwt/issues/detail?id=180#c10
-						// Fixed for 3.1d from 5/19 onwards - see smartclient.com/builds. Please confirm.
+						// Updated:
+						// http://code.google.com/p/smartgwt/issues/detail?id=180#c10
+						// Fixed for 3.1d from 5/19 onwards - see
+						// smartclient.com/builds. Please confirm.
 						if (ff instanceof HTMLPaneItem) {
 							((HTMLPaneItem) ff).setValue(fieldValue);
 						}
@@ -100,7 +104,8 @@ public class MainFormPane extends Canvas {
 					}
 				}
 			} catch (Exception e) {
-				Utils.logException(e, "MainFormPane.FormValuesManager.editRecord() 2");
+				Utils.logException(e,
+						"MainFormPane.FormValuesManager.editRecord() 2");
 			}
 
 		}
@@ -111,7 +116,8 @@ public class MainFormPane extends Canvas {
 				Record record = Utils.getEditedRecord(MainFormPane.this);
 				// this.editRecord(record);
 
-				this.editRecord3(record);// mm20120902 - съехали снова. Вернулся на editRecord3
+				this.editRecord3(record);// mm20120902 - съехали снова. Вернулся
+											// на editRecord3
 			}
 
 		}
@@ -145,7 +151,8 @@ public class MainFormPane extends Canvas {
 	private Criteria parentFormCriteria = INTITAL_CRITERIA;
 	private Criteria thisFormCriteria = INTITAL_CRITERIA;
 
-	// 20130514 - обнаружнен косяк - при создании новой записи - сброс сортировки в гриде
+	// 20130514 - обнаружнен косяк - при создании новой записи - сброс
+	// сортировки в гриде
 	private String sortState;
 
 	public void setSortState(String sortState) {
@@ -159,7 +166,8 @@ public class MainFormPane extends Canvas {
 	public MainFormPane() {
 	}
 
-	public MainFormPane(final String formCode, final boolean isLookup, final MainFormPane parentFormPane, Boolean isDrillDownForm,
+	public MainFormPane(final String formCode, final boolean isLookup,
+			final MainFormPane parentFormPane, Boolean isDrillDownForm,
 			String parentFormTabCode, final Criteria parentFormCriteria1) {
 		this.setFormCode(formCode);
 
@@ -173,34 +181,49 @@ public class MainFormPane extends Canvas {
 			ConstructorApp.formNameArr.put(formCode, formCode);
 		}
 		dataSource = new FormDataSource();
+
 		System.out.println(formCode + " isLookup:" + isLookup);
 		this.parentFormPane = parentFormPane;
-		this.parentFormsCount = null == parentFormPane ? 0 : parentFormPane.parentFormsCount + 1;
+		this.parentFormsCount = null == parentFormPane ? 0
+				: parentFormPane.parentFormsCount + 1;
 		this.buttonsToolBar = new FormToolbar(this);
-		String parentFormCode = (null != parentFormPane) ? parentFormPane.getFormCode() : null;
-		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, formCode, ConstructorApp.debugEnabled, false // isLookupForm
+		String parentFormCode = (null != parentFormPane) ? parentFormPane
+				.getFormCode() : null;
+		instanceIdentifier = new FormInstanceIdentifier(
+				ConstructorApp.sessionId, formCode,
+				ConstructorApp.debugEnabled, false // isLookupForm
 				, isDrillDownForm, parentFormCode, parentFormTabCode);
 		instanceIdentifier.setGridHashCode(-999);
 		// Запрет вложенности форм более чем 20 и запрет зацикливания формы...
 		if (20 >= this.parentFormsCount
-				&& !instanceIdentifier.getKey().equals(null == parentFormPane ? "" : parentFormPane.getInstanceIdentifier().getKey())) {
-			if (null != parentFormPane && parentFormPane.getFormMetadata().getChildForms().containsKey(instanceIdentifier.getKey())) {
-				processFormMetadata(parentFormPane.getFormMetadata().getChildForms().get(instanceIdentifier.getKey()), isLookup,
-						parentFormCriteria1, false);
+				&& !instanceIdentifier.getKey().equals(
+						null == parentFormPane ? "" : parentFormPane
+								.getInstanceIdentifier().getKey())) {
+			if (null != parentFormPane
+					&& parentFormPane.getFormMetadata().getChildForms()
+							.containsKey(instanceIdentifier.getKey())) {
+				processFormMetadata(parentFormPane.getFormMetadata()
+						.getChildForms().get(instanceIdentifier.getKey()),
+						isLookup, parentFormCriteria1, false);
 			} else {
-				Utils.createQueryService("MainFormPane.getFormMetaData").getFormMetaData(instanceIdentifier, new DSAsyncCallback<FormMD>() {
-					public void onSuccess(FormMD result) {
-						result.getStatus().showActionStatus();
-						processFormMetadata(result, isLookup, parentFormCriteria1, true);
-						// Utils.debug("MainFormPane.getFormMetaData. QueryService:" + result);
-					}
-				});
+				Utils.createQueryService("MainFormPane.getFormMetaData")
+						.getFormMetaData(instanceIdentifier,
+								new DSAsyncCallback<FormMD>() {
+									public void onSuccess(FormMD result) {
+										result.getStatus().showActionStatus();
+										processFormMetadata(result, isLookup,
+												parentFormCriteria1, true);
+										// Utils.debug("MainFormPane.getFormMetaData. QueryService:"
+										// + result);
+									}
+								});
 			}
 		}
 
 	}
 
-	public void processFormMetadata(FormMD formMetaData, boolean isLookup, Criteria parentFormCriteria, boolean isAutoFetch) {
+	public void processFormMetadata(FormMD formMetaData, boolean isLookup,
+			Criteria parentFormCriteria, boolean isAutoFetch) {
 		setFormMetadata(formMetaData);
 		setFormColumns(new FormColumns(MainFormPane.this));
 
@@ -209,7 +232,8 @@ public class MainFormPane extends Canvas {
 
 		if (!isLookup) {
 			gridFields = formColumns.createGridFields();
-			mainForm = new MainForm(MainFormPane.this, formColumns.hasSideTabsCount, formColumns.getHeaderSpans());
+			mainForm = new MainForm(MainFormPane.this,
+					formColumns.hasSideTabsCount, formColumns.getHeaderSpans());
 			instanceIdentifier.setGridHashCode(mainForm.getHashCode());
 		}
 		dataSource.setMainFormPane(MainFormPane.this);
@@ -248,17 +272,24 @@ public class MainFormPane extends Canvas {
 	public void createDetailForms(Criteria parentFormCriteria) {
 		// System.out.println("createDetailForms... ###################################");
 		String fc = this.getFormCode();
-		String formTitle = FormTab.getIconTitle(ConstructorApp.formNameArr.get(fc), ConstructorApp.formIconArr.get(fc));
+		String formTitle = FormTab.getIconTitle(
+				ConstructorApp.formNameArr.get(fc),
+				ConstructorApp.formIconArr.get(fc));
 
-		// System.out.println("createDetailForms. sideDetailFormsContainer before: " + sideDetailFormsContainer);
+		// System.out.println("createDetailForms. sideDetailFormsContainer before: "
+		// + sideDetailFormsContainer);
 
-		sideDetailFormsContainer = new DetailFormsContainer(parentFormCriteria, this, Orientation.HORIZONTAL);
+		sideDetailFormsContainer = new DetailFormsContainer(parentFormCriteria,
+				this, Orientation.HORIZONTAL);
 
-		// System.out.println("createDetailForms. sideDetailFormsContainer: " + sideDetailFormsContainer);
+		// System.out.println("createDetailForms. sideDetailFormsContainer: " +
+		// sideDetailFormsContainer);
 
-		bottomDetailFormsContainer = new DetailFormsContainer(parentFormCriteria, this, Orientation.VERTICAL);
+		bottomDetailFormsContainer = new DetailFormsContainer(
+				parentFormCriteria, this, Orientation.VERTICAL);
 
-		// System.out.println("createDetailForms. bottomDetailFormsContainer: " + bottomDetailFormsContainer);
+		// System.out.println("createDetailForms. bottomDetailFormsContainer: "
+		// + bottomDetailFormsContainer);
 
 		HLayout gridAndFormLayout = new HLayout();
 		gridAndFormLayout.setMargin(0);
@@ -274,10 +305,13 @@ public class MainFormPane extends Canvas {
 		String summarySectionTitle = formTitle;
 		String detailsSectionTitle = formTitle + "-Подробности";
 
-		// TODO - вынести в настройки высоту SectionStack: sections.setHeaderHeight(1); По дефолту - 26
+		// TODO - вынести в настройки высоту SectionStack:
+		// sections.setHeaderHeight(1); По дефолту - 26
 		sectionsHeaderHeigth = 5;
 		sections.setHeaderHeight(sectionsHeaderHeigth);
-		if (sectionsHeaderHeigth <= 10) // Если высота меньше 10px то не выводим наименования - все равно некрасиво тогда получится если
+		if (sectionsHeaderHeigth <= 10) // Если высота меньше 10px то не выводим
+										// наименования - все равно некрасиво
+										// тогда получится если
 		// выводить наименования
 		{
 			summarySectionTitle = "";
@@ -296,7 +330,8 @@ public class MainFormPane extends Canvas {
 			detailsSection.setExpanded(true);
 		}
 		sections.setSections(summarySection, detailsSection);
-		if ("0%".equals(getFormMetadata().getHeight()) || "0".equals(getFormMetadata().getHeight())) {
+		if ("0%".equals(getFormMetadata().getHeight())
+				|| "0".equals(getFormMetadata().getHeight())) {
 			summarySection.setShowHeader(false);
 			detailsSection.setShowHeader(false);
 		}
@@ -315,7 +350,8 @@ public class MainFormPane extends Canvas {
 	public void doBeforeClose() {
 		DetailFormsContainer bottomCon = getBottomDetailFormsContainer();
 		DetailFormsContainer sideCon = getSideDetailFormsContainer();
-		// Utils.debug("MainFormPane.doBeforeClose. bottomCon:" + bottomCon + "; sideCon:" + sideCon);
+		// Utils.debug("MainFormPane.doBeforeClose. bottomCon:" + bottomCon +
+		// "; sideCon:" + sideCon);
 		if (null != bottomCon) {
 			bottomCon.doBeforeClose();
 		}
@@ -334,8 +370,11 @@ public class MainFormPane extends Canvas {
 
 	public void filterData(Criteria parentFormCriteria, boolean isRefresh) {
 		// this.parentFormCriteria = parentFormCriteria;
-		Utils.debug("MainFormPane.filterData. 1" + parentFormCriteria.getValues());
-		if (isRefresh || !getPrevParentFormCriteria().getValues().equals(parentFormCriteria.getValues())) {
+		Utils.debug("MainFormPane.filterData. 1"
+				+ parentFormCriteria.getValues());
+		if (isRefresh
+				|| !getPrevParentFormCriteria().getValues().equals(
+						parentFormCriteria.getValues())) {
 			Utils.debug("MainFormPane.filterData. 2");
 			setForceFetch(true);
 			Utils.debug("MainFormPane.filterData. 3: " + this.formCode);
@@ -355,8 +394,10 @@ public class MainFormPane extends Canvas {
 				// e.printStackTrace();
 				// }
 
-				grid.setData(new Record[0]); // grid.invalidateCache(); // http://forums.smartclient.com/showthread.php?t=15572
-				Utils.debug("MainFormPane.filterData. 8. isRefresh:" + isRefresh);
+				grid.setData(new Record[0]); // grid.invalidateCache(); //
+												// http://forums.smartclient.com/showthread.php?t=15572
+				Utils.debug("MainFormPane.filterData. 8. isRefresh:"
+						+ isRefresh);
 				grid.filterData(parentFormCriteria);
 
 				Utils.debug("MainFormPane.filterData. 9");
@@ -373,12 +414,15 @@ public class MainFormPane extends Canvas {
 
 	}
 
-	public void filterDetailData(Record record, ListGrid treeGrid, int selectedRecordIndex) {
+	public void filterDetailData(Record record, ListGrid treeGrid,
+			int selectedRecordIndex) {
 		Utils.debug("filterDetailData0.... record:" + record);
-		filterDetailData(record, treeGrid, selectedRecordIndex, true, true, true);
+		filterDetailData(record, treeGrid, selectedRecordIndex, true, true,
+				true);
 	}
 
-	public void filterDetailData(Record record, ListGrid treeGrid, int selectedRecordIndex, boolean filterDynamicMultiDetails,
+	public void filterDetailData(Record record, ListGrid treeGrid,
+			int selectedRecordIndex, boolean filterDynamicMultiDetails,
 			boolean filterDynamicSingleDetails, boolean filterStaticDetails) {
 		Utils.debug("filterDetailData.... record:" + record);
 		setSelectedRow(selectedRecordIndex);
@@ -387,14 +431,18 @@ public class MainFormPane extends Canvas {
 		// setThisFormCriteria(record);
 		setThisFormCriteria(record);
 
-		Utils.debug("filterDetailData.... BottomDetailFormsContainer:" + this.getThisFormCriteria().getValues()
+		Utils.debug("filterDetailData.... BottomDetailFormsContainer:"
+				+ this.getThisFormCriteria().getValues()
 		// + getBottomDetailFormsContainer()
-				);
-		Utils.debug("filterDetailData.... SideDetailFormsContainer:" // + getSideDetailFormsContainer()
-				);
-		getBottomDetailFormsContainer().filterDetailContainerData(getThisFormCriteria(), filterDynamicMultiDetails,
+		);
+		Utils.debug("filterDetailData.... SideDetailFormsContainer:" // +
+																		// getSideDetailFormsContainer()
+		);
+		getBottomDetailFormsContainer().filterDetailContainerData(
+				getThisFormCriteria(), filterDynamicMultiDetails,
 				filterDynamicSingleDetails, filterStaticDetails);
-		getSideDetailFormsContainer().filterDetailContainerData(getThisFormCriteria(), filterDynamicMultiDetails,
+		getSideDetailFormsContainer().filterDetailContainerData(
+				getThisFormCriteria(), filterDynamicMultiDetails,
 				filterDynamicSingleDetails, filterStaticDetails);
 		valuesManager.editRecord2();
 		buttonsToolBar.setActionsStatuses();
@@ -452,7 +500,8 @@ public class MainFormPane extends Canvas {
 
 	public FormMD getFormState() {
 		// Сохранение параметров формы.
-		Utils.debug("**************FORM: " + formCode + "*************************");
+		Utils.debug("**************FORM: " + formCode
+				+ "*************************");
 		FormMD form = new FormMD();
 		form.setFormCode(formCode);
 		Integer formWidth = mainForm.getWidth();
@@ -460,22 +509,33 @@ public class MainFormPane extends Canvas {
 		Integer paneWidth = getWidth();
 		Integer paneHeight = getHeight();
 		Utils.debug("Border:" + this.getBorder());
-		Utils.debug("FormWidth. new:" + formWidth + "; old:" + this.getFormMetadata().getWidth());
-		Utils.debug("FormHeight. new:" + formHeight + "; old:" + this.getFormMetadata().getHeight());
+		Utils.debug("FormWidth. new:" + formWidth + "; old:"
+				+ this.getFormMetadata().getWidth());
+		Utils.debug("FormHeight. new:" + formHeight + "; old:"
+				+ this.getFormMetadata().getHeight());
 		Utils.debug("TotalWidth. new:" + paneWidth);
 		Utils.debug("TotalHeight. new:" + paneHeight);
-		String formWidthStr = "" + (Math.round(formWidth.doubleValue() / paneWidth.doubleValue() * 20.0) * 5);
-		String formHeightStr = "" + (Math.round(formHeight.doubleValue() / paneHeight.doubleValue() * 20.0) * 5);
-		formWidthStr = (0 == this.getSideDetailFormsContainer().getTabCounter()) ? this.getFormMetadata().getWidth() : formWidthStr;
-		formHeightStr = (0 == this.getBottomDetailFormsContainer().getTabCounter()) ? this.getFormMetadata().getHeight() : formHeightStr;
+		String formWidthStr = ""
+				+ (Math.round(formWidth.doubleValue() / paneWidth.doubleValue()
+						* 20.0) * 5);
+		String formHeightStr = ""
+				+ (Math.round(formHeight.doubleValue()
+						/ paneHeight.doubleValue() * 20.0) * 5);
+		formWidthStr = (0 == this.getSideDetailFormsContainer().getTabCounter()) ? this
+				.getFormMetadata().getWidth() : formWidthStr;
+		formHeightStr = (0 == this.getBottomDetailFormsContainer()
+				.getTabCounter()) ? this.getFormMetadata().getHeight()
+				: formHeightStr;
 		Utils.debug("W%" + formWidthStr + "; H%" + formHeightStr);
 
 		// Сохранение параметров (ширины и порядка) столбцов.
 		Utils.debug("Columns before....");
 		for (FormTreeGridField f : this.getFormColumns().getGridFields()) {
 			if (!f.getColumnMD().getDisplaySize().equals(f.getWidth())) {
-				Utils.debug(f.getName() + " Old width" + f.getColumnMD().getDisplaySize() + "New width:" + f.getWidth()
-						+ "; getSortDirection:" + f.getSortDirection());
+				Utils.debug(f.getName() + " Old width"
+						+ f.getColumnMD().getDisplaySize() + "New width:"
+						+ f.getWidth() + "; getSortDirection:"
+						+ f.getSortDirection());
 			}
 		}
 		Utils.debug("**************************************************");
@@ -512,8 +572,10 @@ public class MainFormPane extends Canvas {
 	public String getTitlePath() {
 		String path = "";
 		MainFormPane mfp = this;
-		while (null != mfp && ConstructorApp.formNameArr.containsKey(mfp.getFormCode())) {
-			path = ConstructorApp.formNameArr.get(mfp.getFormCode()) + "-" + path;
+		while (null != mfp
+				&& ConstructorApp.formNameArr.containsKey(mfp.getFormCode())) {
+			path = ConstructorApp.formNameArr.get(mfp.getFormCode()) + "-"
+					+ path;
 			mfp = mfp.getParentFormPane();
 		}
 		return path;
@@ -573,7 +635,8 @@ public class MainFormPane extends Canvas {
 	}
 
 	public void setBorder(boolean showBorder) {
-		// TODO mm20120110 - Закоментил - расползание границ формы после изменения версии в 2.5 - 3.0. Да и вообще - криво с этой рамочкой.
+		// TODO mm20120110 - Закоментил - расползание границ формы после
+		// изменения версии в 2.5 - 3.0. Да и вообще - криво с этой рамочкой.
 		// Что-то другое придумать.
 		// Canvas cnv = this;
 		// if (showBorder) {
@@ -587,7 +650,8 @@ public class MainFormPane extends Canvas {
 	 * @param bottomDetailFormsContainer
 	 *            the bottomDetailFormsContainer to set
 	 */
-	public void setBottomDetailFormsContainer(DetailFormsContainer bottomDetailFormsContainer) {
+	public void setBottomDetailFormsContainer(
+			DetailFormsContainer bottomDetailFormsContainer) {
 		this.bottomDetailFormsContainer = bottomDetailFormsContainer;
 	}
 
@@ -702,7 +766,8 @@ public class MainFormPane extends Canvas {
 	 * @param sideDetailFormsContainer
 	 *            the sideDetailFormsContainer to set
 	 */
-	public void setSideDetailFormsContainer(DetailFormsContainer sideDetailFormsContainer) {
+	public void setSideDetailFormsContainer(
+			DetailFormsContainer sideDetailFormsContainer) {
 		this.sideDetailFormsContainer = sideDetailFormsContainer;
 	}
 
@@ -723,11 +788,13 @@ public class MainFormPane extends Canvas {
 
 	protected void setParentFormCriteria(Criteria parentFormCriteria) {
 		setPrevParentFormCriteria(this.parentFormCriteria);
-		this.parentFormCriteria = (null == parentFormCriteria) ? INTITAL_CRITERIA : parentFormCriteria;
+		this.parentFormCriteria = (null == parentFormCriteria) ? INTITAL_CRITERIA
+				: parentFormCriteria;
 	}
 
 	private void setPrevParentFormCriteria(Criteria prevParentFormCriteria) {
-		this.prevParentFormCriteria = (null == prevParentFormCriteria) ? INTITAL_CRITERIA : prevParentFormCriteria;
+		this.prevParentFormCriteria = (null == prevParentFormCriteria) ? INTITAL_CRITERIA
+				: prevParentFormCriteria;
 	}
 
 	private void setThisFormCriteria(Criteria thisFormCriteria) {
@@ -735,16 +802,19 @@ public class MainFormPane extends Canvas {
 			Utils.debugAlert("setThisFormCriteria: " + null);
 			this.thisFormCriteria = INTITAL_CRITERIA;
 		} else {
-			Utils
-					.debug("setThisFormCriteria formCode:" + this.formCode + "; crit:" + thisFormCriteria + ":"
-							+ thisFormCriteria.getValues());
+			Utils.debug("setThisFormCriteria formCode:" + this.formCode
+					+ "; crit:" + thisFormCriteria + ":"
+					+ thisFormCriteria.getValues());
 			this.thisFormCriteria = thisFormCriteria;
 		}
 	}
 
 	public void setThisFormCriteria(Record record) {
-		Criteria thisFormCriteria = Utils.getCriteriaFromListGridRecord2(this, record);
-		Utils.debug("setThisFormCriteria2 formCode:" + this.formCode + "; crit:" + thisFormCriteria + ":" + thisFormCriteria.getValues());
+		Criteria thisFormCriteria = Utils.getCriteriaFromListGridRecord2(this,
+				record);
+		Utils.debug("setThisFormCriteria2 formCode:" + this.formCode
+				+ "; crit:" + thisFormCriteria + ":"
+				+ thisFormCriteria.getValues());
 		this.setThisFormCriteria(thisFormCriteria);
 	}
 
@@ -769,7 +839,8 @@ public class MainFormPane extends Canvas {
 	private void setEditValues(int rowNum, Map valuesMap) {
 		ListGrid g = getMainForm().getTreeGrid();
 		// Получаем значения записи с учетом несохраненных изменений
-		Map<String, Object> map = JSOHelper.convertToMap(g.getEditedRecord(rowNum).getJsObj());
+		Map<String, Object> map = JSOHelper.convertToMap(g.getEditedRecord(
+				rowNum).getJsObj());
 		map.putAll(valuesMap);
 		g.setEditValues(rowNum, map);
 		getValuesManager().setValues(map);

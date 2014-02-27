@@ -16,27 +16,38 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface QueryServiceAsync {
 
-	public void connect(int ServerIdx, String user, String password, boolean isScript, String urlParams, Boolean isDebugEnabled,
+	public void connect(int ServerIdx, String user, String password,
+			boolean isScript, String urlParams, Boolean isDebugEnabled,
 			AsyncCallback<ConnectionInfo> callback);
 
-	public void fetch(FormInstanceIdentifier fi, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch,
-			AsyncCallback<RowsArr> callback);
+	public void relogin(int sessionID, String user, String password,
+			String urlParams, AsyncCallback<Void> callback);
 
-	public void executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow, FormActionMD actMD, AsyncCallback<Row> callback);
+	public void fetch(FormInstanceIdentifier fi, String sortBy, int startRow,
+			int endRow, Map<?, ?> criteria, boolean forceFetch,
+			AsyncCallback<RowsArr> callback) throws TimeoutException;
 
-	public void getFormMetaData(FormInstanceIdentifier fi, AsyncCallback<FormMD> callback);
+	public void executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow,
+			FormActionMD actMD, AsyncCallback<Row> callback);
+
+	public void getFormMetaData(FormInstanceIdentifier fi,
+			AsyncCallback<FormMD> callback);
 
 	public void getMenusArr(int sessionId, AsyncCallback<MenusArr> callback);
 
 	public void sessionClose(int sessionId, AsyncCallback<Void> callback);
 
-	public void closeForm(FormInstanceIdentifier fi, FormMD formState, AsyncCallback<Void> callback);
+	public void closeForm(FormInstanceIdentifier fi, FormMD formState,
+			AsyncCallback<Void> callback);
 
-	public void getStaticLookupsArr(int sessionId, AsyncCallback<StaticLookupsArr> callback);
+	public void getStaticLookupsArr(int sessionId,
+			AsyncCallback<StaticLookupsArr> callback);
 
-	public void getServerInfoArrWithoutPassword(AsyncCallback<ServerInfoArr> callback);
+	public void getServerInfoArrWithoutPassword(
+			AsyncCallback<ServerInfoArr> callback);
 
 	public void getFile(AsyncCallback<String> callback);
 
-	public void setExportData(FormInstanceIdentifier fi, ExportData exportData, AsyncCallback<Integer> callback);
+	public void setExportData(FormInstanceIdentifier fi, ExportData exportData,
+			AsyncCallback<Integer> callback);
 }

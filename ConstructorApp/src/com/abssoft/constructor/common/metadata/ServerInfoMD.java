@@ -9,6 +9,8 @@ public class ServerInfoMD implements IsSerializable, Cloneable {
 	private boolean allowUserChange;
 	private boolean transferPassToClient;
 	private String title;
+	private int sessionTimeout;
+	private int dbSessionTimeout;
 
 	private String dbUsername;
 	private String dbPassword;
@@ -33,6 +35,7 @@ public class ServerInfoMD implements IsSerializable, Cloneable {
 		result.setDbUrl(this.getDbUrl());
 		result.setFcSchemaOwner(this.getFcSchemaOwner());
 		result.setServerID(this.getServerID());
+		result.setSessionTimeout(this.getSessionTimeout());
 		return result;
 	}
 
@@ -130,5 +133,21 @@ public class ServerInfoMD implements IsSerializable, Cloneable {
 
 	public void setValidationFN(String validationFN) {
 		this.validationFN = validationFN;
+	}
+
+	public int getSessionTimeout() {
+		return sessionTimeout;
+	}
+
+	public void setSessionTimeout(int sessionTimeout) {
+		this.sessionTimeout = sessionTimeout;
+	}
+
+	public int getDbSessionTimeout() {
+		return dbSessionTimeout;
+	}
+
+	public void setDbSessionTimeout(int dbSessionTimeout) {
+		this.dbSessionTimeout = dbSessionTimeout;
 	}
 }

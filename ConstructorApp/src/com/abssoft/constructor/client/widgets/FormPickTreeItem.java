@@ -3,6 +3,7 @@ package com.abssoft.constructor.client.widgets;
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.FormDataSourceField;
 import com.abssoft.constructor.client.data.FormTreeGridField;
+import com.abssoft.constructor.client.data.TimeoutException;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.data.common.GwtRpcDataSource;
@@ -27,26 +28,33 @@ public class FormPickTreeItem extends IPickTreeItem {
 		FormDataSourceField[] dsFields;
 
 		@Override
-		protected void executeFetch(final String requestId, DSRequest request, final DSResponse response) {
+		protected void executeFetch(final String requestId, DSRequest request,
+				final DSResponse response) throws TimeoutException {
 			Utils.debug("PickDataSource Fetch. Lookup:" + lookupCode);
 			Criteria cr = new Criteria();
 			try {
 				cr.addCriteria(request.getCriteria());
 			} catch (Exception e) {
-				Utils.debug("Exception on request.getCriteria().getValues():" + e.getMessage());
+				Utils.debug("Exception on request.getCriteria().getValues():"
+						+ e.getMessage());
 			}
 			int startRow = 0;
 			int endRow = 10000;
 			String sortBy = request.getAttribute("sortBy");
-			Utils.createQueryService("FormPickTreeItem.fetch").fetch(instanceIdentifier, sortBy, startRow, endRow,
-					Utils.getHashMapFromCriteria(cr), false, new DSAsyncCallback<RowsArr>(requestId, response, this) {
+			Utils.createQueryService("FormPickTreeItem.fetch").fetch(
+					instanceIdentifier, sortBy, startRow, endRow,
+					Utils.getHashMapFromCriteria(cr), false,
+					new DSAsyncCallback<RowsArr>(requestId, response, this) {
 						public void onSuccess(RowsArr result) {
 							records = new TreeNode[result.size()];
-							Utils.debug("PickDataSource. valueFieldNum:" + valueFieldNum + "; result.size:" + result.size());
+							Utils.debug("PickDataSource. valueFieldNum:"
+									+ valueFieldNum + "; result.size:"
+									+ result.size());
 							for (int r = 0; r < result.size(); r++) {
 								try {
 									Row row = result.get(r);
-									records[r] = Utils.getTreeNodeFromRow(dsFields, row);
+									records[r] = Utils.getTreeNodeFromRow(
+											dsFields, row);
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
@@ -75,18 +83,25 @@ public class FormPickTreeItem extends IPickTreeItem {
 
 	private FormColumnMD columnMD;
 
-	public FormPickTreeItem(FormColumnMD columnMD, final MainFormPane mainFormPane) {
+	public FormPickTreeItem(FormColumnMD columnMD,
+			final MainFormPane mainFormPane) {
 		this(columnMD, mainFormPane, null);
 	}
 
-	public FormPickTreeItem(FormColumnMD columnMD, final MainFormPane mainFormPane, final FormTreeGridField formTreeGridField) {
+	public FormPickTreeItem(FormColumnMD columnMD,
+			final MainFormPane mainFormPane,
+			final FormTreeGridField formTreeGridField) {
 		this.lookupCode = columnMD.getLookupCode();
 		this.columnMD = columnMD;
-		int gridHashCode = 10000 + FormPickTreeItem.this.columnMD.getDisplayNum();
-		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, lookupCode, ConstructorApp.debugEnabled, true, false,
+		int gridHashCode = 10000 + FormPickTreeItem.this.columnMD
+				.getDisplayNum();
+		instanceIdentifier = new FormInstanceIdentifier(
+				ConstructorApp.sessionId, lookupCode,
+				ConstructorApp.debugEnabled, true, false,
 				mainFormPane.getFormCode(), null);
 		instanceIdentifier.setGridHashCode(gridHashCode);
-		FormMD fmd = mainFormPane.getFormMetadata().getLookupsArr().get(lookupCode);
+		FormMD fmd = mainFormPane.getFormMetadata().getLookupsArr()
+				.get(lookupCode);
 		Utils.debug("PickDataSource ******** " + fmd.getFormName());
 		final MainFormPane mfp = new MainFormPane();
 		mfp.setFormCode(lookupCode);
