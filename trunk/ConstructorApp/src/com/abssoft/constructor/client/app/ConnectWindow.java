@@ -379,6 +379,8 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 	}
 
 	public void show() {
+		userNameItem.setValue("");
+		passItem.setValue("");
 		super.show();
 		super.setOpacity(100);
 		passItem.focusInItem();

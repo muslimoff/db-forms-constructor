@@ -53,7 +53,6 @@ public class ReloginWindow extends ConnectWindow {
 			super.show();
 		opened = true;
 	}
-
 	@Override
 	public void hide() {
 		opened = false;
