@@ -1,105 +1,63 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <root attribute1="x" attribute2="y">
 	<skins>
-		<skin code="Enterprise" 	name="Enterprise"></skin>
+		<skin code="Enterprise" name="Enterprise"></skin>
 		<skin code="EnterpriseBlue" name="Enterprise Blue"></skin>
-		<skin code="Graphite" 		name="Graphite"></skin>
-		<skin code="Simplicity" 	name="Simplicity"></skin>
-		<skin code="Mobile" 		name="Mobile"></skin>
-		<skin code="SilverWave" 	name="Silver Wave"></skin>
-		<skin code="BlackOps" 		name="Black Ops"></skin>
-		<skin code="TreeFrog" 		name="Tree Frog"></skin>
-		<skin code="fleet" 			name="Fleet"></skin>
-		<skin code="Cupertino" 		name="Cupertino"></skin>
-		<skin code="standard" 		name="Standard"></skin>
+		<skin code="Graphite" name="Graphite"></skin>
+		<skin code="Simplicity" name="Simplicity"></skin>
+		<skin code="Mobile" name="Mobile"></skin>
+		<skin code="SilverWave" name="Silver Wave"></skin>
+		<skin code="BlackOps" name="Black Ops"></skin>
+		<skin code="TreeFrog" name="Tree Frog"></skin>
+		<skin code="fleet" name="Fleet"></skin>
+		<skin code="Cupertino" name="Cupertino"></skin>
+		<skin code="standard" name="Standard"></skin>
 	</skins>
-<!-- variables: validationFN, fc_schema_owner, db_username -->
+	<!-- variables: validationFN, fc_schema_owner, db_username -->
 	<dbConnections>
-		<defaultValues
-			dbusername="FC22"
-			fcSchemaOwner="FC22"
-			debug="true"
-			validationFN="&amp;fc_schema_owner..users_pkg.validate_login"
+		<defaultValues dbusername="FC22" fcSchemaOwner="FC22"
+			debug="true" validationFN="&amp;fc_schema_owner..users_pkg.validate_login"
 			title="Forms Constructor" />
 
-		<server id="1"
-				display="AppAdmin (FC22)" 
-				default="true" 
-				fcSchemaOwner="FC22" 
-				dbusername="FC22">
-			ap.bas.kz:1521:XE
-		</server>
-		
-		<server id="14"
-				display="FC22 VM_XE" 
-				default="true" 
-				fcSchemaOwner="FC22" 
-				dbusername="FC22">
-			localhost:1521:XE
+		<server id="13" display="OLD DEV Kazakhmys FC22" default="true"
+			fcSchemaOwner="FC22" dbusername="FC22">
+			localhost:1521:DEV
 		</server>
 
-		<server id="24"
-			display="SOSMA-TEST" 
-			default="true" 
-			fcSchemaOwner="SOSMA_TEST" 
-			dbusername="SOSMA_TEST">
-			ko:1521:XE
+		<server id="14" display="DEV_KZ Kazakhmys FC22" default="true"
+			fcSchemaOwner="FC22" dbusername="FC22">
+			localhost:1522:DEV_KZ
 		</server>
 
-		<server id="21"
-			display="SOSMA" 
-			default="true" 
-			fcSchemaOwner="SOSMA" 
-			dbusername="SOSMA">
-			ko:1521:XE
+		<server id="15" display="TEST APPS User" dbusername="APPS"
+			dbpassword="apps" allowuserchange="false" debug="false" default="true"
+			validationFN="xxfnd_apps_utils_pkg.validate_ebs_login">
+			kzala3135.kz.kmz.local:1523:HRTEST
 		</server>
 
-		<server id="41" display="KC PROD FC Admin" default="false">oebsdbala.air-astana.net:1521:OEBSPROD</server>
-
-		<server id="42"
-			display="KC PROD FC User" 
-			dbusername="APPS"
-			dbpassword="GHJLala2011" 
-			allowuserchange="false"
-			debug="false"
-			default="true"
-			validationFN="xxfnd_apps_utils_pkg.validate_ebs_login">oebsdbala.air-astana.net:1521:OEBSPROD</server>
-
-		<server id="51"
-				display="SMA DBLocal" 
-				default="true" 
-				fcSchemaOwner="SMA" 
-				dbusername="SMA">
-			localhost:1521:XE
-		</server>			
-		
-		<server id="52"
-				display="SMA DB Remote" 
-				default="true" 
-				fcSchemaOwner="SMA" 
-				dbusername="SMA">
-			serverdb.samalmed.kz:1521:XE
+		<server id="16" display="TEST FC22 ADMIN" default="true"
+			fcSchemaOwner="FC22" dbusername="FC22">
+			kzala3135.kz.kmz.local:1523:HRTEST
 		</server>
 
-		<server id="61"
-				display="Amazon FC22" 
-				default="true" 
-				fcSchemaOwner="FC22" 
-				dbusername="FC22">
-			ec2-75-101-131-133.compute-1.amazonaws.com:1521:XE
+
+		<!-- WARNING! RAC INSTANCE: HOST:PORT/SERVICE_NAME. See: https://forums.oracle.com/message/9201385 -->
+		<server id="17" display="PROD APPS User" dbusername="APPS"
+			dbpassword="apps" allowuserchange="false" debug="false" default="true"
+			validationFN="xxfnd_apps_utils_pkg.validate_ebs_login">
+			kzala4019.kz.kmz.local:1521/HRPROD
+		</server>
+		<server id="18" display="DEV APPS User" dbusername="APPS"
+			dbpassword="apps" allowuserchange="false" debug="false" default="true"
+			validationFN="xxfnd_apps_utils_pkg.validate_ebs_login"
+			sessionTimeout="1" dbSessionTimeout="2">
+			kzala3134.kz.kmz.local:1522:HRDEV
 		</server>
 
-		<server id="71"
-				display="CA MS_PRODUCT" 
-				default="true" 
-				fcSchemaOwner="MS_PRODUCT" 
-				dbusername="ms_product">
-			192.168.110.3:1541:XE
-		</server>				
 	</dbConnections>
-	
+
 	<metadataQuery>
-		<!--menusSQLOld-->
+		<!--menusSQLOld -->
 		<sqlStatement name="metadataSQL">
 			<![CDATA[
 				SELECT * FROM &fc_schema_owner..global_params
