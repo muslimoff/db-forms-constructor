@@ -7,12 +7,15 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 
+import com.abssoft.constructor.client.data.TimeoutException;
+import com.abssoft.constructor.client.data.TimeoutException.TimeoutType;
 import com.abssoft.constructor.common.ExportData;
 import com.abssoft.constructor.common.FormInstanceIdentifier;
 import com.abssoft.constructor.common.IconsArr;
@@ -40,11 +43,12 @@ public class Session implements Serializable {
 	private static final long serialVersionUID = 8497777456570432919L;
 	private OracleConnection connection;
 	private String fcSchemaOwner;
-	private HashMap<String, Form> formDataHashMap = new HashMap<String, Form>();
+	private Map<String, Form> formDataHashMap = new HashMap<String, Form>();
 	private boolean isScript;
-	private final HashMap<String, String> paramsMap = new HashMap<String, String>();
+	private final Map<String, String> paramsMap = new HashMap<String, String>();
 	private ServerInfoMD serverInfoMD;
-	private Boolean isDebugEnabled = false;
+	private boolean isDebugEnabled = false;
+	private Date startDate = new Date();
 
 	// Для дебага (Session.debug) - вывода вне сессии
 	public static Session getEmptySession(Boolean isDebugEnabled) {
@@ -57,7 +61,8 @@ public class Session implements Serializable {
 		this.isScript = isScript;
 	}
 
-	public Session(Connection connection, ServerInfoMD serverInfoMD, Boolean isDebugEnabled, Boolean isScript) {
+	public Session(Connection connection, ServerInfoMD serverInfoMD,
+			Boolean isDebugEnabled, Boolean isScript) {
 		this(isDebugEnabled, isScript);
 		this.connection = (OracleConnection) connection;
 		this.setServerInfoMD(serverInfoMD);
@@ -88,10 +93,14 @@ public class Session implements Serializable {
 
 	public void closeForm(FormInstanceIdentifier fi, FormMD formState) {
 		this.debug("session form " + fi.getInfo() + " before close...");
-		formDataHashMap.get(fi.getKey()).closeForm(fi.getGridHashCode(), formState);
-		// TODO Было закомментировано: Во избежание повторной вычитки настроек формы. Но тогда возникают проблемы при изменении формы на
-		// лету. Приходится делать реконнект. Раскомментировал. Предусмотреть режимы работы debug и рабочий. Или забить - пусть так будет.
-		// А еще лучше - при старте сессии вычитывать настройки всех форм, а потом только перечитывать при изменении OVN.
+		formDataHashMap.get(fi.getKey()).closeForm(fi.getGridHashCode(),
+				formState);
+		// TODO Было закомментировано: Во избежание повторной вычитки настроек
+		// формы. Но тогда возникают проблемы при изменении формы на
+		// лету. Приходится делать реконнект. Раскомментировал. Предусмотреть
+		// режимы работы debug и рабочий. Или забить - пусть так будет.
+		// А еще лучше - при старте сессии вычитывать настройки всех форм, а
+		// потом только перечитывать при изменении OVN.
 		int instCount = formDataHashMap.get(fi.getKey()).getInstancesCount();
 		this.debug("Form " + fi.getFormCode() + " instances: " + instCount);
 		if (0 == instCount) {
@@ -100,13 +109,17 @@ public class Session implements Serializable {
 		this.debug("session form " + fi.getInfo() + " closed...");
 	}
 
-	public Row executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow, FormActionMD actMD) throws SQLException, Exception {
-		return formDataHashMap.get(fi.getKey()).executeDML(fi.getGridHashCode(), oldRow, newRow, actMD);
+	public Row executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow,
+			FormActionMD actMD) throws SQLException, Exception {
+		return formDataHashMap.get(fi.getKey()).executeDML(
+				fi.getGridHashCode(), oldRow, newRow, actMD);
 	}
 
-	public RowsArr fetch(FormInstanceIdentifier fi, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch)
+	public RowsArr fetch(FormInstanceIdentifier fi, String sortBy,
+			int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch)
 			throws SQLException {
-		return formDataHashMap.get(fi.getKey()).fetch(fi.getGridHashCode(), sortBy, startRow, endRow, criteria, forceFetch);
+		return formDataHashMap.get(fi.getKey()).fetch(fi.getGridHashCode(),
+				sortBy, startRow, endRow, criteria, forceFetch);
 	}
 
 	public OracleConnection getConnection() {
@@ -117,20 +130,23 @@ public class Session implements Serializable {
 		return fcSchemaOwner;
 	}
 
-	public HashMap<String, Form> getFormDataHashMap() {
+	public Map<String, Form> getFormDataHashMap() {
 		return formDataHashMap;
 	}
 
-	// public FormMD getFormMetaData(FormInstanceIdentifier formIdentifier) throws SQLException {
+	// public FormMD getFormMetaData(FormInstanceIdentifier formIdentifier)
+	// throws SQLException {
 	// return getFormMetaData(formIdentifier, true);
 	// }
 
 	public FormMD getFormMetaData(FormInstanceIdentifier fi
 	// , boolean isNonLookupForm
 	) throws SQLException {
-		// String formMapKey = (null == parentFormCode) ? formCode : formCode + "." + parentFormCode;
+		// String formMapKey = (null == parentFormCode) ? formCode : formCode +
+		// "." + parentFormCode;
 		if (!formDataHashMap.containsKey(fi.getKey())) {
-			// 20130516 - Вставка пустой записи для предотвращения рекурсии в случае, если родительская форма равна текущей
+			// 20130516 - Вставка пустой записи для предотвращения рекурсии в
+			// случае, если родительская форма равна текущей
 			// formDataHashMap.put(fi.getKey(), null);
 			Form form = new Form(connection, this, fi);
 			form.setFcSchemaOwner(fcSchemaOwner);
@@ -144,7 +160,8 @@ public class Session implements Serializable {
 		try {
 
 			OraclePreparedStatement menusStmnt = //
-			(OraclePreparedStatement) connection.prepareStatement(Utils.getSQLQueryFromXML("menusSQL", this));
+			(OraclePreparedStatement) connection.prepareStatement(Utils
+					.getSQLQueryFromXML("menusSQL", this));
 
 			ResultSet menusRs = menusStmnt.executeQuery();
 			while (menusRs.next()) {
@@ -172,12 +189,15 @@ public class Session implements Serializable {
 			menusStmnt.close();
 
 			// icons
-			OraclePreparedStatement iconsStmnt = (OraclePreparedStatement) connection.prepareStatement(Utils.getSQLQueryFromXML("iconsSQL",
-					this));
+			OraclePreparedStatement iconsStmnt = (OraclePreparedStatement) connection
+					.prepareStatement(Utils
+							.getSQLQueryFromXML("iconsSQL", this));
 			ResultSet iconsRs = iconsStmnt.executeQuery();
 			IconsArr icons = new IconsArr();
 			while (iconsRs.next()) {
-				icons.put(iconsRs.getInt("icon_id"), iconsRs.getString("icon_file_name"), iconsRs.getString("icon_path"), isScript);
+				icons.put(iconsRs.getInt("icon_id"),
+						iconsRs.getString("icon_file_name"),
+						iconsRs.getString("icon_path"), isScript);
 			}
 			metadata.setIcons(icons);
 			iconsRs.close();
@@ -190,7 +210,7 @@ public class Session implements Serializable {
 		return metadata;
 	}
 
-	public HashMap<String, String> getParamsMap() {
+	public Map<String, String> getParamsMap() {
 		return paramsMap;
 	}
 
@@ -202,15 +222,18 @@ public class Session implements Serializable {
 		StaticLookupsArr lookupsArr = new StaticLookupsArr();
 		String currentLookupCode = "-9999";
 		try {
-			OraclePreparedStatement lookupsStmnt = (OraclePreparedStatement) connection.prepareStatement(Utils.getSQLQueryFromXML(
-					"statLookupsSQL", this));
+			OraclePreparedStatement lookupsStmnt = (OraclePreparedStatement) connection
+					.prepareStatement(Utils.getSQLQueryFromXML(
+							"statLookupsSQL", this));
 
 			ResultSet lookupsRs = lookupsStmnt.executeQuery();
 			StaticLookup l = new StaticLookup();
 			while (lookupsRs.next()) {
 				String lookupCode = lookupsRs.getString("lookup_code");
-				String lookupValueCode = lookupsRs.getString("lookup_value_code");
-				String lookupDisplayValue = lookupsRs.getString("lookup_display_value");
+				String lookupValueCode = lookupsRs
+						.getString("lookup_value_code");
+				String lookupDisplayValue = lookupsRs
+						.getString("lookup_display_value");
 				if ("-9999".equals(currentLookupCode)) {
 					currentLookupCode = lookupCode;
 				}
@@ -235,7 +258,8 @@ public class Session implements Serializable {
 		return isScript;
 	}
 
-	public Integer setExportData(FormInstanceIdentifier fi, ExportData exportData) {
+	public Integer setExportData(FormInstanceIdentifier fi,
+			ExportData exportData) {
 		return formDataHashMap.get(fi.getKey()).setExportData(fi, exportData);
 	}
 
@@ -251,7 +275,8 @@ public class Session implements Serializable {
 		try {
 			// metadataSQL
 			String metadataSQL = Utils.getSQLQueryFromXML("metadataSQL", this);
-			OraclePreparedStatement lookupsStmnt = (OraclePreparedStatement) connection.prepareStatement(metadataSQL);
+			OraclePreparedStatement lookupsStmnt = (OraclePreparedStatement) connection
+					.prepareStatement(metadataSQL);
 			ResultSet lookupsRs = lookupsStmnt.executeQuery();
 			while (lookupsRs.next()) {
 				String lookupCode = lookupsRs.getString("param_name");
@@ -277,4 +302,41 @@ public class Session implements Serializable {
 		return isDebugEnabled;
 	}
 
+	public synchronized void renew() {
+		startDate = new Date();
+	}
+
+	private boolean isApplicationTimedOut() {
+		if (serverInfoMD == null || serverInfoMD.getSessionTimeout() < 0)
+			return false;
+		Date now = new Date();
+		long period = now.getTime() - startDate.getTime();
+		return period > serverInfoMD.getSessionTimeout() * 60 * 1000;
+	}
+
+	private boolean isDbTimedOut() {
+		if (!isApplicationTimedOut() || serverInfoMD.getDbSessionTimeout() < 0)
+			return false;
+		Date now = new Date();
+		long period = now.getTime() - startDate.getTime();
+		return period > serverInfoMD.getDbSessionTimeout() * 60 * 1000;
+	}
+
+	public synchronized void checkRenew() throws TimeoutException {
+		if (isDbTimedOut())
+			throw new TimeoutException(TimeoutType.DB);
+		if (isApplicationTimedOut())
+			throw new TimeoutException(TimeoutType.APPLICATION);
+		renew();
+	}
+
+	public synchronized void releaseTimedout() {
+		try {
+			boolean closable = connection != null && !connection.isClosed();
+			if (closable && isDbTimedOut())
+				connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }

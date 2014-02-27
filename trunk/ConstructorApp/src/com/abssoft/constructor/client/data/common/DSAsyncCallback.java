@@ -1,6 +1,8 @@
 package com.abssoft.constructor.client.data.common;
 
 import com.abssoft.constructor.client.ConstructorApp;
+import com.abssoft.constructor.client.data.TimeoutEvent;
+import com.abssoft.constructor.client.data.TimeoutException;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.widgets.ActionStatusWindow;
 import com.abssoft.constructor.common.ActionStatus;
@@ -13,8 +15,8 @@ import com.smartgwt.client.rpc.RPCResponse;
 import com.smartgwt.client.util.SC;
 
 /**
- * Реализация интерфейса <code>AsyncCallback<T></code> с реализованным методом <code>onFailure</code> и абстрактным методом
- * <code>onSuccess</code>
+ * Реализация интерфейса <code>AsyncCallback<T></code> с реализованным методом
+ * <code>onFailure</code> и абстрактным методом <code>onSuccess</code>
  * 
  * @author User
  * 
@@ -42,7 +44,8 @@ public abstract class DSAsyncCallback<T> implements AsyncCallback<T> {
 	 * @param response
 	 * @param dataSource
 	 */
-	public DSAsyncCallback(String requestId, DSResponse response, DataSource dataSource) {
+	public DSAsyncCallback(String requestId, DSResponse response,
+			DataSource dataSource) {
 		this();
 		this.requestId = requestId;
 		this.response = response;
@@ -55,17 +58,25 @@ public abstract class DSAsyncCallback<T> implements AsyncCallback<T> {
 		// см.
 		// http://markmail.org/message/mathox7k5ddzf4rq?q=com.google.gwt.user.client.rpc.StatusCodeException+timeout&page=1&refer=7etmvxwbevp4ytpb
 		if (caught instanceof StatusCodeException) {
-			additionalDetails = additionalDetails + ((StatusCodeException) caught).getStatusCode();
+			additionalDetails = additionalDetails
+					+ ((StatusCodeException) caught).getStatusCode();
+		} else if (caught instanceof TimeoutException) {
+			TimeoutException te = (TimeoutException) caught;
+			ConstructorApp.eb.fireEvent(new TimeoutEvent(te.getTimeoutType()));
+			return;
 		}
 
 		SC.clearPrompt();
 		String details = caught.getMessage();
 		String errCode = "Internal Error[GWT600]!";
-		// Window.alert("ServiceEntryPoint:" + ((ServiceDefTarget) ConstructorApp.queryService1).getServiceEntryPoint());
+		// Window.alert("ServiceEntryPoint:" + ((ServiceDefTarget)
+		// ConstructorApp.queryService1).getServiceEntryPoint());
 		try {
 			if (ConstructorApp.debugEnabled)
-				ActionStatusWindow.createActionStatusWindow(errCode, caught.toString(), Utils.getExceptionStack(caught) + "\n"
-						+ additionalDetails, ActionStatus.StatusType.ERROR, null, "Cancel");
+				ActionStatusWindow.createActionStatusWindow(errCode,
+						caught.toString(), Utils.getExceptionStack(caught)
+								+ "\n" + additionalDetails,
+						ActionStatus.StatusType.ERROR, null, "Cancel");
 		} catch (Exception e) {
 			Window.alert(errCode + details);
 		}
