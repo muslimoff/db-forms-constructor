@@ -20,12 +20,12 @@
    <FormInstanceIdentifier>
       <FormCode>MENUS</FormCode>
       <GridHashCode>-999</GridHashCode>
-      <IsDebugEnabled>true</IsDebugEnabled>
+      <IsDebugEnabled>false</IsDebugEnabled>
       <IsDrillDownForm>false</IsDrillDownForm>
       <IsLookupForm>false</IsLookupForm>
-      <SessionId>200006</SessionId>
+      <SessionId>14696398</SessionId>
    </FormInstanceIdentifier>
-   <ObjectVersionNumber>390</ObjectVersionNumber>
+   <ObjectVersionNumber>388</ObjectVersionNumber>
    <Columns>
       <Column>
          <Integer>0</Integer>
@@ -55,125 +55,27 @@
          <FormColumnMD>
             <DataType>S</DataType>
             <Description>*Ссылка на форму (для конечных узлов)</Description>
-            <DisplayName>Код формы</DisplayName>
+            <DisplayName>Форма</DisplayName>
             <DisplayNum>20</DisplayNum>
             <DisplaySize>200</DisplaySize>
-            <FieldType>16</FieldType>
+            <FieldType>9</FieldType>
             <IsFrozen>false</IsFrozen>
             <IsPrimaryKey>false</IsPrimaryKey>
             <LookupCode>FORMS_LIST</LookupCode>
             <Name>MENU_FORM_CODE</Name>
             <ShowHover>false</ShowHover>
-            <ShowOnGrid>N</ShowOnGrid>
-            <EditorTitleOrientation>L</EditorTitleOrientation>
-            <EditorEndRow>true</EditorEndRow>
-            <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
-            <ColActions/>
-            <ColumnLookupMappingArr>
-               <FormColumnLookupMappingMD>
-                  <LookupFormColumnCode>FORM_CODE</LookupFormColumnCode>
-                  <ColumnUserName>Код формы</ColumnUserName>
-                  <ColumnDisplaySize>*</ColumnDisplaySize>
-                  <ColumnDisplayNumber>1001</ColumnDisplayNumber>
-                  <ShowOnGrid>N</ShowOnGrid>
-                  <ColumnCodeToMapping>MENU_FORM_CODE</ColumnCodeToMapping>
-               </FormColumnLookupMappingMD>
-               <FormColumnLookupMappingMD>
-                  <LookupFormColumnCode>FORM_CODE_DISPLAY</LookupFormColumnCode>
-                  <ColumnUserName>Код формы</ColumnUserName>
-                  <ColumnDisplaySize>*</ColumnDisplaySize>
-                  <ColumnDisplayNumber>1005</ColumnDisplayNumber>
-                  <ShowOnGrid>Y</ShowOnGrid>
-               </FormColumnLookupMappingMD>
-               <FormColumnLookupMappingMD>
-                  <LookupFormColumnCode>FORM_NAME</LookupFormColumnCode>
-                  <ColumnUserName>Форма</ColumnUserName>
-                  <ColumnDisplaySize>*</ColumnDisplaySize>
-                  <ColumnDisplayNumber>1002</ColumnDisplayNumber>
-                  <ShowOnGrid>Y</ShowOnGrid>
-                  <ColumnCodeToMapping>MENU_FORM_NAME</ColumnCodeToMapping>
-               </FormColumnLookupMappingMD>
-               <FormColumnLookupMappingMD>
-                  <LookupFormColumnCode>HOT_KEY</LookupFormColumnCode>
-                  <ColumnUserName>Горячая клавиша</ColumnUserName>
-                  <ColumnDisplaySize>*</ColumnDisplaySize>
-                  <ColumnDisplayNumber>1003</ColumnDisplayNumber>
-                  <ShowOnGrid>N</ShowOnGrid>
-               </FormColumnLookupMappingMD>
-               <FormColumnLookupMappingMD>
-                  <LookupFormColumnCode>ICON_ID</LookupFormColumnCode>
-                  <ColumnUserName>Icon</ColumnUserName>
-                  <ColumnDisplaySize>20%</ColumnDisplaySize>
-                  <ColumnDisplayNumber>5</ColumnDisplayNumber>
-                  <ShowOnGrid>Y</ShowOnGrid>
-               </FormColumnLookupMappingMD>
-            </ColumnLookupMappingArr>
-         </FormColumnMD>
-      </Column>
-      <Column>
-         <Integer>2</Integer>
-         <FormColumnMD>
-            <DataType>S</DataType>
-            <Description>Имя формы (для конечных узлов)</Description>
-            <DisplayName>Форма</DisplayName>
-            <DisplayNum>25</DisplayNum>
-            <DisplaySize>200</DisplaySize>
-            <FieldType>16</FieldType>
-            <IsFrozen>false</IsFrozen>
-            <IsPrimaryKey>false</IsPrimaryKey>
-            <LookupCode>FORMS_LIST</LookupCode>
-            <Name>MENU_FORM_NAME</Name>
-            <ShowHover>false</ShowHover>
             <ShowOnGrid>Y</ShowOnGrid>
             <EditorTitleOrientation>L</EditorTitleOrientation>
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
+            <LookupHeight>120</LookupHeight>
             <LookupAttributes/>
             <ColActions/>
-            <ColumnLookupMappingArr>
-               <FormColumnLookupMappingMD>
-                  <LookupFormColumnCode>FORM_CODE</LookupFormColumnCode>
-                  <ColumnUserName>Код формы</ColumnUserName>
-                  <ColumnDisplaySize>*</ColumnDisplaySize>
-                  <ColumnDisplayNumber>1001</ColumnDisplayNumber>
-                  <ShowOnGrid>N</ShowOnGrid>
-                  <ColumnCodeToMapping>MENU_FORM_CODE</ColumnCodeToMapping>
-               </FormColumnLookupMappingMD>
-               <FormColumnLookupMappingMD>
-                  <LookupFormColumnCode>FORM_CODE_DISPLAY</LookupFormColumnCode>
-                  <ColumnUserName>Код формы</ColumnUserName>
-                  <ColumnDisplaySize>*</ColumnDisplaySize>
-                  <ColumnDisplayNumber>1005</ColumnDisplayNumber>
-                  <ShowOnGrid>Y</ShowOnGrid>
-               </FormColumnLookupMappingMD>
-               <FormColumnLookupMappingMD>
-                  <LookupFormColumnCode>FORM_NAME</LookupFormColumnCode>
-                  <ColumnUserName>Форма</ColumnUserName>
-                  <ColumnDisplaySize>*</ColumnDisplaySize>
-                  <ColumnDisplayNumber>1002</ColumnDisplayNumber>
-                  <ShowOnGrid>Y</ShowOnGrid>
-                  <ColumnCodeToMapping>MENU_FORM_NAME</ColumnCodeToMapping>
-               </FormColumnLookupMappingMD>
-               <FormColumnLookupMappingMD>
-                  <LookupFormColumnCode>HOT_KEY</LookupFormColumnCode>
-                  <ColumnUserName>Горячая клавиша</ColumnUserName>
-                  <ColumnDisplaySize>*</ColumnDisplaySize>
-                  <ColumnDisplayNumber>1003</ColumnDisplayNumber>
-                  <ShowOnGrid>N</ShowOnGrid>
-               </FormColumnLookupMappingMD>
-               <FormColumnLookupMappingMD>
-                  <LookupFormColumnCode>ICON_ID</LookupFormColumnCode>
-                  <ColumnUserName>Icon</ColumnUserName>
-                  <ColumnDisplaySize>20%</ColumnDisplaySize>
-                  <ColumnDisplayNumber>5</ColumnDisplayNumber>
-                  <ShowOnGrid>Y</ShowOnGrid>
-               </FormColumnLookupMappingMD>
-            </ColumnLookupMappingArr>
+            <ColumnLookupMappingArr/>
          </FormColumnMD>
       </Column>
       <Column>
-         <Integer>3</Integer>
+         <Integer>2</Integer>
          <FormColumnMD>
             <DataType>N</DataType>
             <Description>*Позиция пунктов на одном уровне. Если не указано - то сначала нумерованные, потом по наименованию</Description>
@@ -195,7 +97,7 @@
          </FormColumnMD>
       </Column>
       <Column>
-         <Integer>4</Integer>
+         <Integer>3</Integer>
          <FormColumnMD>
             <DataType>B</DataType>
             <Description>*Показывать в навигаторе</Description>
@@ -216,7 +118,7 @@
          </FormColumnMD>
       </Column>
       <Column>
-         <Integer>5</Integer>
+         <Integer>4</Integer>
          <FormColumnMD>
             <DataType>S</DataType>
             <Description>*Код меню</Description>
@@ -240,7 +142,7 @@
          </FormColumnMD>
       </Column>
       <Column>
-         <Integer>6</Integer>
+         <Integer>5</Integer>
          <FormColumnMD>
             <DataType>S</DataType>
             <Description>*Ссылка на пункт меню-родитель</Description>
@@ -262,7 +164,7 @@
          </FormColumnMD>
       </Column>
       <Column>
-         <Integer>7</Integer>
+         <Integer>6</Integer>
          <FormColumnMD>
             <DataType>S</DataType>
             <Description>**FORM_DISPLAY</Description>
@@ -284,7 +186,7 @@
          </FormColumnMD>
       </Column>
       <Column>
-         <Integer>8</Integer>
+         <Integer>7</Integer>
          <FormColumnMD>
             <DataType>S</DataType>
             <Description>**FORM_DISPLAY_STAT</Description>
@@ -307,7 +209,7 @@
          </FormColumnMD>
       </Column>
       <Column>
-         <Integer>9</Integer>
+         <Integer>8</Integer>
          <FormColumnMD>
             <DataType>N</DataType>
             <Description>**ICON_ID</Description>
@@ -328,7 +230,7 @@
          </FormColumnMD>
       </Column>
       <Column>
-         <Integer>10</Integer>
+         <Integer>9</Integer>
          <FormColumnMD>
             <DataType>B</DataType>
             <Description>**IS_FOLDER</Description>
@@ -349,7 +251,7 @@
          </FormColumnMD>
       </Column>
       <Column>
-         <Integer>11</Integer>
+         <Integer>10</Integer>
          <FormColumnMD>
             <DataType>B</DataType>
             <Description>**CAN_ACCEPT_DROP</Description>
@@ -370,7 +272,7 @@
          </FormColumnMD>
       </Column>
       <Column>
-         <Integer>12</Integer>
+         <Integer>11</Integer>
          <FormColumnMD>
             <DataType>B</DataType>
             <Description>**CAN_DRAG</Description>
@@ -391,7 +293,7 @@
          </FormColumnMD>
       </Column>
       <Column>
-         <Integer>13</Integer>
+         <Integer>12</Integer>
          <FormColumnMD>
             <DataType>S</DataType>
             <Description>**ELEMENT_TYPE</Description>
@@ -411,7 +313,7 @@
          </FormColumnMD>
       </Column>
       <Column>
-         <Integer>14</Integer>
+         <Integer>13</Integer>
          <FormColumnMD>
             <DataType>S</DataType>
             <Description>*??? ?????</Description>
@@ -432,7 +334,7 @@
          </FormColumnMD>
       </Column>
       <Column>
-         <Integer>15</Integer>
+         <Integer>14</Integer>
          <FormColumnMD>
             <DataType>S</DataType>
             <Description>*????????????? ????????</Description>
@@ -453,28 +355,7 @@
          </FormColumnMD>
       </Column>
       <Column>
-         <Integer>17</Integer>
-         <FormColumnMD>
-            <DataType>S</DataType>
-            <Description>Действие</Description>
-            <DisplayName>Действие</DisplayName>
-            <DisplayNum>1018</DisplayNum>
-            <DisplaySize>*</DisplaySize>
-            <IsFrozen>false</IsFrozen>
-            <IsPrimaryKey>false</IsPrimaryKey>
-            <Name>ACTION_CODE</Name>
-            <ShowHover>false</ShowHover>
-            <ShowOnGrid>N</ShowOnGrid>
-            <EditorTitleOrientation>L</EditorTitleOrientation>
-            <EditorEndRow>true</EditorEndRow>
-            <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
-            <ColActions/>
-            <ColumnLookupMappingArr/>
-         </FormColumnMD>
-      </Column>
-      <Column>
-         <Integer>16</Integer>
+         <Integer>15</Integer>
          <FormColumnMD>
             <DataType>S</DataType>
             <Description>Столбец</Description>
@@ -495,16 +376,37 @@
          </FormColumnMD>
       </Column>
       <Column>
-         <Integer>19</Integer>
+         <Integer>17</Integer>
          <FormColumnMD>
             <DataType>S</DataType>
-            <Description>*Text of the hint</Description>
-            <DisplayName>Text of the hint</DisplayName>
-            <DisplayNum>1019</DisplayNum>
+            <Description>Лукап</Description>
+            <DisplayName>Лукап</DisplayName>
+            <DisplayNum>1018</DisplayNum>
             <DisplaySize>*</DisplaySize>
             <IsFrozen>false</IsFrozen>
             <IsPrimaryKey>false</IsPrimaryKey>
-            <Name>HINT</Name>
+            <Name>LOOKUP_CODE</Name>
+            <ShowHover>false</ShowHover>
+            <ShowOnGrid>N</ShowOnGrid>
+            <EditorTitleOrientation>L</EditorTitleOrientation>
+            <EditorEndRow>true</EditorEndRow>
+            <EditorColsSpan>*</EditorColsSpan>
+            <LookupAttributes/>
+            <ColActions/>
+            <ColumnLookupMappingArr/>
+         </FormColumnMD>
+      </Column>
+      <Column>
+         <Integer>16</Integer>
+         <FormColumnMD>
+            <DataType>S</DataType>
+            <Description>Действие</Description>
+            <DisplayName>Действие</DisplayName>
+            <DisplayNum>1018</DisplayNum>
+            <DisplaySize>*</DisplaySize>
+            <IsFrozen>false</IsFrozen>
+            <IsPrimaryKey>false</IsPrimaryKey>
+            <Name>ACTION_CODE</Name>
             <ShowHover>false</ShowHover>
             <ShowOnGrid>N</ShowOnGrid>
             <EditorTitleOrientation>L</EditorTitleOrientation>
@@ -519,13 +421,13 @@
          <Integer>18</Integer>
          <FormColumnMD>
             <DataType>S</DataType>
-            <Description>Лукап</Description>
-            <DisplayName>Лукап</DisplayName>
-            <DisplayNum>1018</DisplayNum>
+            <Description>*Text of the hint</Description>
+            <DisplayName>Text of the hint</DisplayName>
+            <DisplayNum>1019</DisplayNum>
             <DisplaySize>*</DisplaySize>
             <IsFrozen>false</IsFrozen>
             <IsPrimaryKey>false</IsPrimaryKey>
-            <Name>LOOKUP_CODE</Name>
+            <Name>HINT</Name>
             <ShowHover>false</ShowHover>
             <ShowOnGrid>N</ShowOnGrid>
             <EditorTitleOrientation>L</EditorTitleOrientation>
@@ -681,6 +583,7 @@
          <SqlProcedureName>&amp;fc_schema_owner..MENUS_PKG.P_UPDATE</SqlProcedureName>
          <DmlProcText>begin FC22.MENUS_PKG.P_UPDATE(P_MENU_CODE =&gt; ?,P_MENU_NAME =&gt; ?,P_PARENT_MENU_CODE =&gt; ?,P_MENU_FORM_CODE =&gt; ?,P_MENU_FORM_NAME =&gt; ?,P_MENU_POSITION =&gt; ?,P_ELEMENT_TYPE =&gt; ?,P_SHOW_IN_NAVIGATOR =&gt; ?); end;</DmlProcText>
          <ConfirmText>Вы уверены?</ConfirmText>
+         <HotKey>shift+ctrl+s</HotKey>
          <ShowSeparatorBelow>true</ShowSeparatorBelow>
          <DisplayOnToolbar>true</DisplayOnToolbar>
          <DisplayInContextMenu>true</DisplayInContextMenu>
@@ -887,6 +790,7 @@
             <SideTabsPosition>T</SideTabsPosition>
             <ShowBottomToolBar>true</ShowBottomToolBar>
             <LookupWidth>300</LookupWidth>
+            <LookupHeight>70</LookupHeight>
             <DataPageSize>0</DataPageSize>
             <Status>
                <LongMessageText></LongMessageText>
@@ -897,13 +801,13 @@
             <FormInstanceIdentifier>
                <FormCode>FORMS_LIST</FormCode>
                <GridHashCode>-999</GridHashCode>
-               <IsDebugEnabled>true</IsDebugEnabled>
+               <IsDebugEnabled>false</IsDebugEnabled>
                <IsDrillDownForm>false</IsDrillDownForm>
                <IsLookupForm>true</IsLookupForm>
                <ParentFormCode>MENUS</ParentFormCode>
-               <SessionId>200006</SessionId>
+               <SessionId>14696398</SessionId>
             </FormInstanceIdentifier>
-            <ObjectVersionNumber>32</ObjectVersionNumber>
+            <ObjectVersionNumber>31</ObjectVersionNumber>
             <Columns>
                <Column>
                   <Integer>0</Integer>
