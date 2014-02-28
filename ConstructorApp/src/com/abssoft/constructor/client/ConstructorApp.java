@@ -14,8 +14,8 @@ import com.abssoft.constructor.client.common.KeyIdentifier;
 import com.abssoft.constructor.client.common.TabSet;
 import com.abssoft.constructor.client.common.ToolBar;
 import com.abssoft.constructor.client.data.TimeoutEvent;
+import com.abssoft.constructor.client.data.TimeoutEvent.TimeoutType;
 import com.abssoft.constructor.client.data.TimeoutEventHandler;
-import com.abssoft.constructor.client.data.TimeoutException.TimeoutType;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.form.ApplicationToolBar;
@@ -57,7 +57,7 @@ import com.smartgwt.client.widgets.tab.Tab;
  * @author Muslimoff
  * @version 0.0.0.1
  */
-public class ConstructorApp implements EntryPoint {
+public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 	public static final Logger log = Logger.getLogger("");
 	public static final EventBus eb = GWT.create(SimpleEventBus.class);
 	public static TabSet tabSet = new TabSet();
@@ -340,7 +340,7 @@ public class ConstructorApp implements EntryPoint {
 				+ com.google.gwt.user.client.Window.Location.getQueryString());
 		canvas.draw();
 		mainToolBar.showOrHide(ConstructorApp.showToolbar);
-		addTimeoutHandler();
+		eb.addHandler(TimeoutEvent.getType(), this);
 		connectWindow = new ConnectWindow(ConstructorApp.this);
 	}
 
@@ -367,20 +367,15 @@ public class ConstructorApp implements EntryPoint {
 		})
 	}-*/;
 
-	private void addTimeoutHandler() {
-		eb.addHandler(TimeoutEvent.getType(), new TimeoutEventHandler() {
+	@Override
+	public void onTimeout(TimeoutType timeoutType) {
+		if (timeoutType == TimeoutType.APPLICATION) {
+			ConstructorApp.log.info("Application session timed out");
+			ReloginWindow.getInstance().show();
+		} else {
+			ConstructorApp.log.info("Database session timed out");
+			connectWindow.show();
+		}
 
-			@Override
-			public void onTimeout(TimeoutType timeoutType) {
-				if (timeoutType == TimeoutType.APPLICATION) {
-					ConstructorApp.log.info("Application session timed out");
-					ReloginWindow.getInstance().show();
-				} else {
-					ConstructorApp.log.info("Database session timed out");
-					connectWindow.show();
-				}
-
-			}
-		});
 	}
 }

@@ -10,6 +10,7 @@ import com.abssoft.constructor.common.FormColumnsArr;
 import com.abssoft.constructor.common.FormInstanceIdentifier;
 import com.abssoft.constructor.common.FormTabsArr;
 import com.abssoft.constructor.common.FormsArr;
+import com.abssoft.constructor.common.HasActionStatus;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -19,7 +20,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  */
 @Default(required = false)
-public class FormMD implements IsSerializable, Cloneable {
+public class FormMD implements IsSerializable, Cloneable, HasActionStatus {
 	private String formCode;
 	private String hotKey;
 	private String formName;
@@ -353,7 +354,8 @@ public class FormMD implements IsSerializable, Cloneable {
 		return childForms;
 	}
 
-	public void setFormInstanceIdentifier(FormInstanceIdentifier formInstanceIdentifier) {
+	public void setFormInstanceIdentifier(
+			FormInstanceIdentifier formInstanceIdentifier) {
 		this.formInstanceIdentifier = formInstanceIdentifier;
 	}
 

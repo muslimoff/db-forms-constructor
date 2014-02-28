@@ -2,10 +2,13 @@ package com.abssoft.constructor.client.data.common;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.TimeoutEvent;
+import com.abssoft.constructor.client.data.TimeoutEvent.TimeoutType;
 import com.abssoft.constructor.client.data.TimeoutException;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.widgets.ActionStatusWindow;
 import com.abssoft.constructor.common.ActionStatus;
+import com.abssoft.constructor.common.ActionStatus.StatusType;
+import com.abssoft.constructor.common.HasActionStatus;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.StatusCodeException;
@@ -61,8 +64,7 @@ public abstract class DSAsyncCallback<T> implements AsyncCallback<T> {
 			additionalDetails = additionalDetails
 					+ ((StatusCodeException) caught).getStatusCode();
 		} else if (caught instanceof TimeoutException) {
-			TimeoutException te = (TimeoutException) caught;
-			ConstructorApp.eb.fireEvent(new TimeoutEvent(te.getTimeoutType()));
+			ConstructorApp.eb.fireEvent(new TimeoutEvent(TimeoutType.DB));
 			return;
 		}
 
@@ -88,6 +90,13 @@ public abstract class DSAsyncCallback<T> implements AsyncCallback<T> {
 
 	}
 
-	public abstract void onSuccess(T result);
+	public void onSuccess(T result) {
+		if (result != null && result instanceof HasActionStatus) {
+			ActionStatus as = ((HasActionStatus) result).getStatus();
+			if (as != null && as.getStatusType() == StatusType.APPL_TIMEOUT)
+				ConstructorApp.eb.fireEvent(new TimeoutEvent(
+						TimeoutType.APPLICATION));
+		}
+	};
 
 }

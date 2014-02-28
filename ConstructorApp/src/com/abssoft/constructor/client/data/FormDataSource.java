@@ -120,6 +120,7 @@ public class FormDataSource extends GwtRpcDataSource {
 				new DSAsyncCallback<RowsArr>(requestId, response, this) {
 					@Override
 					public void onSuccess(RowsArr result) {
+						super.onSuccess(result);
 						SC.clearPrompt();
 						Utils.debug(formCode + "...............DataSource: "
 								+ FormDataSource.this.getID()

@@ -43,7 +43,8 @@ public class MenusDataCallback extends DSAsyncCallback<MenusArr> {
 		public FormMenuItem(final MenuMD menuMetadata) {
 			this.menuMetadata = menuMetadata;
 			this.setTitle(menuMetadata.getFormName());
-			this.setIcon(ConstructorApp.menus.getIcons().get(menuMetadata.getIconId()));
+			this.setIcon(ConstructorApp.menus.getIcons().get(
+					menuMetadata.getIconId()));
 			String hotKey = menuMetadata.getHotKey();
 			if (hotKey != null) {
 				KeyIdentifier key = new KeyIdentifier(menuMetadata.getHotKey());
@@ -52,10 +53,13 @@ public class MenusDataCallback extends DSAsyncCallback<MenusArr> {
 			}
 			this.addClickHandler(new ClickHandler() {
 				public void onClick(MenuItemClickEvent event) {
-					Utils.debug("FormMenus onClick: " + menuMetadata.getFormCode());
-					new MainFormContainer(new Criteria(), new FormTabMD(), FormTab.TabType.MAIN, ConstructorApp.tabSet, menuMetadata
-							.getFormCode());
-					Utils.debug("FormMenus onClick2: " + menuMetadata.getFormCode());
+					Utils.debug("FormMenus onClick: "
+							+ menuMetadata.getFormCode());
+					new MainFormContainer(new Criteria(), new FormTabMD(),
+							FormTab.TabType.MAIN, ConstructorApp.tabSet,
+							menuMetadata.getFormCode());
+					Utils.debug("FormMenus onClick2: "
+							+ menuMetadata.getFormCode());
 				}
 			});
 
@@ -67,6 +71,7 @@ public class MenusDataCallback extends DSAsyncCallback<MenusArr> {
 	}
 
 	public void onSuccess(MenusArr result) {
+		super.onSuccess(result);
 		ConstructorApp.menus = result;
 		HashMap<String, MenuWithHover> menusHM = new HashMap<String, MenuWithHover>();
 		System.out.println("menus size: " + result.size());
@@ -84,7 +89,8 @@ public class MenusDataCallback extends DSAsyncCallback<MenusArr> {
 			ConstructorApp.formIconArr.put(formCode, menuMD.getIconId());
 			ConstructorApp.formNameArr.put(formCode, menuMD.getFormName());
 			// ////////////////////////////////////////////
-			// TODO - если в корневой менюшке висит форма - проблема - нужно так же проверять на кол-во дочерних, и если 0, то цеплять
+			// TODO - если в корневой менюшке висит форма - проблема - нужно так
+			// же проверять на кол-во дочерних, и если 0, то цеплять
 			// действие на кнопку.
 			// TODO - не работает HotKey для вложенных субменюшек.
 			// TODO - переделать вместо null == parentMenuCode на lvl==1
@@ -123,11 +129,15 @@ public class MenusDataCallback extends DSAsyncCallback<MenusArr> {
 		if (null != formList) {
 			for (int i = 0; i < formList.size(); i++) {
 				String formCode = formList.get(i);
-				Utils.debug("Form, that will be open (" + i + "): \"" + formCode + "\"");
-				if (formCode != null && ConstructorApp.formNameArr.containsKey(formCode)) {
+				Utils.debug("Form, that will be open (" + i + "): \""
+						+ formCode + "\"");
+				if (formCode != null
+						&& ConstructorApp.formNameArr.containsKey(formCode)) {
 					Utils.debug("Form opening (" + i + "):" + formCode);
-					MainFormContainer mfc = new MainFormContainer(new Criteria(), new FormTabMD(), FormTab.TabType.MAIN,
-							ConstructorApp.tabSet, formCode // , true
+					MainFormContainer mfc = new MainFormContainer(
+							new Criteria(), new FormTabMD(),
+							FormTab.TabType.MAIN, ConstructorApp.tabSet,
+							formCode // , true
 							, false, true);
 					mfc.getMainFormPane().setFromUrl(true);
 				}

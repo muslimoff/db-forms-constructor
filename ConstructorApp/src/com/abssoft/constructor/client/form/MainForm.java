@@ -90,9 +90,11 @@ class MainForm extends Canvas {
 		}
 
 		// // 20121210 - косяк редактирования
-		// public native Boolean startEditingInt(int rowNum, int colNum, Boolean suppressFocus) /*-{
+		// public native Boolean startEditingInt(int rowNum, int colNum, Boolean
+		// suppressFocus) /*-{
 		// $wnd.alert("1xxxxx "+rowNum+";"+colNum);
-		// var self = this.@com.smartgwt.client.widgets.BaseWidget::getOrCreateJsObj()();
+		// var self =
+		// this.@com.smartgwt.client.widgets.BaseWidget::getOrCreateJsObj()();
 		// $wnd.alert("2xxxxx "+self);
 		// var retVal =self.startEditing(rowNum, colNum, suppressFocus);
 		// $wnd.alert("3xxxxx "+retVal);
@@ -104,26 +106,35 @@ class MainForm extends Canvas {
 		// }-*/;
 		//
 		// @Override
-		// public Boolean startEditing(Integer rowNum, Integer colNum, Boolean suppressFocus) {
-		// Utils.debug("FormListGrid.startEditing: " + this.getJsObj().toString());
+		// public Boolean startEditing(Integer rowNum, Integer colNum, Boolean
+		// suppressFocus) {
+		// Utils.debug("FormListGrid.startEditing: " +
+		// this.getJsObj().toString());
 		// // return super.startEditing(rowNum, colNum, suppressFocus);
-		// // 20121210 - косяк редактирования - com.google.gwt.dev.shell.HostedModeException: invoke arguments: JS value of type Java
-		// // Object com.google.gwt.dev.shell.JsValueOOPHM$DispatchObjectOOPHM, expected int
+		// // 20121210 - косяк редактирования -
+		// com.google.gwt.dev.shell.HostedModeException: invoke arguments: JS
+		// value of type Java
+		// // Object com.google.gwt.dev.shell.JsValueOOPHM$DispatchObjectOOPHM,
+		// expected int
 		// return startEditingInt(rowNum, colNum, suppressFocus);
 		// }
 
 		public native boolean saveAllEdits(int[] rows)
 		/*-{
 			var self = this.@com.smartgwt.client.widgets.BaseWidget::getOrCreateJsObj()();
-			var rowsJS = rows == null ? null : @com.smartgwt.client.util.JSOHelper::convertToJavaScriptArray([I)(rows);
+			var rowsJS = rows == null ? null
+					: @com.smartgwt.client.util.JSOHelper::convertToJavaScriptArray([I)(rows);
 			return self.saveAllEdits(rowsJS);
 		}-*/;
 
-		// Пример добавления хендлера для эвентов. См. http://forums.smartclient.com/showthread.php?t=9923
+		// Пример добавления хендлера для эвентов. См.
+		// http://forums.smartclient.com/showthread.php?t=9923
 		// @Override
-		// public HandlerRegistration addRowEditorEnterHandler(RowEditorEnterHandler handler) {
+		// public HandlerRegistration
+		// addRowEditorEnterHandler(RowEditorEnterHandler handler) {
 		// Utils.debug("FormListGrid.Adding handler");
-		// HandlerRegistration r = doAddHandler(handler, RowEditorEnterEvent.getType());
+		// HandlerRegistration r = doAddHandler(handler,
+		// RowEditorEnterEvent.getType());
 		// return r;
 		// };
 
@@ -134,7 +145,8 @@ class MainForm extends Canvas {
 		public native boolean saveAllEdits(int[] rows)
 		/*-{
 			var self = this.@com.smartgwt.client.widgets.BaseWidget::getOrCreateJsObj()();
-			var rowsJS = rows == null ? null : @com.smartgwt.client.util.JSOHelper::convertToJavaScriptArray([I)(rows);
+			var rowsJS = rows == null ? null
+					: @com.smartgwt.client.util.JSOHelper::convertToJavaScriptArray([I)(rows);
 			return self.saveAllEdits(rowsJS);
 		}-*/;
 
@@ -147,8 +159,10 @@ class MainForm extends Canvas {
 					TreeNode n = event.getNode();
 					TreeNode[] parentNodes = t.getParents(n);
 					String titlePath = "-";
-					// Error Something other than a Java object was returned from JSNI method
-					// '@com.smartgwt.client.widgets.tree.Tree::getTitle(Lcom/smartgwt/client/widgets/tree/TreeNode;)':JS value of type int,
+					// Error Something other than a Java object was returned
+					// from JSNI method
+					// '@com.smartgwt.client.widgets.tree.Tree::getTitle(Lcom/smartgwt/client/widgets/tree/TreeNode;)':JS
+					// value of type int,
 					// expected java.lang.Object
 					try {
 						titlePath = t.getTitle(n);
@@ -174,7 +188,8 @@ class MainForm extends Canvas {
 
 				@Override
 				public void onFolderOpened(FolderOpenedEvent event) {
-					Utils.debug("onFolderOpened>>>>" + event.getNode().getTitle());
+					Utils.debug("onFolderOpened>>>>"
+							+ event.getNode().getTitle());
 					System.out.println("@@" + FormTreeGrid.this.getOpenState());
 				}
 			});
@@ -207,8 +222,10 @@ class MainForm extends Canvas {
 				public void onFolderDrop(FolderDropEvent event) {
 					// Очищаем код действия формы в случае перетаскивания грида
 					// Прийдется тут ловить действие, которое привязать к форме
-					ActionItem dragAndDropActItem = mainFormPane.getButtonsToolBar().getDragAndDropActItem();
-					FormActionMD faMD = (null != dragAndDropActItem) ? dragAndDropActItem.getFormActionMD() : new FormActionMD();
+					ActionItem dragAndDropActItem = mainFormPane
+							.getButtonsToolBar().getDragAndDropActItem();
+					FormActionMD faMD = (null != dragAndDropActItem) ? dragAndDropActItem
+							.getFormActionMD() : new FormActionMD();
 					mainFormPane.setCurrentAction(faMD);
 				}
 			});
@@ -220,10 +237,13 @@ class MainForm extends Canvas {
 		@Override
 		public void onRecordClick(RecordClickEvent event) {
 			Record r = event.getRecord();
-			Utils.debug("MainForm.GridRecordClickHandler.onRecordClick.1. r:" + r);
+			Utils.debug("MainForm.GridRecordClickHandler.onRecordClick.1. r:"
+					+ r);
 			if (null == r) {
-				r = ((ListGrid) event.getSource()).getEditedRecord(event.getRecordNum());
-				Utils.debug("MainForm.GridRecordClickHandler.onRecordClick.2. r:" + r);
+				r = ((ListGrid) event.getSource()).getEditedRecord(event
+						.getRecordNum());
+				Utils.debug("MainForm.GridRecordClickHandler.onRecordClick.2. r:"
+						+ r);
 			}
 			// mainFormPane.setThisFormCriteria(r);
 			mainFormPane.filterDetailData(r, treeGrid, event.getRecordNum());
@@ -237,10 +257,12 @@ class MainForm extends Canvas {
 			// treeGrid.focus();
 			Record r = event.getRecord();
 			if (null == r) {
-				r = ((ListGrid) event.getSource()).getEditedRecord(event.getRowNum());
+				r = ((ListGrid) event.getSource()).getEditedRecord(event
+						.getRowNum());
 			}
 			// mainFormPane.setThisFormCriteria(r);
-			mainFormPane.filterDetailData((ListGridRecord) r, treeGrid, event.getRowNum(), false, false, false);
+			mainFormPane.filterDetailData((ListGridRecord) r, treeGrid,
+					event.getRowNum(), false, false, false);
 		}
 	}
 
@@ -257,13 +279,15 @@ class MainForm extends Canvas {
 				currRow = treeGrid.getRecordIndex(r);
 			} catch (Exception e) {
 				currRow = treeGrid.getEventRow();
-				Utils.debug("MainForm.getSelectedRecord error:" + e.getMessage() + "; currRow:" + currRow);
+				Utils.debug("MainForm.getSelectedRecord error:"
+						+ e.getMessage() + "; currRow:" + currRow);
 			}
 		}
 		return currRow;
 	}
 
-	MainForm(final MainFormPane mainFormPane, final boolean showResizeBar, HeaderSpan[] headerSpans) {
+	MainForm(final MainFormPane mainFormPane, final boolean showResizeBar,
+			HeaderSpan[] headerSpans) {
 		Utils.debug("Constructor MainForm");
 		this.setMargin(0);
 		this.mainFormPane = mainFormPane;
@@ -280,7 +304,8 @@ class MainForm extends Canvas {
 			treeGrid = new FormTreeGrid();
 		} else {
 			treeGrid = new FormListGrid();
-			// 20130604 - Для ListGrid добавлена возможность управления размером страницы. Для дерева не нужно - само умное
+			// 20130604 - Для ListGrid добавлена возможность управления размером
+			// страницы. Для дерева не нужно - само умное
 			Integer dataPageSize = formMetadata.getDataPageSize();
 			if (null != dataPageSize && 0 != dataPageSize) {
 				treeGrid.setDataPageSize(formMetadata.getDataPageSize());
@@ -299,7 +324,8 @@ class MainForm extends Canvas {
 		bottomToolBar.setWidth100();
 		//
 		if (formMetadata.isShowBottomToolBar()) {
-			treeGrid.setGridComponents(new Object[] { ListGridComponent.HEADER, ListGridComponent.FILTER_EDITOR, ListGridComponent.BODY,
+			treeGrid.setGridComponents(new Object[] { ListGridComponent.HEADER,
+					ListGridComponent.FILTER_EDITOR, ListGridComponent.BODY,
 					bottomToolBar }); // ListGridComponent.SUMMARY_ROW
 		}
 		// 20110322
@@ -333,16 +359,20 @@ class MainForm extends Canvas {
 		{// Редактирование в гриде.
 			treeGrid.setCanEdit(true);
 			// treeGrid.setModalEditing(true);
-			if (null != mainFormPane.getFormMetadata().getDoubleClickActionCode()) {
+			if (null != mainFormPane.getFormMetadata()
+					.getDoubleClickActionCode()) {
 				treeGrid.setEditEvent(ListGridEditEvent.NONE);
 				treeGrid.addRecordDoubleClickHandler(new RecordDoubleClickHandler() {
 					@Override
 					public void onRecordDoubleClick(RecordDoubleClickEvent event) {
 						try {
-							mainFormPane.getButtonsToolBar().getDoubleClickActItem().doActionWithConfirm(event.getRecordNum());
+							mainFormPane.getButtonsToolBar()
+									.getDoubleClickActItem()
+									.doActionWithConfirm(event.getRecordNum());
 						} catch (Exception e) {
 							e.printStackTrace();
-							Window.alert("treeGrid.addRecordDoubleClickHandler: " + e.getMessage());
+							Window.alert("treeGrid.addRecordDoubleClickHandler: "
+									+ e.getMessage());
 						}
 					}
 				});
@@ -355,7 +385,8 @@ class MainForm extends Canvas {
 		treeGrid.setHoverWidth(300);
 
 		treeGrid.setInitialSort(mainFormPane.getFormColumns().getDefaultSort());
-		// Utils.debugAlert("treeGrid.InitialSort:" + treeGrid.getInitialSort());
+		// Utils.debugAlert("treeGrid.InitialSort:" +
+		// treeGrid.getInitialSort());
 		{
 			treeGrid.setHeight100();
 			this.addChild(treeGrid);
@@ -370,15 +401,20 @@ class MainForm extends Canvas {
 				ListGrid grid = ((ListGrid) event.getSource());
 				int rowNum = event.getRowNum();
 				// Обработка выхода по клавише ESCAPE
-				if (null == event.getRecord() && EditCompletionEvent.ESCAPE_KEYPRESS.equals(event.getEditCompletionEvent())) {
-					int nextRecord = (0 == rowNum && null != grid.getRecord(rowNum + 1)) ? rowNum + 1 : rowNum - 1;
-					System.out.println("rowNum:" + rowNum + "; nextRecord:" + nextRecord);
+				if (null == event.getRecord()
+						&& EditCompletionEvent.ESCAPE_KEYPRESS.equals(event
+								.getEditCompletionEvent())) {
+					int nextRecord = (0 == rowNum && null != grid
+							.getRecord(rowNum + 1)) ? rowNum + 1 : rowNum - 1;
+					System.out.println("rowNum:" + rowNum + "; nextRecord:"
+							+ nextRecord);
 					// mainFormPane.getValuesManager().clearValues();
 					grid.deselectAllRecords();
 					grid.selectRecord(nextRecord);
 					mainFormPane.setSelectedRow(nextRecord);
 					Utils.debug("treeGrid.onEditorExit. before mainFormPane.filterDetailData");
-					mainFormPane.filterDetailData(grid.getRecord(nextRecord), treeGrid, nextRecord);
+					mainFormPane.filterDetailData(grid.getRecord(nextRecord),
+							treeGrid, nextRecord);
 				}
 				Utils.debug("treeGrid.onEditorExit ended...");
 			}
@@ -390,16 +426,22 @@ class MainForm extends Canvas {
 		// Utils.debug("treeGrid.onRowEditorExit started...");
 		// ListGrid grid = ((ListGrid) event.getSource());
 		// int rowNum = event.getRowNum();
-		// System.out.println("treeGrid.onRowEditorExit getEditCompletionEvent:" + event.getEditCompletionEvent());
-		// // Обработка выхода по клавише ESCAPE при отказе от ввода новой записи
-		// if (null == event.getRecord() && EditCompletionEvent.ESCAPE.equals(event.getEditCompletionEvent())) {
-		// int nextRecord = (0 == rowNum && null != grid.getRecord(rowNum + 1)) ? rowNum + 1 : rowNum - 1;
-		// System.out.println("rowNum:" + rowNum + "; nextRecord:" + nextRecord);
+		// System.out.println("treeGrid.onRowEditorExit getEditCompletionEvent:"
+		// + event.getEditCompletionEvent());
+		// // Обработка выхода по клавише ESCAPE при отказе от ввода новой
+		// записи
+		// if (null == event.getRecord() &&
+		// EditCompletionEvent.ESCAPE.equals(event.getEditCompletionEvent())) {
+		// int nextRecord = (0 == rowNum && null != grid.getRecord(rowNum + 1))
+		// ? rowNum + 1 : rowNum - 1;
+		// System.out.println("rowNum:" + rowNum + "; nextRecord:" +
+		// nextRecord);
 		// // mainFormPane.getValuesManager().clearValues();
 		// grid.deselectAllRecords();
 		// grid.selectRecord(nextRecord);
 		// mainFormPane.setSelectedRow(nextRecord);
-		// mainFormPane.filterDetailData(grid.getRecord(nextRecord), treeGrid, nextRecord);
+		// mainFormPane.filterDetailData(grid.getRecord(nextRecord), treeGrid,
+		// nextRecord);
 		// }
 		// Utils.debug("treeGrid.onRowEditorExit ended...");
 		// }
@@ -413,7 +455,8 @@ class MainForm extends Canvas {
 
 			@Override
 			public void onRowEditorEnter(RowEditorEnterEvent event) {
-				Utils.debug("treeGrid.onRowEditorEnter started... event:" + event);
+				Utils.debug("treeGrid.onRowEditorEnter started... event:"
+						+ event);
 				ListGrid grid = ((ListGrid) event.getSource());
 				Utils.debug("grid:" + grid);
 
@@ -421,7 +464,8 @@ class MainForm extends Canvas {
 				int rowNum;
 				try {
 					rowNum = event.getRowNum();
-					//Utils.debugAlert("treeGrid.onRowEditorEnter. rowNum:" + rowNum);
+					// Utils.debugAlert("treeGrid.onRowEditorEnter. rowNum:" +
+					// rowNum);
 				} catch (Exception e) {
 					Utils.debug(e.getMessage());
 					e.printStackTrace();
@@ -434,13 +478,17 @@ class MainForm extends Canvas {
 				if (null == record && 0 == newRec.getAttributes().length) {
 					setNewRecDefaultValues(rowNum, true);
 				} else {
-					// TODO Простановка DisplayValue для лукап-форм с DisplayFileds
-					FormDataSourceField[] dsf = mainFormPane.getFormColumns().getDataSourceFields();
+					// TODO Простановка DisplayValue для лукап-форм с
+					// DisplayFileds
+					FormDataSourceField[] dsf = mainFormPane.getFormColumns()
+							.getDataSourceFields();
 					for (FormDataSourceField f : dsf) {
-						Utils.debug("treeGrid.onRowEditorEnter." + f.getColumnMD().getName() + ">>:"
+						Utils.debug("treeGrid.onRowEditorEnter."
+								+ f.getColumnMD().getName() + ">>:"
 								+ f.getColumnMD().getLookupDisplayValue());
 					}
-					Utils.debug("treeGrid.onRowEditorEnter.newRec.getAttributes():" + newRec.getAttributes());
+					Utils.debug("treeGrid.onRowEditorEnter.newRec.getAttributes():"
+							+ newRec.getAttributes());
 				}
 				Utils.debug("treeGrid.onRowEditorEnter ended...");
 			}
@@ -486,8 +534,10 @@ class MainForm extends Canvas {
 		// TODO SmartGWT 2.2. - сделали сохранение состояния грида и дерева
 	}
 
-	// 20130514 - Для выделения цветом выбранной записи. Не взлетело. Вызов закоменчен вверху.
-	// TODO - вывести в настройки формы для возможности переопределения (BackgroundColor)
+	// 20130514 - Для выделения цветом выбранной записи. Не взлетело. Вызов
+	// закоменчен вверху.
+	// TODO - вывести в настройки формы для возможности переопределения
+	// (BackgroundColor)
 	public static void setSelectionColors(ListGrid listGrid) {
 
 		listGrid.setBaseStyle("simpleCell");
@@ -506,18 +556,22 @@ class MainForm extends Canvas {
 		listGrid.setAnimateSelectionUnder(true);
 
 		Canvas selectionUnderCanvasProperties = new Canvas();
-		selectionUnderCanvasProperties.setAnimateShowEffect(AnimationEffect.FADE);
+		selectionUnderCanvasProperties
+				.setAnimateShowEffect(AnimationEffect.FADE);
 		selectionUnderCanvasProperties.setAnimateFadeTime(1000);
 		selectionUnderCanvasProperties.setBackgroundColor("#ffff40");
 		listGrid.setSelectionUnderCanvasProperties(selectionUnderCanvasProperties);
 
 	}
 
-	public void setNewRecDefaultValues(final int rowNum, boolean isFromDefaultVals) {
+	public void setNewRecDefaultValues(final int rowNum,
+			boolean isFromDefaultVals) {
 		FormActionMD actMD = mainFormPane.getCurrentAction();
-		final FormDataSourceField[] dsFields = mainFormPane.getFormColumns().getDataSourceFields();
+		final FormDataSourceField[] dsFields = mainFormPane.getFormColumns()
+				.getDataSourceFields();
 		if (isFromDefaultVals) {
-			Map<String, Object> rowMap = Utils.getRowDefaultValuesMap(mainFormPane);
+			Map<String, Object> rowMap = Utils
+					.getRowDefaultValuesMap(mainFormPane);
 			treeGrid.setEditValues(rowNum, rowMap);
 		}
 		if (null == actMD.getDmlProcText()) {
@@ -528,14 +582,16 @@ class MainForm extends Canvas {
 				@Override
 				public void executeSuccessSubProc() {
 					Utils.debug("MainForm.setNewRecDefaultValues: DMLProcExecution.executeSuccessSubProc() start...");
-					Map<String, Object> resultMap = Utils.getMapFromRow(dsFields, getResultRow());
+					Map<String, Object> resultMap = Utils.getMapFromRow(
+							dsFields, getResultRow());
 					treeGrid.setEditValues(rowNum, resultMap);
 					Utils.debug("MainForm.setNewRecDefaultValues. Before mainFormPane.filterDetailData 2");
 					mainFormPane.filterDetailData(null, treeGrid, rowNum);
 				}
 			};
 			Row oldRow = null;
-			Row newRow = Utils.getRowFromRecord(dsFields, treeGrid.getEditedRecord(rowNum));
+			Row newRow = Utils.getRowFromRecord(dsFields,
+					treeGrid.getEditedRecord(rowNum));
 			procExec.executeGlobal(oldRow, newRow);
 		}
 	}
@@ -577,14 +633,17 @@ class MainForm extends Canvas {
 	public void doBeforeClose() {
 		final int gridHashCode = getHashCode();
 		final String formCode = mainFormPane.getFormCode();
-		Utils.debug(formCode + ": mainForm.doBeforeClose(). sessionId = " + ConstructorApp.sessionId + "; gridHashCode = " + gridHashCode);
+		Utils.debug(formCode + ": mainForm.doBeforeClose(). sessionId = "
+				+ ConstructorApp.sessionId + "; gridHashCode = " + gridHashCode);
 		FormMD formState = mainFormPane.getFormState();
 		Utils.debug("mainFormPane.FormState: " + formState);
-		Utils.createQueryService("MainForm.closeForm").closeForm(mainFormPane.getInstanceIdentifier(), formState,
+		Utils.createQueryService("MainForm.closeForm").closeForm(
+				mainFormPane.getInstanceIdentifier(), formState,
 				new DSAsyncCallback<Void>() {
 					@Override
 					public void onSuccess(Void result) {
-						Utils.debug("MainForm. Form " + formCode + "(" + gridHashCode + ")" + " closed...");
+						Utils.debug("MainForm. Form " + formCode + "("
+								+ gridHashCode + ")" + " closed...");
 					}
 				});
 	}
@@ -601,18 +660,25 @@ class MainForm extends Canvas {
 				hCnt = mainFormPane.getSideDetailFormsContainer().getTabs().length;
 				vCnt = mainFormPane.getBottomDetailFormsContainer().getTabs().length;
 			} catch (Exception e) {
-				System.err.println("MainForm.MainFormResizedHandler.onResized(ResizedEvent event) error:");
+				System.err
+						.println("MainForm.MainFormResizedHandler.onResized(ResizedEvent event) error:");
 				e.printStackTrace();
 			}
 			// Horizontal
 			if (0 != hCnt) {
-				Utils.debug("New Width for " + mainFormPane.getFormCode() + ": "
-						+ (Math.round(mf.getWidth().floatValue() / pts.getWidth().floatValue() * 100)));
+				Utils.debug("New Width for "
+						+ mainFormPane.getFormCode()
+						+ ": "
+						+ (Math.round(mf.getWidth().floatValue()
+								/ pts.getWidth().floatValue() * 100)));
 			}
 			// Vertical
 			if (0 != vCnt) {
-				Utils.debug("New Height for " + mainFormPane.getFormCode() + ": "
-						+ (Math.round(mf.getHeight().floatValue() / pts.getHeight().floatValue() * 100)));
+				Utils.debug("New Height for "
+						+ mainFormPane.getFormCode()
+						+ ": "
+						+ (Math.round(mf.getHeight().floatValue()
+								/ pts.getHeight().floatValue() * 100)));
 			}
 		}
 
@@ -621,19 +687,24 @@ class MainForm extends Canvas {
 	public ExportData createExportData() {
 		ExportData exportData = new ExportData();
 		String title = mainFormPane.getFormMetadata().getFormName();
-		title = "".equals(title) ? mainFormPane.getFormMetadata().getFormCode() : title;
+		title = "".equals(title) ? mainFormPane.getFormMetadata().getFormCode()
+				: title;
 		exportData.setTitle(title);
 
-		for (FormTreeGridField f : mainFormPane.getFormColumns().getGridFields()) {
-			if ((!"false".equals(f.getAttribute("showIf")) && !"false".equals(f.getAttribute("canExport")))
+		for (FormTreeGridField f : mainFormPane.getFormColumns()
+				.getGridFields()) {
+			if ((!"false".equals(f.getAttribute("showIf")) && !"false".equals(f
+					.getAttribute("canExport")))
 					|| null != f.getColumnMD().getEditorTabCode()) {
 				exportData.getHeaderNames().add(f.getName());
 				exportData.getHeaderTitles().add(f.getTitle());
-				String displayField = (f instanceof FormTreeGridField) ? f.getColumnMD().getLookupDisplayValue() : null;
+				String displayField = (f instanceof FormTreeGridField) ? f
+						.getColumnMD().getLookupDisplayValue() : null;
 				exportData.getHeaderDisplFldNames().add(displayField);
 
 				String hdrType = "String";
-				if ("N".equals(f.getColumnMD().getDataType()) && null == f.getColumnMD().getLookupCode()) {
+				if ("N".equals(f.getColumnMD().getDataType())
+						&& null == f.getColumnMD().getLookupCode()) {
 					hdrType = "Number";
 				}
 				exportData.getHeaderTypes().add(hdrType);
@@ -650,9 +721,11 @@ class MainForm extends Canvas {
 			if (null != pfp) {
 				ExportData parentRowData = pfp.getMainForm().createExportData();
 				exportData.setParamNames(parentRowData.getHeaderTitles());
-				Record r = pfp.getMainForm().getTreeGrid().getRecord(pfp.getSelectedRow());
-				ArrayList<String> row = Utils.createArrayListFromRecord(r, pfp, parentRowData.getHeaderNames(), parentRowData
-						.getHeaderDisplFldNames());
+				Record r = pfp.getMainForm().getTreeGrid()
+						.getRecord(pfp.getSelectedRow());
+				ArrayList<String> row = Utils.createArrayListFromRecord(r, pfp,
+						parentRowData.getHeaderNames(),
+						parentRowData.getHeaderDisplFldNames());
 				exportData.setParamVals(row);
 			}
 		} catch (Exception e) {
@@ -663,18 +736,21 @@ class MainForm extends Canvas {
 		// Чтение значений полей
 		try {
 			for (Record r : rs.getRange(0, dataLen)) {
-				ArrayList<String> row = Utils.createArrayListFromRecord(r, mainFormPane, exportData.getHeaderNames(), exportData
-						.getHeaderDisplFldNames());
+				ArrayList<String> row = Utils.createArrayListFromRecord(r,
+						mainFormPane, exportData.getHeaderNames(),
+						exportData.getHeaderDisplFldNames());
 				exportData.getData().add(row);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		Utils.createQueryService("MainForm.setExportData").setExportData(mainFormPane.getInstanceIdentifier(), exportData,
+		Utils.createQueryService("MainForm.setExportData").setExportData(
+				mainFormPane.getInstanceIdentifier(), exportData,
 				new DSAsyncCallback<Integer>() {
 					@Override
 					public void onSuccess(Integer result) {
+						super.onSuccess(result);
 						String fullUrl = ExportUrl + "&dataClobId=" + result;
 						System.out.println("fullUrl:" + fullUrl);
 						com.google.gwt.user.client.Window.open(fullUrl, "", "");
@@ -693,7 +769,8 @@ class MainForm extends Canvas {
 		ResultSet rs = treeGrid.getResultSet();
 		// TODO least(100, dataLen)
 		int dataLen = rs.getLength(); // 100;
-		// TODO - Проблема в Firefox - для больших диапазонов (данных более 32К) падает с ошибкой
+		// TODO - Проблема в Firefox - для больших диапазонов (данных более 32К)
+		// падает с ошибкой
 		if (!rs.rangeIsLoaded(0, dataLen)) {
 			rs.getRange(0, dataLen);
 		} else {
