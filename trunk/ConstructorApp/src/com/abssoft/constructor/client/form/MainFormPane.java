@@ -210,6 +210,7 @@ public class MainFormPane extends Canvas {
 						.getFormMetaData(instanceIdentifier,
 								new DSAsyncCallback<FormMD>() {
 									public void onSuccess(FormMD result) {
+										super.onSuccess(result);
 										result.getStatus().showActionStatus();
 										processFormMetadata(result, isLookup,
 												parentFormCriteria1, true);

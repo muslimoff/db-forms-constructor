@@ -1,9 +1,11 @@
 package com.abssoft.constructor.client.data;
 
-import com.abssoft.constructor.client.data.TimeoutException.TimeoutType;
 import com.google.gwt.event.shared.GwtEvent;
 
 public class TimeoutEvent extends GwtEvent<TimeoutEventHandler> {
+	public enum TimeoutType {
+		APPLICATION, DB
+	}
 
 	private static Type<TimeoutEventHandler> TYPE;
 	private final TimeoutType timeoutType;

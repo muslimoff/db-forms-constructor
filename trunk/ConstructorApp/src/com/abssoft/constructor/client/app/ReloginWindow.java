@@ -4,6 +4,8 @@ import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.Utils;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.smartgwt.client.widgets.events.CloseClickEvent;
+import com.smartgwt.client.widgets.events.CloseClickHandler;
 
 public class ReloginWindow extends ConnectWindow {
 
@@ -19,6 +21,13 @@ public class ReloginWindow extends ConnectWindow {
 
 	public ReloginWindow() {
 		super(null);
+		addCloseClickHandler(new CloseClickHandler() {
+
+			@Override
+			public void onCloseClick(CloseClickEvent event) {
+				opened = false;
+			}
+		});
 	}
 
 	@Override
@@ -53,9 +62,11 @@ public class ReloginWindow extends ConnectWindow {
 			super.show();
 		opened = true;
 	}
+
 	@Override
 	public void hide() {
 		opened = false;
 		super.hide();
 	}
+
 }

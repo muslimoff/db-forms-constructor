@@ -78,6 +78,7 @@ public class FormLookupComboboxItem extends MyComboBoxItem {
 					instanceIdentifier, sortBy, startRow, endRow, crMap, false,
 					new DSAsyncCallback<RowsArr>(requestId, response, this) {
 						public void onSuccess(RowsArr result) {
+							super.onSuccess(result);
 							TreeNode[] records = new TreeNode[result.size()];
 							for (int r = 0; r < result.size(); r++) {
 								try {

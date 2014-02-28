@@ -46,6 +46,7 @@ public class FormPickTreeItem extends IPickTreeItem {
 					Utils.getHashMapFromCriteria(cr), false,
 					new DSAsyncCallback<RowsArr>(requestId, response, this) {
 						public void onSuccess(RowsArr result) {
+							super.onSuccess(result);
 							records = new TreeNode[result.size()];
 							Utils.debug("PickDataSource. valueFieldNum:"
 									+ valueFieldNum + "; result.size:"

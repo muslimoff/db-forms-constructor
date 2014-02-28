@@ -105,6 +105,7 @@ public class GridComboBoxItem extends MyComboBoxItem {
 					instanceIdentifier, sortBy, startRow, endRow, crMap, false,
 					new DSAsyncCallback<RowsArr>(requestId, response, this) {
 						public void onSuccess(RowsArr result) {
+							super.onSuccess(result);
 							Utils.debug("ComboBoxDataSource.executeFetch 14");
 							records = new TreeNode[result.size()];
 							values.clear();

@@ -220,9 +220,12 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 	public Row executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow,
 			FormActionMD actMD) throws TimeoutException {
 		Session session = getSessionData(fi);
-		session.checkRenew();
+		session.checkDbTimeout();
+		session.setInUse(true);
 		try {
-			return session.executeDML(fi, oldRow, newRow, actMD);
+			Row result = session.executeDML(fi, oldRow, newRow, actMD);
+			session.checkApplTimeout(result);
+			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
 			session.debug("QueryServiceImpl.executeDML... oldRow:" + oldRow
@@ -244,6 +247,8 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 			actionStatus.setLongMessageText(longMessageText);
 			r.setStatus(actionStatus);
 			return r;
+		} finally {
+			session.setInUse(false);
 		}
 	}
 
@@ -252,14 +257,18 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 			throws TimeoutException {
 		RowsArr result = new RowsArr();
 		Session session = getSessionData(fi);
-		session.checkRenew();
+		session.checkDbTimeout();
+		session.setInUse(true);
 		session.debug("QueryServiceImpl.fetch. start");
 		try {
 			result = session.fetch(fi, sortBy, startRow, endRow, criteria,
 					forceFetch);
+			session.checkApplTimeout(result);
 		} catch (SQLException e) {
 			result.setStatus(new ActionStatus(Messages.getMessage(e),
 					ActionStatus.StatusType.ERROR));
+		} finally {
+			session.setInUse(false);
 		}
 		session.debug("QueryServiceImpl.fetch. end");
 		return result;
@@ -288,22 +297,33 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 			throws TimeoutException {
 		FormMD result = new FormMD();
 		Session session = getSessionData(fi);
-		session.checkRenew();
+		session.checkDbTimeout();
+		session.setInUse(true);
 		try {
 			result = session.getFormMetaData(fi);
+			session.checkApplTimeout(result);
 		} catch (SQLException e) {
 			String errMsg = Messages.getMessage(e);
 			// errMsg = "FormCode:" + fi.getFormCode() + "\n" + errMsg;
 			result.setStatus(new ActionStatus(errMsg,
 					ActionStatus.StatusType.ERROR));
+		} finally {
+			session.setInUse(false);
 		}
 		return result;
 	}
 
 	public MenusArr getMenusArr(int sessionId) throws TimeoutException {
 		Session session = getSessionData(sessionId);
-		session.checkRenew();
-		return session.getMenusArrOld();
+		session.checkDbTimeout();
+		session.setInUse(true);
+		try {
+			MenusArr result = session.getMenusArrOld();
+			session.checkApplTimeout(result);
+			return result;
+		} finally {
+			session.setInUse(false);
+		}
 	}
 
 	/**
@@ -331,8 +351,15 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 	public StaticLookupsArr getStaticLookupsArr(int sessionId)
 			throws TimeoutException {
 		Session session = getSessionData(sessionId);
-		session.checkRenew();
-		return session.getStaticLookupsArr();
+		session.checkDbTimeout();
+		session.setInUse(true);
+		try {
+			StaticLookupsArr result = session.getStaticLookupsArr();
+			session.checkApplTimeout(result);
+			return result;
+		} finally {
+			session.setInUse(false);
+		}
 	}
 
 	public static String getWebinfPath() {
@@ -565,10 +592,16 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 	public Integer setExportData(FormInstanceIdentifier fi,
 			ExportData exportData) throws TimeoutException {
 		Session session = getSessionData(fi);
-		session.checkRenew();
-		session.debug("service " + fi.getInfo() + " before close...");
-		Integer result = session.setExportData(fi, exportData);
-		session.debug("service form " + fi.getInfo() + " closed...");
-		return result;
+		session.checkDbTimeout();
+		session.setInUse(true);
+		try {
+			session.debug("service " + fi.getInfo() + " before close...");
+			Integer result = session.setExportData(fi, exportData);
+			session.debug("service form " + fi.getInfo() + " closed...");
+			return result;
+		} finally {
+			session.setInUse(false);
+		}
 	}
+
 }

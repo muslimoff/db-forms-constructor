@@ -15,9 +15,11 @@ import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 
 import com.abssoft.constructor.client.data.TimeoutException;
-import com.abssoft.constructor.client.data.TimeoutException.TimeoutType;
+import com.abssoft.constructor.common.ActionStatus;
+import com.abssoft.constructor.common.ActionStatus.StatusType;
 import com.abssoft.constructor.common.ExportData;
 import com.abssoft.constructor.common.FormInstanceIdentifier;
+import com.abssoft.constructor.common.HasActionStatus;
 import com.abssoft.constructor.common.IconsArr;
 import com.abssoft.constructor.common.MenusArr;
 import com.abssoft.constructor.common.Row;
@@ -49,6 +51,8 @@ public class Session implements Serializable {
 	private ServerInfoMD serverInfoMD;
 	private boolean isDebugEnabled = false;
 	private Date startDate = new Date();
+	private boolean isApplicationTimedOut = false;
+	private boolean inUse = false;
 
 	// Для дебага (Session.debug) - вывода вне сессии
 	public static Session getEmptySession(Boolean isDebugEnabled) {
@@ -304,39 +308,63 @@ public class Session implements Serializable {
 
 	public synchronized void renew() {
 		startDate = new Date();
+		isApplicationTimedOut = false;
 	}
 
-	private boolean isApplicationTimedOut() {
+	public boolean isApplicationTimedOut() {
 		if (serverInfoMD == null || serverInfoMD.getSessionTimeout() < 0)
 			return false;
+		if (isApplicationTimedOut)
+			return true;
 		Date now = new Date();
 		long period = now.getTime() - startDate.getTime();
-		return period > serverInfoMD.getSessionTimeout() * 60 * 1000;
+		isApplicationTimedOut = period > serverInfoMD.getSessionTimeout() * 60 * 1000;
+		return isApplicationTimedOut;
 	}
 
 	private boolean isDbTimedOut() {
-		if (!isApplicationTimedOut() || serverInfoMD.getDbSessionTimeout() < 0)
+		if (serverInfoMD.getDbSessionTimeout() < 0)
 			return false;
 		Date now = new Date();
 		long period = now.getTime() - startDate.getTime();
 		return period > serverInfoMD.getDbSessionTimeout() * 60 * 1000;
 	}
 
-	public synchronized void checkRenew() throws TimeoutException {
+	public synchronized void checkDbTimeout() throws TimeoutException {
 		if (isDbTimedOut())
-			throw new TimeoutException(TimeoutType.DB);
-		if (isApplicationTimedOut())
-			throw new TimeoutException(TimeoutType.APPLICATION);
-		renew();
+			throw new TimeoutException();
+		else if (!isApplicationTimedOut())
+			renew();
+	}
+
+	public void checkApplTimeout(HasActionStatus result) {
+		if (isApplicationTimedOut()) {
+			ActionStatus as = result.getStatus();
+			if (as == null)
+				as = new ActionStatus();
+			as.setStatusType(StatusType.APPL_TIMEOUT);
+			result.setStatus(as);
+		} else
+			renew();
 	}
 
 	public synchronized void releaseTimedout() {
 		try {
+			if (isInUse())
+				return;
 			boolean closable = connection != null && !connection.isClosed();
 			if (closable && isDbTimedOut())
 				connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public synchronized boolean isInUse() {
+		return inUse;
+	}
+
+	public synchronized void setInUse(boolean inUse) {
+		this.inUse = inUse;
 	}
 }

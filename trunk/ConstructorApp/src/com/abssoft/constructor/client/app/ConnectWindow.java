@@ -72,6 +72,7 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 									@Override
 									public void onSuccess(
 											StaticLookupsArr result) {
+										super.onSuccess(result);
 										ConstructorApp.staticLookupsArr = result;
 										System.out.println(result);
 										// openFormsFromURL();

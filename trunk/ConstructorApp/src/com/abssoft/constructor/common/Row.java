@@ -9,7 +9,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author User
  */
-public class Row extends HashMap<Integer, Attribute> implements IsSerializable {
+public class Row extends HashMap<Integer, Attribute> implements IsSerializable,
+		HasActionStatus {
 
 	private static final long serialVersionUID = -1005056453151583048L;
 	/**
@@ -18,8 +19,10 @@ public class Row extends HashMap<Integer, Attribute> implements IsSerializable {
 	private ActionStatus status = new ActionStatus();
 
 	/*
-	 * boolean isStatusBtn = paramName.equals(actMD.getStatusButtonParam()); boolean isStatusMsgLevel =
-	 * paramName.equals(actMD.getStatusMsgLevelParam()); boolean isStatusMsgTxt = paramName.equals(actMD.getStatusMsgTxtParam());
+	 * boolean isStatusBtn = paramName.equals(actMD.getStatusButtonParam());
+	 * boolean isStatusMsgLevel =
+	 * paramName.equals(actMD.getStatusMsgLevelParam()); boolean isStatusMsgTxt
+	 * = paramName.equals(actMD.getStatusMsgTxtParam());
 	 */
 
 	/**

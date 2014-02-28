@@ -5,11 +5,13 @@ import java.util.HashMap;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Набор строк (класса Row). Хранит информацию о результатах, возвращенных запросом.
+ * Набор строк (класса Row). Хранит информацию о результатах, возвращенных
+ * запросом.
  * 
  * @author User
  */
-public class RowsArr extends HashMap<Integer, Row> implements IsSerializable {
+public class RowsArr extends HashMap<Integer, Row> implements IsSerializable,
+		HasActionStatus {
 
 	private static final long serialVersionUID = -6017120529964851633L;
 
