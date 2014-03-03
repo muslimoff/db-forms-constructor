@@ -55,6 +55,8 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 					ConstructorApp.appServerVersion,
 					ConstructorApp.dbServerVersion);
 			if (!"".equals(status) || -1 == ConstructorApp.sessionId) {
+				if (!ConnectWindow.this.isDrawn())
+					ConnectWindow.this.show();
 				ConnectWindow.this.setOpacity(100);
 				status = "Error:" + status;
 				Window.alert(status);
@@ -263,7 +265,7 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 		}
 
 		this.addItem(form);
-		this.show();
+		// this.show();
 	}
 
 	private class ServerInfoArrDSAsyncCallback extends
@@ -314,10 +316,12 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 					.getParameter("app.userName");
 			String pwd = com.google.gwt.user.client.Window.Location
 					.getParameter("app.pwd");
-			if (defaultServerIsSet && null != userName && !"".equals(userName)) {
+			if (defaultServerIsSet && null != userName && !userName.isEmpty()) {
 				userNameItem.setValue(userName);
 				passItem.setValue(pwd);
 				connect();
+			} else {
+				ConnectWindow.this.show();
 			}
 		}
 	}
