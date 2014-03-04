@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import com.abssoft.constructor.client.app.ConnectWindow;
 import com.abssoft.constructor.client.app.ReloginWindow;
@@ -58,7 +57,6 @@ import com.smartgwt.client.widgets.tab.Tab;
  * @version 0.0.0.1
  */
 public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
-	public static final Logger log = Logger.getLogger("");
 	public static final EventBus eb = GWT.create(SimpleEventBus.class);
 	public static TabSet tabSet = new TabSet();
 	public static final String queryServiceRelativePath = "query";
@@ -370,10 +368,10 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 	@Override
 	public void onTimeout(TimeoutType timeoutType) {
 		if (timeoutType == TimeoutType.APPLICATION) {
-			ConstructorApp.log.info("Application session timed out");
+			GWT.log("Application session timed out");
 			ReloginWindow.getInstance().show();
 		} else {
-			ConstructorApp.log.info("Database session timed out");
+			GWT.log("Database session timed out");
 			connectWindow.show();
 		}
 

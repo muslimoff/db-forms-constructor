@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -87,6 +88,39 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 		session.debug("service form " + fi.getInfo() + " closed...");
 	}
 
+	private void initCookies(Session session) {
+		try {
+			HttpSession httpSession = this.getThreadLocalRequest().getSession();
+			this.getThreadLocalResponse().addCookie(new Cookie("xxx", "yyy"));
+			session.debug("jSessionId: " + httpSession.getId());
+			for (Cookie c : this.getThreadLocalRequest().getCookies()) {
+				session.debug("Cookie:" + c.getName() + "=\"" + c.getValue()
+						+ "\"");
+			}
+		} catch (Exception e) {
+			session.debug("httpSession error 1:");
+			e.printStackTrace();
+		}
+	}
+
+	private Connection getConnection(String url, String userName,
+			String userPass) throws ClassNotFoundException, SQLException {
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		Connection connection = DriverManager.getConnection(
+				"jdbc:oracle:thin:@" + url, userName, userPass);
+		// mm20110724 Выключил автокоммит сессии для управления комитом на
+		// уровне действий (FormActionMD.autoCommit)
+		connection.setAutoCommit(false);
+		return connection;
+	}
+
+	private void setNlsLang(Connection connection) throws SQLException {
+		String nlsLangSQL = "alter session set nls_language='AMERICAN'";
+		PreparedStatement nlsStmnt = connection.prepareStatement(nlsLangSQL);
+		nlsStmnt.execute();
+		nlsStmnt.close();
+	}
+
 	private boolean isValidLogin(Session session, String user, String password,
 			String urlParams) throws SQLException {
 		String validateLoginSQL = Utils.getSQLQueryFromXML(
@@ -115,34 +149,31 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 		return isLoginValid;
 	}
 
+	private ConnectionInfo getConnectionInfo(Connection connection)
+			throws SQLException {
+		String sessionSQL = "Select Userenv('sessionid') As Sessionid, Fnd_Profile.Value('ICX_DATE_FORMAT_MASK') Date_Format From Dual";
+		Statement sessionStmnt = connection.createStatement();
+		ResultSet rs = sessionStmnt.executeQuery(sessionSQL);
+		rs.next();
+		int sessionId = rs.getBigDecimal(1).intValue();
+		String dateFormat = rs.getString("Date_Format").replace('R', 'y')
+				.replace('m', 'M').replace('D', 'd');
+		ConnectionInfo result = new ConnectionInfo(null, sessionId, dateFormat);
+		rs.close();
+		sessionStmnt.close();
+		return result;
+	}
+
 	public ConnectionInfo connect(int ServerIdx, String user, String password,
 			boolean isScript, String urlParams, Boolean isDebugEnabled) {
-
-		// ServletContext x = getServletContext();
-
-		// String jSessionId = httpSession.getId();
-		// //////////////////////////////////
 		Session session = Session.getEmptySession(isDebugEnabled);
-
-		try {
-			HttpSession httpSession = this.getThreadLocalRequest().getSession();
-			this.getThreadLocalResponse().addCookie(new Cookie("xxx", "yyy"));
-			session.debug("jSessionId: " + httpSession.getId());
-			for (Cookie c : this.getThreadLocalRequest().getCookies()) {
-				session.debug("Cookie:" + c.getName() + "=\"" + c.getValue()
-						+ "\"");
-			}
-		} catch (Exception e) {
-			session.debug("httpSession error 1:");
-			e.printStackTrace();
-		}
-
+		initCookies(session);
+		ConnectionInfo c = null;
 		session.debug("QueryServiceImpl.connect. urlParams:" + urlParams);
 		String errMsg = "";
 		int sessionId = -1;
 		try {
 			session.debug("QueryServiceImpl.connect. Before connect...");
-			Class.forName("oracle.jdbc.driver.OracleDriver");
 			ServerInfoMD serverInfoMD = serverInfoArr.get(ServerIdx);
 			session.debug("serverInfoMD:" + serverInfoMD);
 			String userName = serverInfoMD.isTransferPassToClient() ? user
@@ -150,44 +181,27 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 			String userPass = serverInfoMD.isTransferPassToClient() ? password
 					: serverInfoMD.getDbPassword();
 			Locale.setDefault(Locale.ENGLISH);
-			Connection connection = DriverManager.getConnection(
-					"jdbc:oracle:thin:@" + serverInfoMD.getDbUrl(), userName,
-					userPass);
+			Connection connection = getConnection(serverInfoMD.getDbUrl(),
+					userName, userPass);
 			session.debug("Connected..");
-			{
-				String nlsLangSQL = "alter session set nls_language='AMERICAN'";
-				OraclePreparedStatement nlsStmnt = (OraclePreparedStatement) connection
-						.prepareStatement(nlsLangSQL);
-				nlsStmnt.execute();
-				nlsStmnt.close();
-			}
-			{
-				String sessionSQL = "Select USERENV ('sessionid') as sessionid From DUAL";
-				Statement sessionStmnt = connection.createStatement();
-				ResultSet sessionidRS = sessionStmnt.executeQuery(sessionSQL);
-				sessionidRS.next();
-				sessionId = sessionidRS.getBigDecimal(1).intValue();
-				sessionidRS.close();
-				sessionStmnt.close();
-			}
-			// mm20110724 Выключил автокоммит сессии для управления комитом на
-			// уровне действий (FormActionMD.autoCommit)
-			connection.setAutoCommit(false);
+			setNlsLang(connection);
 			session = new Session(connection, serverInfoMD, isDebugEnabled,
 					isScript);
-			// Custom Login Validation
 			Utils.spoolOut("serverInfoMD.isTransferPassToClient():"
 					+ serverInfoMD.isTransferPassToClient());
 			if (!serverInfoMD.isTransferPassToClient()) {
 				session.debug("QueryServiceImpl.connect. Custom Login.");
 				session.debug("user:" + user + "; password:" + password
 						+ "; userName:" + userName + "; userPass:" + userPass);
+				// Custom Login Validation
 				if (!isValidLogin(session, user, password, urlParams)) {
 					connection.close();
 					sessionId = -1;
 					throw new Exception("Пароль не тот...");
 				}
 			}
+			c = getConnectionInfo(connection);
+			sessionId = c.getSessionId();
 			sessionData.put(sessionId, session);
 			try {
 				this.getThreadLocalRequest().getSession(true)
@@ -202,7 +216,11 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 			errMsg = e.toString();
 			sessionId = -1;
 		}
-		ConnectionInfo c = new ConnectionInfo(errMsg, sessionId);
+		if (c == null)
+			c = new ConnectionInfo(errMsg, sessionId, null);
+		else
+			c.setStatus(errMsg);
+		c.setSessionId(sessionId);
 		c.setDbServerVersion("bla-bla-bla...");
 		session.debug("sessionId: " + sessionId + "; " + errMsg);
 		return c;
@@ -403,7 +421,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 			Utils.spoolOut(s);
 		}
 
-		this.serverInfoArr = ReadSettingsXML(filename);
+		this.serverInfoArr = readSettingsXML(filename);
 		this.serverInfoArr.setAppServerVersion(getAppServerVersion());
 		Utils.spoolOut("appServerVersion3:"
 				+ this.serverInfoArr.getAppServerVersion());
@@ -417,7 +435,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 		timeoutChecker.shutdownNow();
 	}
 
-	private ServerInfoArr ReadSettingsXML(String filename) {
+	private ServerInfoArr readSettingsXML(String filename) {
 		ServerInfoArr result = new ServerInfoArr();
 		XPathFactory factory = XPathFactory.newInstance();
 		XPath xPath = factory.newXPath();
