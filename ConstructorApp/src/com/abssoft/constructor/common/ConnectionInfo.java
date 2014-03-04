@@ -11,6 +11,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class ConnectionInfo implements IsSerializable {
 	private String status;
 	private String dbServerVersion;
+	private String dateFormat;
 	private int sessionId;
 
 	// так надо - конструктор без параметров, чтобы не было такого:
@@ -20,9 +21,10 @@ public class ConnectionInfo implements IsSerializable {
 	public ConnectionInfo() {
 	}
 
-	public ConnectionInfo(String status, int sessionId) {
+	public ConnectionInfo(String status, int sessionId, String dateFormat) {
 		this.status = status;
 		this.sessionId = sessionId;
+		this.dateFormat = dateFormat;
 	}
 
 	public void setStatus(String status) {
@@ -47,5 +49,13 @@ public class ConnectionInfo implements IsSerializable {
 
 	public String getDbServerVersion() {
 		return dbServerVersion;
+	}
+
+	public String getDateFormat() {
+		return dateFormat;
+	}
+
+	public void setDateFormat(String dateFormat) {
+		this.dateFormat = dateFormat;
 	}
 }

@@ -51,6 +51,9 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 			// String currentSkin = Cookies.getCookie("FCSessionId");
 			String status = result.getStatus();
 			ConstructorApp.dbServerVersion = result.getDbServerVersion();
+			if (result.getDateFormat() != null
+					&& !result.getDateFormat().isEmpty())
+				Utils.setDateFormat(result.getDateFormat());
 			detailTextItem.setVersions(ConstructorApp.clientVersion,
 					ConstructorApp.appServerVersion,
 					ConstructorApp.dbServerVersion);
@@ -70,14 +73,11 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 				Utils.createQueryService("ConnectWindow.StaticLookups")
 						.getStaticLookupsArr(ConstructorApp.sessionId,
 								new DSAsyncCallback<StaticLookupsArr>() {
-
 									@Override
 									public void onSuccess(
 											StaticLookupsArr result) {
 										super.onSuccess(result);
 										ConstructorApp.staticLookupsArr = result;
-										System.out.println(result);
-										// openFormsFromURL();
 									}
 								});
 				ConnectWindow.this.hide();
