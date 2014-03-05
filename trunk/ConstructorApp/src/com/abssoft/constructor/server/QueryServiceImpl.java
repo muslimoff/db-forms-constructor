@@ -106,17 +106,17 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 	private Connection getConnection(String url, String userName,
 			String userPass) throws ClassNotFoundException, SQLException {
 		Class.forName("oracle.jdbc.driver.OracleDriver");
-		Connection connection = DriverManager.getConnection(
-				"jdbc:oracle:thin:@" + url, userName, userPass);
+		Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@"
+				+ url, userName, userPass);
 		// mm20110724 Выключил автокоммит сессии для управления комитом на
 		// уровне действий (FormActionMD.autoCommit)
-		connection.setAutoCommit(false);
-		return connection;
+		conn.setAutoCommit(false);
+		return conn;
 	}
 
-	private void setNlsLang(Connection connection) throws SQLException {
+	private void setNlsLang(Connection conn) throws SQLException {
 		String nlsLangSQL = "alter session set nls_language='AMERICAN'";
-		PreparedStatement nlsStmnt = connection.prepareStatement(nlsLangSQL);
+		PreparedStatement nlsStmnt = conn.prepareStatement(nlsLangSQL);
 		nlsStmnt.execute();
 		nlsStmnt.close();
 	}
@@ -127,50 +127,68 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 				"customLoginValidationSQL", session);
 		session.debug("@@@validateLoginSQL:\n" + validateLoginSQL);
 
-		OraclePreparedStatement statement = null;
+		OraclePreparedStatement stmt = null;
 		boolean isLoginValid = false;
 		try {
 			Connection connection = session.getConnection();
-			statement = (OraclePreparedStatement) connection
+			stmt = (OraclePreparedStatement) connection
 					.prepareStatement(validateLoginSQL);
 			session.debug("Parameters: ");
-			Utils.setParameterValue(session, statement, "p_username", user);
-			Utils.setParameterValue(session, statement, "p_password", password);
-			Utils.setParameterValue(session, statement, "p_url_params",
-					urlParams);
-			ResultSet loginRS = statement.executeQuery();
+			Utils.setParameterValue(session, stmt, "p_username", user);
+			Utils.setParameterValue(session, stmt, "p_password", password);
+			Utils.setParameterValue(session, stmt, "p_url_params", urlParams);
+			ResultSet loginRS = stmt.executeQuery();
 			loginRS.next();
 			isLoginValid = "Y".equals(loginRS.getString("isValid"));
 			loginRS.close();
 		} finally {
-			if (statement != null)
-				statement.close();
+			if (stmt != null)
+				stmt.close();
 		}
 		return isLoginValid;
 	}
 
-	private ConnectionInfo getConnectionInfo(Connection connection)
+	private int getSessionId(Connection conn) throws SQLException {
+		String sessionSQL = "Select Userenv('sessionid') As Sessionid From Dual";
+		int sessionId = -1;
+		Statement stmt = conn.createStatement();
+		try {
+			ResultSet rs = stmt.executeQuery(sessionSQL);
+			rs.next();
+			sessionId = rs.getBigDecimal(1).intValue();
+			rs.close();
+		} finally {
+			if (stmt != null)
+				stmt.close();
+		}
+		return sessionId;
+	}
+
+	private String getDateFormat(Connection connection, Session session)
 			throws SQLException {
-		String sessionSQL = "Select Userenv('sessionid') As Sessionid, Fnd_Profile.Value('ICX_DATE_FORMAT_MASK') Date_Format From Dual";
-		Statement sessionStmnt = connection.createStatement();
-		ResultSet rs = sessionStmnt.executeQuery(sessionSQL);
-		rs.next();
-		int sessionId = rs.getBigDecimal(1).intValue();
-		String dateFormat = rs.getString("Date_Format").replace('R', 'y')
-				.replace('m', 'M').replace('D', 'd');
-		ConnectionInfo result = new ConnectionInfo(null, sessionId, dateFormat);
-		rs.close();
-		sessionStmnt.close();
-		return result;
+		String sessionSQL = Utils.getSQLQueryFromXML("DATE_FORMAT", session);
+		String dateFormat = null;
+		Statement stmt = connection.createStatement();
+		try {
+			ResultSet rs = stmt.executeQuery(sessionSQL);
+			rs.next();
+			dateFormat = rs.getString("Date_Format").replace('R', 'y')
+					.replace('m', 'M').replace('D', 'd');
+			rs.close();
+		} finally {
+			if (stmt != null)
+				stmt.close();
+		}
+		return dateFormat;
 	}
 
 	public ConnectionInfo connect(int ServerIdx, String user, String password,
 			boolean isScript, String urlParams, Boolean isDebugEnabled) {
 		Session session = Session.getEmptySession(isDebugEnabled);
 		initCookies(session);
-		ConnectionInfo c = null;
 		session.debug("QueryServiceImpl.connect. urlParams:" + urlParams);
 		String errMsg = "";
+		String dateFormat = null;
 		int sessionId = -1;
 		try {
 			session.debug("QueryServiceImpl.connect. Before connect...");
@@ -181,12 +199,11 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 			String userPass = serverInfoMD.isTransferPassToClient() ? password
 					: serverInfoMD.getDbPassword();
 			Locale.setDefault(Locale.ENGLISH);
-			Connection connection = getConnection(serverInfoMD.getDbUrl(),
-					userName, userPass);
+			Connection conn = getConnection(serverInfoMD.getDbUrl(), userName,
+					userPass);
 			session.debug("Connected..");
-			setNlsLang(connection);
-			session = new Session(connection, serverInfoMD, isDebugEnabled,
-					isScript);
+			setNlsLang(conn);
+			session = new Session(conn, serverInfoMD, isDebugEnabled, isScript);
 			Utils.spoolOut("serverInfoMD.isTransferPassToClient():"
 					+ serverInfoMD.isTransferPassToClient());
 			if (!serverInfoMD.isTransferPassToClient()) {
@@ -195,13 +212,13 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 						+ "; userName:" + userName + "; userPass:" + userPass);
 				// Custom Login Validation
 				if (!isValidLogin(session, user, password, urlParams)) {
-					connection.close();
+					conn.close();
 					sessionId = -1;
 					throw new Exception("Пароль не тот...");
 				}
 			}
-			c = getConnectionInfo(connection);
-			sessionId = c.getSessionId();
+			sessionId = getSessionId(conn);
+			dateFormat = getDateFormat(conn, session);
 			sessionData.put(sessionId, session);
 			try {
 				this.getThreadLocalRequest().getSession(true)
@@ -216,11 +233,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 			errMsg = e.toString();
 			sessionId = -1;
 		}
-		if (c == null)
-			c = new ConnectionInfo(errMsg, sessionId, null);
-		else
-			c.setStatus(errMsg);
-		c.setSessionId(sessionId);
+		ConnectionInfo c = new ConnectionInfo(errMsg, sessionId, dateFormat);
 		c.setDbServerVersion("bla-bla-bla...");
 		session.debug("sessionId: " + sessionId + "; " + errMsg);
 		return c;
