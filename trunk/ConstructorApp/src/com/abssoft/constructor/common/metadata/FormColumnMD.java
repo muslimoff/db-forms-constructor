@@ -2,6 +2,7 @@ package com.abssoft.constructor.common.metadata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -45,7 +46,7 @@ public class FormColumnMD implements IsSerializable, Cloneable {
 	private Integer lookupWidth;
 	private Integer lookupHeight;
 
-	private HashMap<String, String> lookupAttributes = new HashMap<String, String>();
+	private Map<String, String> lookupAttributes = new HashMap<String, String>();
 
 	private ArrayList<ColumnAction> colActions = new ArrayList<ColumnAction>();
 
@@ -88,7 +89,8 @@ public class FormColumnMD implements IsSerializable, Cloneable {
 		clone.setEditorOnEnterKeyAction(this.editorOnEnterKeyAction);
 		clone.setLookupWidth(this.lookupWidth);
 		clone.setLookupHeight(this.lookupHeight);
-		// тут сфилонил - нужно и в тех методах писать клонирование. Или общий метод...
+		// тут сфилонил - нужно и в тех методах писать клонирование. Или общий
+		// метод...
 		clone.setLookupAttributes(this.lookupAttributes);
 		clone.setColActions(this.colActions);
 
@@ -185,7 +187,7 @@ public class FormColumnMD implements IsSerializable, Cloneable {
 		return hoverСolumnСode;
 	}
 
-	public HashMap<String, String> getLookupAttributes() {
+	public Map<String, String> getLookupAttributes() {
 		return lookupAttributes;
 	}
 
@@ -380,7 +382,7 @@ public class FormColumnMD implements IsSerializable, Cloneable {
 		this.hoverСolumnСode = hoverСolumnСode;
 	}
 
-	public void setLookupAttributes(HashMap<String, String> lookupAttributes) {
+	public void setLookupAttributes(Map<String, String> lookupAttributes) {
 		this.lookupAttributes = lookupAttributes;
 	}
 
