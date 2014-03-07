@@ -1,9 +1,9 @@
 package com.abssoft.constructor.client.widgets;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.Constants;
@@ -144,7 +144,7 @@ public class FormLookupComboboxItem extends MyComboBoxItem {
 		Criteria cr = Utils
 				.getCriteriaFromListGridRecord2(mainFormPane, record);
 		// Добавление атрибутов колонки
-		HashMap<String, String> lookupAttributes = parentColumnMD
+		Map<String, String> lookupAttributes = parentColumnMD
 				.getLookupAttributes();
 		Iterator<String> attrs = lookupAttributes.keySet().iterator();
 		while (attrs.hasNext()) {

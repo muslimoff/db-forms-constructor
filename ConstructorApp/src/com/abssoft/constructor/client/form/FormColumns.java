@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import com.abssoft.constructor.client.data.FormDataSourceField;
@@ -27,7 +28,7 @@ public class FormColumns {
 	FormDataSourceField[] dataSourceFields;
 	FormItem[] editorFormItems;
 	SortSpecifier[] defaultSort = null;
-	private LinkedHashMap<String, HeaderSpan> gridHeaderSpansMap = new LinkedHashMap<String, HeaderSpan>();
+	private Map<String, HeaderSpan> gridHeaderSpansMap = new LinkedHashMap<String, HeaderSpan>();
 
 	public FormItem[] getEditorFormItems() {
 		return editorFormItems;
@@ -55,12 +56,15 @@ public class FormColumns {
 		}
 		for (int i = 0; i < columnsCount; i++) {
 			FormColumnMD m = columns.get(i);
-			// По умолчанию, если getFieldType=1 или =2, и табик не указан, значит боковой динамический детейл
-			if (("1".equals(m.getFieldType()) || "2".equals(m.getFieldType())) && null == m.getEditorTabCode())
+			// По умолчанию, если getFieldType=1 или =2, и табик не указан,
+			// значит боковой динамический детейл
+			if (("1".equals(m.getFieldType()) || "2".equals(m.getFieldType()))
+					&& null == m.getEditorTabCode())
 				hasSideTabsCount = true;
 		}
 
-		Utils.debug("bottomTabsCount: " + hasBottomTabsCount + "; sideTabsCount: " + hasSideTabsCount);
+		Utils.debug("bottomTabsCount: " + hasBottomTabsCount
+				+ "; sideTabsCount: " + hasSideTabsCount);
 	}
 
 	public FormDataSourceField[] createDSFields() {
@@ -78,13 +82,15 @@ public class FormColumns {
 			gridFields[i].setAlign(Alignment.CENTER);
 
 			String fieldDataType = m.getDataType();
-			if ("N".equalsIgnoreCase(fieldDataType) || "D".equalsIgnoreCase(fieldDataType)) {
+			if ("N".equalsIgnoreCase(fieldDataType)
+					|| "D".equalsIgnoreCase(fieldDataType)) {
 				gridFields[i].setCellAlign(Alignment.RIGHT);
 			} else if ("S".equalsIgnoreCase(fieldDataType)) {
 				gridFields[i].setCellAlign(Alignment.LEFT);
 			}
 
-			{// 20130727 HeaderSpans. Разбивка перенесена на серверную часть (Form.getColumns)
+			{// 20130727 HeaderSpans. Разбивка перенесена на серверную часть
+				// (Form.getColumns)
 				HeaderSpan hs = null;
 				String headerName = m.getHeaderName();
 				if (null != headerName) {
@@ -97,11 +103,13 @@ public class FormColumns {
 						destArr[srcArrLength] = gridFields[i].getName();
 						hs.setFields(destArr);
 						// for (int ddd = 0; ddd < destArr.length; ddd++) {
-						// System.out.println(">>> ddd[" + ddd + "]=" + destArr[ddd]);
+						// System.out.println(">>> ddd[" + ddd + "]=" +
+						// destArr[ddd]);
 						// }
 
 					} else {
-						hs = new HeaderSpan(headerName, new String[] { gridFields[i].getName() });
+						hs = new HeaderSpan(headerName,
+								new String[] { gridFields[i].getName() });
 						gridHeaderSpansMap.put(headerName, hs);
 					}
 				}
@@ -151,9 +159,12 @@ public class FormColumns {
 			int k = 0;
 			while (i1.hasNext()) {
 				String colSortIdx = i1.next();
-				Utils.debug("getDefaultSort. colSortIdx: " + colSortIdx + " => " + x.get(colSortIdx));
-				SortDirection sd = colSortIdx.contains("-") ? SortDirection.DESCENDING : SortDirection.ASCENDING;
-				result[k++] = new SortSpecifier(x.get(colSortIdx).replaceAll("-", ""), sd);
+				Utils.debug("getDefaultSort. colSortIdx: " + colSortIdx
+						+ " => " + x.get(colSortIdx));
+				SortDirection sd = colSortIdx.contains("-") ? SortDirection.DESCENDING
+						: SortDirection.ASCENDING;
+				result[k++] = new SortSpecifier(x.get(colSortIdx).replaceAll(
+						"-", ""), sd);
 			}
 		}
 		return result;

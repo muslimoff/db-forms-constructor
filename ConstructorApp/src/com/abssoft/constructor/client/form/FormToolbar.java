@@ -2,15 +2,19 @@ package com.abssoft.constructor.client.form;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.ActionItem;
+import com.abssoft.constructor.client.data.FormDataSource;
+import com.abssoft.constructor.client.data.FormDataSourceField;
 import com.abssoft.constructor.common.FormActionsArr;
 import com.abssoft.constructor.common.metadata.FormActionMD;
 import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.ToolbarItem;
+import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.menu.MenuItemSeparator;
@@ -19,9 +23,10 @@ public class FormToolbar extends DynamicForm {
 
 	private ArrayList<MenuItem> actionItemsArr = new ArrayList<MenuItem>();
 	// private ArrayList<IButton> actionButtonsArr = new ArrayList<IButton>();
-	// private ArrayList<MenuItem> actionMenuItemsArr = new ArrayList<MenuItem>();
+	// private ArrayList<MenuItem> actionMenuItemsArr = new
+	// ArrayList<MenuItem>();
 
-	public LinkedHashMap<String, ActionItem> actionItemsMap = new LinkedHashMap<String, ActionItem>();
+	public Map<String, ActionItem> actionItemsMap = new LinkedHashMap<String, ActionItem>();
 	private MainFormPane mainFormPane;
 	private Menu ctxMenu;
 	private ToolbarItem btnToolbar = new ToolbarItem();
@@ -32,10 +37,12 @@ public class FormToolbar extends DynamicForm {
 	private class CtxMenu extends Menu {
 		CtxMenu(ArrayList<MenuItem> menuItemsArr, MainFormPane mainFormPane) {
 			String formTitle = mainFormPane.getFormMetadata().getFormName();
-			String icon = ConstructorApp.menus.getIcons().get(mainFormPane.getFormMetadata().getIconId());
+			String icon = ConstructorApp.menus.getIcons().get(
+					mainFormPane.getFormMetadata().getIconId());
 
 			int additionalMICount = 2;
-			MenuItem[] menuItems = new MenuItem[menuItemsArr.size() + additionalMICount];
+			MenuItem[] menuItems = new MenuItem[menuItemsArr.size()
+					+ additionalMICount];
 			// Title MenuItem
 			menuItems[0] = new MenuItem(formTitle);
 			menuItems[0].setEnabled(false);
@@ -70,11 +77,14 @@ public class FormToolbar extends DynamicForm {
 		formNameItem.setWidth("200");
 		formNameItem.setShowTitle(false);
 
-		FormActionsArr formActionsArr = mainFormPane.getFormMetadata().getActions();
-
+		FormActionsArr formActionsArr = mainFormPane.getFormMetadata()
+				.getActions();
+		boolean hasEditAction = false;
 		/*****************/
 		for (int i = 0; i < formActionsArr.size(); i++) {
 			FormActionMD formActionMD = formActionsArr.get(i);
+			if (!hasEditAction)
+				hasEditAction = "8".equals(formActionMD.getType());
 			ActionItem actionItem = new ActionItem(mainFormPane, formActionMD);
 			actionItemsArr.add(actionItem);
 			if (formActionMD.getDisplayInContextMenu()) {
@@ -88,15 +98,23 @@ public class FormToolbar extends DynamicForm {
 			if (null != actionItem.getButton()) {
 				actionButtonsArr.add(actionItem.getButton());
 			}
-			if (formActionMD.getCode().equals(mainFormPane.getFormMetadata().getDoubleClickActionCode())) {
+			if (formActionMD.getCode().equals(
+					mainFormPane.getFormMetadata().getDoubleClickActionCode())) {
 				doubleClickActItem = actionItem;
 			}
 
-			if (formActionMD.getCode().equals(mainFormPane.getFormMetadata().getDragAndDropActionCode())) {
+			if (formActionMD.getCode().equals(
+					mainFormPane.getFormMetadata().getDragAndDropActionCode())) {
 				dragAndDropActItem = actionItem;
 			}
 
 		}
+		ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
+		FormDataSource fds = mainFormPane.getDataSource();
+		if (grid != null)
+			grid.setCanEdit(hasEditAction);
+		for (FormDataSourceField f : fds.getFormDSFields())
+			f.setCanEdit(hasEditAction);
 		/*****************/
 		ctxMenu = new CtxMenu(actionMenuItemsArr, mainFormPane);
 
@@ -108,7 +126,10 @@ public class FormToolbar extends DynamicForm {
 		btnToolbar.setButtons(btns);
 		this.setContextMenu(ctxMenu);
 		mainFormPane.setContextMenu(ctxMenu);
-		if (null != mainFormPane.getMainFormContainer()) { // 20120824 была ошибка для одиночных динамических форм
+		if (null != mainFormPane.getMainFormContainer()) { // 20120824 была
+															// ошибка для
+															// одиночных
+															// динамических форм
 			mainFormPane.getMainFormContainer().setContextMenu(ctxMenu);
 		}
 		btnToolbar.setStartRow(false);
