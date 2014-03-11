@@ -50,7 +50,7 @@
 		<server id="18" display="DEV APPS User" dbusername="APPS"
 			dbpassword="apps" allowuserchange="false" debug="false" default="true"
 			validationFN="xxfnd_apps_utils_pkg.validate_ebs_login"
-			sessionTimeout="1" dbSessionTimeout="2">
+			sessionTimeout="30" dbSessionTimeout="50">
 			kzala3134.kz.kmz.local:1522:HRDEV
 		</server>
 

@@ -26,7 +26,7 @@ public class FormToolbar extends DynamicForm {
 	// private ArrayList<MenuItem> actionMenuItemsArr = new
 	// ArrayList<MenuItem>();
 
-	public Map<String, ActionItem> actionItemsMap = new LinkedHashMap<String, ActionItem>();
+	public final Map<String, ActionItem> actionItemsMap = new LinkedHashMap<String, ActionItem>();
 	private MainFormPane mainFormPane;
 	private Menu ctxMenu;
 	private ToolbarItem btnToolbar = new ToolbarItem();
@@ -109,12 +109,22 @@ public class FormToolbar extends DynamicForm {
 			}
 
 		}
+
 		ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		FormDataSource fds = mainFormPane.getDataSource();
-		if (grid != null)
-			grid.setCanEdit(hasEditAction);
-		for (FormDataSourceField f : fds.getFormDSFields())
-			f.setCanEdit(hasEditAction);
+		if (grid != null) {
+			Boolean canEdit = grid.getCanEdit();
+			if (canEdit == null)
+				canEdit = false;
+			grid.setCanEdit(canEdit && hasEditAction);
+		}
+		for (FormDataSourceField f : fds.getFormDSFields()) {
+			Boolean canEdit = f.getCanEdit();
+			if (canEdit == null)
+				canEdit = false;
+			f.setCanEdit(canEdit && hasEditAction);
+		}
+
 		/*****************/
 		ctxMenu = new CtxMenu(actionMenuItemsArr, mainFormPane);
 

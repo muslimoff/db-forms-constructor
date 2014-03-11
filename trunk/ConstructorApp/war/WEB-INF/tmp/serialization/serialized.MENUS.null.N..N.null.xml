@@ -23,7 +23,7 @@
       <IsDebugEnabled>false</IsDebugEnabled>
       <IsDrillDownForm>false</IsDrillDownForm>
       <IsLookupForm>false</IsLookupForm>
-      <SessionId>14696398</SessionId>
+      <SessionId>14893636</SessionId>
    </FormInstanceIdentifier>
    <ObjectVersionNumber>388</ObjectVersionNumber>
    <Columns>
@@ -45,7 +45,7 @@
             <EditorTitleOrientation>L</EditorTitleOrientation>
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
+            <LookupAttributes class="java.util.HashMap"/>
             <ColActions/>
             <ColumnLookupMappingArr/>
          </FormColumnMD>
@@ -69,7 +69,7 @@
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
             <LookupHeight>120</LookupHeight>
-            <LookupAttributes/>
+            <LookupAttributes class="java.util.HashMap"/>
             <ColActions/>
             <ColumnLookupMappingArr/>
          </FormColumnMD>
@@ -91,7 +91,7 @@
             <EditorTitleOrientation>L</EditorTitleOrientation>
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
+            <LookupAttributes class="java.util.HashMap"/>
             <ColActions/>
             <ColumnLookupMappingArr/>
          </FormColumnMD>
@@ -112,7 +112,7 @@
             <EditorTitleOrientation>L</EditorTitleOrientation>
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
+            <LookupAttributes class="java.util.HashMap"/>
             <ColActions/>
             <ColumnLookupMappingArr/>
          </FormColumnMD>
@@ -136,7 +136,7 @@
             <EditorTitleOrientation>L</EditorTitleOrientation>
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
+            <LookupAttributes class="java.util.HashMap"/>
             <ColActions/>
             <ColumnLookupMappingArr/>
          </FormColumnMD>
@@ -158,7 +158,7 @@
             <EditorTitleOrientation>L</EditorTitleOrientation>
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
+            <LookupAttributes class="java.util.HashMap"/>
             <ColActions/>
             <ColumnLookupMappingArr/>
          </FormColumnMD>
@@ -180,7 +180,7 @@
             <EditorTitleOrientation>L</EditorTitleOrientation>
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
+            <LookupAttributes class="java.util.HashMap"/>
             <ColActions/>
             <ColumnLookupMappingArr/>
          </FormColumnMD>
@@ -203,7 +203,7 @@
             <EditorTitleOrientation>L</EditorTitleOrientation>
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
+            <LookupAttributes class="java.util.HashMap"/>
             <ColActions/>
             <ColumnLookupMappingArr/>
          </FormColumnMD>
@@ -224,7 +224,7 @@
             <EditorTitleOrientation>L</EditorTitleOrientation>
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
+            <LookupAttributes class="java.util.HashMap"/>
             <ColActions/>
             <ColumnLookupMappingArr/>
          </FormColumnMD>
@@ -245,7 +245,7 @@
             <EditorTitleOrientation>L</EditorTitleOrientation>
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
+            <LookupAttributes class="java.util.HashMap"/>
             <ColActions/>
             <ColumnLookupMappingArr/>
          </FormColumnMD>
@@ -266,7 +266,7 @@
             <EditorTitleOrientation>L</EditorTitleOrientation>
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
+            <LookupAttributes class="java.util.HashMap"/>
             <ColActions/>
             <ColumnLookupMappingArr/>
          </FormColumnMD>
@@ -287,7 +287,7 @@
             <EditorTitleOrientation>L</EditorTitleOrientation>
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
+            <LookupAttributes class="java.util.HashMap"/>
             <ColActions/>
             <ColumnLookupMappingArr/>
          </FormColumnMD>
@@ -307,7 +307,7 @@
             <EditorTitleOrientation>L</EditorTitleOrientation>
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
+            <LookupAttributes class="java.util.HashMap"/>
             <ColActions/>
             <ColumnLookupMappingArr/>
          </FormColumnMD>
@@ -328,7 +328,7 @@
             <EditorTitleOrientation>L</EditorTitleOrientation>
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
+            <LookupAttributes class="java.util.HashMap"/>
             <ColActions/>
             <ColumnLookupMappingArr/>
          </FormColumnMD>
@@ -349,7 +349,7 @@
             <EditorTitleOrientation>L</EditorTitleOrientation>
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
+            <LookupAttributes class="java.util.HashMap"/>
             <ColActions/>
             <ColumnLookupMappingArr/>
          </FormColumnMD>
@@ -370,7 +370,7 @@
             <EditorTitleOrientation>L</EditorTitleOrientation>
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
+            <LookupAttributes class="java.util.HashMap"/>
             <ColActions/>
             <ColumnLookupMappingArr/>
          </FormColumnMD>
@@ -391,7 +391,7 @@
             <EditorTitleOrientation>L</EditorTitleOrientation>
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
+            <LookupAttributes class="java.util.HashMap"/>
             <ColActions/>
             <ColumnLookupMappingArr/>
          </FormColumnMD>
@@ -412,7 +412,7 @@
             <EditorTitleOrientation>L</EditorTitleOrientation>
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
+            <LookupAttributes class="java.util.HashMap"/>
             <ColActions/>
             <ColumnLookupMappingArr/>
          </FormColumnMD>
@@ -433,7 +433,7 @@
             <EditorTitleOrientation>L</EditorTitleOrientation>
             <EditorEndRow>true</EditorEndRow>
             <EditorColsSpan>*</EditorColsSpan>
-            <LookupAttributes/>
+            <LookupAttributes class="java.util.HashMap"/>
             <ColActions/>
             <ColumnLookupMappingArr/>
          </FormColumnMD>
@@ -805,7 +805,7 @@
                <IsDrillDownForm>false</IsDrillDownForm>
                <IsLookupForm>true</IsLookupForm>
                <ParentFormCode>MENUS</ParentFormCode>
-               <SessionId>14696398</SessionId>
+               <SessionId>14893636</SessionId>
             </FormInstanceIdentifier>
             <ObjectVersionNumber>31</ObjectVersionNumber>
             <Columns>
@@ -827,7 +827,7 @@
                      <EditorTitleOrientation>L</EditorTitleOrientation>
                      <EditorEndRow>true</EditorEndRow>
                      <EditorColsSpan>*</EditorColsSpan>
-                     <LookupAttributes/>
+                     <LookupAttributes class="java.util.HashMap"/>
                      <ColActions/>
                      <ColumnLookupMappingArr/>
                   </FormColumnMD>
@@ -849,7 +849,7 @@
                      <EditorTitleOrientation>L</EditorTitleOrientation>
                      <EditorEndRow>true</EditorEndRow>
                      <EditorColsSpan>*</EditorColsSpan>
-                     <LookupAttributes/>
+                     <LookupAttributes class="java.util.HashMap"/>
                      <ColActions/>
                      <ColumnLookupMappingArr/>
                   </FormColumnMD>
@@ -871,7 +871,7 @@
                      <EditorTitleOrientation>L</EditorTitleOrientation>
                      <EditorEndRow>true</EditorEndRow>
                      <EditorColsSpan>*</EditorColsSpan>
-                     <LookupAttributes/>
+                     <LookupAttributes class="java.util.HashMap"/>
                      <ColActions/>
                      <ColumnLookupMappingArr/>
                   </FormColumnMD>
@@ -892,7 +892,7 @@
                      <EditorTitleOrientation>L</EditorTitleOrientation>
                      <EditorEndRow>true</EditorEndRow>
                      <EditorColsSpan>*</EditorColsSpan>
-                     <LookupAttributes/>
+                     <LookupAttributes class="java.util.HashMap"/>
                      <ColActions/>
                      <ColumnLookupMappingArr/>
                   </FormColumnMD>
@@ -914,7 +914,7 @@
                      <EditorTitleOrientation>L</EditorTitleOrientation>
                      <EditorEndRow>true</EditorEndRow>
                      <EditorColsSpan>*</EditorColsSpan>
-                     <LookupAttributes/>
+                     <LookupAttributes class="java.util.HashMap"/>
                      <ColActions/>
                      <ColumnLookupMappingArr/>
                   </FormColumnMD>
