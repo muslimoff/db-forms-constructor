@@ -56,7 +56,7 @@ public class MenusDataCallback extends DSAsyncCallback<MenusArr> {
 					Utils.debug("FormMenus onClick: "
 							+ menuMetadata.getFormCode());
 					new MainFormContainer(new Criteria(), new FormTabMD(),
-							FormTab.TabType.MAIN, ConstructorApp.tabSet,
+							FormTab.TabType.MAIN, ConstructorApp.getTabSet(),
 							menuMetadata.getFormCode());
 					Utils.debug("FormMenus onClick2: "
 							+ menuMetadata.getFormCode());
@@ -136,7 +136,7 @@ public class MenusDataCallback extends DSAsyncCallback<MenusArr> {
 					Utils.debug("Form opening (" + i + "):" + formCode);
 					MainFormContainer mfc = new MainFormContainer(
 							new Criteria(), new FormTabMD(),
-							FormTab.TabType.MAIN, ConstructorApp.tabSet,
+							FormTab.TabType.MAIN, ConstructorApp.getTabSet(),
 							formCode // , true
 							, false, true);
 					mfc.getMainFormPane().setFromUrl(true);

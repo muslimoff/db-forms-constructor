@@ -58,13 +58,13 @@ import com.smartgwt.client.widgets.tab.Tab;
  */
 public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 	public static final EventBus eb = GWT.create(SimpleEventBus.class);
-	public static TabSet tabSet = new TabSet();
+	private static final TabSet tabSet = new TabSet();
 	public static final String queryServiceRelativePath = "query";
 	public static int sessionId = -1;
 	// TODO Разделить иконки и меню
 	public static MenusArr menus;
-	public static HashMap<String, Integer> formIconArr = new HashMap<String, Integer>();
-	public static HashMap<String, String> formNameArr = new HashMap<String, String>();
+	public static Map<String, Integer> formIconArr = new HashMap<String, Integer>();
+	public static Map<String, String> formNameArr = new HashMap<String, String>();
 	public static StaticLookupsArr staticLookupsArr;
 	public static ApplicationToolBar mainToolBar = new ApplicationToolBar();
 	public static boolean debugEnabled = true;
@@ -375,5 +375,9 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 			connectWindow.show();
 		}
 
+	}
+
+	public static TabSet getTabSet() {
+		return tabSet;
 	}
 }
