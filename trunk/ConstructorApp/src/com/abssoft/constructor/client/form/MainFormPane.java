@@ -220,7 +220,6 @@ public class MainFormPane extends Canvas {
 								});
 			}
 		}
-
 	}
 
 	public void processFormMetadata(FormMD formMetaData, boolean isLookup,
@@ -831,13 +830,12 @@ public class MainFormPane extends Canvas {
 		return thisFormCriteria;
 	}
 
-	@SuppressWarnings("unchecked")
-	public void setEditValues(Map valuesMap) {
+	public void setEditValues(Map<String, ?> valuesMap) {
 		setEditValues(getSelectedRow(), valuesMap);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void setEditValues(int rowNum, Map valuesMap) {
+	private void setEditValues(int rowNum, Map<String, ?> valuesMap) {
 		ListGrid g = getMainForm().getTreeGrid();
 		// Получаем значения записи с учетом несохраненных изменений
 		Map<String, Object> map = JSOHelper.convertToMap(g.getEditedRecord(

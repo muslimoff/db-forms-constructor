@@ -230,7 +230,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			errMsg = e.toString();
+			errMsg = Messages.getMessage(e);
 			sessionId = -1;
 		}
 		ConnectionInfo c = new ConnectionInfo(errMsg, sessionId, dateFormat);
