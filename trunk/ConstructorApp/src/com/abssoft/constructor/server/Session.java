@@ -5,6 +5,7 @@ package com.abssoft.constructor.server;
 //https://www.google.com/accounts/AuthSubRequest?next=http%3A%2F%2Feu.bas.kz%3A8000%2FConstructorApp%2F&&scope=http%3A%2F%2Fwww.google.com%2Fcalendar%2Ffeeds%2F
 import java.io.Serializable;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
@@ -43,7 +44,7 @@ import com.abssoft.constructor.common.metadata.StaticLookup;
 public class Session implements Serializable {
 
 	private static final long serialVersionUID = 8497777456570432919L;
-	private OracleConnection connection;
+	private OracleConnection conn;
 	private String fcSchemaOwner;
 	private Map<String, Form> formDataHashMap = new HashMap<String, Form>();
 	private boolean isScript;
@@ -53,6 +54,7 @@ public class Session implements Serializable {
 	private Date startDate = new Date();
 	private boolean isApplicationTimedOut = false;
 	private boolean inUse = false;
+	private String urlParams;
 
 	// Для дебага (Session.debug) - вывода вне сессии
 	public static Session getEmptySession(Boolean isDebugEnabled) {
@@ -66,13 +68,15 @@ public class Session implements Serializable {
 	}
 
 	public Session(Connection connection, ServerInfoMD serverInfoMD,
-			Boolean isDebugEnabled, Boolean isScript) {
+			Boolean isDebugEnabled, Boolean isScript, String urlParams) {
 		this(isDebugEnabled, isScript);
-		this.connection = (OracleConnection) connection;
-		this.setServerInfoMD(serverInfoMD);
-		this.setFcSchemaOwner(serverInfoMD.getFcSchemaOwner());
+		this.urlParams = urlParams;
+		this.conn = (OracleConnection) connection;
+		this.serverInfoMD = serverInfoMD;
+		this.fcSchemaOwner = serverInfoMD.getFcSchemaOwner();
 		setParamsMap();
 		getStaticLookupsArr();
+		resetDbSession();
 	}
 
 	public void debug(String text) {
@@ -127,7 +131,7 @@ public class Session implements Serializable {
 	}
 
 	public OracleConnection getConnection() {
-		return connection;
+		return conn;
 	}
 
 	public String getFcSchemaOwner() {
@@ -152,7 +156,7 @@ public class Session implements Serializable {
 			// 20130516 - Вставка пустой записи для предотвращения рекурсии в
 			// случае, если родительская форма равна текущей
 			// formDataHashMap.put(fi.getKey(), null);
-			Form form = new Form(connection, this, fi);
+			Form form = new Form(conn, this, fi);
 			form.setFcSchemaOwner(fcSchemaOwner);
 			formDataHashMap.put(fi.getKey(), form);
 		}
@@ -164,7 +168,7 @@ public class Session implements Serializable {
 		try {
 
 			OraclePreparedStatement menusStmnt = //
-			(OraclePreparedStatement) connection.prepareStatement(Utils
+			(OraclePreparedStatement) conn.prepareStatement(Utils
 					.getSQLQueryFromXML("menusSQL", this));
 
 			ResultSet menusRs = menusStmnt.executeQuery();
@@ -193,7 +197,7 @@ public class Session implements Serializable {
 			menusStmnt.close();
 
 			// icons
-			OraclePreparedStatement iconsStmnt = (OraclePreparedStatement) connection
+			OraclePreparedStatement iconsStmnt = (OraclePreparedStatement) conn
 					.prepareStatement(Utils
 							.getSQLQueryFromXML("iconsSQL", this));
 			ResultSet iconsRs = iconsStmnt.executeQuery();
@@ -226,7 +230,7 @@ public class Session implements Serializable {
 		StaticLookupsArr lookupsArr = new StaticLookupsArr();
 		String currentLookupCode = "-9999";
 		try {
-			OraclePreparedStatement lookupsStmnt = (OraclePreparedStatement) connection
+			OraclePreparedStatement lookupsStmnt = (OraclePreparedStatement) conn
 					.prepareStatement(Utils.getSQLQueryFromXML(
 							"statLookupsSQL", this));
 
@@ -279,7 +283,7 @@ public class Session implements Serializable {
 		try {
 			// metadataSQL
 			String metadataSQL = Utils.getSQLQueryFromXML("metadataSQL", this);
-			OraclePreparedStatement lookupsStmnt = (OraclePreparedStatement) connection
+			OraclePreparedStatement lookupsStmnt = (OraclePreparedStatement) conn
 					.prepareStatement(metadataSQL);
 			ResultSet lookupsRs = lookupsStmnt.executeQuery();
 			while (lookupsRs.next()) {
@@ -306,9 +310,40 @@ public class Session implements Serializable {
 		return isDebugEnabled;
 	}
 
+	public synchronized void resetDbSession() {
+		String resetSql = Utils.getSQLQueryFromXML("RESET_SESSION_SQL", this);
+		if (resetSql == null || resetSql.isEmpty())
+			return;
+		try (PreparedStatement stmt = conn.prepareStatement(resetSql)) {
+			stmt.setString(1, urlParams);
+			stmt.execute();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		renew();
+	}
+
 	public synchronized void renew() {
 		startDate = new Date();
 		isApplicationTimedOut = false;
+	}
+
+	private boolean executeTimeoutSql() {
+		String timeoutSql = Utils.getSQLQueryFromXML("TIMEOUTSQL", this);
+		if (timeoutSql == null || timeoutSql.isEmpty())
+			return false;
+		String res = null;
+		try (PreparedStatement stmt = conn.prepareStatement(timeoutSql)) {
+			stmt.setString(1, urlParams);
+			ResultSet rs = stmt.executeQuery();
+			rs.next();
+			res = rs.getString(1);
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "Y".equals(res);
 	}
 
 	public boolean isApplicationTimedOut() {
@@ -319,6 +354,8 @@ public class Session implements Serializable {
 		Date now = new Date();
 		long period = now.getTime() - startDate.getTime();
 		isApplicationTimedOut = period > serverInfoMD.getSessionTimeout() * 60 * 1000;
+		if (!isApplicationTimedOut)
+			isApplicationTimedOut = executeTimeoutSql();
 		return isApplicationTimedOut;
 	}
 
@@ -352,9 +389,9 @@ public class Session implements Serializable {
 		try {
 			if (isInUse())
 				return;
-			boolean closable = connection != null && !connection.isClosed();
+			boolean closable = conn != null && !conn.isClosed();
 			if (closable && isDbTimedOut())
-				connection.close();
+				conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

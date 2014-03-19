@@ -51,7 +51,6 @@ import com.abssoft.constructor.common.metadata.FormMD;
 import com.abssoft.constructor.common.metadata.ServerInfoMD;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-//@SuppressWarnings("serial")
 public class QueryServiceImpl extends RemoteServiceServlet implements
 		QueryService {
 	private final ScheduledThreadPoolExecutor timeoutChecker = new ScheduledThreadPoolExecutor(
@@ -66,8 +65,6 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 		return s;
 	}
 
-	// private String appServerVersion = "";
-
 	public static Session getSessionData(Integer sessionID) {
 		Session s = sessionData.get(sessionID);
 		return s;
@@ -75,7 +72,6 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 
 	private ServerInfoArr serverInfoArr = new ServerInfoArr();
 
-	// public static String SERVER_WEB_INF;
 	private static String webinfPath;
 
 	public QueryServiceImpl() {
@@ -116,9 +112,9 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 
 	private void setNlsLang(Connection conn) throws SQLException {
 		String nlsLangSQL = "alter session set nls_language='AMERICAN'";
-		PreparedStatement nlsStmnt = conn.prepareStatement(nlsLangSQL);
-		nlsStmnt.execute();
-		nlsStmnt.close();
+		try (PreparedStatement nlsStmnt = conn.prepareStatement(nlsLangSQL)) {
+			nlsStmnt.execute();
+		}
 	}
 
 	private boolean isValidLogin(Session session, String user, String password,
@@ -151,33 +147,25 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 	private int getSessionId(Connection conn) throws SQLException {
 		String sessionSQL = "Select Userenv('sessionid') As Sessionid From Dual";
 		int sessionId = -1;
-		Statement stmt = conn.createStatement();
-		try {
+		try (Statement stmt = conn.createStatement()) {
 			ResultSet rs = stmt.executeQuery(sessionSQL);
 			rs.next();
 			sessionId = rs.getBigDecimal(1).intValue();
 			rs.close();
-		} finally {
-			if (stmt != null)
-				stmt.close();
 		}
 		return sessionId;
 	}
 
-	private String getDateFormat(Connection connection, Session session)
+	private String getDateFormat(Connection conn, Session session)
 			throws SQLException {
 		String sessionSQL = Utils.getSQLQueryFromXML("DATE_FORMAT", session);
 		String dateFormat = null;
-		Statement stmt = connection.createStatement();
-		try {
+		try (Statement stmt = conn.createStatement()) {
 			ResultSet rs = stmt.executeQuery(sessionSQL);
 			rs.next();
 			dateFormat = rs.getString("Date_Format").replace('R', 'y')
 					.replace('m', 'M').replace('D', 'd');
 			rs.close();
-		} finally {
-			if (stmt != null)
-				stmt.close();
 		}
 		return dateFormat;
 	}
@@ -203,7 +191,8 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 					userPass);
 			session.debug("Connected..");
 			setNlsLang(conn);
-			session = new Session(conn, serverInfoMD, isDebugEnabled, isScript);
+			session = new Session(conn, serverInfoMD, isDebugEnabled, isScript,
+					urlParams);
 			Utils.spoolOut("serverInfoMD.isTransferPassToClient():"
 					+ serverInfoMD.isTransferPassToClient());
 			if (!serverInfoMD.isTransferPassToClient()) {
@@ -214,7 +203,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 				if (!isValidLogin(session, user, password, urlParams)) {
 					conn.close();
 					sessionId = -1;
-					throw new Exception("Пароль не тот...");
+					throw new Exception(Messages.getMessage("login.failed"));
 				}
 			}
 			sessionId = getSessionId(conn);
@@ -243,7 +232,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 			String urlParams) throws Exception {
 		Session session = getSessionData(sessionID);
 		if (isValidLogin(session, user, password, urlParams))
-			session.renew();
+			session.resetDbSession();
 		else
 			throw new Exception(Messages.getMessage("login.failed"));
 	}
