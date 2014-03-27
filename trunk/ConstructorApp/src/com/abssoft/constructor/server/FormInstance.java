@@ -1,12 +1,12 @@
 package com.abssoft.constructor.server;
 
 import java.io.Serializable;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 import oracle.sql.CLOB;
 
@@ -32,8 +32,8 @@ public class FormInstance implements Serializable {
 	private Map<?, ?> currentFilterValues;
 	private int currentEndRow = -1;
 	private RowsArr resultData = new RowsArr();
-	private HashMap<Integer, CLOB> ClobHM = new HashMap<Integer, CLOB>();
-	private HashMap<Integer, ExportData> exportDatHM = new HashMap<Integer, ExportData>();
+	private Map<Integer, CLOB> clobHM = new HashMap<Integer, CLOB>();
+	private Map<Integer, ExportData> exportDatHM = new HashMap<Integer, ExportData>();
 	private Session session;
 
 	public FormInstance(Form form) throws SQLException {
@@ -53,7 +53,6 @@ public class FormInstance implements Serializable {
 		}
 		session.debug("FormInstance. Resultset closed.");
 		try {
-
 			statement.close();
 		} catch (java.sql.SQLException e) {
 			session.printErrorStackTrace(e);
@@ -64,7 +63,7 @@ public class FormInstance implements Serializable {
 		resultData.clear();
 		// resultData = null;
 		session.debug("FormInstance. resultData (RowsArr) cleared.");
-		ClobHM.clear();
+		clobHM.clear();
 		// ClobHM = null;
 		session.debug("FormInstance. ClobHM cleared.");
 		session.debug("FormInstance closed...");
@@ -82,7 +81,6 @@ public class FormInstance implements Serializable {
 			String[] sortByArr = sortBy.split(",");
 			sortBy = "";
 			for (String ss : sortByArr) {
-				// System.out.println("######>" + ss);
 				sortBy = sortBy + ("".equals(sortBy) ? "" : ", ")
 						+ ss.replaceAll("-", "")
 						+ (ss.contains("-") ? " desc" : "");
@@ -101,27 +99,31 @@ public class FormInstance implements Serializable {
 			// также принудительно
 			if (forceFetch || -1 == currentEndRow || currentSortBy != sortBy
 					|| !currentFilterValues.equals(filterValues)) {
-				OracleConnection connection = form.getConnection();
+				Connection connection = form.getConnection();
 				session.debug("Erase ResultSetData....");
 				currentEndRow = -1;
 				resultData = new RowsArr();
-				ClobHM.clear();
+				clobHM.clear();
 				sqlText = form.getFormSQLText()
 						+ ((sortBy != null) ? sortBy : "");
 				{
 					String totalRowsSqlText = "select count(*) cnt from ("
 							+ sqlText + "\n)";
-					OraclePreparedStatement rowCntStmnt = (OraclePreparedStatement) connection
-							.prepareStatement(totalRowsSqlText); // statement
-					form.setFilterValues(session, rowCntStmnt, filterValues);
-					session.debug("totalRowsSqlText:\n" + totalRowsSqlText);
-					ResultSet rowCntRS = rowCntStmnt.executeQuery();
-					rowCntRS.next();
-					int totalRows = rowCntRS.getInt("CNT");
-					session.debug("totalRows:" + totalRows);
-					resultData.setTotalRows(totalRows);
-					rowCntRS.close();
-					rowCntStmnt.close();
+					OraclePreparedStatement rowCntStmnt = null;
+					try {
+						rowCntStmnt = (OraclePreparedStatement) connection
+								.prepareStatement(totalRowsSqlText);
+						form.setFilterValues(session, rowCntStmnt, filterValues);
+						session.debug("totalRowsSqlText:\n" + totalRowsSqlText);
+						ResultSet rowCntRS = rowCntStmnt.executeQuery();
+						rowCntRS.next();
+						int totalRows = rowCntRS.getInt("CNT");
+						session.debug("totalRows:" + totalRows);
+						resultData.setTotalRows(totalRows);
+						rowCntRS.close();
+					} finally {
+						Utils.closeStatement(rowCntStmnt);
+					}
 				}
 				statement = (OraclePreparedStatement) connection
 						.prepareStatement(sqlText);
@@ -151,8 +153,7 @@ public class FormInstance implements Serializable {
 			for (int rowNum = currentEndRow + 1; rowNum <= endRow; rowNum++) {
 				boolean isRSclosed = false;
 				try {
-					if (!rs.next() // !rs.isAfterLast() //!rs.isClosed() &&
-					) {
+					if (!rs.next()) {
 						session.debug("FormInstance. ResultSet ended. rowNum:"
 								+ rowNum);
 						rs.close();
@@ -196,8 +197,6 @@ public class FormInstance implements Serializable {
 			for (int i = 0; i <= Math.min(endRow, currentEndRow) - startRow; i++) {
 				Row r = resultData.get(i + startRow);
 				currentData.put(i, r);
-				// resultData.remove(i + startRow);
-				// System.out.println("col:" + i + "; data1:" + r.get(0));
 			}
 			currentData.setTotalRows(resultData.getTotalRows());
 			session.debug("currentData.TotalRows setted"
@@ -221,12 +220,12 @@ public class FormInstance implements Serializable {
 		return currentData;
 	}
 
-	public void setClobHM(HashMap<Integer, CLOB> clobHM) {
-		ClobHM = clobHM;
+	public void setClobHM(Map<Integer, CLOB> clobHM) {
+		this.clobHM = clobHM;
 	}
 
-	public HashMap<Integer, CLOB> getClobHM() {
-		return ClobHM;
+	public Map<Integer, CLOB> getClobHM() {
+		return clobHM;
 	}
 
 	public void setForm(Form form) {
@@ -237,7 +236,7 @@ public class FormInstance implements Serializable {
 		return form;
 	}
 
-	public HashMap<Integer, ExportData> getExportDatHM() {
+	public Map<Integer, ExportData> getExportDatHM() {
 		return exportDatHM;
 	}
 

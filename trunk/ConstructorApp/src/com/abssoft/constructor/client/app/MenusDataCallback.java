@@ -3,6 +3,7 @@ package com.abssoft.constructor.client.app;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.common.FormTab;
@@ -73,15 +74,15 @@ public class MenusDataCallback extends DSAsyncCallback<MenusArr> {
 	public void onSuccess(MenusArr result) {
 		super.onSuccess(result);
 		ConstructorApp.menus = result;
-		HashMap<String, MenuWithHover> menusHM = new HashMap<String, MenuWithHover>();
+		Map<String, MenuWithHover> menusHM = new HashMap<String, MenuWithHover>();
 		System.out.println("menus size: " + result.size());
 		final MenuWithHover menu = new MenuWithHover();
 		menu.setShowShadow(true);
 		menu.setShadowDepth(10);
 		int formsCount = result.size();
 
-		ArrayList<String> rootMenuCodes = new ArrayList<String>();
-		ArrayList<String> rootMenuNames = new ArrayList<String>();
+		List<String> rootMenuCodes = new ArrayList<String>();
+		List<String> rootMenuNames = new ArrayList<String>();
 		for (int i = 0; i < formsCount; i++) {
 			final MenuMD menuMD = result.get(i);
 			String formCode = menuMD.getFormCode();

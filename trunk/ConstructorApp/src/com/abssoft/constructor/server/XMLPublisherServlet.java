@@ -10,10 +10,10 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -31,7 +31,6 @@ import javax.xml.transform.stream.StreamSource;
 import oracle.apps.xdo.template.FOProcessor;
 import oracle.apps.xdo.template.RTFProcessor;
 import oracle.i18n.net.MimeUtility;
-import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 import oracle.sql.CLOB;
 
@@ -60,12 +59,12 @@ public class XMLPublisherServlet extends HttpServlet // implements
 	public static String findExportData(Session session, Integer exportDataID) {
 		String result;
 
-		Map<String, Form> forms = session.getFormDataHashMap();
+		Map<String, Form> forms = session.getFormDataMap();
 		Iterator<String> formsIt = forms.keySet().iterator();
 		while (formsIt.hasNext()) {
 			String frmKey = formsIt.next();
 			Form frm = forms.get(frmKey);
-			HashMap<Integer, FormInstance> formInsts = frm.getFormInstance();
+			Map<Integer, FormInstance> formInsts = frm.getFormInstance();
 			Iterator<Integer> formsInstIt = formInsts.keySet().iterator();
 			while (formsInstIt.hasNext()) {
 				Integer instIdx = formsInstIt.next();
@@ -84,21 +83,18 @@ public class XMLPublisherServlet extends HttpServlet // implements
 	public static CLOB findCLOB(Session session, Integer dataClobId) {
 		CLOB result;
 
-		Map<String, Form> forms = session.getFormDataHashMap();
+		Map<String, Form> forms = session.getFormDataMap();
 		Iterator<String> formsIt = forms.keySet().iterator();
 		while (formsIt.hasNext()) {
 			String frmKey = formsIt.next();
 			Form frm = forms.get(frmKey);
-			HashMap<Integer, FormInstance> formInsts = frm.getFormInstance();
+			Map<Integer, FormInstance> formInsts = frm.getFormInstance();
 			Iterator<Integer> formsInstIt = formInsts.keySet().iterator();
 			while (formsInstIt.hasNext()) {
 				Integer instIdx = formsInstIt.next();
 				FormInstance frmInst = formInsts.get(instIdx);
-				System.out.println("key:" + frmKey + "; frm:" + frm
-						+ "; instIdx:" + instIdx);
 				if (frmInst.getClobHM().containsKey(dataClobId)) {
 					result = frmInst.getClobHM().get(dataClobId);
-					System.out.println("CLOB:" + result);
 					return result;
 				}
 			}
@@ -108,7 +104,7 @@ public class XMLPublisherServlet extends HttpServlet // implements
 
 	public static CLOB findCLOB(Session session, String reportCode)
 			throws SQLException {
-		OracleConnection connection = session.getConnection();
+		Connection connection = session.getConnection();
 		String sqlText = Utils
 				.getSQLQueryFromXML("reportTemplatesSQL", session);
 		OraclePreparedStatement statement = (OraclePreparedStatement) connection
@@ -156,23 +152,6 @@ public class XMLPublisherServlet extends HttpServlet // implements
 		doMethod(req, resp);
 	}
 
-	// @Override
-	// protected void service(HttpServletRequest req, HttpServletResponse resp)
-	// throws ServletException, IOException {
-	// super.service(req, resp);
-	// // TODO вылетает сессия XMLPublisherServlet при долгом таймауте
-	// // session.setMaxInactiveInterval(interval);
-	// HttpSession httpSession = req.getSession(true);
-	// httpSession.setMaxInactiveInterval(5);
-	// System.out.println("session.getCreationTime:" +
-	// httpSession.getCreationTime());
-	// System.out.println("session.getId:" + httpSession.getId());
-	// System.out.println("session.getLastAccessedTime:" +
-	// httpSession.getLastAccessedTime());
-	// System.out.println("session.getMaxInactiveInterval:" +
-	// httpSession.getMaxInactiveInterval());
-	// }
-
 	private void doMethod(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		req.setCharacterEncoding("utf-8");
@@ -200,8 +179,6 @@ public class XMLPublisherServlet extends HttpServlet // implements
 		Session session = QueryServiceImpl.getSessionData(sessionID);
 		Utils.spoolOut("SessionID:" + sessionID + "; session:" + session);
 		Utils.spoolOut("req.getQueryString():" + req.getQueryString());
-		// System.out.println("ss: " + req.getQueryString());
-		// Reader r = req.getReader();
 		if (null == session) {
 			processEmptySessionResponse(req, resp);
 		} else {

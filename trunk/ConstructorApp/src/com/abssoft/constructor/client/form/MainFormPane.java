@@ -759,7 +759,6 @@ public class MainFormPane extends Canvas {
 	 */
 	public void setSelectedRow(int selectedRow) {
 		this.selectedRow = selectedRow;
-		System.out.println("selectedRow set to " + selectedRow);
 	}
 
 	/**
