@@ -48,10 +48,16 @@
 			kzala4019.kz.kmz.local:1521/HRPROD
 		</server>
 		<server id="18" display="DEV APPS User" dbusername="APPS"
+			dbpassword="apps" allowuserchange="false" debug="false"
+			validationFN="xxfnd_apps_utils_pkg.validate_ebs_login"
+			sessionTimeout="30" dbSessionTimeout="50">
+			kzala3135.kz.kmz.local:1522:DEV_kz
+		</server>
+		<server id="19" display="HPREPROD APPS User" dbusername="APPS"
 			dbpassword="apps" allowuserchange="false" debug="false" default="true"
 			validationFN="xxfnd_apps_utils_pkg.validate_ebs_login"
 			sessionTimeout="30" dbSessionTimeout="50">
-			kzala3134.kz.kmz.local:1522:HRDEV
+			(DESCRIPTION =(ADDRESS_LIST =(ADDRESS = (PROTOCOL = TCP)(HOST = kzala4033-vip.kz.kmz.local)(PORT = 1521)))(CONNECT_DATA =(SERVICE_NAME = HRPP)(INSTANCE_NAME=HRPP1)))
 		</server>
 
 	</dbConnections>
