@@ -125,5 +125,23 @@ Insert Into global_params
      Values ('customLoginValidationSQL'
             ,'Select &validationFN (:p_username, :p_password, :p_url_params) isValid From DUAL')
 /
+Insert Into Fc22.Global_Params Gp
+  (Param_Name, Param_Value)
+Values
+  ('RESET_SESSION_SQL'
+  ,'Begin Xxfnd_Apps_Utils_Pkg.Reset_Session(P_Url_Params => ?); End;');
+/
+Insert Into Fc22.Global_Params Gp
+  (Param_Name, Param_Value)
+Values
+  ('TIMEOUTSQL'
+  ,'Begin ? := Xxfnd_Apps_Utils_Pkg.Session_Timedout(P_Url_Params => ?); End;');
+/
+Insert Into Fc22.Global_Params Gp
+  (Param_Name, Param_Value)
+Values
+  ('DATE_FORMAT'
+  ,'Begin ? := Fnd_Profile.Value(''ICX_DATE_FORMAT_MASK''); End;');
+/
 Grant Select On global_params To fc_admin
 
