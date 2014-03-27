@@ -4,12 +4,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -112,8 +114,12 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 
 	private void setNlsLang(Connection conn) throws SQLException {
 		String nlsLangSQL = "alter session set nls_language='AMERICAN'";
-		try (PreparedStatement nlsStmnt = conn.prepareStatement(nlsLangSQL)) {
+		PreparedStatement nlsStmnt = null;
+		try {
+			nlsStmnt = conn.prepareStatement(nlsLangSQL);
 			nlsStmnt.execute();
+		} finally {
+			Utils.closeStatement(nlsStmnt);
 		}
 	}
 
@@ -138,8 +144,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 			isLoginValid = "Y".equals(loginRS.getString("isValid"));
 			loginRS.close();
 		} finally {
-			if (stmt != null)
-				stmt.close();
+			Utils.closeStatement(stmt);
 		}
 		return isLoginValid;
 	}
@@ -147,11 +152,15 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 	private int getSessionId(Connection conn) throws SQLException {
 		String sessionSQL = "Select Userenv('sessionid') As Sessionid From Dual";
 		int sessionId = -1;
-		try (Statement stmt = conn.createStatement()) {
+		Statement stmt = null;
+		try {
+			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sessionSQL);
 			rs.next();
 			sessionId = rs.getBigDecimal(1).intValue();
 			rs.close();
+		} finally {
+			Utils.closeStatement(stmt);
 		}
 		return sessionId;
 	}
@@ -160,12 +169,17 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 			throws SQLException {
 		String sessionSQL = Utils.getSQLQueryFromXML("DATE_FORMAT", session);
 		String dateFormat = null;
-		try (Statement stmt = conn.createStatement()) {
-			ResultSet rs = stmt.executeQuery(sessionSQL);
-			rs.next();
-			dateFormat = rs.getString("Date_Format").replace('R', 'y')
-					.replace('m', 'M').replace('D', 'd');
-			rs.close();
+		CallableStatement call = null;
+		try {
+			call = conn.prepareCall(sessionSQL);
+			call.registerOutParameter(1, Types.VARCHAR);
+			call.execute();
+			dateFormat = call.getString(1);
+			if (dateFormat != null)
+				dateFormat = dateFormat.replace('R', 'y').replace('m', 'M')
+						.replace('D', 'd');
+		} finally {
+			Utils.closeStatement(call);
 		}
 		return dateFormat;
 	}
@@ -521,17 +535,6 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 				else
 					si.setDbSessionTimeout(-1);
 
-				// System.out.println("getServerID>>" + si.getServerID());
-				// System.out.println("getDisplayName>>" +
-				// si.getDisplayName());
-				// System.out.println("isAllowUserChange>>" +
-				// si.isAllowUserChange());
-				// System.out.println("getDbUsername>>" +
-				// si.getDbUsername());
-				// System.out.println("getDbPassword>>" +
-				// si.getDbPassword());
-				// System.out.println("isTransferPassToClient>>" +
-				// si.isTransferPassToClient());
 				if (null == si.getDbUsername()) {
 					si.setDbUsername(defaultUsername);
 				}

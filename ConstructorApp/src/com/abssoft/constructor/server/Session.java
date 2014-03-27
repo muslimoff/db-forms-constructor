@@ -4,16 +4,15 @@ package com.abssoft.constructor.server;
 //http://code.google.com/intl/ru-RU/apis/accounts/
 //https://www.google.com/accounts/AuthSubRequest?next=http%3A%2F%2Feu.bas.kz%3A8000%2FConstructorApp%2F&&scope=http%3A%2F%2Fwww.google.com%2Fcalendar%2Ffeeds%2F
 import java.io.Serializable;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import oracle.jdbc.OracleConnection;
-import oracle.jdbc.OraclePreparedStatement;
 
 import com.abssoft.constructor.client.data.TimeoutException;
 import com.abssoft.constructor.common.ActionStatus;
@@ -44,9 +43,9 @@ import com.abssoft.constructor.common.metadata.StaticLookup;
 public class Session implements Serializable {
 
 	private static final long serialVersionUID = 8497777456570432919L;
-	private OracleConnection conn;
+	private Connection conn;
 	private String fcSchemaOwner;
-	private Map<String, Form> formDataHashMap = new HashMap<String, Form>();
+	private Map<String, Form> formDataMap = new HashMap<String, Form>();
 	private boolean isScript;
 	private final Map<String, String> paramsMap = new HashMap<String, String>();
 	private ServerInfoMD serverInfoMD;
@@ -67,11 +66,11 @@ public class Session implements Serializable {
 		this.isScript = isScript;
 	}
 
-	public Session(Connection connection, ServerInfoMD serverInfoMD,
+	public Session(Connection conn, ServerInfoMD serverInfoMD,
 			Boolean isDebugEnabled, Boolean isScript, String urlParams) {
 		this(isDebugEnabled, isScript);
 		this.urlParams = urlParams;
-		this.conn = (OracleConnection) connection;
+		this.conn = conn;
 		this.serverInfoMD = serverInfoMD;
 		this.fcSchemaOwner = serverInfoMD.getFcSchemaOwner();
 		setParamsMap();
@@ -80,7 +79,6 @@ public class Session implements Serializable {
 	}
 
 	public void debug(String text) {
-		// Timer t = new Timer();
 		if (isDebugEnabled) {
 			Utils.spoolOut(text);
 		}
@@ -101,36 +99,35 @@ public class Session implements Serializable {
 
 	public void closeForm(FormInstanceIdentifier fi, FormMD formState) {
 		this.debug("session form " + fi.getInfo() + " before close...");
-		formDataHashMap.get(fi.getKey()).closeForm(fi.getGridHashCode(),
-				formState);
+		formDataMap.get(fi.getKey()).closeForm(fi.getGridHashCode(), formState);
 		// TODO Было закомментировано: Во избежание повторной вычитки настроек
 		// формы. Но тогда возникают проблемы при изменении формы на
 		// лету. Приходится делать реконнект. Раскомментировал. Предусмотреть
 		// режимы работы debug и рабочий. Или забить - пусть так будет.
 		// А еще лучше - при старте сессии вычитывать настройки всех форм, а
 		// потом только перечитывать при изменении OVN.
-		int instCount = formDataHashMap.get(fi.getKey()).getInstancesCount();
+		int instCount = formDataMap.get(fi.getKey()).getInstancesCount();
 		this.debug("Form " + fi.getFormCode() + " instances: " + instCount);
 		if (0 == instCount) {
-			formDataHashMap.remove(fi.getKey());
+			formDataMap.remove(fi.getKey());
 		}
 		this.debug("session form " + fi.getInfo() + " closed...");
 	}
 
 	public Row executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow,
 			FormActionMD actMD) throws SQLException, Exception {
-		return formDataHashMap.get(fi.getKey()).executeDML(
-				fi.getGridHashCode(), oldRow, newRow, actMD);
+		return formDataMap.get(fi.getKey()).executeDML(fi.getGridHashCode(),
+				oldRow, newRow, actMD);
 	}
 
 	public RowsArr fetch(FormInstanceIdentifier fi, String sortBy,
 			int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch)
 			throws SQLException {
-		return formDataHashMap.get(fi.getKey()).fetch(fi.getGridHashCode(),
-				sortBy, startRow, endRow, criteria, forceFetch);
+		return formDataMap.get(fi.getKey()).fetch(fi.getGridHashCode(), sortBy,
+				startRow, endRow, criteria, forceFetch);
 	}
 
-	public OracleConnection getConnection() {
+	public Connection getConnection() {
 		return conn;
 	}
 
@@ -138,39 +135,30 @@ public class Session implements Serializable {
 		return fcSchemaOwner;
 	}
 
-	public Map<String, Form> getFormDataHashMap() {
-		return formDataHashMap;
+	public Map<String, Form> getFormDataMap() {
+		return formDataMap;
 	}
 
-	// public FormMD getFormMetaData(FormInstanceIdentifier formIdentifier)
-	// throws SQLException {
-	// return getFormMetaData(formIdentifier, true);
-	// }
-
-	public FormMD getFormMetaData(FormInstanceIdentifier fi
-	// , boolean isNonLookupForm
-	) throws SQLException {
-		// String formMapKey = (null == parentFormCode) ? formCode : formCode +
-		// "." + parentFormCode;
-		if (!formDataHashMap.containsKey(fi.getKey())) {
+	public FormMD getFormMetaData(FormInstanceIdentifier fi)
+			throws SQLException {
+		if (!formDataMap.containsKey(fi.getKey())) {
 			// 20130516 - Вставка пустой записи для предотвращения рекурсии в
 			// случае, если родительская форма равна текущей
 			// formDataHashMap.put(fi.getKey(), null);
 			Form form = new Form(conn, this, fi);
 			form.setFcSchemaOwner(fcSchemaOwner);
-			formDataHashMap.put(fi.getKey(), form);
+			formDataMap.put(fi.getKey(), form);
 		}
-		return formDataHashMap.get(fi.getKey()).getFormMetaData();
+		return formDataMap.get(fi.getKey()).getFormMetaData();
 	}
 
 	public MenusArr getMenusArrOld() {
 		MenusArr metadata = new MenusArr();
+		PreparedStatement menusStmnt = null;
+		PreparedStatement iconsStmnt = null;
 		try {
-
-			OraclePreparedStatement menusStmnt = //
-			(OraclePreparedStatement) conn.prepareStatement(Utils
-					.getSQLQueryFromXML("menusSQL", this));
-
+			menusStmnt = conn.prepareStatement(Utils.getSQLQueryFromXML(
+					"menusSQL", this));
 			ResultSet menusRs = menusStmnt.executeQuery();
 			while (menusRs.next()) {
 				String formCode = menusRs.getString("form_code");
@@ -194,12 +182,9 @@ public class Session implements Serializable {
 				metadata.add(menu);
 			}
 			menusRs.close();
-			menusStmnt.close();
-
 			// icons
-			OraclePreparedStatement iconsStmnt = (OraclePreparedStatement) conn
-					.prepareStatement(Utils
-							.getSQLQueryFromXML("iconsSQL", this));
+			iconsStmnt = conn.prepareStatement(Utils.getSQLQueryFromXML(
+					"iconsSQL", this));
 			ResultSet iconsRs = iconsStmnt.executeQuery();
 			IconsArr icons = new IconsArr();
 			while (iconsRs.next()) {
@@ -209,10 +194,12 @@ public class Session implements Serializable {
 			}
 			metadata.setIcons(icons);
 			iconsRs.close();
-			iconsStmnt.close();
 
 		} catch (Exception e) {
 			printErrorStackTrace(e);
+		} finally {
+			Utils.closeStatement(menusStmnt);
+			Utils.closeStatement(menusStmnt);
 		}
 		this.debug("session - MenusArr.size=" + metadata.size());
 		return metadata;
@@ -229,11 +216,10 @@ public class Session implements Serializable {
 	public StaticLookupsArr getStaticLookupsArr() {
 		StaticLookupsArr lookupsArr = new StaticLookupsArr();
 		String currentLookupCode = "-9999";
+		PreparedStatement lookupsStmnt = null;
 		try {
-			OraclePreparedStatement lookupsStmnt = (OraclePreparedStatement) conn
-					.prepareStatement(Utils.getSQLQueryFromXML(
-							"statLookupsSQL", this));
-
+			lookupsStmnt = conn.prepareStatement(Utils.getSQLQueryFromXML(
+					"statLookupsSQL", this));
 			ResultSet lookupsRs = lookupsStmnt.executeQuery();
 			StaticLookup l = new StaticLookup();
 			while (lookupsRs.next()) {
@@ -254,9 +240,10 @@ public class Session implements Serializable {
 				lookupsArr.put(currentLookupCode, l);
 			}
 			lookupsRs.close();
-			lookupsStmnt.close();
 		} catch (java.sql.SQLException e) {
 			printErrorStackTrace(e);
+		} finally {
+			Utils.closeStatement(lookupsStmnt);
 		}
 		this.debug("lookupsArr:" + lookupsArr);
 		return lookupsArr;
@@ -268,7 +255,7 @@ public class Session implements Serializable {
 
 	public Integer setExportData(FormInstanceIdentifier fi,
 			ExportData exportData) {
-		return formDataHashMap.get(fi.getKey()).setExportData(fi, exportData);
+		return formDataMap.get(fi.getKey()).setExportData(fi, exportData);
 	}
 
 	public void setFcSchemaOwner(String fcSchemaOwner) {
@@ -276,15 +263,15 @@ public class Session implements Serializable {
 	}
 
 	public void setFormDataHashMap(HashMap<String, Form> formDataHashMap) {
-		this.formDataHashMap = formDataHashMap;
+		this.formDataMap = formDataHashMap;
 	}
 
 	private void setParamsMap() {
+		PreparedStatement lookupsStmnt = null;
 		try {
 			// metadataSQL
 			String metadataSQL = Utils.getSQLQueryFromXML("metadataSQL", this);
-			OraclePreparedStatement lookupsStmnt = (OraclePreparedStatement) conn
-					.prepareStatement(metadataSQL);
+			lookupsStmnt = conn.prepareStatement(metadataSQL);
 			ResultSet lookupsRs = lookupsStmnt.executeQuery();
 			while (lookupsRs.next()) {
 				String lookupCode = lookupsRs.getString("param_name");
@@ -292,9 +279,10 @@ public class Session implements Serializable {
 				paramsMap.put(lookupCode, lookupValueCode);
 			}
 			lookupsRs.close();
-			lookupsStmnt.close();
 		} catch (Exception e) {
 			printErrorStackTrace(e);
+		} finally {
+			Utils.closeStatement(lookupsStmnt);
 		}
 	}
 
@@ -314,12 +302,16 @@ public class Session implements Serializable {
 		String resetSql = Utils.getSQLQueryFromXML("RESET_SESSION_SQL", this);
 		if (resetSql == null || resetSql.isEmpty())
 			return;
-		try (PreparedStatement stmt = conn.prepareStatement(resetSql)) {
-			stmt.setString(1, urlParams);
-			stmt.execute();
-			stmt.close();
+		CallableStatement call = null;
+		try {
+			call = conn.prepareCall(resetSql);
+			call.setString(1, urlParams);
+			call.execute();
+			conn.commit();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			Utils.closeStatement(call);
 		}
 		renew();
 	}
@@ -334,19 +326,22 @@ public class Session implements Serializable {
 		if (timeoutSql == null || timeoutSql.isEmpty())
 			return false;
 		String res = null;
-		try (PreparedStatement stmt = conn.prepareStatement(timeoutSql)) {
-			stmt.setString(1, urlParams);
-			ResultSet rs = stmt.executeQuery();
-			rs.next();
-			res = rs.getString(1);
-			stmt.close();
+		CallableStatement call = null;
+		try {
+			call = conn.prepareCall(timeoutSql);
+			call.registerOutParameter(1, Types.VARCHAR);
+			call.setString(2, urlParams);
+			call.execute();
+			res = call.getString(1);
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			Utils.closeStatement(call);
 		}
 		return "Y".equals(res);
 	}
 
-	public boolean isApplicationTimedOut() {
+	private boolean isApplicationTimedOut() {
 		if (serverInfoMD == null || serverInfoMD.getSessionTimeout() < 0)
 			return false;
 		if (isApplicationTimedOut)

@@ -285,16 +285,10 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 			ConstructorApp.appServerVersion = result.getAppServerVersion();
 			detailTextItem.setVersions(ConstructorApp.clientVersion,
 					ConstructorApp.appServerVersion, null);
-			// Utils.debug("AppServerVersion:" +
-			// ConstructorApp.appServerVersion);
 			String defaultServerID = com.google.gwt.user.client.Window.Location
 					.getParameter("app.serverID");
 			Boolean defaultServerIsSet = null != defaultServerID
 					&& !"".equals(defaultServerID);
-			// System.out.println("defaultServerID: " + defaultServerID +
-			// "; is null:" + (null == defaultServerID) + "; isEmptyString:"
-			// + "".equals(defaultServerID) + "; defaultServerIsSet:" +
-			// defaultServerIsSet);
 
 			for (int i = 0; i < result.size(); i++) {
 				ServerInfoMD si = result.get(i);

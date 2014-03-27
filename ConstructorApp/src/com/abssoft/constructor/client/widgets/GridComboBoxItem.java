@@ -340,7 +340,6 @@ public class GridComboBoxItem extends MyComboBoxItem {
 							ListGridRecord rec = grig.getRecord(currRow);
 							String colName = GridComboBoxItem.this.parentColumnMD
 									.getName();
-							// System.out.println("##$@@" + result);
 							if (null != value) {
 								result = value.equals(rec.getAttribute(colName)) ? rec
 										.getAttribute(lookupDisplValFld)
