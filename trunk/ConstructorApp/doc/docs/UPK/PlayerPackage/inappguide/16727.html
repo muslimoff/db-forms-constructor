@@ -1,0 +1,44 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title> Microsoft Dynamics CRM </title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+<meta name="Generator" content="AITPublish" />
+<meta name="Keywords" content="Microsoft Dynamics CRM	help integration" />
+<link rel="stylesheet" type="text/css" href="36.css" />
+<script language="javascript" type="text/javascript" src="dhtml_toc.js"></script>
+<style>
+table.info {width:100%;}
+td {width:;}
+</style>
+<script>
+
+function resetWidth(){
+
+mytables=document.getElementsByTagName('Table')
+
+for (i=0;i<mytables.length;i++){
+
+if(mytables[i].width >450){
+
+mytables[i].className="info"
+
+}
+
+}
+
+}
+</script>
+</head>
+<body> 
+<h3 class="heading3">Microsoft Dynamics CRM</h3>
+<p class="bodytext">For the context-sensitive content to be launched from Microsoft Dynamics CRM, the pre-existing Help launch file (<strong class="bold">default.aspx</strong>) should be replaced for each language. Follow these instructions:</p>
+<ol class="listprocedure"><li class="listprocedure">Rename the existing default.aspx file on the Microsoft Dynamics CRM server (per language) to <strong class="bold">default1.aspx</strong>. The default path for this file for this file is:<p class="listcontinueindent">http://&lt;dynamics_server&gt;/crmweb/help/default1.aspx</p>
+</li><li class="listprocedure">Place the contents (files) from the mscrm3\hemi\help\ directory in the same location where you renamed the existing default.aspx file.</li><li class="listprocedure">Open the mscrmhelp.js file to enter the value for OD_GATEWAYURL. The URL value for OD_GATEWAYURL should point to the location where the content gateway file is deployed. It should be a fully qualified URL similar to: <br />http://&lt;content server&gt;/&lt;content&gt;/mscrm3/hemi/mscrm_gateway.html</li></ol><p class="bodytext">Microsoft Dynamics CRM users will now be able to launch context-sensitive content from the Help menu with the Help on This Page menu item as well as the Help toolbar button.</p>
+
+
+<script>resetWidth()</script>
+</body>
+</html>
+
+

@@ -1,0 +1,47 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title> Deploy a Custom Library </title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+<meta name="Generator" content="AITPublish" />
+<meta name="Keywords" content="" />
+<link rel="stylesheet" type="text/css" href="36.css" />
+<script language="javascript" type="text/javascript" src="dhtml_toc.js"></script>
+<style>
+table.info {width:100%;}
+td {width:;}
+</style>
+<script>
+
+function resetWidth(){
+
+mytables=document.getElementsByTagName('Table')
+
+for (i=0;i<mytables.length;i++){
+
+if(mytables[i].width >450){
+
+mytables[i].className="info"
+
+}
+
+}
+
+}
+</script>
+</head>
+<body> 
+<h5 class="heading5">Deploy a Custom Library</h5>
+<p class="bodytext">Use the following steps if you have not deployed a custom Library on your Oracle Applications server.</p>
+<a name="o16660"></a>
+<p class="procheading"><img src="8262.gif" alt="procimage" height="17" width="23" vspace="0" hspace="0" align="bottom" border="0" />To deploy a custom library:</p>
+<ol class="listprocedure"><li class="listprocedure">Back up your existing <strong class="bold">CUSTOM.pll</strong> to <strong class="bold">CUSTOM.pll.orig</strong>.</li><li class="listprocedure">Locate the <strong class="bold">ODPNCustomPLL.zip</strong> file in the ORACLE folder where the Developer is installed and extract the <strong class="bold">CUSTOM.pll</strong> and <strong class="bold">ODPN.pll </strong>files. Copy them to the $AU_TOP/resource folder on the Oracle Applications server.<br /><strong class="bold">Note:</strong> $AU_TOP is defined as a variable and references /oracle/VIS/apps/apps_st/appl/au in both a Unix and Windows operating system.</li><li class="listprocedure">Ensure that no one is currently using Oracle Applications (Web Forms). Shut down the Oracle Forms Server service if you are running 11i.<br /><strong class="bold">Note:</strong> It is not necessary to shut down any service if you are running R12.</li><li class="listprocedure">While in the $AU_TOP/resource, compile the <strong class="bold">ODPN.pll</strong> and <strong class="bold">CUSTOM.pll</strong> library files using the command for your specific EBS version:<p class="listcontinueindent">Oracle 11.5.10 server:<br />ifcmp60 module=ODPN.pll module_type=LIBRARY userid=apps/apps@&lt;instance&gt; compile_all=yes <br /><br />ifcmp60 module=CUSTOM.pll module_type=LIBRARY userid=apps/apps@&lt;instance&gt; compile_all=yes<br /><br />For Oracle E-Business Suite R12:<br />frmcmp module=ODPN.pll module_type=library userid=apps/apps@&lt;instance&gt; compile_all=yes<br /><br />frmcmp module=CUSTOM.pll module_type=library userid=apps/apps@&lt;instance&gt; compile_all=yes</p>
+</li></ol><p class="noteparagraph"><strong class="bold">Note:</strong> Replace the database connect string to reflect your instance.</p>
+<p class="noteparagraph"><strong class="bold">Note:</strong> Shutting down the Forms server is not necessary for Oracle E-Business Suite R12.</p>
+
+
+<script>resetWidth()</script>
+</body>
+</html>
+
+

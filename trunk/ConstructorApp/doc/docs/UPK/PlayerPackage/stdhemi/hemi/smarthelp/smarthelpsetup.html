@@ -1,0 +1,129 @@
+﻿<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<!--Version 9.6.1.10-->
+<html>
+<head>
+    <title></title>
+    <meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+    <script type='text/javascript' src='../scripts/oddefs.js'></script>
+    <script type='text/javascript' src='../scripts/odgatewaydefs.js'></script>
+    <script type='text/javascript' src='../scripts/odhelper.js'></script>
+    <script type='text/javascript' src='../strings.js'></script>
+    <script type='text/javascript'>
+        var query = window.location.search.length > 0 ? window.location.search.substr(1) : '';
+        var text = '';
+
+        document.title = TITLE;
+        if (query == 'config') {
+            document.location.href = 'smarthelpconfig.html';
+        }
+
+        //Allowed parameter list
+        var validtestparams = ['showtestpage', 'showscore', 'maxhit', 'maxsearch', 'threshold', 'minscore'];
+        var validparams = ['diagnosticmode', 'usecache', 'tracemode', 'stricturlcheck'];
+        var params = ['reset', 'query', 'queryall', 'setupdiag', 'standardcontent', 'detect', 'nostandardcontent', 'repair'];
+        var edits = [];
+
+        function Redirect(_query) {
+            var br = '';
+            if (_query.length > 1 && (_query.lastIndexOf('&') != _query.length - 1))
+                br = '&';
+            var ie = parseInt(BROWSER_VER_IE); //6 [6, 7, 8]
+            var ff = parseInt(BROWSER_VER_FF); //3 [3, 3.5]
+            var actversion = Gkod.Gateway.Browser._version;
+            var acttype = Gkod.Gateway.Browser._type;
+            if (acttype == 'Firefox') {
+                if (parseFloat(actversion) >= ff && parseFloat(actversion) < (ff + 1))//4
+                    document.location.href = '../fftbutton/fftbuttonsetup.html?' + _query + br + 'browser=ff';
+                else
+                    WriteText('notsupported', NOTSUPPORTED_FF);
+            }
+            else if (acttype == 'Explorer') {
+                if (parseFloat(actversion) >= ie && parseFloat(actversion) < (ie + 3))//9
+                    document.location.href = '../ietbutton/ietbuttonsetup.html?' + _query + br + 'browser=ie';
+                else
+                    WriteText('notsupported', NOTSUPPORTED_IE);
+            }
+            else {
+                WriteText('notsupported', NOTSUPPORTED_BROWSER);
+            }
+        }
+
+        function WriteText(id, text) {
+            document.getElementById(id).appendChild(document.createTextNode(text));
+        }
+
+        function IsValidTestParams(s) {
+            for (var i = 0; i < validtestparams.length; i++) {
+                if (validtestparams[i] == s)
+                    return true;
+            }
+
+            return false;
+        }
+
+        function IsValidParams(s) {
+            for (var i = 0; i < validparams.length; i++) {
+                if (validparams[i] == s)
+                    return true;
+            }
+
+            return false;
+        }
+
+        function IsParams(s) {
+            for (var i = 0; i < params.length; i++) {
+                if (params[i] == s)
+                    return true;
+                //special case - standardcontent=escape(url)
+                else if (s.indexOf('standardcontent') == 0)
+                    return true;
+            }
+
+            return false;
+        }
+
+        function IsValidProtocol() {
+            if (window.location.protocol != 'undefined' && window.location.protocol.indexOf('http') == 0)
+                return true;
+            return false;
+        }
+    </script>
+</head>
+<body>
+    <div id='notsupported'></div>
+    <div id='error'></div>
+    <script type='text/javascript'>
+        if (IsValidProtocol()) {
+            if (query.length < 1 || IsParams(query)) {
+                Redirect(query);
+            }
+            else if (query == 'diagnosticmode') {
+                Redirect(query + '=1');
+            }
+            else {
+                var params = '';
+                if (query.lastIndexOf('&') != query.length - 1)
+                    query += '&';
+                var a = query.split('&');
+                for (var i = 0; i < a.length; i++) {
+                    var b = a[i].split('=');
+                    if (IsValidTestParams(b[0]) || IsValidParams(b[0])) {
+                        if (b.length == 2) {
+                            params += a[i] + '&';
+                        }
+                    }
+                }
+                if (params != '')
+                    Redirect(params);
+                else
+                    WriteText('notsupported', BADFORMATTED_URL);
+            }
+        }
+        else {
+            WriteText('notsupported', NOTSUPPORTED_PROT);
+        }
+    </script>
+</body>
+</html>

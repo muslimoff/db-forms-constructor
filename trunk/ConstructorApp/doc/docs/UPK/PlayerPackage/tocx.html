@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<head>
+	<title></title>
+	<script type="text/javascript">
+
+		function Init() {
+			var url=this.location.href;
+			var k = url.indexOf("?");
+			if (k < 0)
+				k = url.indexOf("#");
+			var params = "";
+			if (k > 0)
+				params = "?" + url.substr(k + 1);
+			var newurl = "toc0.html" + params;
+			frames["toc0window"].location.href = newurl;
+		}
+	
+	</script>
+</head>
+<frameset border="0" frameborder="no" framespacing="no" onload="Init()">
+	<frame name="toc0window" id="toc0window" src="./toc/empty.html" noresize scrolling="no" marginwidth="0" marginheight="0" frameborder="no">
+</frameset>
+</html>

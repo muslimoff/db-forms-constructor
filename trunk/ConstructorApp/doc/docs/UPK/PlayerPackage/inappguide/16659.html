@@ -1,0 +1,50 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title> Implement Context-Sensitive Help Integration </title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+<meta name="Generator" content="AITPublish" />
+<meta name="Keywords" content="" />
+<link rel="stylesheet" type="text/css" href="36.css" />
+<script language="javascript" type="text/javascript" src="dhtml_toc.js"></script>
+<style>
+table.info {width:100%;}
+td {width:;}
+</style>
+<script>
+
+function resetWidth(){
+
+mytables=document.getElementsByTagName('Table')
+
+for (i=0;i<mytables.length;i++){
+
+if(mytables[i].width >450){
+
+mytables[i].className="info"
+
+}
+
+}
+
+}
+</script>
+</head>
+<body> 
+<h4 class="heading4">Implement Context-Sensitive Help Integration</h4>
+<p class="bodytext">If you want to implement context-sensitive help for Oracle E-Business Suite applications, the correct Context IDs of the objects in Oracle must be captured while the content is recorded. To enable this, you must deploy or modify the custom library (<strong class="bold">CUSTOM.pll</strong>) on the Oracle server you will use to record the content. This must be done before you begin to record content.</p>
+<p class="bodytext">The custom library is required for recording content only. It is not necessary for deployment of context-sensitive content from Oracle E-Business-Suite. If you use the different systems for development (content creation) and production (deployment), then the custom library configuration is not necessary in the production environment. If you use the same system for development and production, then custom library only needs to be installed while the content is being recorded.</p>
+<p class="subheading">Check Existing Custom Library Configuration</p>
+<p class="subparagraph">The .pll delivered with the Developer is written with SPECIAL7 as the default value. This default value is a suggestion. You can use anything between 1 and 15. If you have not created any Oracle specific applications that use the SPECIAL event, you can use the default. If you have created Oracle-specific applications that do use the SPECIAL event, the value of 7 may be taken, and you need to find another suitable unused value between 1and 15. </p>
+<p class="bodytext">You can use the following command lines to find an unused value instead of editing and recompiling the custom.pll file repeatedly:</p>
+<p class="code">cd $AU_TOP/forms/US; grep -i APP_SPECIAL.ENABLE `find . -name &quot;*.fmb&quot; -print`| grep SPECIAL7| grep -i PROPERTY_ON </p>
+<p class="code">cd $AU_TOP/resource; grep -i APP_SPECIAL.ENABLE `find . -name &quot;*.fmb&quot; -print`| grep SPECIAL7| g rep -i PROPERTY_ON</p>
+<p class="bodytext">If you receive a result that looks like the statement below, the value is already being used.</p>
+<p class="code">./CSCCCCRC.fmb:app_special.enable('SPECIAL7', PROPERTY_ON);</p>
+
+
+<script>resetWidth()</script>
+</body>
+</html>
+
+

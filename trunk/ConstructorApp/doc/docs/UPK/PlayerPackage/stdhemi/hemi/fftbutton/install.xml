@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright © 1998, 2011, Oracle and/or its affiliates.  All rights reserved.
+-->
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+  <Description about="urn:mozilla:install-manifest">
+    <em:id>hemiffbutton@ondemandgk.com</em:id>
+    <em:version>9.6.1.95</em:version>
+    <em:targetApplication>
+      <Description>  <!-- Firefox -->
+        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+        <em:minVersion>3.0</em:minVersion>
+        <em:maxVersion>3.6.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+
+    <em:name>SmartHelp</em:name>
+    <em:description>Toolbar button for SmartHelp</em:description>
+    <em:creator>Oracle</em:creator>
+    <em:iconURL>chrome://hemiffbutton/skin/hemi_Pkg.ico</em:iconURL>
+<!--<em:optionsURL>chrome://hemiffbutton/content/prefs.xul</em:optionsURL>-->
+    <em:file>
+      <Description about="urn:mozilla:extension:file:hemiffbutton">
+        <em:package>content/</em:package>
+        <em:skin>skin/</em:skin>
+      </Description>
+    </em:file>
+  </Description>
+
+</RDF>

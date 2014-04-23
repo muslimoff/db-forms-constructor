@@ -1,0 +1,43 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title> Customize the SAP Help Menu </title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+<meta name="Generator" content="AITPublish" />
+<meta name="Keywords" content="" />
+<link rel="stylesheet" type="text/css" href="36.css" />
+<script language="javascript" type="text/javascript" src="dhtml_toc.js"></script>
+<style>
+table.info {width:100%;}
+td {width:;}
+</style>
+<script>
+
+function resetWidth(){
+
+mytables=document.getElementsByTagName('Table')
+
+for (i=0;i<mytables.length;i++){
+
+if(mytables[i].width >450){
+
+mytables[i].className="info"
+
+}
+
+}
+
+}
+</script>
+</head>
+<body> 
+<h5 class="heading5">Customize the SAP Help Menu</h5>
+<p class="bodytext">Once the transports have been imported into the SAP system, you must customize the SAP Help menu. Using transaction se43, customize the SAP System Help menu to launch Player content by creating a menu item with 'Code' ZOND and 'Functional Type' H.</p>
+<ol class="listprocedure"><li class="listprocedure">Using transaction se37, modify the HELP_START function module. You will need the access key obtained earlier. (Note: the status message...)</li><li class="listprocedure">Insert a modification above the line with statement &quot;when 'GLOS'.&quot;</li><li class="listprocedure">Enter the modification, &quot;include /GKOD/...&quot;</li><li class="listprocedure">Save and activate the modification.</li></ol>
+
+
+<script>resetWidth()</script>
+</body>
+</html>
+
+

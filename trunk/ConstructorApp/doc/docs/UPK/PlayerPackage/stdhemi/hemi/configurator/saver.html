@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<!--Version 9.6.0.3-->
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="../scripts/oddefs.js"></script>
+<script type="text/javascript" src="../scripts/odhelper.js"></script>
+<style type="text/css">
+body { border:none;margin:0px;padding:0px;/*background:#f00;*/ }
+</style>
+</head>
+<body>
+<form id="saveit" name="saveit" action="saveit.any" method="post">
+<input name="saveit_f" type="hidden" value="config.js" />
+<input name="saveit_c" type="hidden" value="//config" />
+</form>
+</body>
+</html>
+
+<script type="text/javascript">
+
+var save = function()
+{
+  var undefined;
+  var w = window.parent;
+  if(!w||!w.GkodConfig||!w.GkodConfig.Page||w.GkodConfig.Page.saveit_c===undefined||w.GkodConfig.Page.saveit_f===undefined) return;
+  var form = document.forms['saveit'];
+  var url = new Gkod.Helper.Url(document.URL);
+  form.action = url.GetParam('use','saveit.with');
+  form.saveit_c.value = w.GkodConfig.Page.saveit_c;
+  form.saveit_f.value = w.GkodConfig.Page.saveit_f;
+  form.submit();
+}
+
+setTimeout(function(){save();},200);
+
+</script>

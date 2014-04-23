@@ -1,0 +1,284 @@
+﻿<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+
+<!--Version 9.6.1.26-->
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+    <link href='style/odstdiegateway.css' rel='stylesheet' />
+    <script type="text/javascript" src="../../js/cookie.js"></script>        
+    <script type="text/javascript" src="scripts/oddefs.js"></script>
+    <script type="text/javascript" src="scripts/odplaybackdefs.js"></script>    
+    <script type="text/javascript" src="scripts/odgatewaydefs.js"></script>
+    <script type="text/javascript" src="scripts/escape.js"></script>
+    <script type="text/javascript" src="scripts/odgatewayscripts.js"></script>
+    <script type="text/javascript" src="scripts/odscripts.js"></script>
+    
+    <script type="text/javascript">
+    //Optional files
+    var root_url = document.URL.substr(0, document.URL.indexOf('/hemi/_stdie_gateway.html'));
+    Gkod.Http.LoadFile(self, root_url + "/hemi/odbrand.js");     
+    Gkod.Http.LoadFile(self, root_url + "/hemi/odstdcustomurl.js");     
+    Gkod.Http.LoadFile(self, root_url + "/hemi/odstdtest.js");
+    //Gkod.Http.LoadFile(self, root_url + "/tools/ondemandtrace.js");
+
+    document.title = Gkod.Variables.OD_BRAND;
+    
+    Gkod.Cookie.Get('HemiCookie');
+    var tempcookie = Gkod.Cookie.Get('HemiCookie', 'hemiparamtest');
+    if (typeof (tempcookie) != 'undefined' && tempcookie != 'undefined') {
+
+        Gkod.Variables.OD_HEMIPARAMTEST = parseInt(tempcookie);
+    }
+
+    var mode = (window.location.search.indexOf("genctx") > 0) ? "generic" : "normal";
+    Gkod.Trace.Write(Gkod.Trace.ID.GEN, "[STDIE_GATEWAY] : gateway mode= " + mode, 3);
+
+    var _window = null;
+    var _app = "";
+    var _list = [];
+    var _testparams = "";
+    var _tocloaded = false;
+    var counter = 0;
+    
+    function TransferCtx(list, app, testparams)
+    {
+        Gkod.Trace.Write(Gkod.Trace.ID.GEN, "[STDIE_GATEWAY] : TransferCtx() mode=" + mode, 3);
+        //Generic
+        if (mode == 'generic')
+        {    
+            //Reset this array
+            _list = list;
+            _app = app;
+            _testparams = testparams;
+            Gkod.Trace.Write(Gkod.Trace.ID.GEN, "[STDIE_GATEWAY] : TransferCtx() - length=" + _list.length + " appname=" + _app + " testparams=" + _testparams, 3);
+            var _url = document.URL;
+            var j = _url.indexOf("/stdhemi/hemi/");
+            var _tocurl = _url.substr(0, j) + "/index.html" + window.location.search;
+            _window = window.open(_tocurl, 'toc');
+            //Gkod.Gateway.ReplaceWindow(_tocurl);
+            setTimeout(onTocLoaded, 300);
+        }
+    }
+
+    function onTocLoaded()
+    {
+        //Gkod.Trace.Write("ontocloaded called");
+        //Generic
+        if (mode == 'generic')
+        {
+            Gkod.Trace.Write(Gkod.Trace.ID.GEN, "[STDIE_GATEWAY] : window = " + typeof(_window) + " TransferCtx = " + typeof(_window.TransferCtx) + " onTocLoaded = " + typeof(_window.onTocLoaded) + " " + _window.onTocLoaded, 3);
+            if (typeof(_window) != 'undefined' && typeof(_window.TransferCtx) != 'undefined' && 
+                typeof(_window.onTocLoaded) != 'undefined' && _window.onTocLoaded)
+            {
+                Gkod.Trace.Write(Gkod.Trace.ID.GEN, "[STDIE_GATEWAY] : call to TransferCtx - length=" + _list.length + " appname=" + _app + " testparams=" + _testparams, 3);
+                _window.TransferCtx(_list, _app, _testparams);
+                _tocloaded = true;
+                window.close();
+            }
+            else
+            {
+                counter++;
+                if (counter < 100) 
+                {
+                    setTimeout(onTocLoaded, 300); 
+                } 
+	            else
+                {
+                   CheckToc();
+                }	
+            }
+        }
+    }
+    
+    function CheckToc()
+    {
+        if (!_tocloaded)
+        {
+            Gkod.Trace.Write(Gkod.Trace.ID.GEN, "[STDIE_GATEWAY] : TOC has not called back in 30 secs", 3);
+        }
+    }
+        
+
+    if (mode == 'normal')
+    //Normal
+    {
+        ParseGatewayURL();
+        
+        function _unescape(s)
+        {
+            var _temp = s;
+            var _app = Gkod.ctxinfo.appname + "\\$";
+            _temp = _temp.replace(new RegExp(_app, "g"), "");
+            _temp = Gkod.Escape.MyUnEscape(_temp);
+            return _temp;
+        }        
+        
+        if (Gkod.ctxinfo.appname != "")
+        {
+            var ODSCRIPTS_SPEC = ["odbrand.js"];
+            if (Gkod.ctxinfo.custom == "")
+            {
+                ODSCRIPTS_SPEC.push("odcustomurl.js");
+            }
+            else
+            {
+                ODSCRIPTS_SPEC.push(Gkod.ctxinfo.custom);
+            }
+            GetFullPath(ODSCRIPTS_SPEC, Gkod.ctxinfo.appname.toLowerCase(), 3); 
+            Gkod.Http.LoadFiles(self, ODSCRIPTS_SPEC);  
+        }
+        
+        if (Gkod.Variables.OD_APPLICATIONHELP_URL != "" && Gkod.ctxinfo.apphelpurl != "")
+        {
+            Gkod.Variables.OD_APPLICATIONHELP_URL += "?" + Gkod.Utility.Decode(Gkod.ctxinfo.apphelpurl);
+        }
+        
+        if (Gkod.ctxinfo.appname != "")
+        {
+            CreateCTXEX();    
+            CreateTOCURL();
+        }
+        else
+        {
+            //no appname, open standard toc
+            Gkod.Gateway.ReplaceWindow(Gkod.Variables.OD_STANDARD_URL);
+        }
+
+        function OD_launch()
+        {
+            if (Gkod.ctxinfo.tocurl != "") {
+                Gkod.Gateway.ReplaceWindow(Gkod.ctxinfo.tocurl);
+            }
+            else {
+                Gkod.Trace.Write(Gkod.Trace.ID.GEN, "[STDIE_GATEWAY] : OD_launch() cannot open toc", 3);
+            }
+        }
+
+        // Gkod direct launch, except if we need some test data
+        if (Gkod.Variables.OD_HEMIPARAMTEST == 0 && Gkod.Variables.OD_APPLICATIONHELP_URL == "" && Gkod.Variables.OD_EXTHELP_URL == "")
+        {
+            OD_launch();
+        }
+        else
+        {
+            var scriptsource = '<A name="Gkod" href="javascript:OD_launch();" class="LinkText">' + Gkod.Variables.OD_BRAND + '</A>';
+            
+            if (Gkod.Variables.OD_SHOWHELPMODE == Gkod.Variables._LINK_GATEWAY && Gkod.Variables.OD_APPLICATIONHELP_URL != "")
+            {
+                var helpsource = '<A name="help" href="' + Gkod.Variables.OD_APPLICATIONHELP_URL + '" class="LinkText">' + Gkod.Variables.OD_SHOWHELPTEXT + '</A>';
+                var temp = scriptsource + "<BR>" + helpsource;
+                scriptsource = temp;
+            }    
+            
+            var scriptsourceexthelp = "";
+            if (Gkod.Variables.OD_EXTHELP_URL != "")
+            {
+                scriptsourceexthelp = '<A name="Ext" href="' + Gkod.Variables.OD_EXTHELP_URL + '" target=_blank class="LinkText">' + Gkod.Variables.OD_EXTHELP_TEXT + '</A>';
+            }
+           
+            var logo_src = Gkod.Variables.OD_SHOWAPPLOGO;
+/*            
+            if (Gkod.ctxinfo.appname != "")
+            {
+                var app_spec_url = document.URL.substr(0, document.URL.indexOf('stdhemi/hemi')) + Gkod.ctxinfo.appname.toLowerCase() + "/hemi/" + Gkod.Variables.OD_SHOWAPPLOGO;
+                if (Gkod.Http.IsFileExists(app_spec_url))
+                {
+                    logo_src = app_spec_url;
+                }
+            }
+*/          
+            var exthelp = "";
+            if (scriptsourceexthelp != "")  
+                exthelp = '<tr><td><BR></td></tr>' + '<tr><td nowrap class="LinkCell">' + scriptsourceexthelp + '</td><td></td></tr>';
+            var logosource = '<table width="450" border="0" cellspacing="0" cellpadding="0">' +
+                                '<tr><td colspan="2"><img src=' + logo_src + ' border="0"></td></tr>' + 
+                                '<tr><td><BR></td></tr>' + 
+                                '<tr><td class="HorzLine"></td></tr>' + 
+                                '<tr><td><BR></td></tr>' + 
+                                '<tr><td nowrap class="LinkCell">' + scriptsource + '</td><td></td></tr>' + 
+                                exthelp +
+                             '</table>';
+
+            if (Gkod.Variables.OD_SHOWHELPMODE == Gkod.Variables._EMBEDDED_BOTTOM || Gkod.Variables.OD_SHOWHELPMODE == Gkod.Variables._LINK_GATEWAY)
+            {
+                document.write(logosource);
+            }
+
+            var hemiparamtext = "<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH='100%' VSPACE=0>" +
+                "<TR><TD WIDTH='10%' HEIGHT=30 colspan='3'></TD></TR>" +    
+                "<TR VALIGN=TOP><TD WIDTH='100%' colspan='3'>&nbsp;</TD></TR>" +
+                "<TR VALIGN=TOP>" +
+                "<TD VALIGN=TOP ALIGN=LEFT WIDTH=64></TD>" +
+                "<TD WIDTH=10% HEIGHT=30 valign=top></TD>" +
+                "<TD WIDTH=90% HEIGHT=30 valign=top><B>TOC URL : </B><FONT color='#00008B'><B>" + Gkod.ctxinfo.tocurl + "</B></FONT>" +
+                "</TR>" +
+                "<TR VALIGN=TOP>" +
+                "<TD VALIGN=TOP ALIGN=LEFT WIDTH=64></TD>" +
+                "<TD WIDTH=10% HEIGHT=30 valign=top></TD>" +
+                "<TD WIDTH=90% HEIGHT=30 valign=top><B>APPLICATION NAME : </B><FONT color='#00008B'><B>" + Gkod.ctxinfo.appname + "</B></FONT>" +
+                "</TR>" +
+                "<TR VALIGN=TOP>" +
+                "<TD VALIGN=TOP ALIGN=LEFT WIDTH=64></TD>" +
+                "<TD WIDTH=10% HEIGHT=30 valign=top></TD>" +
+                "<TD WIDTH=90% HEIGHT=30 valign=top><B>LANGUAGE CODE : </B><FONT color='#00008B'><B>" + Gkod.ctxinfo.language + "</B></FONT>" +
+                "</TR>" +
+                "<TR VALIGN=TOP>" +
+                "<TD VALIGN=TOP ALIGN=LEFT WIDTH=64></TD>" +
+                "<TD WIDTH=10% HEIGHT=30 valign=top></TD>" +
+                "<TD WIDTH=90% HEIGHT=30 valign=top><B>CTXEX : </B><FONT color='#00008B'><B>" + Gkod.ctxinfo.ctxex + "</B></FONT>" +
+                "</TR>" +		
+                "<TR VALIGN=TOP>" +
+                "<TD VALIGN=TOP ALIGN=LEFT WIDTH=64></TD>" +
+                "<TD WIDTH=10% HEIGHT=30 valign=top></TD>" +
+                "<TD WIDTH=90% HEIGHT=30 valign=top><B>CTXEX (unescaped) : </B><FONT color='#00008B'><B>" + _unescape(Gkod.ctxinfo.ctxex) + "</B></FONT>" +
+                "</TR>" +			    
+                "<TR VALIGN=TOP>" +
+                "<TD VALIGN=TOP ALIGN=LEFT WIDTH=64></TD>" +
+                "<TD WIDTH=10% HEIGHT=30 valign=top></TD>" +
+                "<TD WIDTH=90% HEIGHT=30 valign=top><B>HELP URL : </B><FONT color='#00008B'><B>" + Gkod.Variables.OD_APPLICATIONHELP_URL + "</B></FONT>" +
+                "</TR>";
+
+                for (i in Gkod.ctxinfo.extra)
+                {
+                    hemiparamtext += "<TR VALIGN=TOP>" +
+                    "<TD VALIGN=TOP ALIGN=LEFT WIDTH=64></TD>" +
+                    "<TD WIDTH=10% HEIGHT=30 valign=top></TD>" +
+                    "<TD WIDTH=90% HEIGHT=30 valign=top><B>" + i + " : </B><FONT color='#00008B'><B>" + Gkod.ctxinfo.extra[i] + "</B></FONT>" +
+                    "</TR>";            
+                }
+                
+                hemiparamtext += "</TABLE>";
+            
+            // Write test data
+            if (Gkod.Variables.OD_HEMIPARAMTEST == 1)
+            {
+                document.write(hemiparamtext);
+            }
+
+            if (Gkod.Variables.OD_APPLICATIONHELP_URL != "" && (Gkod.Variables.OD_SHOWHELPMODE == Gkod.Variables._EMBEDDED_BOTTOM || Gkod.Variables.OD_SHOWHELPMODE == Gkod.Variables._EMBEDDED_TOP))
+            {
+                document.write("<BR><BR>");	
+                var iwidth = screen.width*.95;
+                var iheight = (screen.height/2)*.95;
+                document.write("<IFRAME src='" + Gkod.Variables.OD_APPLICATIONHELP_URL + "' height=" + iheight + " width=" + iwidth + "></IFRAME>");	
+                document.write("<BR><BR>");	
+            }
+
+            if (Gkod.Variables.OD_SHOWHELPMODE == Gkod.Variables._EMBEDDED_TOP)
+            {
+                document.write(logosource);
+            }
+            window.focus();
+        }
+    }
+  
+    </script>
+
+</head>
+<body>
+</body>
+</html>

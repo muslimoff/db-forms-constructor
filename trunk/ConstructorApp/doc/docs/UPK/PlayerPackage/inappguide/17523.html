@@ -1,0 +1,46 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title> JD Edwards World </title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+<meta name="Generator" content="AITPublish" />
+<meta name="Keywords" content="JD Edwards World	help integration " />
+<link rel="stylesheet" type="text/css" href="36.css" />
+<script language="javascript" type="text/javascript" src="dhtml_toc.js"></script>
+<style>
+table.info {width:100%;}
+td {width:;}
+</style>
+<script>
+
+function resetWidth(){
+
+mytables=document.getElementsByTagName('Table')
+
+for (i=0;i<mytables.length;i++){
+
+if(mytables[i].width >450){
+
+mytables[i].className="info"
+
+}
+
+}
+
+}
+</script>
+</head>
+<body> 
+<h3 class="heading3">JD Edwards World</h3>
+<p class="bodytext">The instructions that follow are for the JWalk Java client interface. A button to launch Player content appears on the program menus; no configuration is necessary for this button to appear. However, it must be configured to point to the Player help content through entries in two text files.</p>
+<a name="o17524"></a>
+<p class="bodytext">To launch the context-sensitive help content, the JD Edwards World Web Enablement administrator needs to set entries appropriately in the WV9100.JVM and DYNBLD9100.JVM text files. These files are located within the Deployment area of the JWalk server or client.</p>
+<ul class="listbulletindent"><li class="listbulletindent">For the iSeries-i5 Installation:<br />www/&lt;HTTP server&gt;, such as apachedft/htdocs/JWALK/JWALKAPP/A9100APP</li><li class="listbulletindent">For the Windows NT-2000-2003 Server Installation:<br />C:\Inetpub\wwwroot\JWALKAPP\A9100APP or<br />C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\JWALKAPP\A9100APP</li></ul><p class="bodytext">The Text File entries to be updated are:</p>
+<ul class="listbulletindent"><li class="listbulletindent">UPKVIEWI - Set this to Y to display the Context aware icon on the program menus.</li><li class="listbulletindent">UPKVIEWH - Set this to Y to display the View Content Option from the Help Drop Down menu.</li><li class="listbulletindent">UPKHELP - This displays text when hovering over the Context aware icon.</li><li class="listbulletindent">UPKHELPOPT - This displays text for the option on the Help Drop Down menu.</li><li class="listbulletindent">UPKPath - This should be set to the path of the UPK server. For example:<br />http://&lt;server&gt;/&lt;virtual directory&gt;/jdewalk/hemi/jdewalk_gateway.html_?CTXEX=</li></ul><p class="bodytext">If you place the help content on the Windows server supporting the JWalk client interface, no additional configuration is necessary. If the help content is on a non-Windows server, you need to configure the odcustomurl.js file. See the following section for details.</p>
+
+
+<script>resetWidth()</script>
+</body>
+</html>
+
+

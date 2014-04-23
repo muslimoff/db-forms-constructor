@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<!--Version 9.6.0.3-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="config.css" />
+<!--<script type="text/javascript" src="../../tools/ondemandtrace.js"></script>-->
+<script type="text/javascript" src="../../../js/cookie.js"></script>
+<script type="text/javascript" src="../scripts/oddefs.js"></script>
+<script type="text/javascript" src="../scripts/odplaybackdefs.js"></script>
+<script type="text/javascript" src="../scripts/odgatewaydefs.js"></script>
+<script type="text/javascript" src="../scripts/odhelper.js"></script>
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript">
+{
+  var url = new Gkod.Helper.Url(document.URL);
+  var test = url.Safe_GetParam('test',60,null);
+  var done = false;
+
+  AutoRun = function()
+  {
+    if(done) return; done = true;
+    try
+    {
+      if(test===null)
+        GkodConfig.InjectMenu();
+      else GkodConfig.InjectTest();
+    }
+    catch(e) { Gkod.Helper.Exception(e,'AutoRun'); }
+  }
+}
+</script>
+</head>
+<body onload="AutoRun()">
+  <div class="content"><div id="page" class="page"></div></div>
+</body>
+</html>

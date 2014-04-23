@@ -1,0 +1,1775 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="icon" href="ondemand.ico" type="image/x-icon" />
+	<link rel="shortcut icon" href="ondemand.ico" type="image/x-icon" />
+	<style type="text/css">
+		*
+		{
+			padding: 0px;
+			margin: 0px;
+			border: 0px;
+			font-family: Tahoma;
+			font-size: 12px;
+		}
+		body, html
+		{
+			overflow: hidden;
+			width: 100%;
+			height: 100%;
+		}
+		a
+		{
+			text-decoration: underline;
+		}
+		a:link
+		{
+			color: #00F;
+		}
+		a:active
+		{
+			color: #00F;
+		}
+		a:visited
+		{
+			color: #00F;
+		}
+		a:hover
+		{
+			color: #00F;
+		}
+		.fill
+		{
+			width: 100%;
+			height: 100%;
+		}
+		.tiframe
+		{
+			height: 100%;
+		}
+		.thorizontal
+		{
+			width: 100%;
+			height: 5px;
+		}
+		.tvertical
+		{
+			width: 5px;
+			height: 100%;
+		}
+		.tsep
+		{
+			width: 5px;
+			height: 100%;
+		}
+		#myTable
+		{
+			width: 100%;
+			height: 100%;
+		}
+		#cover
+		{
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			width: 0px;
+			height: 0px;
+			cursor: e-resize;
+			background-color: red;
+			opacity: 0.0;
+			filter: alpha(opacity='00');
+		}
+		#coversearch
+		{
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			width: 0%;
+			height: 0%;
+			cursor: wait;
+			background-color: red;
+			opacity: 0.0;
+			filter: alpha(opacity='00');
+		}
+		#searchprdiv
+		{
+			width: 120px;
+			height: 40px;
+			background-color: #FFF;
+			border: black solid 1px;
+			text-align: center;
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			cursor: wait;
+			display: none;
+		}
+		#coverjumpin
+		{
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			width: 0%;
+			height: 0%;
+			background-color: red;
+			opacity: 0.0;
+			filter: alpha(opacity='00');
+		}
+		#jumpindiv
+		{
+			width: 0px;
+			height: 0px;
+			text-align: left;
+			padding: 0px;
+			position: absolute;
+			top: 100px;
+			left: 300px;
+			display: none;
+			border: 1px solid gray;
+		}
+		#jumpindiv ul
+		{
+			padding-left: 50px;
+		}
+		#header1
+		{
+			border: 0px;
+			margin: 0px;
+			padding: 0px;
+		}
+		#header2
+		{
+			width: 100%;
+		}
+		#header3
+		{
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			width: 100%;
+			text-align: right;
+		}
+		.modebuttonshow
+		{
+			display: inline-table;
+		}
+		.modebuttonhide
+		{
+			display: none;
+		}
+		.cttableshow
+		{
+			display: none;
+			height: 0px;
+		}
+		.cttablehide
+		{
+			display: none;
+			height: 0px;
+		}
+		.dividerColor
+		{
+			border-width: 2px;
+			border-style: solid;
+		}
+		.button
+		{
+			height: 41px;
+			border-left-width: 0px;
+			border-top-width: 0px;
+			border-bottom-width: 0px;
+			position: absolute;
+			top: 0px;
+			color: White;
+			background-image: url(./img/tdbackground.png);
+		}
+		.lastbutton
+		{
+			height: 41px;
+			background-image: url(./img/tdbackground.png);
+		}
+		.textalign1
+		{
+			position: absolute;
+			top: 15px;
+			left: 38px;
+			width: 60px;
+		}
+		#jumpinS, #jumpinT, #jumpinD
+		{
+			width: 21px;
+			height: 41px;
+			position: absolute;
+			top: 0px;
+		}
+		#playmodetable
+		{
+			height: 41px;
+		}
+		.jumpinimgclass
+		{
+			position: absolute;
+			top: 10px;
+			left: 2px;
+			width: 9px;
+			height: 15px;
+			background-image: url(./img/jumpinarrow.png);
+		}
+		#seeitimage
+		{
+			width: 34px;
+			height: 34px;
+			background-image: url(./img/seeit.png);
+			position: absolute;
+			top: 9px;
+			left: 5px;
+		}
+		#tryitimage
+		{
+			width: 34px;
+			height: 34px;
+			background-image: url(./img/tryit.png);
+			position: absolute;
+			top: 9px;
+			left: 5px;
+		}
+		#knowitimage
+		{
+			width: 34px;
+			height: 34px;
+			background-image: url(./img/knowit.png);
+			position: absolute;
+			top: 9px;
+			left: 5px;
+		}
+		#doitimage
+		{
+			width: 34px;
+			height: 34px;
+			background-image: url(./img/doit.png);
+			position: absolute;
+			top: 9px;
+			left: 5px;
+		}
+		#printitimagePDF
+		{
+			width: 34px;
+			height: 34px;
+			background-image: url(./img/printitpdf.png);
+			position: absolute;
+			top: 9px;
+			left: 5px;
+		}
+		#printitimageDOC
+		{
+			width: 34px;
+			height: 34px;
+			background-image: url(./img/printitdoc.png);
+			position: absolute;
+			top: 9px;
+			left: 5px;
+		}
+		.tocSearchBarText
+		{
+			font-family: Arial, Helvetica, sans-serif;
+			font-size: 12px;
+			color: #797979;
+		}
+		.bannerStyle
+		{
+			background-image: url(./img/banner_image.png);
+		}
+	</style>
+	<!--[if IE 6]>
+<style>
+
+#playmodetable
+{
+	height: 45px;
+}			
+
+.button
+{
+	height: 41px;
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-bottom-width: 0px;
+	position: absolute;
+	top: 0px;
+	color: White;
+	background-image: url();
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='./img/tdbackground.png',sizingMethod='scale')
+}
+
+.lastbutton
+{
+	height: 41px;
+	background-image: url();
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='./img/tdbackground.png',sizingMethod='scale')
+	position: absolute;
+	top: 9px;
+	left: 5px;
+}
+
+#seeitimage
+{
+	width: 34px;
+	height: 34px;
+	background-image: url();
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='./img/seeit.png',sizingMethod='scale')
+}
+
+#tryitimage
+{
+	width: 34px;
+	height: 34px;
+	background-image: url();
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='./img/tryit.png',sizingMethod='scale')
+}
+
+#knowitimage
+{
+	width: 34px;
+	height: 34px;
+	background-image: url();
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='./img/knowit.png',sizingMethod='scale')
+}
+
+#doitimage
+{
+	width: 34px;
+	height: 34px;
+	background-image: url();
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='./img/doit.png',sizingMethod='scale')
+}
+
+#printitimagePDF
+{
+	width: 34px;
+	height: 34px;
+	background-image: url();
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='./img/printitpdf.png',sizingMethod='scale')
+}
+
+#printitimageDOC
+{
+	width: 34px;
+	height: 34px;
+	background-image: url();
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='./img/printitdoc.png',sizingMethod='scale')
+}
+
+.jumpinimgclass
+{
+	position: absolute;
+	top: 10px;
+	left: 2px;
+	width: 9px;
+	height: 15px;
+	background-image: url();
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='./img/jumpinarrow.png',sizingMethod='scale')
+}
+
+.bannerStyle
+{
+	background-image: url();
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='./img/banner_image.png',sizingMethod='scale')
+}
+
+
+</style>
+<![endif]-->
+	<link href="./css/skin.css" rel="stylesheet" type="text/css" />
+	<title></title>
+
+	<script type="text/javascript">
+		var isIE6 = false;
+	</script>
+
+	<!--[if IE 6]>
+		<script type="text/javascript">
+			var isIE6=true;
+		</script>
+	<![endif]-->
+
+	<script type="text/javascript">
+		var showscore = 0;
+	</script>
+
+	<script type="text/javascript" src="outline.js"></script>
+
+	<script type="text/javascript" src="./js/browser.js"></script>
+
+	<script type="text/javascript" src="./js/cookie.js"></script>
+
+	<script type="text/javascript" src="./js/escape.js"></script>
+
+	<script type="text/javascript" src="./js/xmlloader.js"></script>
+
+	<script type="text/javascript" src="./js/_odtrack.js"></script>
+
+	<script type="text/javascript" src="./js/ods.js"></script>
+
+	<script type="text/javascript" src="./toc/tocfunctions.js"></script>
+
+	<script type="text/javascript" src="./js/playerlaunch.js"></script>
+
+	<script type="text/javascript" src="./js/query.js"></script>
+
+	<script type="text/javascript" src="./preferences/defaultprefs.js"></script>
+
+	<script type="text/javascript" src="./js/preferences.js"></script>
+
+	<script type="text/javascript" src="./js/help.js"></script>
+
+	<script type="text/javascript" src="./js/about.js"></script>
+
+	<script type="text/javascript" src="./js/resource.js"></script>
+
+	<script type="text/javascript" src="./js/resource_b.js"></script>
+
+	<script type="text/javascript" src="./js/tree.js"></script>
+
+	<script type="text/javascript" src="topicmap.js"></script>
+
+	<script type="text/javascript" src="./js/noevents.js"></script>
+
+	<script type="text/javascript" src="kpsettings.js"></script>
+
+	<script type="text/javascript" src="./js/baseurl.js"></script>
+
+	<script type="text/javascript" src="./js/relativelink.js"></script>
+
+	<script type="text/javascript">
+
+		var showParameters = false;
+		var searchParam = null;
+		var hemiParam = null;
+		var genericMode = false;
+		var genericMode_SearchHemi = false;
+		var searchVisible = false;
+		var pModesVisible = false;
+		var conceptVisible = false;
+		var allRoles = new Array();
+		var _rolesRemoved = false;
+		var ctxTopicList = new Array();
+		var ctxTopicList2 = new Array();
+		var onTocLoaded = false;
+		var showButtons = new Array();
+
+		var _semaphore = true;
+
+		function PlayTopic1(mode) {
+			if (_semaphore == true)
+				PlayTopic(mode);
+			_semaphore = true;
+		}
+
+		function Jumpin1(mode) {
+			_semaphore = false;
+			Jumpin(mode);
+		}
+
+		function NoWrap(s) {
+			var ss = "";
+			for (var i = 0; i < s.length; i++) {
+				if (s.substr(i, 1) == " ") {
+					ss += "&nbsp;";
+				}
+				else {
+					ss += s.substr(i, 1);
+				}
+			}
+			return ss;
+		}
+
+		function _getObjectById(owner, id) {
+			for (var i = 0; i < owner.childNodes.length; i++) {
+				cni = owner.childNodes[i];
+				if (cni.id == id) {
+					return cni;
+				}
+				else {
+					obj = _getObjectById(cni, id);
+					if (obj != null)
+						return obj;
+				}
+			}
+			return null;
+		}
+
+		function getObjectById(id) {
+			return document.getElementById(id);
+			//				return _getObjectById(document.body,id);
+		}
+
+		////////////////////////////////////////////////////////////////////////////
+
+		var _ftcobj = null;
+		var _myTableObj = null;
+		var _header1DivObj = null;
+		var _header2DivObj = null;
+		var _treeContainerObj = null;
+		var _conceptContainerObj = null;
+		var _searchResultObj = null;
+		var _pmTableObj = null;
+		var _ctTableObj = null;
+		var _searchBoxObj = null;
+		var _changeViewObj = null;
+		var _sres0Obj = null;
+		var _sres1Obj = null;
+		var _sres2Obj = null;
+		var _resulttextObj = null;
+		var _vbordersize = 10;
+		var _hbordersize = 10;
+		var _sbordersize = 10;
+
+		function getOffsetLeft(myobj) {
+			var parentOffsets = 0;
+			if (myobj.parentNode)
+				parentOffsets = getOffsetLeft(myobj.parentNode);
+			var offset = (myobj.offsetLeft ? myobj.offsetLeft : 0);
+			return offset + parentOffsets;
+		}
+
+		function getOffsetTop(myobj) {
+			var parentOffsets = 0;
+			if (myobj.parentNode)
+				parentOffsets = getOffsetTop(myobj.parentNode);
+			var offset = (myobj.offsetTop ? myobj.offsetTop : 0);
+			return offset + parentOffsets;
+		}
+
+		function coverToSep() {
+			if (_cover_dragged)
+				return;
+			var sepobj = document.getElementById("sepdiv");
+			var coverobj = document.getElementById("cover");
+			coverobj.style.width = sepobj.clientWidth + "px";
+			coverobj.style.height = sepobj.clientHeight + "px";
+			offsetLeft = getOffsetLeft(sepobj);
+			offsetTop = getOffsetTop(sepobj);
+			coverobj.style.top = offsetTop + "px";
+			coverobj.style.left = offsetLeft + "px";
+		}
+
+		function coverToFull() {
+			var coverobj = document.getElementById("cover");
+			coverobj.style.top = "0px";
+			coverobj.style.left = "0px";
+			coverobj.style.width = "100%";
+			coverobj.style.height = "100%";
+		}
+
+		var _cover_dragged = false;
+
+		function sepD() {
+			_cover_dragged = true;
+			coverToFull();
+			var coverobj = document.getElementById("cover");
+			if (coverobj.setCapture)
+				coverobj.setCapture();
+		}
+
+		function sepM(event) {
+			if (!_cover_dragged)
+				return;
+			if (_ftcobj == null)
+				_ftcobj = getObjectById("ftc");
+			e = event;
+			if (e == null)
+				e = window.event;
+			w = e.clientX - _sbordersize - _sbordersize / 2;
+			if (w > 0)
+				_ftcobj.style.width = "" + w + "px";
+			if (_treeContainerObj == null)
+				_treeContainerObj = getObjectById("treecontainer");
+			w = _treeContainerObj.clientWidth - 40;
+			setTimeout("_HResize()", 1);
+		}
+
+		function sepU() {
+			_cover_dragged = false;
+			coverToSep();
+			var coverobj = document.getElementById("cover");
+			if (coverobj.releaseCapture)
+				coverobj.releaseCapture();
+			if (document.frames)
+				document.frames[0].focus();
+			if (_ftcobj == null)
+				_ftcobj = getObjectById("ftc");
+			var c = new Cookie(document, "OnDemandToc", 365);
+			c.Load();
+			c.Separator = _ftcobj.offsetWidth;
+			c.Store();
+		}
+
+		////////////////////////////////////////////////////////////////////////////
+
+		function ShowAbout() {
+			OpenAbout("./toc/about.html");
+		}
+
+		function ShowHelp() {
+			onHelp(GetBasePath());
+		}
+
+		function ShowPrefs() {
+			OpenPreferencesDialog(GetBasePath(), false);
+		}
+
+		////////////////////////////////////////////////////////////////////////////
+
+		function JumpIn_Show(s, mode) {
+			if (s != null) {
+				document.getElementById("coverjumpin").style.width = "100%";
+				document.getElementById("coverjumpin").style.height = "100%";
+
+				var btnobj = getObjectById("jumpin" + mode);
+				x = btnobj.offsetLeft;
+				y = btnobj.offsetTop;
+				p = btnobj.offsetParent;
+				while (p != null) {
+					x += p.offsetLeft;
+					y += p.offsetTop;
+					p = p.offsetParent;
+				}
+				y += 12;
+				cv = document.body.clientWidth;
+				if (x + 290 > cv) {
+					x = cv - 290;
+				}
+				document.getElementById("jumpindiv").style.left = (document.all ? x : "" + x + "px");
+				document.getElementById("jumpindiv").style.top = (document.all ? y : "" + y + "px");
+				document.getElementById("jumpindiv").style.width = (document.all ? 250 : "250px");
+				document.getElementById("jumpindiv").style.height = "auto";
+				this.frames["jumpindiv"].setContent(s);
+				document.getElementById("jumpindiv").style.display = "block";
+			}
+			else {
+				document.getElementById("coverjumpin").style.width = "0px";
+				document.getElementById("coverjumpin").style.height = "0px";
+				document.getElementById("jumpindiv").style.display = "none";
+			}
+		}
+
+		function jumpinCorrection(w, h) {
+			h += 35;
+			document.getElementById("jumpindiv").style.height = (document.all ? h : "" + h + "px");
+		}
+
+		function SearchResult_Show(k) {
+			if (_searchResultObj == null)
+				_searchResultObj = getObjectById("searchresult");
+			_searchResultObj.style.display = (k ? "" : "none");
+			viewSearch = k;
+			searchVisible = k;
+			Resize();
+		}
+
+		function SearchProcess_Show(k) {
+			if (k) {
+				document.getElementById("coversearch").style.width = "100%";
+				document.getElementById("coversearch").style.height = "100%";
+				sprd = document.getElementById("searchprdiv");
+				sprd.style.display = "block";
+				w = Math.round((document.body.clientWidth / 2) - 60);
+				h = Math.round((document.body.clientHeight / 2) - 20);
+				sprd.style.left = (document.all ? w : "" + w + "px");
+				sprd.style.top = (document.all ? h : "" + h + "px");
+			}
+			else {
+				document.getElementById("coversearch").style.width = "0px";
+				document.getElementById("coversearch").style.height = "0px";
+				document.getElementById("searchprdiv").style.display = "none";
+			}
+		}
+
+		function Resize() {
+			setTimeout("_Resize()", 1);
+		}
+
+		var _seeittextobj = null;
+		var _tryittextobj = null;
+		var _knowittextobj = null;
+		var _doittextobj = null;
+		var _printittextobj = null;
+		var _seeitbuttonobj = null;
+		var _tryitbuttonobj = null;
+		var _knowitbuttonobj = null;
+		var _doitbuttonobj = null;
+		var _printitbuttonobj = null;
+		var _jumpinSobj = null;
+		var _jumpinTobj = null;
+		var _jumpinDobj = null;
+		var _lastbuttonobj = null;
+
+		function _HResize() {
+
+			if (pModesVisible == true) {
+				if (_pmTableObj == null)
+					_pmTableObj = getObjectById("playmodetable");
+
+				if (_seeittextobj == null)
+					_seeittextobj = getObjectById("seeittext");
+				if (_tryittextobj == null)
+					_tryittextobj = getObjectById("tryittext");
+				if (_knowittextobj == null)
+					_knowittextobj = getObjectById("knowittext");
+				if (_doittextobj == null)
+					_doittextobj = getObjectById("doittext");
+				if (_printittextobj == null)
+					_printittextobj = getObjectById("printittext");
+				if (_seeitbuttonobj == null)
+					_seeitbuttonobj = getObjectById("seeitbutton");
+				if (_tryitbuttonobj == null)
+					_tryitbuttonobj = getObjectById("tryitbutton");
+				if (_knowitbuttonobj == null)
+					_knowitbuttonobj = getObjectById("knowitbutton");
+				if (_doitbuttonobj == null)
+					_doitbuttonobj = getObjectById("doitbutton");
+				if (_printitbuttonobj == null)
+					_printitbuttonobj = getObjectById("printitbutton");
+				if (_jumpinSobj == null)
+					_jumpinSobj = getObjectById("jumpinS");
+				if (_jumpinTobj == null)
+					_jumpinTobj = getObjectById("jumpinT");
+				if (_jumpinDobj == null)
+					_jumpinDobj = getObjectById("jumpinD");
+				if (_lastbuttonobj == null)
+					_lastbuttonobj = getObjectById("lastbutton");
+
+				_pmTable = document.getElementById("playmodetable");
+				_btn = new Array();
+				_btn[0] = null;
+				_btn[1] = document.getElementById("btn1");
+				_btn[2] = document.getElementById("btn2");
+				_btn[3] = document.getElementById("btn3");
+				_btn[4] = document.getElementById("btn4");
+				_btn[5] = document.getElementById("btn5");
+				_btn[6] = document.getElementById("btn6");
+				_jbtn = new Array();
+				_jbtn[0] = null;
+				_jbtn[1] = document.getElementById("jumpinS");
+				_jbtn[2] = document.getElementById("jumpinT");
+				_jbtn[3] = null;
+				_jbtn[4] = document.getElementById("jumpinD");
+				_jbtn[5] = null;
+				_jbtn[6] = null;
+				var _limitSize = 0;
+				for (var i = 1; i <= 6; i++) {
+					if (showButtons[i] == true)
+						_limitSize += 102;
+				}
+				if (_pmTable.clientWidth < _limitSize) {
+					document.getElementById("seeittext").style.display = "none";
+					document.getElementById("tryittext").style.display = "none";
+					document.getElementById("knowittext").style.display = "none";
+					document.getElementById("doittext").style.display = "none";
+					document.getElementById("printittextPDF").style.display = "none";
+					document.getElementById("printittextDOC").style.display = "none";
+				}
+				else {
+					document.getElementById("seeittext").style.display = "block";
+					document.getElementById("tryittext").style.display = "block";
+					document.getElementById("knowittext").style.display = "block";
+					document.getElementById("doittext").style.display = "block";
+					document.getElementById("printittextPDF").style.display = "block";
+					document.getElementById("printittextDOC").style.display = "block";
+				}
+				var b_ct = 0;
+				for (var i = 1; i <= 6; i++) {
+					if (showButtons[i] == true)	// latszik
+					{
+						_btn[i].style.display = "block";
+						if (_pmTable.clientWidth < _limitSize)	// kis meret
+						{
+							_btn[i].style.width = "65px";
+							_btn[i].style.left = "" + (b_ct * 67) + "px";
+							if (_jbtn[i] != null)
+								_jbtn[i].style.left = "45px";
+						}
+						else	// nagy meret
+						{
+							_btn[i].style.width = "100px";
+							_btn[i].style.left = "" + (b_ct * 102) + "px";
+							if (_jbtn[i] != null)
+								_jbtn[i].style.left = "80px";
+						}
+						b_ct++;
+					}
+					else	// nem latszik
+					{
+						_btn[i].style.display = "none";
+					}
+				}
+			}
+
+			coverToSep();
+
+			if (_sres0Obj == null)
+				_sres0Obj = getObjectById("sres0");
+			if (_sres1Obj == null)
+				_sres1Obj = getObjectById("sres1");
+			if (_sres2Obj == null)
+				_sres2Obj = getObjectById("sres2");
+			if (_resulttextObj == null)
+				_resulttextObj = getObjectById("resulttext");
+			w0 = _sres0Obj.clientWidth;
+			w1 = _sres1Obj.clientWidth;
+			w2 = _sres2Obj.clientWidth;
+			if (w1 == 0)
+				return;
+			w = w0 - w1 - 8;
+			_sres2Obj.style.width = "" + w + "px";
+			if (document.all) {
+				if (w >= 12)
+					_resulttextObj.style.width = "" + (w - 12) + "px";
+			}
+		}
+
+		function _Resize() {
+			if (document.body.clientHeight < 100 || document.body.clientWidth < 100) {
+				_HResize();
+				return false;
+			}
+			if (viewApplicable == true || (allRoles.length > 0 && systemEnableCookies == true)) {
+				getObjectById("appandroles").className = 'tocSearchColor modebuttonshow';
+			}
+			if (_myTableObj == null)
+				_myTableObj = getObjectById("myTable");
+			if (_header1DivObj == null)
+				_header1DivObj = getObjectById("header1table");
+			if (_header2DivObj == null)
+				_header2DivObj = getObjectById("header2");
+			if (_treeContainerObj == null)
+				_treeContainerObj = getObjectById("treecontainer");
+			if (_conceptContainerObj == null)
+				_conceptContainerObj = getObjectById("conceptcontainer");
+			if (_searchResultObj == null)
+				_searchResultObj = getObjectById("searchresult");
+			if (_changeViewObj == null)
+				_changeViewObj = getObjectById("changeview");
+			if (_pmTableObj == null)
+				_pmTableObj = getObjectById("playmodetable");
+			if (_ctTableObj == null)
+				_ctTableObj = getObjectById("concepttitletable");
+			//				if (_searchBoxObj==null)
+			//					_searchBoxObj=getObjectById("searchbox");
+
+			_HResize();
+
+			//				_searchBoxObj.size=(_treeContainerObj.clientWidth-18)/6;
+
+			h = document.body.clientHeight - _hbordersize * 2 - _header1DivObj.clientHeight - _header2DivObj.clientHeight;
+
+			if (IsSafari() || IsFF3())
+				h -= 2;
+
+			h -= 4;
+			if (h >= 0)
+				_myTableObj.style.height = "" + h + "px";
+
+			var showChangeView = (viewApplicable || searchVisible);
+
+			_changeViewObj.className = (showChangeView ? 'tocSearchColor modebuttonshow' : 'tocSearchColor modebuttonhide');
+
+			hh = 0;
+			if (searchVisible)
+				hh = _searchResultObj.clientHeight;
+
+			if (showChangeView)
+				hh += getObjectById("changeview").clientHeight;
+
+			try {
+				_approles_correction = 46;
+				if (document.all && (viewApplicable == true || allRoles.length > 0)) {
+					_approles_correction = 52;
+				}
+
+				_treeContainerObj.style.height = "" + (h - _approles_correction - hh) + "px";
+			}
+			catch (e) {
+				_treeContainerObj.style.height = "0px";
+			}
+
+			hh = h;
+			if (pModesVisible) {
+				hh -= 44;
+				hh -= 2;
+			}
+			if (conceptVisible) {
+				//					hh-=30;
+			}
+			hh += 4;
+			if (hh >= 0)
+				_conceptContainerObj.style.height = "" + hh + "px";
+			RefreshConcept();
+
+			w = getObjectById("blogo").clientWidth;
+			getObjectById("blogoframe").style.width = "" + (w + 20) + "px";
+
+		}
+
+		function EventKeyDown(event) {
+			if (!event)
+				event = window.event;
+			code = event.keyCode;
+			if (code == 27) {
+				JumpIn_Show(null, null);
+			}
+			if (code == 13 && _inputHasFocus == true) {
+				Search_Click();
+				return false;
+			}
+		}
+
+		function FocusToSearchField() {
+			return;
+			try {
+				var sb = getObjectById("searchbox");
+				sb.focus();
+			}
+			catch (e) {
+			}
+		}
+
+		function applicable_Click() {
+			var o = getObjectById("chapp");
+			if (o.checked) {
+				viewApplicable = true;
+				_goToFlatMode = true;
+				Select(0);
+			}
+			else {
+				viewApplicable = false;
+				Select(0);
+			}
+		}
+
+		function Search_Click() {
+			if (_inputIsEmpty == true)
+				return;
+			try {
+				a = moduleName;
+			}
+			catch (e) {
+				return;
+			}
+			viewSearch = true;
+			_goToFlatMode = true;
+			FocusToSearchField();
+			//				SetSelectionViewText(true);
+			Select(1);
+		}
+
+		function Search_Clear_Click() {
+			var sb = getObjectById("searchbox");
+			sb.value = "";
+			OnInputBlur();
+			if (viewSearch == false)
+				return;
+			viewSearch = false;
+			FocusToSearchField();
+			Select(0);
+		}
+
+		function SetSelectionViewText(flatMode, empty) {
+			o = this.frames["mytreeframe"];
+			flatMode = o.GetActualFlatView();
+			if (!empty)
+				empty = o.IsActualViewEmpty();
+			if (empty == true) {
+				document.getElementById("selectionviewtext").innerHTML = "";
+			}
+			else {
+				document.getElementById("selectionviewtext").innerHTML = (flatMode ? R_toc_tree_view_in_outline : R_toc_tree_view_resultlist);
+			}
+		}
+
+		function EnableSelectionViewText(enable) {
+			s = (enable ? 'visible' : 'hidden');
+			document.getElementById("selectionviewtext").style.visibility = s;
+		}
+
+		function ChangeView_Click() {
+			o = this.frames["mytreeframe"];
+			if (!o)
+				return;
+			flatMode = o.ChangeTreeView();
+			//				SetSelectionViewText(flatMode);
+		}
+
+		var _inputIsEmpty = true;
+		var _inputHasFocus = false;
+
+		function OnInputFocus() {
+			_inputHasFocus = true;
+			if (_inputIsEmpty == true) {
+				var sb = getObjectById("searchbox");
+				sb.value = "";
+				sb.className = "tocSearch";
+			}
+			_inputIsEmpty = false;
+		}
+
+		function OnInputBlur() {
+			_inputHasFocus = false;
+			var sb = getObjectById("searchbox");
+			if (sb.value == "") {
+				_inputIsEmpty = true;
+				sb.value = R_Toc_search;
+				sb.className = "tocSearchBarText";
+			}
+			else {
+				_inputIsEmpty = false;
+				sb.className = "tocSearch";
+			}
+		}
+
+		function SearchFontSize(s) {
+			for (var i=1;i<document.styleSheets.length;i++){
+				var ss = document.styleSheets[i];
+				if (ss.rules) {
+					for (var j = 0; j < ss.rules.length; j++) {
+						var rr = ss.rules[j];
+						if (rr.selectorText == s) {
+							return rr.style.fontSize;
+						}
+					}
+				}
+				else if (ss.cssRules) {
+					for (var j = 0; j < ss.cssRules.length; j++) {
+						var rr = ss.cssRules[j];
+						if (rr.selectorText == s) {
+							return rr.style.fontSize;
+						}
+					}
+				}
+			}
+			return "";
+		}
+
+		function Init() {
+			if (!document.all) {
+//				bypassToc = false;
+			}
+			var h1 = getObjectById("header1table");
+			var h3 = getObjectById("header3");
+			h3.style.top = "" + (h1.clientHeight + 2) + "px";
+			h3.style.display = "block";
+			h3img = getObjectById("bannerimg");
+			w = h3img.clientWidth;
+			h3img.style.height = "" + (h1.clientHeight) + "px";
+			h3img.style.width = "" + w + "px";
+			b = getObjectById("thorizontal1");
+			_hbordersize = b.clientHeight;
+			b = getObjectById("tvertical1");
+			_vbordersize = b.clientWidth;
+			b = getObjectById("tsep1");
+			_sbordersize = b.clientWidth;
+
+			{
+				var sbox = document.getElementById("searchbox");
+				var fs = parseInt(SearchFontSize(".tocSearch"));
+				var h = parseInt(sbox.style.height);
+				var d = Math.floor((h - fs) / 2);
+				var c = (isIE6 == true ? 4 : 0);
+				sbox.style.height = "" + (h - d + c) + "px";
+				sbox.style.paddingTop = "" + d + "px";
+			}			
+			
+			try {
+				document.title = R_toc_title + " - " + UnescapeQuotes(moduleName);
+			}
+			catch (e) {
+				Resize();
+				//					alert("The content is empty");
+				window.onresize = _Resize;
+				document.getElementById("cover").onmousemove = sepM;
+				document.getElementById("searchbox").disabled = true;
+				document.getElementById("treecontainer").innerHTML = '<div style="width: 100%; text-align: center; color: red;">' + R_toc_content_empty + "</div>";
+				return;
+			}
+
+			if (_resulttextObj == null)
+				_resulttextObj = getObjectById("resulttext");
+			if (document.all) {
+				_resulttextObj.style.width = "100px";
+			}
+
+
+			if (systemEnableCookies == true && UserPrefs.EnablePreferences == true) {
+				var o = getObjectById("prefsbutton");
+				o.style.display = 'block';
+			}
+
+			LoadXMLDocArray("roles.xml", "Roles_Returned", "Roles_Error", "Role", false);
+		}
+
+		function RolesRemoved() {
+			if (_rolesRemoved == true)
+				alert(R_roles_all_removed);
+			_rolesRemoved = false;
+		}
+
+		function Roles_Returned(ret) {
+			for (var i = 0; i < ret.length; i++) {
+				allRoles[i] = ret[i];
+			}
+			var o = getObjectById("hasrole");
+			if (allRoles.length > 0 && systemEnableCookies == true) {
+				o.style.display = 'inline';
+				s0 = getObjectById("sres0");
+				s0.style.height = "30px";
+
+				//					setTimeout("Init1()",50);
+			}
+			UserRoles.LoadCookie();
+			if (UserRoles.Filtering == true && allRoles.length == 0) {
+				UserRoles.Filtering = false;
+				UserRoles.StoreCookie();
+				_rolesRemoved = true;
+			}
+			var o = getObjectById("chroles");
+			o.checked = UserRoles.Filtering;
+			if (UserRoles.Filtering == true) {
+				InitRoles(GetRolesQueryString());
+			}
+			else {
+				setTimeout("Init1()", 50);
+			}
+		}
+
+		function Roles_Error() {
+			setTimeout("Init1()", 50);
+		}
+
+		function Init0(topiclist) {
+			o = window.frames["mytreeframe"];
+			o.SetTopicList("ROLES", topiclist, "parent.Init1");
+		}
+
+		function GetAllRoles() {
+			return allRoles;
+		}
+
+		function onRoles() {
+			OpenRolesDialog(GetBasePath());
+		}
+
+		function roles_Click() {
+			var o = getObjectById("chroles");
+			if (o.checked == true && UserRoles.Roles.length == 0) {
+				o.checked = false;
+				onRoles();
+				return;
+			}
+			UserRoles.Filtering = o.checked;
+			UserRoles.StoreCookie();
+			setRoleFiltering();
+		}
+
+		function onUpdateRoles() {
+			setRoleFiltering();
+		}
+
+		function GetRolesQueryString() {
+			if (!UserRoles.Filtering) {
+				return "NOROLES";
+			}
+			l = UserRoles.Roles.length;
+			if (l == 0) {
+				return "NOROLES";
+			}
+			s = "r";
+			for (var i = 0; i < l; i++) {
+				rolestr = UserRoles.Roles[i];
+				rolestr = Gkod.Escape.MyUnEscape(rolestr);
+				rolestr = rolestr.toLowerCase();
+				rolestr = Gkod.Escape.MyEscape(rolestr);
+				s += "'" + rolestr + "'";
+				if (i != (l - 1))
+					s += "-";
+			}
+			return s;
+		}
+
+		function setRoleFiltering() {
+			//				SetSelectionViewText(true)
+			var o = getObjectById("chroles");
+			UserRoles.LoadCookie();
+			o.checked = UserRoles.Filtering;
+			s = GetRolesQueryString();
+			SetRoles(s);
+		}
+
+		function Init1() {
+			SetNoEvents();
+			if (IsSafari())
+				document.onkeydown = EventKeyDown;
+			else
+				document.onkeypress = EventKeyDown;
+
+			FocusToSearchField();
+			ParseArguments();
+
+
+			if (hemiParam != null || genericMode == true) {
+				sb = getObjectById("hasapp");
+				sb.style.display = "inline";
+				s0 = getObjectById("sres0");
+				s0.style.height = "30px";
+				if (!document.all)
+					sb.style.paddingLeft = "7px";
+			}
+			else {
+				if (allRoles.length > 0 && systemEnableCookies == true) {
+					if (!document.all) {
+						sb = getObjectById("hasrole");
+						sb.style.paddingLeft = "7px";
+					}
+				}
+			}
+
+			if (hemiParam == null && genericMode == false || allRoles.length == 0) {
+				var sbox = document.getElementById("searchbox");
+				if (IsFF3()) {
+					sbox.style.marginTop = "" + (-2) + "px";
+				}
+				else if (IsSafari()) {
+					sbox.style.marginTop = "" + (0) + "px";
+				}
+				else {
+					sbox.style.marginTop = "" + (-1) + "px";
+				}
+			}
+
+			if (_ftcobj == null)
+				_ftcobj = getObjectById("ftc");
+			var c = new Cookie(document, "OnDemandToc", 365);
+			c.Load();
+			if (c.Separator)
+				_ftcobj.style.width = "" + c.Separator + "px";
+			Resize();
+			window.onresize = _Resize;
+			document.getElementById("cover").onmousemove = sepM;
+			var sb = getObjectById("searchbox");
+			sb.value = "";
+			OnInputBlur();
+			if (genericMode == true)              // generic mode
+			{
+				OnInputBlur();
+				var sb = getObjectById("chapp");
+				sb.disabled = false;
+				sb.checked = true;
+				viewApplicable = true;
+				Select(5);
+			}
+			else if (searchParam != null && hemiParam != null) // Filtered Hemi view
+			{
+				var sb = getObjectById("searchbox");
+				sb.value = searchParam;
+				OnInputBlur();
+				sb = getObjectById("chapp");
+				sb.disabled = false;
+				sb.checked = true;
+				viewApplicable = true;
+				Select(3);
+			}
+			else if (searchParam != null)	// Filtered view
+			{
+				var sb = getObjectById("searchbox");
+				sb.value = searchParam;
+				OnInputBlur();
+				Select(1);
+			}
+			else if (hemiParam != null)	// Hemi view
+			{
+				var sb = getObjectById("chapp");
+				sb.disabled = false;
+				sb.checked = true;
+				viewApplicable = true;
+				Select(2);
+			}
+			else	// All view
+			{
+				Select(0);
+			};
+		}
+
+		function UnescapeHemiParam(s) {
+			return replaceString("%27", "'", s);
+		}
+
+		function ParseArguments() {
+			var strArgs;
+			var strArg;
+
+			// Call parameters can be seperated from the URL by either a "?"
+			// or a "#" character...
+			var ss = document.location.hash.substring(1);
+			strArgs = ss.split("&");
+			if (strArgs.length == 0 || strArgs[0] == "") {
+				ss = document.location.search.substring(1);
+				strArgs = ss.split("&");
+			};
+
+			if (strArgs.length == 1) {
+				if (strArgs[0].toLowerCase().substr(0, 3) == "su=") {
+					toc_safeUriMode = true;
+					var s = Gkod.Escape.SafeUriUnEscape(strArgs[0].substr(3));
+					strArgs = s.split("&");
+				}
+			}
+
+			if (showParameters)
+				alert(ss);
+
+			for (var i = 0; i < strArgs.length; i++) {
+				strArg = (strArgs[i]);
+
+				if (strArg.substr(0, 7).toLowerCase() == "search=") {
+					if (!IsEmptyArgument(strArg, 7)) {
+						searchParam = strArg.substr(7);
+						_goToFlatMode = true;
+					}
+				}
+				if (strArg.substr(0, 6).toLowerCase() == "ctxex=") {
+					if (!IsEmptyArgument(strArg, 6)) {
+						hemiParam = UnescapeHemiParam(strArg.substr(6));
+						_goToFlatMode = true;
+					}
+				}
+				if (strArg.substr(0, 6).toLowerCase() == "genctx") {
+					genericMode = true;
+					_goToFlatMode = true;
+				}
+			}
+			if (genericMode == true) {
+				searchParam = null;
+			}
+		}
+
+		function IndexObject(index, score) {
+			this.index = index;
+			this.score = score;
+		}
+
+		function SortFunction(a, b) {
+			k = b.score - a.score;
+			return k;
+		}
+
+		function ShowGenToc(x) {
+			ctxTopicList = new Array();
+			ctxTopicList2 = new Array();
+			for (var i = 0; i < x.length; i++) {
+				ctxTopicList[ctxTopicList.length] = new IndexObject(x[i].index, x[i].score);
+			}
+			ctxTopicList.sort(SortFunction);
+			if (hemiParam == null) {
+				ShowGenToc2(null);
+			}
+			else {
+				genericMode_SearchHemi = true;
+				Select(2);
+			}
+		}
+
+		function ShowGenToc2(x) {
+			genericMode_SearchHemi = false;
+			if (x != null) {
+				for (var i = 0; i < x.length; i++) {
+					var ki = x[i].index;
+					var _found = false;
+					for (var j = 0; j < ctxTopicList.length; j++) {
+						var kj = ctxTopicList[j].index;
+						if (ki == kj) {
+							_found = true;
+							break;
+						}
+					}
+					if (_found == false) {
+						for (var j = 0; j < ctxTopicList2.length; j++) {
+							var kj = ctxTopicList2[j].index;
+							if (ki == kj) {
+								_found = true;
+								break;
+							}
+						}
+					}
+
+					if (_found == false) {
+						ctxTopicList2[ctxTopicList2.length] = new IndexObject(ki, 1);
+					}
+				}
+				if (ctxTopicList2.length > 0) {
+					for (var i = 0; i < ctxTopicList.length; i++) {
+						ctxTopicList2[ctxTopicList2.length] = ctxTopicList[i];
+					}
+					ctxTopicList = ctxTopicList2;
+				}
+			}
+			result_Search(ctxTopicList);
+		}
+
+		function IsEmptyArgument(s, keywordlen) {
+			if (s.length <= keywordlen)
+				return true;
+			if (s.length > keywordlen + 2)
+				return false;
+			ss = s.substr(keywordlen);
+			if (ss == '""' || ss == "''")
+				return true;
+			return false;
+		}
+
+		function Closing() {
+			ClosePlayer();
+			var c = new Cookie(document, "OnDemandToc", 365);
+			c.Load();
+			if (window.screenLeft != null)	// IE
+			{
+				c.TocLeft = window.screenLeft - 4;
+				c.TocTop = window.screenTop - 30;
+				c.TocWidth = document.body.clientWidth;
+				c.TocHeight = document.body.clientHeight;
+			}
+			else	// Mozilla
+			{
+				c.TocLeft = window.screenX;
+				c.TocTop = window.screenY;
+				c.TocWidth = window.innerWidth;
+				c.TocHeight = window.innerHeight;
+			}
+			c.Store();
+		}
+
+		function NotSupportedYet() {
+			alert("Coming soon ...");
+		}
+			
+	</script>
+
+</head>
+<body onload="Init();" onbeforeunload="Closing();">
+	<div id="header1">
+		<table id="header1table" class="header" style="width: 100%;" cellpadding="0" cellspacing="0">
+			<tr align="right">
+				<td style="text-align: left; background-color: #FFFFFF;" id="blogoframe">
+					<a href="javascript:ShowAbout()">
+
+						<script type="text/javascript">
+							document.write('<img id="blogo" src="./img/small_logo.gif" style="margin-left: 5px; margin-top: 5px; margin-bottom: 5px; vertical-align: bottom;" alt="' + R_toc_about_player + '" title="' + R_toc_about_player + '" />');
+						</script>
+
+					</a>
+				</td>
+				<td valign="top">
+					<div id="bannerimg" class="headerTransparent bannerStyle" style="width: 425px;">
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="header2">
+		<table style="width: 100%;" border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td class="headerDivbar" style="width: 100%;">
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="header3" style="display: none;" align="right">
+		<table border="0" cellspacing="0" cellpadding="0" align="right">
+			<tr align="right">
+				<td id="prefsbutton" style="width: 21px; text-align: center; vertical-align: middle;
+					display: none;">
+					<a href="javascript:ShowPrefs()">
+
+						<script type="text/javascript">
+							document.write('<img src="./img/prefs_button.gif" style="width: 16px; height: 16px; vertical-align: middle; border: 0px;" title="' + R_toctooltip_preferences + '" alt="' + R_toctooltip_preferences + '"/>');
+						</script>
+
+					</a>
+				</td>
+				<td style="width: 5px;">
+					&nbsp;
+				</td>
+				<td style="width: 21px; text-align: center; vertical-align: middle;">
+					<a href="javascript:ShowHelp()">
+
+						<script type="text/javascript">
+							document.write('<img src="./img/help_button.gif" style="width: 16px; height: 16px; vertical-align: middle; border: 0px;" title="' + R_toctooltip_help + '" alt="' + R_toctooltip_help + '"/>');
+						</script>
+
+					</a>
+				</td>
+				<td style="width: 5px;">
+					&nbsp;
+				</td>
+			</tr>
+		</table>
+	</div>
+	<table style="width: 100%;" cellpadding="0" cellspacing="0">
+		<tr>
+			<td id="thorizontal1" class="thorizontal background">
+			</td>
+		</tr>
+	</table>
+	<table id="myTable" cellpadding="0" cellspacing="0">
+		<tr>
+			<td id="tvertical1" class="tvertical background">
+			</td>
+			<td id="ftc" class="tiframe" style="width: 250px; vertical-align: top">
+				<table style="width: 100%" cellpadding="0" cellspacing="0">
+					<tr>
+						<td>
+							<table id="sres0" class="tocSearchColor" style="width: 100%; height: 45px;" cellspacing="3px">
+								<tr>
+									<td>
+
+										<script>
+											document.write('<input class="tocSearch" name="searchbox" type="text" id="searchbox" value=""');
+											document.write(' style="border: 1px solid #CECECE; width:99%; background-color: white;');
+											if (IsFF3()) {
+												document.write('margin-top: -1px;');
+											}
+											if (isIE6 == true)
+												document.write(' height: 21px;"');
+											else
+												document.write(' height: 19px;"');
+											document.write(' onfocus="OnInputFocus()" onblur="OnInputBlur()"/>');
+										</script>
+
+									</td>
+									<td style="width: 21px;">
+										<a href="javascript:Search_Click();">
+
+											<script>
+												document.write('<img src="./img/searchbtn.gif" style="padding-left:0px;');
+												if (document.all)
+													document.write(' margin-top: 1px;');
+												document.write('" border="0" alt="' + R_toctooltip_search + '" title="' + R_toctooltip_search + '"/>');
+											</script>
+
+										</a>
+									</td>
+									<td style="width: 21px;">
+										<a href="javascript:Search_Clear_Click();">
+
+											<script>
+												document.write('<img src="./img/clear.gif" style="padding-left:0px;');
+												if (document.all)
+													document.write(' margin-top: 1px;');
+												document.write('" border="0" alt="' + R_toctooltip_clearresult + '" title="' + R_toctooltip_clearresult + '"/>');
+											</script>
+
+										</a>
+									</td>
+								</tr>
+							</table>
+							<!--							<table id="appandroles" name="appandroles" class="tocSearchColor modebuttonhide" style="width: 100%; border: 1px solid red;" cellspacing="0px">
+								<tr class="tocSearchColor" style="border: 1px solid black;">
+									<td id="hasapp" style="visibility: hidden; border: 1px solid black;">
+
+										<script type="text/javascript">
+											document.write('<input id="chapp" name="chapp" type="checkbox" value="chapp" disabled="disabled" onclick="applicable_Click()" style="cursor: pointer" title="'+R_toctooltip_applicable+'"/>&nbsp;');
+										</script>
+										
+										<span class="tocFrameText">
+										<script type="text/javascript">document.write(R_toc_applicable);</script>
+										</span>
+										
+									</td>
+									<td id="hasrole" style="visibility: hidden;">
+
+										<script type="text/javascript">
+										document.write('<input id="chroles" name="chroles" type="checkbox" value="chroles" style="cursor: pointer" onclick="roles_Click()" title="'+R_toctooltip_roles+'"/>&nbsp;');
+										</script>
+
+										<a href="javascript:onRoles()" class="tocFrameText">
+
+											<script type="text/javascript">document.write(R_toc_roles);</script>
+
+										</a>
+									</td>
+								</tr>
+							</table>
+-->
+							<div id="appandroles" name="appandroles" class="tocSearchColor modebuttonhide" style="width: 100%;
+								padding-bottom: 3px; padding-left: 0px;">
+								<div id="hasapp" style="display: none; padding-left: 3px;">
+
+									<script type="text/javascript">
+										document.write('<input id="chapp" name="chapp" type="checkbox" value="chapp" disabled="disabled" onclick="applicable_Click()" style="cursor: pointer;" title="' + R_toctooltip_applicable + '"/>');
+									</script>
+
+									<span class="tocSearchColor tocApplicable">
+
+										<script type="text/javascript">											document.write(R_toc_applicable); document.write("&nbsp;");</script>
+
+									</span>
+								</div>
+								<div id="hasrole" style="display: none; padding-left: 3px;">
+
+									<script type="text/javascript">
+										document.write('<input id="chroles" name="chroles" type="checkbox" value="chroles" style="cursor: pointer;" onclick="roles_Click()" title="' + R_toctooltip_roles + '"/>');
+									</script>
+
+									<a href="javascript:onRoles()" class="tocSearchColor tocMyRoles">
+
+										<script type="text/javascript">											document.write(R_toc_roles);</script>
+
+									</a>
+								</div>
+							</div>
+							<table id="searchresult" class="tocFrameText" style="display: none; height: 20px;"
+								cellspacing="2px">
+								<tr>
+									<td id="sres1" valign="top" align="left" style="padding-left: 5px;">
+										<span class="tocResultsFor">
+
+											<script type="text/javascript">												var s = NoWrap(R_toc_resultsfor); document.write(s);</script>
+
+										</span>
+									</td>
+									<td id="sres2" valign="top" style="text-align: left;">
+										<div id="resulttext" style="font-weight: bold; overflow: hidden;" class="tocFrameText">
+										</div>
+									</td>
+								</tr>
+							</table>
+							<table id="changeview" class="tocFrameText modebuttonhide" style="width: 100%; height: 20px;"
+								cellspacing="0px">
+								<tr>
+									<td style="padding-left: 8px;" valign="top" class="tocFrameText">
+										<a id="selectionviewtext" href="javascript:ChangeView_Click();" class="tocFrameText">
+
+											<script>												document.write(R_toc_tree_view_in_outline);</script>
+
+										</a>
+									</td>
+								</tr>
+							</table>
+							<table style="width: 100%;">
+								<tr>
+									<td id="treecontainer" style="height: 800px;">
+										<iframe id="mytreeframe" name="mytreeframe" class="fill" src="./toc/outline-tree.html"
+											frameborder="0"></iframe>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</td>
+			<td id="tsep1" class="tsep background">
+				<div id="sepdiv" style="width: 100%; height: 100%;">
+				</div>
+			</td>
+			<td class="tiframe" style="vertical-align: top;">
+				<div id="playmodetable" class="navCellOff dividerColor" style="position: relative;
+					overflow: hidden; display: none;">
+
+					<script type="text/javascript">
+						document.write('<div id="btn1" style="" class="navCellOff dividerColor button"');
+						document.write('					onmouseout="this.className=\'navCellOff dividerColor button\'"');
+						document.write('					onmouseover="this.className=\'navCellOn dividerColor button\'" ');
+						document.write('					onclick="PlayTopic1(\'S\')" title="' + R_mode_seeit + '">');
+						document.write('	<div id="seeitimage"></div>');
+						document.write('	<span id="seeittext" class="textalign1">' + R_mode_seeit + '</span>');
+						document.write('	<div id="jumpinS" title="' + R_jumpin_link + '" onclick="Jumpin1(\'S\')">');
+						document.write('		<div class="jumpinimgclass"></div>');
+						document.write('	</div>');
+						document.write('</div>');
+						document.write('<div id="btn2" style="" class="navCellOff dividerColor button"');
+						document.write('					onmouseout="this.className=\'navCellOff dividerColor button\'"');
+						document.write('					onmouseover="this.className=\'navCellOn dividerColor button\'"');
+						document.write('					onclick="PlayTopic1(\'T\')" title="' + R_mode_tryit + '">');
+						document.write('	<div id="tryitimage"></div>');
+						document.write('	<span id="tryittext" class="textalign1">' + R_mode_tryit + '</span>');
+						document.write('	<div id="jumpinT" title="' + R_jumpin_link + '" onclick="Jumpin1(\'T\')">');
+						document.write('		<div class="jumpinimgclass"></div>');
+						document.write('	</div>');
+						document.write('</div>');
+						document.write('<div id="btn3" style="" class="navCellOff dividerColor button"');
+						document.write('					onmouseout="this.className=\'navCellOff dividerColor button\'"');
+						document.write('					onmouseover="this.className=\'navCellOn dividerColor button\'"');
+						document.write('					onclick="PlayTopic1(\'K\')" title="' + R_mode_knowit + '">');
+						document.write('	<div id="knowitimage"></div>');
+						document.write('	<span id="knowittext" class="textalign1">' + R_mode_knowit + '</span>');
+						document.write('</div>');
+						document.write('<div id="btn4" style="" class="navCellOff dividerColor button"');
+						document.write('					onmouseout="this.className=\'navCellOff dividerColor button\'"');
+						document.write('					onmouseover="this.className=\'navCellOn dividerColor button\'"');
+						document.write('					onclick="PlayTopic1(\'D\')" title="' + R_mode_doit + '">');
+						document.write('	<div id="doitimage"></div>');
+						document.write('	<span id="doittext" class="textalign1">' + R_mode_doit + '</span>');
+						document.write('	<div id="jumpinD" title="' + R_jumpin_link + '" onclick="Jumpin1(\'D\')">');
+						document.write('		<div class="jumpinimgclass"></div>');
+						document.write('	</div>');
+						document.write('</div>');
+						document.write('<div id="btn5" style="" class="navCellOff dividerColor button"');
+						document.write('					onmouseout="this.className=\'navCellOff dividerColor button\'"');
+						document.write('					onmouseover="this.className=\'navCellOn dividerColor button\'"');
+						document.write('					onclick="PlayTopic1(\'P\')" title="' + R_mode_printit + '">');
+						document.write('	<div id="printitimagePDF"></div>');
+						document.write('	<span id="printittextPDF" class="textalign1">' + R_mode_printit + '</span>');
+						document.write('</div>');
+						document.write('<div id="btn6" style="" class="navCellOff dividerColor button"');
+						document.write('					onmouseout="this.className=\'navCellOff dividerColor button\'"');
+						document.write('					onmouseover="this.className=\'navCellOn dividerColor button\'"');
+						document.write('					onclick="PlayTopic(\'P\')" title="' + R_mode_printit + '">');
+						document.write('	<div id="printitimageDOC"></div>');
+						document.write('	<span id="printittextDOC" class="textalign1">' + R_mode_printit + '</span>');
+						document.write('</div>');
+						document.write('<div class="navCellOff lastbutton"></div>');
+					</script>
+
+				</div>
+				<div id="concepttitletable" style="width: 100%; height: 15px;" class="cttablehide">
+					<hr style="border: 1px solid #DDD; border-style: outset;" />
+				</div>
+				<table style="width: 100%" cellpadding="0" cellspacing="0">
+					<tr>
+						<td id="conceptcontainer" style="height: 800px;">
+							<div id="conceptseparator" style="height: 2px; font-size: 1px;" class="background"></div>
+							<iframe class="fill" style="" id="myconceptframe" name="myconceptframe"
+								frameborder="0" src="./toc/empty.html"></iframe>
+						</td>
+					</tr>
+				</table>
+			</td>
+			<td class="tvertical background">
+			</td>
+		</tr>
+	</table>
+	<table style="width: 100%" cellpadding="0" cellspacing="0">
+		<tr>
+			<td class="thorizontal background">
+			</td>
+		</tr>
+	</table>
+	<div id="cover" onmouseup="sepU()" onmousedown="sepD()">
+	</div>
+	<div id="coversearch">
+	</div>
+	<div id="searchprdiv">
+		<br />
+		<img src="./img/search.gif" alt="search" /></div>
+	<div id="coverjumpin" onmouseup="JumpIn_Show(null,null);">
+	</div>
+	<iframe id="jumpindiv" name="jumpindiv" class="textWindows" onmouseup="JumpIn_Show(null,null);" src="./toc/jumpin.html">
+	</iframe>
+	<img id="ODSFrameView" width="1" height="1" src="" />
+	<img id="ODSKnowitScore" width="1" height="1" src="" />
+	<img id="ODSEvGroup" width="1" height="1" src="" />
+</body>
+</html>

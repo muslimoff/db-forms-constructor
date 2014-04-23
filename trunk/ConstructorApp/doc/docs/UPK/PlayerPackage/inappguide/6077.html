@@ -1,0 +1,47 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title> Configure the Gateway URL </title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+<meta name="Generator" content="AITPublish" />
+<meta name="Keywords" content="" />
+<link rel="stylesheet" type="text/css" href="36.css" />
+<script language="javascript" type="text/javascript" src="dhtml_toc.js"></script>
+<style>
+table.info {width:100%;}
+td {width:;}
+</style>
+<script>
+
+function resetWidth(){
+
+mytables=document.getElementsByTagName('Table')
+
+for (i=0;i<mytables.length;i++){
+
+if(mytables[i].width >450){
+
+mytables[i].className="info"
+
+}
+
+}
+
+}
+</script>
+</head>
+<body> 
+<h5 class="heading5">Configure the Gateway URL</h5>
+<p class="bodytext">In this step, you configure the help menu entry you created to point your deployed content. The content must be installed on either an IIS or Apache server to determine the correct URLs to enter into the system. </p>
+<p class="bodytext">You can set up the URL to call Player content in any client, or you can set up client-dependent base URLs. When you enter a Default Base URL and select the Enabled option, the entry is used to call Player content in any client by default. If you save the entry with the Enabled option deselected, the Default Base URL is not used in the system. If you do not want to use the Default Base URL, you must still enter an empty string in the table. If the entry is not defined, you will receive an error message.</p>
+<p class="bodytext">You can create client dependent base URLs as well. If there is no entry in the Client Dependent Base URL table for a specific client, the Default Base URL is used for that client. When the Enabled option is selected for a client, then the URL for the client is taken as the Base URL. When the Enabled option is deselected for a client, then Player content is deactivated in the client, and users will receive an error message when calling Player content.</p>
+<p class="bodytext">You must log in to the SAP system as a user with developer rights. Since the table you will be using is defined as client independent, you can log in to any client to change the entries.</p>
+<ol class="listprocedure"><li class="listprocedure">Go to transaction /n/GKOD/SS.</li><li class="listprocedure">On the <strong class="bold">Setup </strong>menu, choose <strong class="bold">Default Base URL</strong>. </li><li class="listprocedure">In the <strong class="bold">Default Base URL</strong> field, enter the path to the <strong class="bold">sap_gateway.html</strong> page in the content for SAP on the Web server. This must be a fully-qualified URL containing the <strong class="bold">sap_gateway.html</strong> page. <p class="listcontinueindent">The <strong class="bold">sap_gateway.html</strong> page is located in the front\hemi folder within the Player installation.</p>
+</li><li class="listprocedure">Click the <strong class="bold">Enabled </strong>option to select it, if necessary.</li><li class="listprocedure">Click <img src="7050.gif" alt="" height="16" width="16" vspace="0" hspace="0" align="bottom" border="0" /> <strong class="bold">Save</strong>.</li><li class="listprocedure">Click <img src="7051.gif" alt="" height="16" width="16" vspace="0" hspace="0" align="bottom" border="0" /> <strong class="bold">Continue</strong>.</li><li class="listprocedure">On the <strong class="bold">Setup </strong>menu, choose <strong class="bold">Client Dependent Base URL</strong>.</li><li class="listprocedure">In the <strong class="bold">Table/View</strong> field, enter <strong class="bold">/GKOD/YEXTHLPURM </strong>if necessary.</li></ol><p class="bodytext"></p>
+
+
+<script>resetWidth()</script>
+</body>
+</html>
+
+

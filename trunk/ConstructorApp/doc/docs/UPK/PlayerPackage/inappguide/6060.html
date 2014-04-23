@@ -1,0 +1,49 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title> PeopleSoft Enterprise </title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+<meta name="Generator" content="AITPublish" />
+<meta name="Keywords" content="PeopleSoft Enterprise	help integration" />
+<link rel="stylesheet" type="text/css" href="36.css" />
+<script language="javascript" type="text/javascript" src="dhtml_toc.js"></script>
+<style>
+table.info {width:100%;}
+td {width:;}
+</style>
+<script>
+
+function resetWidth(){
+
+mytables=document.getElementsByTagName('Table')
+
+for (i=0;i<mytables.length;i++){
+
+if(mytables[i].width >450){
+
+mytables[i].className="info"
+
+}
+
+}
+
+}
+</script>
+</head>
+<body> 
+<h3 class="heading3">PeopleSoft Enterprise</h3>
+<p class="bodytext">Set the HelpURL value inside your active Web profile configuration to point to the <strong class="bold">pst8_gateway.html</strong> file, located in the<strong class="bold"> PST8/hemi</strong> folder in the published content.</p>
+<p class="subparagraph">Change the value of the Help URL field in your PeopleSoft application to:</p>
+<p class="code">http://webserver/foldername/pst8_gateway.html?ContextID=%CONTEXT_ID%&amp;LangCD=%LANG_CD%</p>
+<p class="bodytext">You must restart the PeopleSoft Web server service for the changes to take effect.</p>
+<p class="bodytext">It is a good idea to make a note of the original PeopleBooks help URL in case you want to use it later.</p>
+<p class="noteparagraph"><strong class="bold">Note:</strong> For further information, see the Configure Context Sensitive Help and the Enabling the Help Link from the Application Pages sections in the Installing PeopleBooks appendix of the PeopleTools installation guide.</p>
+<p class="noteparagraph"><strong class="bold">Note:</strong> It is recommended that PeopleBooks be installed before starting to record content. However, if PeopleBooks is not installed, the content launches directly from the PeopleSoft Help menu. </p>
+<p class="allowpagebreak"></p>
+
+
+<script>resetWidth()</script>
+</body>
+</html>
+
+

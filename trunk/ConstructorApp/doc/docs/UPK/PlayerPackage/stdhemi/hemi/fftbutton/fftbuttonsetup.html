@@ -1,0 +1,122 @@
+﻿<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+
+<!--Version 9.5.0.17-->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+	<script type="text/javascript" src="../scripts/oddefs.js"></script>
+	<script type="text/javascript" src="../scripts/odplaybackdefs.js"></script>
+	<script type="text/javascript" src="../scripts/odhelper.js"></script>	
+    <script type="text/javascript" src="../odstdtest.js"></script>
+    <script type="text/javascript" src="../strings.js"></script>
+    <script type="text/javascript" src="../odstdcustomurl.js"></script>
+    <script type="text/javascript">
+	document.title = TITLE;
+	var ErrorResult;
+    var install = false;
+    var supported = -1;
+    var s = location.search.substr(1);
+    if (s.length > 0)
+    {    
+        var a = s.split('&');
+        for (var i = 0; i < a.length; i++)
+        {
+            var b = a[i].split('=');
+            if (b.length == 2)
+            {
+                if (b[0] == 'browser')
+                    supported = (b[1] == 'ff') ? 1 : 0;
+            }
+        }
+    }
+
+    setTimeout(function() { var undefined; ErrorResult = ((ErrorResult !== undefined) ? ErrorResult : 1); }, 40000);
+
+    function Load()
+    {
+        if (install) {
+            InstallXPI();
+        }
+    }
+
+    function WriteText(id, text) {
+        document.getElementById(id).innerHTML = text;
+    }
+
+    function ClearStatusText() {
+        document.getElementById("installstatus").innerHTML = "";
+        if (setupdiagMode) {
+            WriteStatusText(DIAGNOSTICMODE);
+        }
+    }
+
+    function WriteStatusText(text) {
+        document.getElementById("installstatus").innerHTML += "<span>" + text + "</span><br /><br />";
+    }
+
+    function doneFn(name, result) {
+        if (result) {
+            WriteStatusText("An error occured: " + result);
+        } else {
+            WriteStatusText(CONFIGURATIONCOMPLETE);
+        }
+    }
+
+    function InstallXPI() {
+        var xpi = {};
+        xpi[PRODUCTNAME] = {
+            URL: "hemiffbutton.xpi",
+            IconURL: "hemi_Pkg.ico"
+        };
+
+        InstallTrigger.install(xpi, doneFn);
+        if (document.getElementById("errortext").childNodes.length == 2) {
+            document.getElementById("errortext").removeChild(document.getElementById("errortext").childNodes[1]);
+        }
+    }
+    </script>
+    <style type="text/css">
+    body
+    {
+        font-family: Tahoma;
+    }
+    </style>
+</head>
+<body onload='Load()'>
+	<div style="width: 800px; text-align: center">
+		<div id="Content">
+			<div id="foreword" style="font-weight: bold; font-size: large"></div>
+		    <br /><br />
+		    <div id="installstatus" style="font-weight: bold"></div>
+		    <br /><br />
+		</div>
+
+    </div>
+    
+    <script type="text/javascript">
+	if (supported == -1)
+	{
+        document.location.href = "../smarthelp/smarthelpsetup.html";
+	}
+	else if (supported == 0)
+	{
+	    ClearStatusText();
+	    WriteStatusText(NOTSUPPORTED_FF);  
+	}
+	else
+	{
+	    WriteText("foreword", FOREWORD_INS);       
+
+        var url = document.URL;
+        url = url.substr(0, url.indexOf("/fftbuttonsetup"));
+        var jarurl = "jar:" + url + "/fftbutton.jar!/fftbuttonsetup_secure.html" + location.search;
+        document.write("<iframe name=secure frameborder=0 height=30% width=100% src='" + jarurl + "' </iframe>");
+    }
+
+    </script>
+</body>
+</html>

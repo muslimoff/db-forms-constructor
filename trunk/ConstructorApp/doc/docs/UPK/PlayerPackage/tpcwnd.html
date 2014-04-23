@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title></title>
+
+	<script type="text/javascript" src="./js/cookie.js"></script>
+
+	<script type="text/javascript" src="./js/preferences.js"></script>
+
+	<script type="text/javascript" src="./js/resource.js"></script>
+
+	<script type="text/javascript" src="./js/help.js"></script>
+
+	<script type="text/javascript">
+
+		var tpc = "";
+		var mode = "";
+
+		function filterHTML(s) {
+			s = replaceString("&amp;", "&", s);
+			s = replaceString("&lt;", "<", s);
+			s = replaceString("&gt;", ">", s);
+			return s;
+		}
+
+		function replaceString(oldString, newString, fullS) {
+			if (fullS == null) return;
+			var cReg = new RegExp(oldString, "g");
+			var nString = fullS.replace(cReg, newString);
+			return nString;
+		}
+
+		function SetTopicName(s) {
+			document.title = filterHTML(s);
+		}
+
+		function GetBasePath() {
+			base = this.location.href;
+			k = base.indexOf('?');
+			if (k < 0)
+				k = base.indexOf('#');
+			if (k >= 0)
+				base = base.substr(0, k);
+			k = base.lastIndexOf('/');
+			b = base.substr(0, k);
+			return b;
+		}
+
+		function ShowHelp() {
+			if (playerIFrame.SeeItPause)
+				playerIFrame.SeeItPause();
+			onHelp(GetBasePath());
+		}
+
+		function ShowPrefs() {
+			if (playerIFrame.SeeItPause)
+				playerIFrame.SeeItPause();
+			OpenPreferencesDialog(GetBasePath(), false, true);
+		}
+
+		function PauseToggle() {
+			if (playerIFrame.PauseToggle)
+				playerIFrame.PauseToggle();
+		}
+
+		function setPauseStatus(isPaused) {
+			document.getElementById("bh_play").style.display = (isPaused ? "block" : "none");
+			document.getElementById("bh_pause").style.display = (isPaused ? "none" : "block");
+		}
+
+		function Forward() {
+			if (playerIFrame.DemoNext)
+				playerIFrame.DemoNext();
+		}
+
+		function Backward() {
+			if (playerIFrame.DemoPrev)
+				playerIFrame.DemoPrev();
+		}
+
+		window.onresize = ResizeWindow;
+
+		function GetWidth(obj) {
+			return document.getElementById(obj).clientWidth;
+		}
+
+		function GetLeft(obj) {
+			return document.getElementById(obj).offsetLeft;
+		}
+
+		function SetWidth(obj, s) {
+			document.getElementById(obj).style.width = s;
+		}
+
+		function SetHeight(obj, s) {
+			document.getElementById(obj).style.height = s;
+		}
+
+		function SetPos(obj, x, y) {
+			document.getElementById(obj).style.top = x;
+			document.getElementById(obj).style.left = y;
+		}
+
+		function ResizeWindow() {
+			cw = 0;
+			ch = 0;
+			if (window.innerWidth) {
+				cw = window.innerWidth;
+			}
+			else if (document.documentElement.clientWidth) {
+				cw = document.documentElement.clientWidth;
+			}
+			else if (document.body.clientWidth) {
+				cw = document.body.clientWidth;
+			}
+
+			if (window.innerHeight) {
+				ch = window.innerHeight;
+			}
+			else if (document.documentElement.clientHeight) {
+				ch = document.documentElement.clientHeight;
+			}
+			else if (document.body.clientHeight) {
+				ch = document.body.clientHeight;
+			}
+
+			if (cw > 0) {
+				SetWidth("wrapper", "" + (cw - 30) + "px");
+				SetHeight("wrapper", "" + (ch - 20) + "px");
+
+				SetWidth("playerHost", "" + (cw - 38) + "px");
+				SetHeight("playerHost", "" + (ch - 68) + "px");
+				SetWidth("playerIFrame", "" + (cw - 38 + 17) + "px");
+				SetHeight("playerIFrame", "" + (ch - 68 + 17) + "px");
+
+
+				SetWidth("controls", "" + cw + "px");
+
+				crw = GetWidth("cright");
+				cll = GetLeft("cleft");
+				clw = GetWidth("cleft");
+				xpos = cw - crw - 18;
+				if (xpos < cll + clw)
+					xpos = cll + clw;
+				SetPos("cright", "0px", "" + xpos + "px");
+			}
+
+		}
+
+		function Load() {
+			if (tpc == "" || mode == "") {
+				alert("Error");
+				this.close();
+			}
+			var ss = this.frames["playerIFrame"].location.href;
+			var k = ss.lastIndexOf("/");
+			if (ss.substr(k) == "/empty.html") {
+				this.frames["playerIFrame"].location.href = "./tpc/" + tpc + "/topic.html?mode=" + mode + "&windowed";
+			}
+		}
+
+		function Load2() {
+			setPauseStatus(false);
+			this.frames["playerIFrame"].location.href = "./tpc/" + tpc + "/topic.html?mode=" + mode + "&windowed";
+		}
+
+		function ParseArguments() {
+			var strArgs;
+			var strArg;
+
+			// Call parameters can be seperated from the URL by either a "?"
+			// or a "#" character...
+
+			var ss = document.location.hash.substring(1);
+			strArgs = ss.split("&");
+			if (strArgs.length == 0 || strArgs[0] == "") {
+				ss = document.location.search.substring(1);
+				strArgs = ss.split("&");
+			}
+
+			for (var i = 0; i < strArgs.length; i++) {
+				strArg = (strArgs[i]);
+				if (strArg.substr(0, 4).toLowerCase() == "tpc=") {
+					tpc = strArg.substr(4);
+				}
+				if (strArg.substr(0, 5).toLowerCase() == "mode=") {
+					mode = strArg.substr(5);
+				}
+			}
+		}
+
+		function initTooltips() {
+			document.getElementById("bh_play").title = R_fusion_play_pause;
+			document.getElementById("bh_pause").title = R_fusion_play_pause;
+			document.getElementById("bh_backward").title = R_fusion_back;
+			document.getElementById("bh_forward").title = R_fusion_forward;
+			document.getElementById("bh_load").title = R_fusion_restart;
+		}
+
+		function Init() {
+			initTooltips();
+			ParseArguments();
+			ResizeWindow();
+			setTimeout("Load()", 10);
+		}
+
+	</script>
+
+	<link href="./css/skin.css" rel="stylesheet" type="text/css" />
+	<style type="text/css">
+		*
+		{
+			margin: 0px;
+			padding: 0px;
+		}
+		#wrapper
+		{
+			position: absolute;
+			top: 15px;
+		}
+		#playerHost
+		{
+			background-color: White;
+			overflow: hidden;
+			margin-left: 15px;
+			border-style: solid;
+			border-width: 4px;
+		}
+		#controls
+		{
+			position: relative;
+			margin-top: 8px;
+		}
+		#cleft
+		{
+			position: relative;
+			width: 250px;
+			height: 30px;
+			margin-left: 20px;
+			top: 1px;
+		}
+		.c_button
+		{
+			width: 60px;
+			height: 28px;
+			background-image: url(./img/buttonbackground1.png);
+			cursor: pointer;
+		}
+		#b_play
+		{
+			width: 60px;
+			height: 28px;
+			background-image: url(./img/play.png);
+		}
+		#b_pause
+		{
+			width: 60px;
+			height: 28px;
+			background-image: url(./img/pause.png);
+		}
+		#bh_backward
+		{
+			position: absolute;
+			top: 0px;
+			left: 62px;
+		}
+		#b_backward
+		{
+			width: 60px;
+			height: 28px;
+			background-image: url(./img/previousstep.png);
+		}
+		#bh_forward
+		{
+			position: absolute;
+			top: 0px;
+			left: 124px;
+		}
+		#b_forward
+		{
+			width: 60px;
+			height: 28px;
+			background-image: url(./img/nextstep.png);
+		}
+		#bh_load
+		{
+			position: absolute;
+			top: 0px;
+			left: 186px;
+		}
+		#b_load
+		{
+			width: 60px;
+			height: 28px;
+			background-image: url(./img/restartplayback.png);
+		}
+		#cright
+		{
+			width: 60px;
+			position: absolute;
+			top: 0px;
+			margin-top: 5px;
+			text-align: right;
+		}
+		#cright img
+		{
+			border: 0px;
+			cursor: pointer;
+		}
+		#cright a
+		{
+			margin-left: 10px;
+		}
+	</style>
+	<!--[if IE 6]>
+<style>
+		.c_button
+		{
+			width: 60px;
+			height: 28px;
+			background-image: url();
+			filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='./img/buttonbackground1.png',sizingMethod='scale');
+			cursor: pointer;
+		}
+		#b_play
+		{
+			width: 60px;
+			height: 28px;
+			background-image: url();
+			filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='./img/play.png',sizingMethod='scale');
+		}
+		#b_pause
+		{
+			width: 60px;
+			height: 28px;
+			background-image: url();
+			filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='./img/pause.png',sizingMethod='scale');
+		}
+		#b_backward
+		{
+			width: 60px;
+			height: 28px;
+			background-image: url();
+			filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='./img/previousstep.png',sizingMethod='scale');
+		}
+		#b_forward
+		{
+			width: 60px;
+			height: 28px;
+			background-image: url();
+			filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='./img/nextstep.png',sizingMethod='scale');
+		}
+		#b_load
+		{
+			width: 60px;
+			height: 28px;
+			background-image: url();
+			filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='./img/restartplayback.png',sizingMethod='scale');
+		}
+</style>
+<![endif]-->
+</head>
+<body onload="Init()" class="background">
+	<div id="wrapper">
+		<div id="playerHost" class="playerCombination">
+			<iframe id="playerIFrame" name="playerIFrame" frameborder="0" src="./toc/empty.html">
+			</iframe>
+		</div>
+		<div id="controls" class="playerCombination">
+			<div id="cleft">
+				<div id="bh_play" class="c_button" onclick="PauseToggle()" style="display: none;">
+					<div id="b_play">
+					</div>
+				</div>
+				<div id="bh_pause" class="c_button" onclick="PauseToggle()">
+					<div id="b_pause">
+					</div>
+				</div>
+				<div id="bh_backward" class="c_button" onclick="Backward()">
+					<div id="b_backward">
+					</div>
+				</div>
+				<div id="bh_forward" class="c_button" onclick="Forward()">
+					<div id="b_forward">
+					</div>
+				</div>
+				<div id="bh_load" class="c_button" onclick="Load2()">
+					<div id="b_load">
+					</div>
+				</div>
+			</div>
+			<div id="cright">
+					<script type="text/javascript">
+						document.write('<a href="javascript:ShowPrefs()"><img class="playerCombination" src="./img/prefs_button.gif" alt="' + R_fusion_preferences + '" title="' + R_fusion_preferences + '" /></a>');
+						document.write('<a href="javascript:ShowHelp()"><img class="playerCombination" src="./img/help_button.gif" alt="' + R_fusion_help + '" title="' + R_fusion_help + '"/></a>');
+					</script>
+				</a>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

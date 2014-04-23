@@ -1,0 +1,33 @@
+﻿<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+	<script src="../js/noevents.js"></script>
+
+	<script>
+	function Loaded() {
+		var ss = document.location.hash.substring(1);
+		strArgs = ss.split("&");
+		if (strArgs.length == 0 || strArgs[0] == "") {
+			ss = document.location.search.substring(1);
+			strArgs = ss.split("&");
+		}
+		for (var i = 0; i < strArgs.length; i++) {
+			strArg = (strArgs[i]);
+			if (strArg == 'callback') {
+				try {
+					parent.EmptyHtmlLoaded();
+				}
+				catch (e) { };
+			}
+		}
+	}
+	</script>
+
+</head>
+<body bgcolor="white" onload="SetNoEvents(); Loaded();">
+</body>
+</html>

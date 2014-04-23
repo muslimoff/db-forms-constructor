@@ -1,0 +1,83 @@
+﻿<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+	<script src="../js/noevents.js"></script>
+
+	<script src="../js/resource.js"></script>
+
+	<script>
+
+		var bSoundIsAvailable = true;
+		var bSeeItOnly = false;
+
+		function ShowColorTable() {
+			frames["preferences0"]["prefmain"].DisableComboBoxes();
+			document.getElementById("preftrp").style.display = "inline";
+			document.getElementById("prefcolor").style.display = "inline";
+			frames["prefcolor"].focus();
+		}
+
+		function ColorSelected(s) {
+			frames["preferences0"]["prefmain"].OnColorSelection(s);
+			HideColorTable();
+		}
+
+		function HideColorTable() {
+			document.getElementById("preftrp").style.display = "none";
+			document.getElementById("prefcolor").style.display = "none";
+			frames["preferences0"]["prefmain"].EnableComboBoxes();
+		}
+
+		function Click() {
+			HideColorTable();
+		}
+
+		function Init() {
+			document.title = R_preferences_title;
+			SetNoEvents();
+
+			var strArgs = document.location.hash.substring(1).split("&");
+			if (strArgs.length == 0 || strArgs[0] == "")
+				strArgs = document.location.search.substring(1).split("&");
+			if (strArgs.length > 0) {
+				for (var i = 0; i < strArgs.length; i++) {
+					var s = strArgs[i].toUpperCase();
+					if (s == "NOSOUND")
+						bSoundIsAvailable = false;
+					if (s == "SEEITONLY") {
+						bSeeItOnly = true;
+					}
+				}
+			}
+			frames["preferences0"]["prefmain"].init();
+		}
+
+		function window_onunload2() {
+			try {
+				if (opener) {
+					if (opener.OnClosingPreferences)
+						opener.OnClosingPreferences();
+				}
+			}
+			catch (e) { };
+		}
+
+
+	</script>
+
+</head>
+<body style="margin: 0px" onload="Init()" onunload="window_onunload2()">
+	<iframe name="preferences0" id="preferences0" src="preferences0.html" style="display: inline;
+		width: 100%; height: 100%"></iframe>
+	<iframe name="preftrp" id="preftrp" src="./transparent.html" allowtransparency style="display: none;
+		filter: chroma(color=#FFFFFF); left: 0px; width: 100%; position: absolute; top: 0px;
+		height: 100%"></iframe>
+	<iframe name="prefcolor" id="prefcolor" src="colortable.html" frameborder="yes" scrolling="no"
+		marginwidth="2" marginheight="2" style="display: none; left: 177px; width: 100px;
+		position: absolute; top: 48px; height: 105px"></iframe>
+</body>
+</html>

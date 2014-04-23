@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<!--Version 9.6.0.15-->
+<resources>
+  <resource xml:id="CT.Action.ShowTOC">Lancer le contenu</resource>
+  <resource xml:id="CT.Title.Language">Langue</resource>
+  <resource xml:id="CT.Title.ContentUrl">URL du contenu</resource>
+
+  <resource xml:id="CT.Type.Number.DefaultOrZero100">Ce doit être un nombre compris entre 0 et 100. -1 est la valeur par défaut.</resource>
+  <resource xml:id="CT.Type.Integer.DefaultOrZeroInf">Ce doit être zéro ou un entier positif. -1 est la valeur par défaut.</resource>
+  <resource xml:id="CT.Type.UseDefault">Utiliser la valeur par défaut</resource>
+  <resource xml:id="CT.Type.Default">Valeur par défaut</resource>
+  <resource xml:id="CT.Type.Yes">Oui</resource>
+  <resource xml:id="CT.Type.No">Non</resource>
+  <resource xml:id="CT.Type.Enable">Activer</resource>
+  <resource xml:id="CT.Type.Enabled">Activé</resource>
+  <resource xml:id="CT.Type.Disable">Désactiver</resource>
+  <resource xml:id="CT.Type.Disabled">Désactivé</resource>
+
+  <resource xml:id="CT.Type.Show">Afficher</resource>
+  <resource xml:id="CT.Type.DontShow">Ne pas afficher</resource>
+
+  <resource xml:id="CT.Type.All">Tout</resource>
+  <resource xml:id="CT.Type.Applicable">Applicable</resource>
+
+  <resource xml:id="CT.Type.Use">Utiliser</resource>
+  <resource xml:id="CT.Type.DontUse">Ne pas utiliser</resource>
+
+  <resource xml:id="CT.Type.ApplicationName.InvalidCharacters">Le nom contient des caractères non valides. Il doit comporter de 1 à 8 caractères et ne contenir que des lettres, des chiffres ou le caractère de soulignement.</resource>
+  <resource xml:id="CT.Type.ApplicationName.InvalidLength">Le nom doit comporter de 1 à 8 caractères et ne contenir que des lettres, des chiffres ou le caractère de soulignement.</resource>
+  <resource xml:id="CT.Type.FrameLocation.Top">En haut</resource>
+  <resource xml:id="CT.Type.FrameLocation.Bottom">En bas</resource>
+  <resource xml:id="CT.Type.HelpMode.TopEmbeddedFrame">Cadre intégré en haut</resource>
+  <resource xml:id="CT.Type.HelpMode.BottomEmbeddedFrame">Cadre intégré en bas</resource>
+  <resource xml:id="CT.Type.HelpMode.LinkInGatewayPage">Lien dans la page de passerelle</resource>
+  <resource xml:id="CT.Type.LanguageMap.DuplicatedKey">{KEY} est en double.</resource>
+  <resource xml:id="CT.Type.LanguageMap.MissingKey">L'ID langue est manquant.</resource>
+  <resource xml:id="CT.Type.LanguageMap.MissingValue">L'URL du contenu doit être indiquée.</resource>
+
+  <resource xml:id="CT.Section.CONTENT">Configurer le contenu multilingue</resource>
+  <resource xml:id="CT.Variable.OD_URL.Title">URL de contenu par langue</resource>
+  <resource xml:id="CT.Variable.OD_URL.Explain">Cette option comporte deux champs : Langue et URL du contenu. Utilisez la liste Langue pour sélectionner une langue, puis, dans le champ URL du contenu, entrez l'URL d'accès au contenu développé dans la langue sélectionnée. Si besoin, vous pouvez ajouter des lignes afin de prendre en charge toutes les langues disponibles.</resource>
+  <resource xml:id="CT.Variable.OD_DEFAULT_URL.Title.Lang">URL de contenu par défaut</resource>
+  <resource xml:id="CT.Variable.OD_DEFAULT_URL.Explain.Lang">URL du contenu à ouvrir si la langue n'est pas définie dans la liste URL de contenu par langue. Par exemple, si vous avez défini les langues Anglais, Espagnol, Français et qu'une personne se connecte en italien, vous pouvez préciser que c'est le contenu en anglais qui doit être lancé.&lt;br/>&lt;br/>Remarque : {rc:parent}</resource>
+
+  <resource xml:id="CT.Section.HELP">Configurer l'aide de l'application</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATIONHELP_URL.Title">URL de l'aide</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATIONHELP_URL.Explain">Si vous saisissez l'URL de l'aide de l'application, elle s'affiche dans la page de passerelle. Si cette URL ne s'affiche pas, le contenu du composant Player se lance sans afficher la page de passerelle.</resource>
+  <resource xml:id="CT.Variable.OD_SHOWHELPMODE.Title">Afficher l'aide sous la forme</resource>
+  <resource xml:id="CT.Variable.OD_SHOWHELPMODE.Explain">Le lien d'aide de l'application peut apparaître sous la forme d'un lien dans la page de passerelle ou sous la forme d'un cadre intégré en haut ou en bas de la page de passerelle. Si vous choisissez d'afficher l'aide sous la forme d'un lien, le champ Texte du lien d'aide est activé afin que vous indiquiez le texte de ce lien.</resource>
+  <resource xml:id="CT.Variable.OD_SHOWHELPTEXT.Title">Texte du lien d'aide</resource>
+  <resource xml:id="CT.Variable.OD_SHOWHELPTEXT.Explain">Texte du lien</resource>
+
+  <resource xml:id="CT.Section.ADVANCED">Configurer les options avancées</resource>
+  <resource xml:id="CT.Variable.OD_TOCVIEW_ALL.Title">Affichage du profil</resource>
+  <resource xml:id="CT.Variable.OD_TOCVIEW_ALL.Explain">Si vous avez configuré le contenu pour qu'il se lance avec l'aide contextuelle, le profil ne contiendra que les éléments liés à la tâche que l'utilisateur exécute dans l'application cible. Il s'agit du contenu applicable, et c'est le paramètre par défaut. Si vous préférez que le profil du contenu s'affiche entièrement, vous pouvez modifier cette option de manière à afficher tout le contenu.</resource>
+  <resource xml:id="CT.Variable.RECAPTUREECID.Title">Afficher la page Nouvelle capture du contexte</resource>
+  <resource xml:id="CT.Variable.RECAPTUREECID.Explain">Ne modifiez cette option que sur l'avis du support clients.</resource>
+  <resource xml:id="CT.Variable.OD_DEFAULT_URL.Title">Emplacement du contenu spécial</resource>
+  <resource xml:id="CT.Variable.OD_DEFAULT_URL.Explain">Si les dossiers de fichiers de configuration, [nom de l'application]/hemi et /stdhemi, sont copiés de leur emplacement par défaut dans le contenu publié, vous devez saisir dans ce champ une URL qui renvoie vers l'emplacement de contenu. Cette option ne doit être utilisée que sur l'avis du support technique.</resource>
+
+  <resource xml:id="CT.Variable.OD_APPLICATIONNAME.Title">Nom d'application</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATIONNAME.Explain">Nom de l'application.</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATION_URL.Title">URL de l'application</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATION_URL.Explain">Description de l'URL de l'application</resource>
+  <resource xml:id="CT.Variable.OD_HEMIFRAMELOCATION.Title">Emplacement du cadre</resource>
+  <resource xml:id="CT.Variable.OD_HEMIFRAMELOCATION.Explain">Emplacement du cadre d'aide, le cas échéant.</resource>
+  <resource xml:id="CT.Variable.OD_SHOWAPPLOGO.Title">Logo de la page de passerelle</resource>
+  <resource xml:id="CT.Variable.OD_SHOWAPPLOGO.Explain">Logo de la page de passerelle.</resource>
+
+  <resource xml:id="CT.Variable.OD_DIRECT.Title">Afficher l'aide Siebel</resource>
+  <resource xml:id="CT.Variable.OD_DIRECT.Explain">Par défaut, UPK se lance directement à partir du menu Siebel > Aide > Contenu. Si vous sélectionnez "Oui" pour cette option, l'aide Siebel initiale se lance et un lien UPK s'affiche dans la zone d'en-tête de l'aide Siebel.</resource>
+
+</resources>

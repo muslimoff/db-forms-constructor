@@ -1,0 +1,214 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title> Target Application-Specific Configuration Settings </title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+<meta name="Generator" content="AITPublish" />
+<meta name="Keywords" content="Agile PLM	multi-language options, CA Clarity PPM	multi-language options, JD Edwards EnterpriseOne	multi-language options, JD Edwards World	multi-language options, Microsoft Dynamics CRM	multi-language options, Oracle CRM On Demand	multi-language options, Oracle E-Business Suite	multi-language options, PeopleSoft Enterprise	multi-language options, SAP GUI for HTML	multi-language options, SAP GUI for Windows	multi-language options, SAP NetWeaver Portal	multi-language options, Siebel CRM (On Premise)	multi-language options" />
+<link rel="stylesheet" type="text/css" href="36.css" />
+<script language="javascript" type="text/javascript" src="dhtml_toc.js"></script>
+<style>
+table.info {width:100%;}
+td {width:;}
+</style>
+<script>
+
+function resetWidth(){
+
+mytables=document.getElementsByTagName('Table')
+
+for (i=0;i<mytables.length;i++){
+
+if(mytables[i].width >450){
+
+mytables[i].className="info"
+
+}
+
+}
+
+}
+</script>
+</head>
+<body> 
+<h3 class="heading3">Target Application-Specific Configuration Settings</h3>
+<p class="bodytext">For target applications that support help integration, there are three possible feature sets to configure: Application Help, Multi-Language Content, and Advanced Options.</p>
+<p class="subheading">Application Help Options</p>
+<p class="subparagraph">The options in this feature allow you to configure a page to launch which has links to both the developed content and the original help. This feature is only available for those applications in which the link to the developed content replaces or suppresses the link to the original application help.</p>
+<ul class="listbulletindent"><li class="listbulletindent">Help URL: If you enter the application's Help URL, it is displayed in the gateway page. If this URL is not present, the Player content launches without displaying the gateway page.</li><li class="listbulletindent">Display Help As: The application's help link can appear as a link in the gateway page, or as a frame embedded at the top or bottom of the gateway page. If you choose to display the help as a link, the Help Link Text field is available for you to supply text for the link.</li></ul><p class="subheading">Multi-Language Content Options</p>
+<p class="subparagraph">The options in this feature allow you to configure the help to launch the appropriate content if you have developed content in multiple languages. This feature is only available for certain target applications.</p>
+<ul class="listbulletindent"><li class="listbulletindent">Content URLs by Language: This option has two fields, Language and Content URL. Use the Language list to select a language, and then enter the URL to the content developed in that language in the Content URL field. You can add new rows as necessary to support all available languages.</li><li class="listbulletindent">Default Content URL: This is a URL to the content to be launched if the language is not defined in the Content URLs by Language list. For example, if you have defined English, Spanish, French, and German, and someone logs on in Italian, you can specify that the English content should be launched.</li></ul><p class="subheading">Advanced Options</p>
+<p class="subparagraph">The options in this feature allow you to control how the outline appears when the content is launched, and point to the content if the scripts folder is moved.</p>
+<ul class="listbulletindent"><li class="listbulletindent">Outline Display: If you have configured the content to launch with context-sensitivity, then the outline will only contain the items which are related to the task the user is performing in the target application. This is called applicable content, and it is the default setting. If you want the entire content outline to display instead, you can change this option to show all content.</li><li class="listbulletindent">Special Content Location: If the configuration file folders, [application name]/hemi and /stdhemi are copied from their default location from within the published content, you must enter a URL in this field which points to the content location. This option should only be used on the advice of Technical Support.</li></ul><p class="subheading">Special Options</p>
+<p class="subparagraph">Certain target applications have special options. Most of these appear under Advanced options as necessary. If there are special options for the target application you are configuring, see the section below for more information.</p>
+<p class="bodytext">Each target application that supports help integration has its own page in the IAS Configuration Utility. However, every target application does not support all of the features. The table below displays the features each target application supports.</p>
+<p class="tablecenter"></p>
+<table width="504" cellpadding="2" cellspacing="0" border="0" style="border-collapse:collapse">
+<tr align="left" valign="top">
+<th width="174"><p class="tableheading">Target Application<br /> </p>
+</th>
+<th width="84"><p class="tableheading2">Application Help</p>
+</th>
+<th width="90"><p class="tableheading2">Multiple Languages</p>
+</th>
+<th width="84"><p class="tableheading2">Advanced Options</p>
+</th>
+<th width="72"><p class="tableheading2">Special Options</p>
+</th>
+</tr>
+<tr align="left" valign="top">
+<td width="174"><p class="tablebodytext">Agile PLM</p>
+</td>
+<td width="84"><p class="tablebodytext2">&nbsp;</p>
+</td>
+<td width="90"><p class="tablebodytext2">&nbsp;</p>
+</td>
+<td width="84"><p class="tablebodytext2">X</p>
+</td>
+<td width="72"><p class="tablebodytext2">&nbsp;</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="174"><p class="tablebodytext">CA Clarity PPM</p>
+</td>
+<td width="84"><p class="tablebodytext2">X</p>
+</td>
+<td width="90"><p class="tablebodytext2">&nbsp;</p>
+</td>
+<td width="84"><p class="tablebodytext2">X</p>
+</td>
+<td width="72"><p class="tablebodytext2">&nbsp;</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="174"><p class="tablebodytext">JD Edwards EnterpriseOne</p>
+</td>
+<td width="84"><p class="tablebodytext2">X</p>
+</td>
+<td width="90"><p class="tablebodytext2">X</p>
+</td>
+<td width="84"><p class="tablebodytext2">X</p>
+</td>
+<td width="72"><p class="tablebodytext2">&nbsp;</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="174"><p class="tablebodytext">JD Edwards World</p>
+</td>
+<td width="84"><p class="tablebodytext2">&nbsp;</p>
+</td>
+<td width="90"><p class="tablebodytext2">&nbsp;</p>
+</td>
+<td width="84"><p class="tablebodytext2">X</p>
+</td>
+<td width="72"><p class="tablebodytext2">&nbsp;</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="174"><p class="tablebodytext">MicroSoft Dynamics CRM</p>
+</td>
+<td width="84"><p class="tablebodytext2">X</p>
+</td>
+<td width="90"><p class="tablebodytext2">&nbsp;</p>
+</td>
+<td width="84"><p class="tablebodytext2">X</p>
+</td>
+<td width="72"><p class="tablebodytext2">&nbsp;</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="174"><p class="tablebodytext">Oracle CRM On Demand</p>
+</td>
+<td width="84"><p class="tablebodytext2">&nbsp;</p>
+</td>
+<td width="90"><p class="tablebodytext2">&nbsp;</p>
+</td>
+<td width="84"><p class="tablebodytext2">X</p>
+</td>
+<td width="72"><p class="tablebodytext2">&nbsp;</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="174"><p class="tablebodytext">Oracle E-Business Suite</p>
+</td>
+<td width="84"><p class="tablebodytext2">X</p>
+</td>
+<td width="90"><p class="tablebodytext2">X</p>
+</td>
+<td width="84"><p class="tablebodytext2">X</p>
+</td>
+<td width="72"><p class="tablebodytext2">X</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="174"><p class="tablebodytext">PeopleSoft Enterprise</p>
+</td>
+<td width="84"><p class="tablebodytext2">X</p>
+</td>
+<td width="90"><p class="tablebodytext2">X</p>
+</td>
+<td width="84"><p class="tablebodytext2">X</p>
+</td>
+<td width="72"><p class="tablebodytext2">&nbsp;</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="174"><p class="tablebodytext">SAP GUI for HTML</p>
+</td>
+<td width="84"><p class="tablebodytext2">&nbsp;</p>
+</td>
+<td width="90"><p class="tablebodytext2">X</p>
+</td>
+<td width="84"><p class="tablebodytext2">X</p>
+</td>
+<td width="72"><p class="tablebodytext2">X</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="174"><p class="tablebodytext">SAP GUI for Windows</p>
+</td>
+<td width="84"><p class="tablebodytext2">&nbsp;</p>
+</td>
+<td width="90"><p class="tablebodytext2">X</p>
+</td>
+<td width="84"><p class="tablebodytext2">X</p>
+</td>
+<td width="72"><p class="tablebodytext2">X</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="174"><p class="tablebodytext">SAP NetWeaver Portal</p>
+</td>
+<td width="84"><p class="tablebodytext2">X</p>
+</td>
+<td width="90"><p class="tablebodytext2">X</p>
+</td>
+<td width="84"><p class="tablebodytext2">X</p>
+</td>
+<td width="72"><p class="tablebodytext2">X</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="174"><p class="tablebodytext">Siebel CRM Applications</p>
+</td>
+<td width="84"><p class="tablebodytext2">&nbsp;</p>
+</td>
+<td width="90"><p class="tablebodytext2">&nbsp;</p>
+</td>
+<td width="84"><p class="tablebodytext2">X</p>
+</td>
+<td width="72"><p class="tablebodytext2">&nbsp;</p>
+</td>
+</tr>
+
+</table>
+<p class="tablebuffer"></p>
+<p class="procheading"><img src="8262.gif" alt="procimage" height="17" width="23" vspace="0" hspace="0" align="bottom" border="0" />To configure application-specific options:</p>
+<ol class="listprocedure"><li class="listprocedure">Launch the IAS Configuration Utility.</li><li class="listprocedure">Click the target application link that you want to configure.</li><li class="listprocedure">Change settings as appropriate.</li><li class="listprocedure">Save the configuration.</li></ol>
+
+
+<script>resetWidth()</script>
+</body>
+</html>
+
+

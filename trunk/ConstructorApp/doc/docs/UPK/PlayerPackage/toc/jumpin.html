@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<link href="../css/skin.css" rel="stylesheet" type="text/css" />
+<style>
+	a
+	{
+		text-decoration: underline;
+	}
+	a:link
+	{
+		color: #00F;
+	}
+	a:active
+	{
+		color: #00F;
+	}
+	a:visited
+	{
+		color: #00F;
+	}
+	a:hover
+	{
+		color: #00F;
+	}
+</style>
+
+<script>
+	function setContent(s) {
+		var d = document.getElementById("content");
+		d.style.width = "auto";
+		d.style.height = "auto";
+		d.innerHTML = s;
+		setTimeout("a()", 1);
+	}
+	function a() {
+		var d = document.getElementById("content");
+		parent.jumpinCorrection(d.offsetWidth, d.offsetHeight);
+	}
+	function PlayTopic(m, f) {
+		if (parent.PlayTopic)
+			parent.PlayTopic(m, f);
+	}
+	function JumpIn_Show(s, m) {
+		if (parent.JumpIn_Show)
+			parent.JumpIn_Show(s, m);
+	}
+	function J_close() {
+		setTimeout("JumpIn_Show(null,null);", 1);
+	}
+</script>
+
+<body onmouseup="J_close()" class="textWindows">
+	<div id="content" class="textWindows">
+	</div>
+</body>
+</html>

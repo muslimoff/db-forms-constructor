@@ -1,0 +1,15 @@
+﻿<KPExport sw_version="9.6" xmlns:msxsl="urn:schemas-microsoft-com:xslt" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:odext="urn:odext" xmlns:tpc="urn:topic-v1" xmlns:sct="urn:section-v1">
+  <Outline Title="FC" Guid="6d3fcf90-ed37-4946-b857-5ced5936560d">
+    <Section Title="Формы" Guid="71f39622-a425-4a6b-b8b2-5d5372c97f4e">
+      <Topic Title="Создание табличной формы (грид)" Guid="046b2fd5-3bd4-4406-88b7-b8596384c9dd">
+        <PlayModes>
+          <Mode type="simulated" name="DemoMode" caption="See It!" href="dhtml_kp.html#Guid=046b2fd5-3bd4-4406-88b7-b8596384c9dd&amp;Mode=S" />
+          <Mode type="simulated" name="TeacherMode" caption="Try It!" href="dhtml_kp.html#Guid=046b2fd5-3bd4-4406-88b7-b8596384c9dd&amp;Mode=T" />
+          <Mode type="query" name="AssessmentMode" caption="Know It?" href="dhtml_kp.html#Guid=046b2fd5-3bd4-4406-88b7-b8596384c9dd&amp;Mode=K" />
+          <Mode type="live" name="GuideItMode" caption="Do It!" href="dhtml_kp.html#Guid=046b2fd5-3bd4-4406-88b7-b8596384c9dd&amp;Mode=D" />
+          <Mode type="print" name="PrintItMode" caption="Print It!" href="dhtml_kp.html#Guid=046b2fd5-3bd4-4406-88b7-b8596384c9dd&amp;Mode=P" />
+        </PlayModes>
+      </Topic>
+    </Section>
+  </Outline>
+</KPExport>

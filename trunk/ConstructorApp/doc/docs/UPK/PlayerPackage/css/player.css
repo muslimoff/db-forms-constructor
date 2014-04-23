@@ -1,0 +1,138 @@
+﻿body { background-color: #FFFFFF; color: #000000 }
+
+li.DecisionList 
+{
+	padding-left:16px;text-indent:-16px
+}
+
+A:link[href*="javascript:"], A:link[href*="http:"] 		{ color : #0000FF}
+A:active[href*="javascript:"], A:active[href*="http:"] 	{ color : #0000FF}
+A:visited[href*="javascript:"], A:visited[href*="http:"] 	{ color : #0000FF}
+A:hover[href*="javascript:"], A:hover[href*="http:"] 	{ color : #0099FF}
+
+.CurvedBoxColor
+{
+    BACKGROUND-COLOR: rgb(102,102,102);
+}
+.BubbleBg
+{
+    BACKGROUND-COLOR: #ffffcc
+}
+.InstructText
+{
+    FONT-FAMILY: Arial, Helvetica, sans-serif;
+    FONT-SIZE: 9pt
+}
+.InstructTextButtonIE
+{
+    FONT-FAMILY: Arial, Helvetica, sans-serif;
+    FONT-SIZE: 9pt;
+    display: inline;
+    height: 23px;
+}
+.InstructTextButtonIE7
+{
+    FONT-FAMILY: Arial, Helvetica, sans-serif;
+    FONT-SIZE: 9pt;
+    display: inline;
+    height: 25px;
+}
+.InstructTextButtonFF
+{
+    FONT-FAMILY: Arial, Helvetica, sans-serif;
+    FONT-SIZE: 9pt;
+    display: inline;
+    height: 22px;
+}
+.GrayBackground
+{
+    BACKGROUND: #cccccc
+}
+.BubbleHyperText
+{
+    COLOR: #0033cc;
+    FONT-FAMILY: Arial, Helvetica, sans-serif;
+    FONT-SIZE: 9pt;
+    FONT-WEIGHT: bold
+}
+a:link[class="BubbleHyperText"]	{color: #0033cc};
+
+.HomeNavHypertext
+{
+    COLOR: #003399;
+    FONT-FAMILY: Arial, Helvetica, sans-serif;
+    FONT-SIZE: 10pt;
+    FONT-WEIGHT: bold;
+    TEXT-DECORATION: none
+}
+.NavHypertextLight
+{
+    COLOR: #ccffff;
+    FONT-FAMILY: Arial, Helvetica, sans-serif;
+    FONT-SIZE: 10pt;
+    FONT-WEIGHT: bold
+}
+.CurvedBoxText
+{
+    COLOR: white;
+    FONT-FAMILY: Arial, Helvetica, sans-serif;
+    FONT-SIZE: 9pt;
+    FONT-WEIGHT: bold;
+    TEXT-DECORATION: none
+}
+.CurvedBoxNav
+{
+    COLOR: #ccffff;
+    FONT-FAMILY: Arial, Helvetica, sans-serif;
+    FONT-SIZE: 9pt
+}
+.FrameText
+{
+    COLOR: black;
+    FONT-FAMILY: Arial, Helvetica, sans-serif;
+    FONT-SIZE: 10pt
+}
+.TocFormControl
+{
+    FONT-FAMILY: Arial, Helvetica, sans-serif;
+    FONT-SIZE: 13px
+}
+.PrefTextHead
+{
+    FONT-FAMILY: Arial, Helvetica, sans-serif;
+    FONT-SIZE: 9pt;
+    FONT-WEIGHT: bold
+}
+.Area
+{
+    BORDER-BOTTOM-COLOR: red;
+    BORDER-LEFT-COLOR: red;
+    BORDER-RIGHT-COLOR: red;
+    BORDER-TOP-COLOR: red
+}
+
+div#content p, div#content ul
+{
+	margin-bottom:0px;
+	margin-top: 0px;
+}
+
+#prbr
+{
+     font-size: 11pt;
+}
+
+a p, a div
+{
+	padding-bottom:15px;
+}
+
+#knowItResults
+{
+	margin-bottom: 20px;
+}
+
+#scoretext
+{
+	padding-top: 15px;
+}

@@ -1,0 +1,34 @@
+﻿<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<script src="../js/browser1.js"></script>
+<script src="../js/noevents.js"></script>
+<script>
+
+function Click()
+{
+	if (parent.Click)
+		parent.Click();
+}
+
+function Init()
+{
+	SetNoEvents();
+	if (!IsMozilla())
+	{
+		document.body.bgColor="#FFFFFF";
+	}
+}
+
+</script>
+</head>
+
+<body onclick="Click()" onload="Init()">
+</body>
+
+</html>

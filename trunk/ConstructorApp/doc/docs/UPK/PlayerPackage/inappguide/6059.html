@@ -1,0 +1,46 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title> Modify an Existing Custom Library </title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+<meta name="Generator" content="AITPublish" />
+<meta name="Keywords" content="" />
+<link rel="stylesheet" type="text/css" href="36.css" />
+<script language="javascript" type="text/javascript" src="dhtml_toc.js"></script>
+<style>
+table.info {width:100%;}
+td {width:;}
+</style>
+<script>
+
+function resetWidth(){
+
+mytables=document.getElementsByTagName('Table')
+
+for (i=0;i<mytables.length;i++){
+
+if(mytables[i].width >450){
+
+mytables[i].className="info"
+
+}
+
+}
+
+}
+</script>
+</head>
+<body> 
+<h5 class="heading5">Modify an Existing Custom Library</h5>
+<p class="bodytext">Use the following steps if you have custom logic in your custom library (CUSTOM.pll) that you do not want to overwrite. You must place a line of code in the custom library that will call out to a new library (ODPN.pll). After doing this, you will only need to recompile your existing CUSTOM.pll if you receive new versions of ODPN.pll with software upgrades. </p>
+<a name="o7007"></a>
+<p class="procheading"><img src="8262.gif" alt="procimage" height="17" width="23" vspace="0" hspace="0" align="bottom" border="0" />To modify a custom library:</p>
+<ol class="listprocedure"><li class="listprocedure">Back up your existing CUSTOM.pll to CUSTOM.pll.orig.</li><li class="listprocedure">Copy the CUSTOM.pll from the $AU_TOP/resource folder on the Oracle Applications server to a client machine that has Oracle Forms Builder installed.</li><li class="listprocedure">Copy the APPCORE2.pll from $AU_TOP/resource folder on the Oracle Applications server to a client machine that has Oracle Forms Builder installed. This should be the same folder you used for the previous step.</li><li class="listprocedure">Locate the ODPNCustomPLL.zip file in the ORACLE folder where the Developer is installed and extract the ODPN.pll file. Copy it to the client machine into same folder as previous file copies.</li><li class="listprocedure">Open CUSTOM.pll using Oracle Forms Builder and attach ODPN.pll. Place this file in the same folder on the client side as your CUSTOM.pll prior to the attachment.</li><li class="listprocedure">Answer Yes, when asked to remove directory path.</li><li class="listprocedure">Add the following code to the Event procedure: <br /><span class="shade">gkod_event (event_name, 'SPECIAL7');</span><p class="listcontinueindent"><strong class="bold">Note:</strong> You may use any number between 1 and 15 in the SPECIAL command as long as there are no conflicts. See <em class="italics">Check Existing Custom Library Configuration</em> for more details. Beginning wtih Oracle EBS 12.1, the SPECIAL command can be replaced with the MENUX command where X is a number between 1 and 15.</p>
+</li><li class="listprocedure">Ensure that no one is currently using Oracle Applications (Web Forms). Shut down the Oracle Forms Server service.</li><li class="listprocedure">Copy the CUSTOM.pll and ODPN.pll files from the client to the $AU_TOP/resource folder on the Oracle Applications server.</li><li class="listprocedure">Compile both the ODPN.pll and the CUSTOM.pll files using steps 5 and 6 in the previous section.</li></ol><p class="allowpagebreak"></p>
+
+
+<script>resetWidth()</script>
+</body>
+</html>
+
+

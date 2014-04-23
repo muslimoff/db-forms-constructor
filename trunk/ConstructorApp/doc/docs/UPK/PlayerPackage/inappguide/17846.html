@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title> Implement In-Application Support </title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+<meta name="Generator" content="AITPublish" />
+<meta name="Keywords" content="Agile PLM	Implementation methods, CA Clarity PPM	Implementation methods, CA Service Desk	Implementation methods, Help integration	definition, JD Edwards EnterpriseOne	Implementation methods, JD Edwards World	Implementation methods, Microsoft Dynamics CRM	Implementation methods, Oracle CRM On Demand	Implementation methods, Oracle E-Business Suite	Implementation methods, Oracle Fusion	Implementation methods, Oracle Hyperion EPM	Implementation methods, Oracle Transportation Management	Implementation methods, PeopleSoft Enterprise	Implementation methods, SAP GUI for HTML	Implementation methods, SAP GUI for Windows	Implementation methods, SAP NetWeaver Portal	Implementation methods, Siebel CRM (On Premise)	Implementation methods, SmartHelp	definition" />
+<link rel="stylesheet" type="text/css" href="36.css" />
+</head>
+<body text="#000000" link="#0000A0" alink="#008000" vlink="#FF0000"><h1 class="heading1">Implement In-Application Support</h1>
+<p class="bodytext">End users access in-application support in one of two ways. The first is via a help link, button, or menu item in the recorded target application. This option is called help integration and requires an application administrator to make minor configuration changes in the target application to enable the Player context-sensistive help. The second option, called SmartHelp, is to install a toolbar button in a browser in which a user launches the target application. This is installed as a browser add-on and may require the help and approval of your Information Technology resources. </p>
+<p class="bodytext">These are the steps for implementing in-application support. You may or may not need to perform all of them, depending on the target application that your audience will be using.</p>
+<ul class="listbulletindent"><li class="listbulletindent">Obtain content that has been created and published in the Developer.</li><li class="listbulletindent">Configure content with the In-Application Support (IAS) Configuration Utility.</li><li class="listbulletindent">Deploy content on a server. </li><li class="listbulletindent">Configure the target application for help integration (if applicable for the target  application your audience will be using).</li><li class="listbulletindent">Install SmartHelp, if it is applicable for the application your audience will be using.</li></ul><p class="bodytext">Refer to the following table to determine the method your application supports.</p>
+<p class="tablecenter"></p>
+<table width="444" cellpadding="2" cellspacing="0" border="0" style="border-collapse:collapse">
+<tr align="left" valign="top">
+<th width="222"><p class="tableheading">Target Application<br /></p>
+</th>
+<th width="108"><p class="tableheading2">SmartHelp<br /></p>
+</th>
+<th width="114"><p class="tableheading2">Help Integration<br /></p>
+</th>
+</tr>
+<tr align="left" valign="top">
+<td width="222"><p class="tablebodytext">Agile PLM</p>
+</td>
+<td width="108"><p class="tablebodytext2">&nbsp;</p>
+</td>
+<td width="114"><p class="tablebodytext2">X</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="222"><p class="tablebodytext">CA Clarity PPM</p>
+</td>
+<td width="108"><p class="tablebodytext2">X</p>
+</td>
+<td width="114"><p class="tablebodytext2">X</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="222"><p class="tablebodytext">CA Service Desk</p>
+</td>
+<td width="108"><p class="tablebodytext2">X</p>
+</td>
+<td width="114"><p class="tablebodytext2">&nbsp;</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="222"><p class="tablebodytext">JD Edwards EnterpriseOne</p>
+</td>
+<td width="108"><p class="tablebodytext2">X</p>
+</td>
+<td width="114"><p class="tablebodytext2">X</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="222"><p class="tablebodytext">JD Edwards World</p>
+</td>
+<td width="108"><p class="tablebodytext2">&nbsp;</p>
+</td>
+<td width="114"><p class="tablebodytext2">X</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="222"><p class="tablebodytext">Microsoft Dynamics CRM</p>
+</td>
+<td width="108"><p class="tablebodytext2">X (ver. 4 only)</p>
+</td>
+<td width="114"><p class="tablebodytext2">X</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="222"><p class="tablebodytext">Oracle (Siebel) CRM On Demand</p>
+</td>
+<td width="108"><p class="tablebodytext2">X</p>
+</td>
+<td width="114"><p class="tablebodytext2">&nbsp;</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="222"><p class="tablebodytext">Oracle E-Business Suite</p>
+</td>
+<td width="108"><p class="tablebodytext2">X</p>
+</td>
+<td width="114"><p class="tablebodytext2">X</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="222"><p class="tablebodytext">Oracle Fusion</p>
+</td>
+<td width="108"><p class="tablebodytext2">X</p>
+</td>
+<td width="114"><p class="tablebodytext2">&nbsp;</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="222"><p class="tablebodytext">Oracle (Hyperion) EPM</p>
+</td>
+<td width="108"><p class="tablebodytext2">X</p>
+</td>
+<td width="114"><p class="tablebodytext2">&nbsp;</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="222"><p class="tablebodytext">Oracle Transportation Management</p>
+</td>
+<td width="108"><p class="tablebodytext2">X</p>
+</td>
+<td width="114"><p class="tablebodytext2">&nbsp;</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="222"><p class="tablebodytext">PeopleSoft Enterprise</p>
+</td>
+<td width="108"><p class="tablebodytext2">X</p>
+</td>
+<td width="114"><p class="tablebodytext2">X</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="222"><p class="tablebodytext">SAP GUI for HTML</p>
+</td>
+<td width="108"><p class="tablebodytext2">X</p>
+</td>
+<td width="114"><p class="tablebodytext2">X</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="222"><p class="tablebodytext">SAP GUI for Windows</p>
+</td>
+<td width="108"><p class="tablebodytext2">&nbsp;</p>
+</td>
+<td width="114"><p class="tablebodytext2">X</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="222"><p class="tablebodytext">SAP NetWeaver Portal</p>
+</td>
+<td width="108"><p class="tablebodytext2">X</p>
+</td>
+<td width="114"><p class="tablebodytext2">X</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="222"><p class="tablebodytext">Siebel CRM (On Premise)</p>
+</td>
+<td width="108"><p class="tablebodytext2">X</p>
+</td>
+<td width="114"><p class="tablebodytext2">X</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="222"><p class="tablebodytext">Other Browser-based applications</p>
+</td>
+<td width="108"><p class="tablebodytext2">X</p>
+</td>
+<td width="114"><p class="tablebodytext2">&nbsp;</p>
+</td>
+</tr>
+
+</table>
+<p class="tablebuffer"></p>
+<p class="noteparagraph"><strong class="bold">Note:</strong> SmartHelp is available for Browser-based applications as long as the toolbar is available.</p>
+<p class="bodytext">Refer to the following information for the general steps to implement SmartHelp or help integration.</p>
+<p class="subheading">Implement SmartHelp</p>
+<ul class="listbulletindent"><li class="listbulletindent">Obtain content - This is a Player package that an author created and published from the Developer.</li><li class="listbulletindent">Configure content - Use the IAS Configuration Utility to set options for SmartHelp. See <a id="h17883" class="jumptemplate" title="Configure SmartHelp" href="17854.html" target="_self">Configure SmartHelp</a>.</li><li class="listbulletindent">Deploy content - Place the content on a web server.</li><li class="listbulletindent">Install SmartHelp - Deploy the link for installing SmartHelp to your end users. See <a id="h17885" class="jumptemplate" title="Use SmartHelp for Browser-based Applications" href="17851.html" target="_self">Use SmartHelp for Browser-based Applications</a>.</li></ul><p class="subheading">Implement Help Integration</p>
+<ul class="listbulletindent"><li class="listbulletindent">Obtain content - This is a Player package that an author created and published from the Developer.</li><li class="listbulletindent">Configure content - Use the IAS Configuration Utility to set options for help integration. See <a id="h17884" class="jumptemplate" title="Target Application-Specific Configuration Settings" href="17861.html" target="_self">Application-Specific Configuration Settings</a>.</li><li class="listbulletindent">Deploy content - Place the content on a Web server.</li><li class="listbulletindent">Integrate Help into the target application - Adjust settings in the target application to launch the content. See the appropriate section for your application in <a id="h17886" class="jumptemplate" title="Integrate Help in Target Applications" href="17850.html" target="_self">Integrate Help for Target Applications</a>.</li></ul><p class="bodytext">Details about each step are in the following sections.</p>
+
+</body>
+</html>
+
+

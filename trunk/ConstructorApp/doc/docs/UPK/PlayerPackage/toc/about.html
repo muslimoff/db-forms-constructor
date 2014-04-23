@@ -1,0 +1,166 @@
+﻿<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+	<title></title>
+	<style>
+		*
+		{
+			padding: 0px;
+			margin: 0px;
+		}
+		body
+		{
+			color: black;
+			background-color: white;
+		}
+		#wrapper
+		{
+			font-size: 8pt;
+			font-family: Arial, Helvetica, sans-serif;
+			margin: 20px;
+		}
+		#about
+		{
+			font-size: 14pt;
+			color: #898989;
+			padding-top: 20px;
+		}
+		#copyright
+		{
+			border-style: inset;
+			border-width: 2px;
+			overflow: auto;
+			width: 100%;
+			height: 105px;
+			margin-top: 10px;
+			margin-bottom: 20px;
+			background-color: #F4F4F4;
+		}
+		#copyright p
+		{
+			padding: 4px 8px 4px 8px;
+		}
+		#okbutton
+		{
+			width: 100%;
+			text-align: center;
+			margin-top: 15px;
+		}
+		.Indent
+		{
+			margin-left: 15px;
+		}
+	</style>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<script language="javascript" src="../js/noevents.js"></script>
+
+	<script language="javascript" src="../js/resource.js"></script>
+
+	<script language="javascript" src="../js/xmlloader.js"></script>
+
+<script language="javascript">
+
+var product_version="";
+var copyright_name="";
+var internal_build="";
+
+function closeAbout()
+{
+		window.close()
+}
+
+function key_event_handler(event)
+{
+	var code=event.keyCode;
+	if (code==13 || code==27)
+		closeAbout();
+}
+
+function OneChild(c)
+{
+	if (c.nodeName[0]=="#")
+		return;
+	tc=(c.textContent ? c.textContent : c.text);
+	s="";
+	for (i=0;i<tc.length;i++)
+	{
+		cc=tc.charCodeAt(i);
+		if (cc!=9 && cc!=10 && cc!=13)
+			s+=tc.substr(i,1);
+	}
+	switch (c.nodeName)
+	{
+		case "ProductVersion": 
+							product_version=s;
+							break;
+		case "InternalBuild": 
+							internal_build=s;
+							break;
+	}
+}
+
+function SetText(obj,s)
+{
+	obj.innerHTML=s;
+}
+
+function RetFunction(req)
+{
+	f=req.responseXML.firstChild;
+	n=f.childNodes.length;
+	for (var i=0;i<n;i++)
+	{
+		OneChild(f.childNodes[i]);
+	}
+	document.title = R_About + R_about_player;
+	SetText(document.getElementById("ProductVersionNumber"),product_version);
+	SetText(document.getElementById("InternalBuildNumber"),internal_build);
+}
+
+function ErrorFunction()
+{
+	var a=0;
+}
+
+function Init()
+{
+	SetNoEvents();
+	LoadXMLDoc("../version.xml","RetFunction","ErrorFunction")
+}
+
+</script>
+
+</head>
+<body onload="Init()">
+	<div id="wrapper">
+		<div style="text-align: center;">
+			<img id="logo" src="../img/large_logo.gif" border="0"><br />
+		</div>
+		<div id="about" class="Indent">
+			<script>document.write(R_about_player_version)</script>
+			<a id="ProductVersionNumber"></a>
+		</div>
+		<div id="build" class="Indent">
+			<script>document.write(R_about_build)</script>
+			<a id="InternalBuildNumber"></a>
+		</div>
+		<div id="copyright">
+			<script>document.write(R_about_copyrighttext)</script>
+		</div>
+		<div style="text-align: center;">
+			<img id="cblogo" src="../img/cb_logo.gif" alt="Oracle" title="Oracle" border="0">
+		</div>
+		<div id="okbutton"">
+			<script>
+				document.write('<input type="button" value="'+R_about_OK+'" onclick="closeAbout()">');
+			</script>
+		</div>
+	</div>
+</body>
+</html>

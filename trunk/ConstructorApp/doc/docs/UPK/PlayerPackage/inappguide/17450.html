@@ -1,0 +1,53 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title> Plan for Deploying In-Application Support </title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+<meta name="Generator" content="AITPublish" />
+<meta name="Keywords" content="" />
+<link rel="stylesheet" type="text/css" href="36.css" />
+<script language="javascript" type="text/javascript" src="dhtml_toc.js"></script>
+<style>
+table.info {width:100%;}
+td {width:;}
+</style>
+<script>
+
+function resetWidth(){
+
+mytables=document.getElementsByTagName('Table')
+
+for (i=0;i<mytables.length;i++){
+
+if(mytables[i].width >450){
+
+mytables[i].className="info"
+
+}
+
+}
+
+}
+</script>
+</head>
+<body> 
+<h2 class="heading2">Plan for Deploying In-Application Support</h2>
+<p class="bodytext">Once you decide to deploy content for in-application support, some of the fundamental questions that need to be addressed are:</p>
+<ul class="listbulletindent"><li class="listbulletindent">What deployment mechanism is most appropriate for your application, Help Integration with a target application or SmartHelp-based deployment?</li><li class="listbulletindent">Who needs to be involved, what needs to be done, and when does it have to happen? </li></ul><p class="bodytext">Understanding the answers to these questions will give you the information you need to implement help integration and context-sensitive help successfully. </p>
+<a name="o17453"></a>
+<p class="bodytext">These are the tasks which need to be completed to successfully deploy in-application support.</p>
+<p class="bodytext"><strong class="bold">Content Author</strong></p>
+<ul class="listbulletindent"><li class="listbulletindent">Create content in the Developer - While ExactMatch information for target applications and SmartMatch information for browser-based non-target applications will be automatically captured, it is recommended that you validate that context is being captured.</li><li class="listbulletindent">Publish the content</li><li class="listbulletindent">Give the published content to the web server administrator</li></ul><p class="bodytext"><strong class="bold">Web Server Administrator </strong></p>
+<ul class="listbulletindent"><li class="listbulletindent">Deploy the published content to a web server</li><li class="listbulletindent">Provide the URL for the content to the application administrator </li></ul><p class="bodytext"><strong class="bold">Application Administrator </strong></p>
+<ul class="listbulletindent"><li class="listbulletindent">Perform the configuration steps detailed in the in-application support guide for each application</li><li class="listbulletindent">Receive the content URL from the web server administrator</li><li class="listbulletindent">Perform help integration steps for URL configuration, if applicable</li></ul><p class="bodytext"><strong class="bold">Test User </strong></p>
+<ul class="listbulletindent"><li class="listbulletindent">Verify the published content appears from the application using the Help Menu Integration option or the SmartHelp button, as deployed</li><li class="listbulletindent">If you are deploying context-sensitive help, the test user should coordinate with the content developer to note which parts of the application were used to create content and then verify that the content launches with an appropriate list of relevant topics.</li></ul><p class="allowpagebreak"></p>
+<a name="o17452"></a>
+<p class="bodytext">For most target applications, application configuration can occur after and independently of content creation. There are two exceptions: </p>
+<ul class="listbulletindent"><li class="listbulletindent">Oracle E-Business Suite: It requires library files to be installed on the application server (applcore forms server) before recording content. See Implement Context-Sensistive Help Integration in the Oracle E-Business Suite section later in this manual for more information on installing library files for Oracle E-Business Suite.</li><li class="listbulletindent">PeopleSoft Enterprise: It is recommended that PeopleBooks is installed and configured before starting to record content.</li></ul><p class="bodytext">If you want to deploy context-sensitive help, always check that context is being captured while recording. See Context Recognition in the Recorder in the Record and Edit Topic Content chapter of the Content Development manual for more information on capturing context while recording.</p>
+
+
+<script>resetWidth()</script>
+</body>
+</html>
+
+

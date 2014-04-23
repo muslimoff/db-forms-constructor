@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright © 1998, 2010, Oracle and/or its affiliates.  All rights reserved.
+-->
+<!--Version 9.6.1.20-->
+<resources>
+  <resource xml:id="CT.Action.ShowTOC">Launch Content</resource>
+  <resource xml:id="CT.Title.Language">Language</resource>
+  <resource xml:id="CT.Title.ContentUrl">Content URL</resource>
+
+  <resource xml:id="CT.Type.Number.DefaultOrZero100">Must be a number in range 0-100. -1 is used for the default value.</resource>
+  <resource xml:id="CT.Type.Integer.DefaultOrZeroInf">Must be zero or a positive integer. -1 is used for the default value.</resource>
+  <resource xml:id="CT.Type.UseDefault">Use Default</resource>
+  <resource xml:id="CT.Type.Default">Default</resource>
+  <resource xml:id="CT.Type.Yes">Yes</resource>
+  <resource xml:id="CT.Type.No">No</resource>
+  <resource xml:id="CT.Type.Enable">Enable</resource>
+  <resource xml:id="CT.Type.Enabled">Enabled</resource>
+  <resource xml:id="CT.Type.Disable">Disable</resource>
+  <resource xml:id="CT.Type.Disabled">Disabled</resource>
+
+  <resource xml:id="CT.Type.Show">Show</resource>
+  <resource xml:id="CT.Type.DontShow">Don't Show</resource>
+
+  <resource xml:id="CT.Type.All">All</resource>
+  <resource xml:id="CT.Type.Applicable">Applicable</resource>
+
+  <resource xml:id="CT.Type.Use">Use</resource>
+  <resource xml:id="CT.Type.DontUse">Don't Use</resource>
+
+  <resource xml:id="CT.Type.ApplicationName.InvalidCharacters">The name contains invalid characters! It must be 1 to 8 character length identifier, containing only letters, numbers and underscore.</resource>
+  <resource xml:id="CT.Type.ApplicationName.InvalidLength">The name must be 1 to 8 character length identifier, containing only letters, numbers and underscore.</resource>
+  <resource xml:id="CT.Type.FrameLocation.Top">Top</resource>
+  <resource xml:id="CT.Type.FrameLocation.Bottom">Bottom</resource>
+  <resource xml:id="CT.Type.HelpMode.TopEmbeddedFrame">Embedded Frame at the Top</resource>
+  <resource xml:id="CT.Type.HelpMode.BottomEmbeddedFrame">Embedded Frame at the Bottom</resource>
+  <resource xml:id="CT.Type.HelpMode.LinkInGatewayPage">Link in the Gateway Page</resource>
+  <resource xml:id="CT.Type.LanguageMap.DuplicatedKey">{KEY} is Duplicated.</resource>
+  <resource xml:id="CT.Type.LanguageMap.MissingKey">The Language ID is Missing.</resource>
+  <resource xml:id="CT.Type.LanguageMap.MissingValue">The Content URL must be Specified.</resource>
+
+  <resource xml:id="CT.Section.CONTENT">Configure Multi-Language Content</resource>
+  <resource xml:id="CT.Variable.OD_URL.Title">Content URLs by Language</resource>
+  <resource xml:id="CT.Variable.OD_URL.Explain">This option has two fields, Language and Content URL. Use the Language list to select a language, and then enter the URL to the content developed in that language in the Content URL field. You can add new rows as necessary to support all available languages.</resource>
+  <resource xml:id="CT.Variable.OD_DEFAULT_URL.Title.Lang">Default Content URL</resource>
+  <resource xml:id="CT.Variable.OD_DEFAULT_URL.Explain.Lang">This is a URL to the content to be launched if the language is not defined in the Content URLs by Language list. For example, if you have defined English, Spanish, French, and German, and someone logs on in Italian, you can specify that the English content should be launched.&lt;br/&gt;&lt;br/&gt;Note: {rc:parent}</resource>
+
+  <resource xml:id="CT.Section.HELP">Configure Application Help</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATIONHELP_URL.Title">Help URL</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATIONHELP_URL.Explain">If you enter the application's Help URL, it is displayed in the gateway page. If this URL is not present, the Player content launches without displaying the gateway page.</resource>
+  <resource xml:id="CT.Variable.OD_SHOWHELPMODE.Title">Display Help As</resource>
+  <resource xml:id="CT.Variable.OD_SHOWHELPMODE.Explain">The application's help link can appear as a link in the gateway page, or as a frame embedded at the top or bottom of the gateway page. If you choose to display the help as a link, the Help Link Text field is available for you to supply text for the link.</resource>
+  <resource xml:id="CT.Variable.OD_SHOWHELPTEXT.Title">Help Link Text</resource>
+  <resource xml:id="CT.Variable.OD_SHOWHELPTEXT.Explain">The text of the link.</resource>
+
+  <resource xml:id="CT.Section.ADVANCED">Configure Advanced Options</resource>
+  <resource xml:id="CT.Variable.OD_TOCVIEW_ALL.Title">Outline Display</resource>
+  <resource xml:id="CT.Variable.OD_TOCVIEW_ALL.Explain">If you have configured the content to launch with context-sensitivity, then the outline will only contain the items which are related to the task the user is performing in the target application. This is called applicable content, and it is the default setting. If you want the entire content outline to display instead, you can change this option to show all content.</resource>
+  <resource xml:id="CT.Variable.RECAPTUREECID.Title">Show Context Recapture Page</resource>
+  <resource xml:id="CT.Variable.RECAPTUREECID.Explain">Change this option only with the advice of Customer Support.</resource>
+  <resource xml:id="CT.Variable.OD_DEFAULT_URL.Title">Special Content Location</resource>
+  <resource xml:id="CT.Variable.OD_DEFAULT_URL.Explain">If the configuration file folders, [application name]/hemi and /stdhemi, are copied from their default location within the published content, you must enter a URL in this field which points to the content location. This option should only be used on the advice of Technical Support.</resource>
+
+  <resource xml:id="CT.Variable.OD_APPLICATIONNAME.Title">Application Name</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATIONNAME.Explain">The Application name.</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATION_URL.Title">Application URL</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATION_URL.Explain">Application URL description</resource>
+  <resource xml:id="CT.Variable.OD_HEMIFRAMELOCATION.Title">Frame Location</resource>
+  <resource xml:id="CT.Variable.OD_HEMIFRAMELOCATION.Explain">The help frame position if applicable.</resource>
+  <resource xml:id="CT.Variable.OD_SHOWAPPLOGO.Title">Gateway Page Logo</resource>
+  <resource xml:id="CT.Variable.OD_SHOWAPPLOGO.Explain">The gateway page logo.</resource>
+
+  <resource xml:id="CT.Variable.OD_DIRECT.Title">Show Siebel Help</resource>
+  <resource xml:id="CT.Variable.OD_DIRECT.Explain">By default, UPK will launch directly from the Siebel > Help > Contents menu. Selecting 'Yes' for this option will launch the original Siebel help and a UPK link will display in the header area of Siebel Help.</resource>
+
+  <resource xml:id="CT.Section.DEFAULTPLAYER">Configure Default Player</resource>
+
+  <resource xml:id="CT.Section.GATEWAY">Configure Gateway</resource>
+  <resource xml:id="CT.Section.GATEWAY_TABS">Configure Tabs</resource>
+  <resource xml:id="CT.Section.GATEWAY_LINKS">Configure Links</resource>
+
+  <resource xml:id="CT.Variable.GATEWAY_EMBED.Title">Tabs</resource>
+  <resource xml:id="CT.Variable.GATEWAY_EMBED.Explain"></resource>
+  <resource xml:id="CT.Variable.GATEWAY_LINK.Title">Links</resource>
+  <resource xml:id="CT.Variable.GATEWAY_LINK.Explain"></resource>
+  <resource xml:id="CT.Variable.GATEWAY_RESOURCES_TITLE.Title">Link Menu Text</resource>
+  <resource xml:id="CT.Variable.GATEWAY_RESOURCES_TITLE.Explain"></resource>
+  <resource xml:id="CT.Variable.TABBED_GATEWAY_OPEN_LAST_ACTIVE_TAB.Title">Remember Active Tab</resource>
+  <resource xml:id="CT.Variable.TABBED_GATEWAY_OPEN_LAST_ACTIVE_TAB.Explain"></resource>
+
+  <!-- can this be assembled from CT.Type.GatewayType.MainPlayer and CT.Title.GatewayTabText ? -->
+  <resource xml:id="CT.Variable.GATEWAY_PLAYER_TITLE.Title">Default Player Tab Text</resource>
+  <resource xml:id="CT.Variable.GATEWAY_PLAYER_TITLE.Explain"></resource>
+
+  <resource xml:id="CT.Title.GatewayTabText">Tab Text</resource>
+  <resource xml:id="CT.Title.GatewayLinkText">Link Text</resource>
+  <resource xml:id="CT.Title.GatewayUrl">URL</resource>
+  <resource xml:id="CT.Title.GatewayType">Type</resource>
+
+  <resource xml:id="CT.Type.GatewayType.MainPlayer">Default Player</resource>
+  <resource xml:id="CT.Type.GatewayType.PlayerWithContext">Player with Context</resource>
+  <resource xml:id="CT.Type.GatewayType.PlayerWithoutContext">Player</resource>
+  <resource xml:id="CT.Type.GatewayType.Help">App Help</resource>
+  <resource xml:id="CT.Type.GatewayType.URLWithoutContext">URL</resource>
+
+  <resource xml:id="CT.Title.GatewayMainPlayer">Main Player</resource>
+  
+</resources>

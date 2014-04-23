@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<!--Version 9.6.0.5-->
+<resources>
+	<resource xml:id="CT.Action.UseCurrentServer">Use Current Server</resource>
+	<resource xml:id="CT.Type.ContentUrl.Invalid">Not a valid HEMI content URL.</resource>
+	<resource xml:id="CT.Section.HEMI">HEMI</resource>
+  <resource xml:id="CT.Section.SMARTHELP">SmartHelp</resource>
+	<resource xml:id="CT.Section.SMARTHELP.Show">Install</resource>
+	<resource xml:id="CT.Section.SMARTHELP.Hidden">The SmartHelp button is not installed yet.</resource>
+  <resource xml:id="CT.Section.SMARTMATCH">SmartMatch</resource>
+	<resource xml:id="CT.Variable.diagnosticmode.Title">Diagnostic Mode</resource>
+	<resource xml:id="CT.Variable.diagnosticmode.Explain">Enable or disable diagnostic mode.</resource>
+	<resource xml:id="CT.Variable.hemiparamtest.Title">Show Parameters</resource>
+  <resource xml:id="CT.Variable.hemiparamtest.Explain">Show or hide the TOC URL and parameters.</resource>
+	<resource xml:id="CT.Variable.standardcontent.Title">Standard Content</resource>
+	<resource xml:id="CT.Variable.standardcontent.Explain">The content URL SmartHelp is installed for.</resource>
+	<resource xml:id="CT.Variable.maxhit.Title">Maximum Hits</resource>
+  <resource xml:id="CT.Variable.maxhit.Explain">If an ECID part is found in more contexts than disregards it.</resource>
+  <resource xml:id="CT.Variable.maxsearch.Title">Maximum Search</resource>
+  <resource xml:id="CT.Variable.maxsearch.Explain">The maximum of searched ECID parts.</resource>
+  <resource xml:id="CT.Variable.threshold.Title">Score Threshold</resource>
+  <resource xml:id="CT.Variable.threshold.Explain">Show entries in TOC with a minimum score threshold.</resource>
+  <resource xml:id="CT.Variable.minscore.Title">Minimum Score</resource>
+  <resource xml:id="CT.Variable.minscore.Explain">Show entries in TOC with a specified minimum score.</resource>
+  <resource xml:id="CT.Variable.showscore.Title">Show TOC Score</resource>
+  <resource xml:id="CT.Variable.showscore.Explain">Make visible or hide the score in the TOC.</resource>
+  <resource xml:id="CT.Variable.showtestpage.Title">Show Test Page</resource>
+  <resource xml:id="CT.Variable.showtestpage.Explain">Shows a test page containing the search details.</resource>
+	<resource xml:id="CT.SmartHelp.Message.InstallFailed">Failed to install SmartHelp button. Please contact your system administrator for assistance.</resource>
+	<resource xml:id="CT.SmartHelp.Message.SaveFailed">Failed to save SmartHelp configuration. Please contact your system administrator for assistance.</resource>
+	<resource xml:id="CT.SmartHelp.Message.LoadFailed">Failed to load SmartHelp configuration. Please contact your system administrator for assistance.</resource>
+</resources>

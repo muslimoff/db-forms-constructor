@@ -1,0 +1,136 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title> Configure SmartHelp </title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+<meta name="Generator" content="AITPublish" />
+<meta name="Keywords" content="CA Clarity PPM	configure, CA Service Desk	configure, JD Edwards EnterpriseOne	configure, Microsoft Dynamics CRM	configure, Oracle CRM On Demand	configure, Oracle E-Business Suite	configure, Oracle Fusion	configure, Oracle Hyperion EPM	configure, Oracle Transportation Management	configure, PeopleSoft Enterprise	configure, SAP GUI for HTML	configure, SAP NetWeaver Portal	configure, Siebel CRM (On Premise)	configure, SmartHelp	configure" />
+<link rel="stylesheet" type="text/css" href="36.css" />
+<script language="javascript" type="text/javascript" src="dhtml_toc.js"></script>
+<style>
+table.info {width:100%;}
+td {width:;}
+</style>
+<script>
+
+function resetWidth(){
+
+mytables=document.getElementsByTagName('Table')
+
+for (i=0;i<mytables.length;i++){
+
+if(mytables[i].width >450){
+
+mytables[i].className="info"
+
+}
+
+}
+
+}
+</script>
+</head>
+<body> 
+<h3 class="heading3">Configure SmartHelp</h3>
+<p class="bodytext">When you record browser-based application content, the content is automatically ready for deployment with the SmartHelp toolbar button. You can host the published content on a web server and install SmartHelp from the hosted content location.</p>
+<p class="bodytext">Other than deploying SmartHelp to end users, there is no content configuration required. There are options, however, if you want to deploy context-sensitive help or disable the SmartMatch capability. It is also possible to deploy the SmartHelp button from one web server location while hosting the content in another web server location.</p>
+<p class="noteparagraph"><strong class="bold">Note: </strong>If you have content created in different versions of the Developer, SmartHelp should be installed and configured from the latest version. An older version of SmartHelp must not point to content from a newer version.</p>
+<p class="subparagraph">There is a page in the Configuration Utility that contains all of the SmartHelp Options, which include the following:</p>
+<ul class="listbulletindent"><li class="listbulletindent">ExactMatch Application Scripts:  This is a list of URLs to the application script folders in the published content that enable ExactMatch context-sensitivity with SmartHelp. ExactMatch is available for the target applications listed below. The URL should end with the text shown in the Link column below for each application. Do not include /hemi in the URL. For example, http://server/contentfolder/oracle.<p class="tablecenter"></p>
+</li></ul><table width="471" cellpadding="2" cellspacing="0" border="0" style="border-collapse:collapse">
+<tr align="left" valign="top">
+<th width="234"><p class="tableheading">Target Application</p>
+</th>
+<th width="237"><p class="tableheading2">Link</p>
+</th>
+</tr>
+<tr align="left" valign="top">
+<td width="234"><p class="tablebodytext">CA Clarity PPM</p>
+</td>
+<td width="237"><p class="tablebodytext2">/clarity</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="234"><p class="tablebodytext">CA Service Desk</p>
+</td>
+<td width="237"><p class="tablebodytext2">/caunisd</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="234"><p class="tablebodytext">JD Edwards EnterpriseOne</p>
+</td>
+<td width="237"><p class="tablebodytext2">/psentone</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="234"><p class="tablebodytext">Microsoft Dynamics CRM (4.0)</p>
+</td>
+<td width="237"><p class="tablebodytext2">/mscrm3</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="234"><p class="tablebodytext">Oracle CRM On Demand</p>
+</td>
+<td width="237"><p class="tablebodytext2">/siebelod</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="234"><p class="tablebodytext">Oracle E-Business Suite</p>
+</td>
+<td width="237"><p class="tablebodytext2">/oracle</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="234"><p class="tablebodytext">Oracle Fusion</p>
+</td>
+<td width="237"><p class="tablebodytext2">/fusion</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="234"><p class="tablebodytext">Oracle Hyperion EPM</p>
+</td>
+<td width="237"><p class="tablebodytext2">/hyperion</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="234"><p class="tablebodytext">Oracle Transportation Management</p>
+</td>
+<td width="237"><p class="tablebodytext2">/oracletm</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="234"><p class="tablebodytext">PeopleSoft Enterprise</p>
+</td>
+<td width="237"><p class="tablebodytext2">/pst8</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="234"><p class="tablebodytext">SAP GUI for HTML</p>
+</td>
+<td width="237"><p class="tablebodytext2">/front</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="234"><p class="tablebodytext">SAP NetWeaver Portal</p>
+</td>
+<td width="237"><p class="tablebodytext2">/front</p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td width="234"><p class="tablebodytext">Siebel CRM (On Premise)</p>
+</td>
+<td width="237"><p class="tablebodytext2">/siebel7</p>
+</td>
+</tr>
+
+</table>
+<p class="tablebuffer"></p>
+<ul class="listbulletindent"><li class="listbulletindent">SmartMatch Content URL:  If SmartMatch content is deployed to a different location, this URL points to the /stdhtml folder within the content. For example, http://server/contentfolder/stdhtml.</li><li class="listbulletindent">Default Content URL:  If no matching content is found for the ExactMatch applications or SmartMatch is not available, this URL is used to launch content. For example, http://server/content/index.html</li></ul><p class="procheading"><img src="8262.gif" alt="procimage" height="17" width="23" vspace="0" hspace="0" align="bottom" border="0" />To configure SmartHelp options:</p>
+<ol class="listprocedure"><li class="listprocedure">Launch the Configuration Utility.</li><li class="listprocedure">Click the <strong class="bold">SmartHelp</strong> link.</li><li class="listprocedure">Enter the URL to the application script folder.</li><li class="listprocedure">If you have more than one application for which you want to enable SmartHelp, click the <strong class="bold">New Row</strong> icon and enter another URL.</li><li class="listprocedure">Enter a default content URL, if desired.</li><li class="listprocedure">If the content is located in a separate location than the scripts, enter the URL to the content in the SmartMatch URL field.</li><li class="listprocedure">Click <strong class="bold">Save</strong>.</li></ol>
+
+
+<script>resetWidth()</script>
+</body>
+</html>
+
+

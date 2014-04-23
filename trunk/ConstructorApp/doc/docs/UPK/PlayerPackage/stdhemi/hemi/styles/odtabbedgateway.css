@@ -1,0 +1,183 @@
+/* Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved. */
+/* Version 9.6.1.7 */
+
+html 
+{
+	overflow: auto;
+}
+
+body
+{
+	font-family: arial, sans-serif;
+	font-size: 15px;
+	font-weight: bold;	
+	text-align: left;
+	margin: 0;
+}
+
+/*Tab*/
+div.tabEars 
+{
+	margin: 10px 0 0 0;
+	white-space: nowrap;
+	border-collapse: collapse;
+}
+
+div.tabEars_IE
+{
+	margin: 10px 0 0 0;
+	white-space: nowrap;
+	border-collapse: collapse;
+	width:5000px;
+}
+
+ul#line
+{
+	border-bottom: 1px solid #000000;
+}
+
+ul.tabArea
+{
+	border-bottom: 1px solid #000000;
+	list-style-type: none;
+	padding-left: 5px;
+	padding-top: 1px;
+	margin: 0;
+}
+
+ul.tabArea li
+{
+	display: inline;
+	border: 1px solid #000000;
+	margin: 0 5px;
+}
+
+ul.tabArea li.activeTab
+{
+	border-bottom: 1px solid #ffffff;
+}
+
+ul.tabArea li.tab
+{
+	background: #CDE2FD;
+}
+
+ul.tabArea li.tab a:hover
+{
+	background: #94B8E9;
+}
+
+ul.tabArea li a
+{
+	padding: 0 10px;
+	text-decoration: none;
+}
+
+ul.tabArea li a.local:link
+{
+	color: #448;
+}
+
+ul.tabArea li a.local:visited
+{
+	color: #448;
+}
+
+ul.tabArea li a.global:link
+{
+	color: red;
+}
+
+ul.tabArea li a.global:visited
+{
+	color: red;
+}
+
+ul.tabArea li.activeTab a
+{
+	background-color: #ffffff;
+}
+
+ul.tabArea li.activeTab a.local:hover
+{
+	color: #448;
+}
+
+ul.tabArea li.activeTab a.global:hover
+{
+	color: red;
+}
+
+div.tabPages
+{
+	clear: both;
+	border-top: ...;
+}
+
+iframe.eframe
+{
+	display: none;
+	position: absolute;
+}
+
+/*Dropdown*/
+div.popupmenu
+{
+	background-color: #CDE2FD;
+	border-top: 1px solid #000000;
+	border-left: 1px solid #000000;
+	border-right: 1px solid #000000;
+	font: bold 15px arial, sans-serif;
+	position: absolute;
+	visibility: hidden;
+}
+
+div.popupmenu a
+{
+	border-bottom: 1px solid #000000;
+	display: block;
+	padding: 0 10px;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+div.popupmenu a.local:link
+{
+	color: #448;
+}
+
+div.popupmenu a.global:visited
+{
+	color: #448;
+}
+
+div.popupmenu a.global:link
+{
+	color: red;
+}
+
+div.popupmenu a.global:visited
+{
+	color: red;
+}
+
+div.popupmenu a:hover
+{
+	color: #000000;
+	background: #94B8E9;
+}
+
+/*IAS Test Page*/
+table.sortable thead
+{
+	background-color: #eee;
+	color: #666666;
+	font-weight: bold;
+	cursor: default;
+}
+/*
+table.sortable1 tbody tr td 
+{
+	white-space:nowrap;
+}
+*/

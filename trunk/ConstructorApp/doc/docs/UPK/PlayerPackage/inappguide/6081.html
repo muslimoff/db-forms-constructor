@@ -1,0 +1,47 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title> Siebel CRM (On Premise) </title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+<meta name="Generator" content="AITPublish" />
+<meta name="Keywords" content="Siebel CRM (On Premise)	help integration " />
+<link rel="stylesheet" type="text/css" href="36.css" />
+<script language="javascript" type="text/javascript" src="dhtml_toc.js"></script>
+<style>
+table.info {width:100%;}
+td {width:;}
+</style>
+<script>
+
+function resetWidth(){
+
+mytables=document.getElementsByTagName('Table')
+
+for (i=0;i<mytables.length;i++){
+
+if(mytables[i].width >450){
+
+mytables[i].className="info"
+
+}
+
+}
+
+}
+</script>
+</head>
+<body> 
+<h3 class="heading3">Siebel CRM (On Premise)</h3>
+<p class="bodytext">Content will be launched directly from the Contents link from the Siebel Help menu. It is also possible to create a link to the Player in the existing Siebel Help page.</p>
+<a name="o16655"></a>
+<p class="procheading"><img src="8262.gif" alt="procimage" height="17" width="23" vspace="0" hspace="0" align="bottom" border="0" />To set up help integration on the Siebel web server:</p>
+<ol class="listprocedure"><li class="listprocedure">Go to the Siebel appication server and find the …/SWEApp/Public/ (installation) folder.</li><li class="listprocedure">Find the folder for the language of the content you recorded and locate the Help folder within it, then find and open the Siebhelp.css file and edit it as described in the next step.</li><li class="listprocedure">Add the behavior:url command to the body section as indicated below: <p class="listcontinueindent"><code class="monospace">body {<br />margin-top: 4px;<br />margin-bottom: 4px;<br />font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;<br />font-size: 8pt;<br /></code><span class="shade">behavior:url(../hemi/odgateway.htc);   //Add this line</span><code class="monospace"><br />}</code></p>
+</li><li class="listprocedure">Save the  Siebhelp.css file.</li><li class="listprocedure">Locate the <strong class="bold">/hemi</strong> folder under Siebel7 in the published content folder.</li><li class="listprocedure">Copy the <strong class="bold">/hemi</strong> folder and paste it in the language folder on the Siebel server.</li><li class="listprocedure">Repeat this procedure for every language you want to configure.</li></ol><p class="noteparagraph"><strong class="bold">Note:</strong> If you want the Contents link to open the Siebel Help page with the Player link in the header area, change the Show Siebel Help option in the Configuration Utility.</p>
+<p class="allowpagebreak"></p>
+
+
+<script>resetWidth()</script>
+</body>
+</html>
+
+

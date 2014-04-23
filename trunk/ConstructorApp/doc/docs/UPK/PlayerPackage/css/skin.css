@@ -1,0 +1,134 @@
+﻿.header
+{
+	height: 54px;
+	background-color: #FFFFFF;
+}
+
+.headerTransparent
+{
+	background-color: #5A75A2;
+}
+
+.headerDivbar
+{
+	height: 21px;
+	background-color: #CDE2FD;
+}
+
+
+.navCellOff
+{
+	background-color: #305ba2;
+	cursor: default;
+	font-weight: normal;
+}
+
+.navCellOn
+{
+	background-color: #467ed8;
+	cursor: pointer;
+	font-weight: bold;
+}
+
+.dividerColor
+{
+	border-color: #3e5782;
+}
+
+.background
+{
+	background-color: #94B8E9;
+}
+
+.playerCombination
+{
+	background-color: #3e5782;
+	border-color: #3e5782;
+}
+
+.tocSearch
+{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+}
+
+.tocApplicable
+{
+	font-family: Arial, Helvetica, sans-Serif;
+	font-size: 12px;
+	color: #000000;
+}
+
+.tocMyRoles
+{
+	font-family: Arial, Helvetica, sans-Serif;
+	font-size: 12px;
+	
+}
+
+.tocMyRoles:link
+{
+	color: #0000FF;
+}
+
+.tocResultsFor
+{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+}
+
+.tocSearchColor
+{
+	background-color: #CDE2FD;
+}
+
+.tocSelectionText
+{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+}
+
+.tocFrameText
+{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	background-color: #FFFFFF;
+}
+
+
+.treeControlNode 
+{ 
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 12px; 
+	color: #000000;
+	background-color: #FFFFFF;
+}
+
+.thover		
+{ 
+	color: #00CCFF; 
+	background-color: #FFFFFF;
+}
+
+.tselected	
+{ 
+	color: #FFFFFF; 
+	background-color: #003366;
+}
+
+.textWindows
+{
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 12px; 
+	color: #000000;
+	background-color: #EEEEEE;
+}
+
+.windowsBgColor
+{
+	background-color: #FFFFFF;
+}
