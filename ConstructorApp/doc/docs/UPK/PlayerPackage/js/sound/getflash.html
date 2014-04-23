@@ -1,0 +1,76 @@
+<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title></title>
+<script type="text/javascript" src="../cookie.js"></script>
+<script type="text/javascript" src="../preferences.js"></script>
+<script type="text/javascript" src="../resource.js"></script>
+<style type="text/css">
+*
+{
+	padding: 0px;
+	margin: 0px;
+}
+body
+{
+	font-family: Arial, Sans-Serif;
+	font-size: 15px;
+	text-align: center;
+}
+p
+{
+	line-height: 40px;
+}
+</style>	
+
+<script type="text/javascript">
+
+function ShowPreferences() {
+	base = this.location.href;
+	k = base.indexOf('?');
+	if (k < 0)
+		k = base.indexOf('#');
+	if (k >= 0)
+		base = base.substr(0, k);
+	k = base.lastIndexOf('/');
+	b = base.substr(0, k);
+	b+="/../.."
+	OpenPreferencesDialog(b);
+}
+
+
+</script>
+
+</head>
+
+<body>
+<p style="margin-top: 90px;">
+<script type="text/javascript">document.write(R_flash1);</script>
+</p>
+<p>
+<script type="text/javascript">document.write(R_flash2);</script>
+<a href="http://get.adobe.com/flashplayer/"><script type="text/javascript">document.write(R_flash3);</script></a>
+<script type="text/javascript">	document.write(R_flash4);</script>
+</p>
+<p>
+<script type="text/javascript">	document.write(R_flash5);</script>
+</p>
+<p>
+<script type="text/javascript">	document.write(R_flash6);</script>
+<a href="javascript:ShowPreferences()"><script type="text/javascript">document.write(R_flash7);</script></a>
+<script type="text/javascript">	document.write(R_flash8);</script>
+</p>
+<p>
+<script type="text/javascript">	document.write(R_flash9);</script>
+</p>
+<p style="margin-top: 40px;">
+<a href="javascript:top.close();"><script type="text/javascript">document.write(R_flash10);</script></a>
+</p>
+</body>
+
+</html>

@@ -1,0 +1,50 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title> Modify the HELP_WEB_AGENT Profile </title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+<meta name="Generator" content="AITPublish" />
+<meta name="Keywords" content="" />
+<link rel="stylesheet" type="text/css" href="36.css" />
+<script language="javascript" type="text/javascript" src="dhtml_toc.js"></script>
+<style>
+table.info {width:100%;}
+td {width:;}
+</style>
+<script>
+
+function resetWidth(){
+
+mytables=document.getElementsByTagName('Table')
+
+for (i=0;i<mytables.length;i++){
+
+if(mytables[i].width >450){
+
+mytables[i].className="info"
+
+}
+
+}
+
+}
+</script>
+</head>
+<body> 
+<h4 class="heading4">Modify the HELP_WEB_AGENT Profile</h4>
+<p class="bodytext">You must modify the HELP_WEB_AGENT profile in Oracle to point to the oracle_gateway.html in the Player content deployed on the server. </p>
+<p class="bodytext">For Oracle E-Business Suite 11i , the URL consists of two parts: the path for the oracle_gateway.html file located in the \oracle\hemi folder in the Player content, plus the path of the default dbc file for the Oracle server. </p>
+<p class="bodytext">Following is an example for 11i:</p>
+<p class="code">URL=http://&lt;server name&gt;:&lt;port&gt;/oracle/hemi/oracle_gateway.html?dbc=d:\oracle\o11iappl\<br />fnd\11.5.0\secure\&lt;server name&gt;.dbc</p>
+<p class="bodytext">Following is an example for R12:</p>
+<p class="code">URL=http://&lt;server name&gt;:&lt;port&gt;/oracle/hemi/oracle_gateway.html</p>
+<a name="o16662"></a>
+<p class="bodytext"><img src="8262.gif" alt="procimage" height="17" width="23" vspace="0" hspace="0" align="bottom" border="0" />To modify the HELP_WEB_AGENT profile in Oracle E-Business Suite:</p>
+<ol class="listprocedure"><li class="listprocedure">Sign on to the Oracle EBS Application via the web browser as an administrator.</li><li class="listprocedure">Click the <strong class="bold">System Administrator</strong> link and locate the <strong class="bold">System </strong>Profile.</li><li class="listprocedure">When the java form launches, enter <strong class="bold">APPLICATIONS_HELP%</strong> in the <strong class="bold">Profile </strong>field and click <strong class="bold">Find</strong>.</li><li class="listprocedure">Enter or edit the URL with the path to the <strong class="bold">oracle_gateway.html</strong>.<br /><strong class="bold">Note:</strong> For Oracle 11.5.10, include the location of the .dbc file in the URL string. Once you have completed your changes, stop and restart the Oracle Forms service.</li><li class="listprocedure">For the profile change to take effect in the current session, exit from the Oracle application and sign in again.</li><li class="listprocedure">Click <strong class="bold">Help </strong>in Oracle, and the Player launches.</li></ol>
+
+
+<script>resetWidth()</script>
+</body>
+</html>
+
+

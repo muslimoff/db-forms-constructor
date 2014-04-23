@@ -1,0 +1,228 @@
+﻿<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<html>
+<head>
+<LINK REL="SHORTCUT ICON" HREF="img/ondemand.ico">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Start Player</title>
+
+<script src="js/escape.js"></script>
+<script src="js/noevents.js"></script>
+<script src="js/cookie.js"></script>
+
+<script>
+	var isIE7=false;
+	if (document.all) { var notIE = false; } else { var notIE = true; }
+	window.focus();
+</script>
+<!--[if IE 7]>
+<script>isIE7=true;</script>
+<![endif]-->
+	<!--[if IE 8]>
+<script>isIE7=true;</script>
+<![endif]-->
+
+<script>
+
+var navigation_mode="smart";
+var browser_buttons=false;
+
+var newWindow=true;
+
+function ShowToc()
+{
+	var params=document.location.hash.substring(1);
+	if (params.length==0)
+		params=document.location.search.substring(1);
+	var toclink="toc.html";
+	if (params.length>0)
+		toclink+="?"+params;
+
+	if (!newWindow)
+	{
+		this.location.href=toclink;
+		return;
+	}
+
+	SetNoEvents();
+	var c=new Cookie(document,"OnDemandToc",365);
+	c.Load();
+
+	var HPercent=.80;
+	var WPercent=.81;
+	var MaxH=750;
+	var MaxW=880;
+	var MinW=770;
+	var AW=screen.availWidth;
+	var AH=screen.availHeight;
+
+	var X;
+	var Y;
+	var W;
+	var H;
+	if (c.TocWidth)
+	{
+		X=Number(c.TocLeft);
+		Y=Number(c.TocTop);
+		W=Number(c.TocWidth);
+		H=Number(c.TocHeight);
+	}
+	else
+	{
+		W=AW * WPercent;
+		H=AH * HPercent;
+		if (W>MaxW)
+			W=MaxW;
+		if (W<MinW)
+			W=MinW;
+		if (H>MaxH)
+			H=MaxH;
+		X=Math.floor((AW-W)/2);
+		Y=Math.floor((AH-H)/2);
+	}
+	if (X<0)
+		X=0;
+	if (Y<0)
+		Y=0;
+	if (X+W > AW-12)
+	{
+		if (W>AW-12)
+		{
+			X=0;
+			W=AW-12;
+		}
+		else
+		{
+			X=AW-12-W;
+		}
+	}
+	if (Y+H > AH-36)
+	{
+		if (H>AH-36)
+		{
+			Y=0;
+			H=AH-36;
+		}
+		else
+		{
+			Y=AH-36-H;
+		}
+	}
+
+	var features="channelmode=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=yes,toolbar=no,";
+	if (browser_buttons==true)
+	{
+		features="channelmode=no,location=yes,directories=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,toolbar=yes,";
+	}
+	window.open(toclink,"toc",features + "left=" + X + ",top=" + Y + ",width=" + W + ",height=" + H );
+}
+
+function Parse()
+{
+	strArgs = document.location.hash.substring(1).split("&");
+	if(strArgs.length == 0 || strArgs[0] == "")
+		strArgs = document.location.search.substring(1).split("&");
+		
+	if (strArgs.length==1)
+	{
+		if (strArgs[0].toLowerCase().substr(0,3)== "su=")
+		{
+			var s=Gkod.Escape.SafeUriUnEscape(strArgs[0].substr(3));
+			strArgs=s.split("&");
+		}
+	}
+
+	for (var i=0; i<strArgs.length; i++) 
+	{
+		strArg = strArgs[i].toLowerCase();
+		if (strArg.substr(0,8) == "buttons=") 
+		{
+			s = strArg.substr(8,1);
+			browser_buttons=(s=="y");
+		}
+		if (strArg.substr(0,6) == "index=") 
+		{
+			s = strArg.substr(6,1);
+			if (s=="b")
+				navigation_mode="back";
+			if (s=="c")
+				navigation_mode="close";
+			if (s=="s")
+				navigation_mode="self";
+			if (s=="l")
+				navigation_mode="leave";
+			if (s=="r")
+				navigation_mode="smart";
+		}
+	}
+	
+	if (navigation_mode=="smart")	// browser dependent default settings
+	{
+		if (isIE7 || notIE)
+		{
+			navigation_mode="self";
+			browser_buttons=true;
+		}
+		else // IE6 as well
+		{
+			navigation_mode="self";
+			browser_buttons=true;
+		}
+	}
+
+	newWindow=(navigation_mode!="self");
+}
+
+function Back()
+{
+	if (history.length!=0)
+		history.back();
+	else
+		Close();
+}
+
+function Close()
+{
+	if (isIE7 || notIE)
+		window.open("","_self");
+	opener=null;
+	window.close();
+}
+
+function Init()
+{
+	Parse();
+	ShowToc();
+	switch (navigation_mode)
+	{
+		case "back" :
+						Back();
+						break;
+		case "close" :
+						Close()
+						break;
+		default:
+						break;
+	}
+}
+
+</script>
+</head>
+
+<body onLoad="Init()">
+
+	<table width='98%' height='98%'>
+	<tr>
+	<td valign='bottom' align='center'>
+		<a href="#" onClick="Init(); return false"><img src="img/large_logo.gif" border="0" alt="Launch player" title="Launch player"></a>
+	</td>
+	<tr>
+	<td valign='bottom' align='right'>
+		<img src="img/cb_logo.gif" border="0" alt="Oracle" title="Oracle">
+	</td>
+	</tr>
+	</table>
+
+</body>
+</html>

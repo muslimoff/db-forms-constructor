@@ -1,0 +1,46 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title> Special Note for SAP Unicode-based Systems </title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+<meta name="Generator" content="AITPublish" />
+<meta name="Keywords" content="" />
+<link rel="stylesheet" type="text/css" href="36.css" />
+<script language="javascript" type="text/javascript" src="dhtml_toc.js"></script>
+<style>
+table.info {width:100%;}
+td {width:;}
+</style>
+<script>
+
+function resetWidth(){
+
+mytables=document.getElementsByTagName('Table')
+
+for (i=0;i<mytables.length;i++){
+
+if(mytables[i].width >450){
+
+mytables[i].className="info"
+
+}
+
+}
+
+}
+</script>
+</head>
+<body> 
+<h5 class="heading5">Special Note for SAP Unicode-based Systems</h5>
+<p class="bodytext">If your SAP System is Unicode-based, please apply the transport in the following manner via the command line.</p>
+<p class="bodytext">Verify that your instance profile has the following parameter set: abap/unicode_check=on. </p>
+<p class="procheading"><img src="8262.gif" alt="procimage" height="17" width="23" vspace="0" hspace="0" align="bottom" border="0" />Apply the transport using the following procedure from the command line.</p>
+<ol class="listprocedure"><li class="listprocedure">Go to your \usr\sap\trans\bin directory.</li><li class="listprocedure">Type the following:<br />tp addtobuffer nnnKxxxxxx &lt;SID&gt; </li><li class="listprocedure">Type the following:<br />tp import nnnKxxxxxx &lt;SID&gt; -Dsetunicodeflag=true client&lt;num&gt; pf=TP_DOMAIN_&lt;SID&gt;.pfl</li></ol><p class="bodytext">Example:<br /><code class="monospace">tp import D6CK900100 UC3 -Dsetunicodeflag=true client800 pf=TP_DOMAIN_UC3.pfl</code></p>
+<p class="bodytext">If you system is Unicode, refer to SAP Note 330267 before importing the content.</p>
+
+
+<script>resetWidth()</script>
+</body>
+</html>
+
+

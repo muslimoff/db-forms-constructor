@@ -1,0 +1,44 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title> Customize the HELP_START Function in SAP </title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+<meta name="Generator" content="AITPublish" />
+<meta name="Keywords" content="" />
+<link rel="stylesheet" type="text/css" href="36.css" />
+<script language="javascript" type="text/javascript" src="dhtml_toc.js"></script>
+<style>
+table.info {width:100%;}
+td {width:;}
+</style>
+<script>
+
+function resetWidth(){
+
+mytables=document.getElementsByTagName('Table')
+
+for (i=0;i<mytables.length;i++){
+
+if(mytables[i].width >450){
+
+mytables[i].className="info"
+
+}
+
+}
+
+}
+</script>
+</head>
+<body> 
+<h5 class="heading5">Customize the HELP_START Function in SAP</h5>
+<p class="bodytext">In this step, you must edit code to customize the &quot;help_start&quot; function in SAP. This function launches SAP Help menu commands and must be modified to launch the Player with special parameters.</p>
+<p class="noteparagraph"><strong class="bold">Note: </strong>The status message &quot;Object FUNC_HELP_START is part of the Basis interface; further development not allowed&quot; may appear. This message is not an error, and you should continue with the procedure.</p>
+<ol class="listprocedure"><li class="listprocedure">Enter <strong class="bold">*OnDemand Include</strong>.</li><li class="listprocedure">Press Enter.</li><li class="listprocedure">Type <strong class="bold">include /GKOD/Y_START_ONDEMAND</strong>. </li></ol><p class="bodytext">The space between &quot;include&quot; and the / in the statement above, as well as the period at the end of the statement, is required.</p>
+
+
+<script>resetWidth()</script>
+</body>
+</html>
+
+

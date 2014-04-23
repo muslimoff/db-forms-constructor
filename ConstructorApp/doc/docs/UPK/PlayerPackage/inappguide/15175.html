@@ -1,0 +1,45 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title> Configure the Help Link Redirector for Clarity 8 </title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+<meta name="Generator" content="AITPublish" />
+<meta name="Keywords" content="CA Clarity PPM	help integration" />
+<link rel="stylesheet" type="text/css" href="36.css" />
+<script language="javascript" type="text/javascript" src="dhtml_toc.js"></script>
+<style>
+table.info {width:100%;}
+td {width:;}
+</style>
+<script>
+
+function resetWidth(){
+
+mytables=document.getElementsByTagName('Table')
+
+for (i=0;i<mytables.length;i++){
+
+if(mytables[i].width >450){
+
+mytables[i].className="info"
+
+}
+
+}
+
+}
+</script>
+</head>
+<body> 
+<h4 class="heading4">Configure the Help Link Redirector for Clarity 8</h4>
+<p class="bodytext">For the context-sensitive content to be launched from Clarity, the pre-existing Help launch file (<strong class="bold">wwhelp.htm</strong>) should be replaced for each language. Follow these instructions:</p>
+<ol class="listprocedure"><li class="listprocedure">Rename the existing <strong class="bold">wwhelp.htm</strong> file on the Clarity server (per language) to<strong class="bold"> wwhelp1.htm</strong>. The default path for this file for the English language Help is:<p class="listcontinueindent"><span class="shade">http://&lt;clarity server&gt;/niku/help/en/wwhelp/wwhimpl/js/html/wwhelp.htm</span></p>
+</li><li class="listprocedure">Place the contents of the clarity\hemi\wwhelp\ directory in the same location where you renamed the existing wwhelp.htm file</li><li class="listprocedure">Open the <strong class="bold">capawwhelp.js</strong> file to enter the value for OD_GATEWAYURL. The URL value for OD_GATEWAYURL should point to the location where the content gateway file is deployed. It should be a fully qualified URL similar to: <p class="listcontinueindent"><span class="shade">http://&lt;content server&gt;/&lt;content&gt;/clarity/hemi/claritygateway.html</span></p>
+</li></ol>
+
+
+<script>resetWidth()</script>
+</body>
+</html>
+
+

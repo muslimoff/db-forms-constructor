@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<!--Version 9.6.0.7-->
+<resources>
+  <resource xml:id="CT.Section.CONTEXT">コンテキスト依存性の構成</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATIONSCRIPTS_URL.Title">ExactMatchアプリケーション・スクリプト</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATIONSCRIPTS_URL.Explain">これは、SmartHelpによるExactMatchコンテキスト依存性を有効にする、発行コンテンツ内のアプリケーション・スクリプト・フォルダへのURLのリストです。ExactMatchは、下にリストされたターゲット・アプリケーションで使用できます。URLは、各アプリケーションで下の「リンク」列に表示されているテキストで終わる必要があります。/hemiをURLに含めないでください。例: http://server/contentfolder/oracle。</resource>
+  <resource xml:id="CT.Variable.OD_SMARTMATCH_URL.Title">SmartMatch URL</resource>
+  <resource xml:id="CT.Variable.OD_SMARTMATCH_URL.Explain">SmartMatchコンテンツが別の場所に配布されている場合、このURLはコンテンツ内の/stdhtmlフォルダを指します。例: http://server/contentfolder/stdhtml。</resource>
+  <resource xml:id="CT.Variable.OD_STANDARD_URL.Title">デフォルト・コンテンツURL</resource>
+  <resource xml:id="CT.Variable.OD_STANDARD_URL.Explain">ExactMatchアプリケーションで一致するコンテンツが見つからなかったりSmartMatchを使用できない場合は、このURLを使用してコンテンツが起動します。例: http://server/content/index.html</resource>
+
+
+  <resource xml:id="CT.Variable.OD_STRICTURLCHECK.Title">アプリケーション・スクリプトのチェック</resource>
+  <resource xml:id="CT.Variable.OD_STRICTURLCHECK.Explain">この変数は、OD_APPLICATIONSCRIPTS_URLリストでアクセス不能URLの直接エラー・メッセージが必要な場合に設定します</resource>
+  <resource xml:id="CT.Variable.OD_ENABLESMARTMATCH.Title">SmartMatch</resource>
+  <resource xml:id="CT.Variable.OD_ENABLESMARTMATCH.Explain">このオプションは、カスタマ・サポートに相談した上で変更してください。</resource>
+  <resource xml:id="CT.Variable.OD_GENERICAPPLICATIONNAME.Title">SmartMatchアプリケーション</resource>
+  <resource xml:id="CT.Variable.OD_GENERICAPPLICATIONNAME.Explain">このオプションは、カスタマ・サポートに相談した上で変更してください。</resource>
+
+  
+  <resource xml:id="CT.Variable.OD_CUSTOMERRORHTML.Title">カスタム・エラー・ページ</resource>
+  <resource xml:id="CT.Variable.OD_CUSTOMERRORHTML.Explain">odcustomerror.htmlを使用している場合は1に設定</resource>
+  <resource xml:id="CT.Variable.OD_ENABLESMARTHELP.Title">SmartHelp</resource>
+  <resource xml:id="CT.Variable.OD_ENABLESMARTHELP.Explain">SmartHelpテスト構成を有効または無効にします。</resource>
+</resources>

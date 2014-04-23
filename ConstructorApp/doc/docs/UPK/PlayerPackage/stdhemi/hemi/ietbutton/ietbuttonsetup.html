@@ -1,0 +1,376 @@
+﻿<!--
+Copyright © 1998, 2011, Oracle and/or its affiliates.  All rights reserved.
+-->
+
+<!--Version 9.6.1.9-->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="../scripts/oddefs.js"></script>
+    <script type="text/javascript" src="../scripts/odplaybackdefs.js"></script>
+    <script type="text/javascript" src="../scripts/odhelper.js"></script>
+    <script type="text/javascript" src="../odstdtest.js"></script>
+    <script type="text/javascript" src="../strings.js"></script>
+    <script type="text/javascript" src="../odstdcustomurl.js"></script>
+    <script type="text/javascript">
+        document.title = TITLE;
+        var codebase = 'codebase="hemiiebutton.cab#ExactVersion=9,6,1,217"';
+        Gkod.Trace.Write(Gkod.Trace.ID.LOAD, '[IETBUTTONSETUP] : ' + codebase);
+        var installed = false;
+        var _temp = null;
+
+        try {
+            _temp = new ActiveXObject('HemiIEButton.ToolbarButton');
+            installed = (typeof (_temp) == 'object');
+        } catch (e) { } //does not exist
+
+        if (installed && _temp != null) {
+            try {
+                _temp.KeepMru();
+            } catch (e) { }
+        }
+
+        function GkodUrl(p) {
+            this.p = String(p);
+            var a = this.p.match(/^[^\?#&]*|[\?&][^\?#&=]*|=[^\?#&]*|#.*$/g);
+            this.url = (a.length > 0) ? a[0] : '';
+            this.fragment = ((a.length > 1) && (a[a.length - 1].charAt(0) == '#')) ? a.pop().substr(1) : null;
+            this.query = {};
+            for (var i = 1, n = a.length; i < n; ++i) {
+                var ai = a[i++];
+                if ((i < n) && (a[i].charAt(0) === '=')) {
+                    this.query[ai.substr(1)] = decodeURIComponent(a[i].substr(1));
+                    continue;
+                }
+                this.query[ai.substr(1)] = '';
+                --i;
+            }
+        }
+
+        GkodUrl.prototype.GetParam = function(p, d) {
+            var undefined;
+            var r = this.query[p];
+            return ((r === undefined) ? d : r);
+        }
+
+        var hemiObject = null;
+        var haltProcessing = false;
+        var paramCount = 0, diagnosticMode = false, setupdiagMode = false, queryMode = false, queryAllMode = false;
+        var detectMode = false;
+
+        var paramParser = new GkodUrl(window.location);
+        var standardContent = paramParser.GetParam('standardcontent', null);
+
+        function Load() {
+            Gkod.Trace.Write(Gkod.Trace.ID.LOAD, '[IETBUTTONSETUP] : Load()');
+            window.onerror = function ErrHandler() {
+                if (typeof (err) != 'undefined') {
+                    WriteStatusText("[Code: " + err.number + " - " + err.message + "].");
+                }
+                window.ErrorResult = status;
+                return true;
+            };
+
+            if (installed) {
+                WriteText('foreword', FOREWORD_CONF);
+                //document.getElementById('bookmark_section').style.visibility = 'visible';
+            }
+            else {
+                WriteText('foreword', FOREWORD_INS);
+            }
+
+            WriteStatusText(WAIT);
+
+            diagnosticMode = window.location.search.indexOf('diagnosticmode') > -1 && window.location.search.indexOf('diagnosticmode=0') == -1;
+            setupdiagMode = window.location.search.indexOf('setupdiag') > -1;
+            setupdiagMode = setupdiagMode || diagnosticMode;
+            queryMode = window.location.search.indexOf("query") > -1;
+            queryAllMode = window.location.search.indexOf("queryall") > -1;
+            detectMode = window.location.search.indexOf("detect") > -1;
+            paramCount = window.location.search.split('&').length;
+
+            //IE6 
+            try {
+                hemiObject = document.getElementById("hemiToolbarButtonNoCodebase").object;
+            }
+            catch (e) {
+                hemiObject = null;
+            }
+
+            if (hemiObject != null) {
+                try {
+                    if (paramCount == 1 || paramCount == 2 && setupdiagMode) {
+                        InstallComponent();
+                        return;
+                    }
+
+                    ClearStatusText();
+                    WriteStatusText(INSTALLSUCCESS1);
+
+                    if (Configure(false) && !queryMode && !detectMode) {
+                        Success();
+                    }
+                }
+                catch (err) {
+                    ClearStatusText();
+                    WriteStatusWithError("CONFIGURATIONFAILURE", err);
+                }
+            }
+            else {
+                //install it
+                InstallComponent();
+            }
+        }
+
+        function Success() {
+            WriteStatusText(CONFIGURATIONCOMPLETE);
+            WriteStatusText(INSTALLSUCCESS2);
+            WriteStatusText(BUTTONVISIBLITYWARNING);
+            WriteStatusText(POPUPBLOCKER);
+        }
+
+        function InstallComponent() {
+            Gkod.Trace.Write(Gkod.Trace.ID.LOAD, '[IETBUTTONSETUP] : InstallComponent() detectMode=' + detectMode);
+            if (detectMode) {
+                window.ErrorResult = 1500;
+            }
+            else {
+                document.getElementById('compDiv').innerHTML = '<object id="hemiToolbarButton" ' + codebase + ' height="0" width="0" classid="clsid:01111111-D318-45F9-A54A-DAE0FB0D16B8"></object>'
+                hemiToolbarButton.onreadystatechange = WaitToInstallComponent;
+                window.setTimeout("CheckReadyState()", 1000, "javascript");
+            }
+        }
+
+        var counter = 0;
+
+        function CheckReadyState() {
+            if (counter == -1) {
+                return;
+            }
+
+            if (hemiToolbarButton.readyState != 4) {
+                if (++counter == 60) {
+                    ClearStatusText();
+                    WriteStatus("INSTALLFAILURE");
+                    window.ErrorResult = 1500;
+                }
+                else {
+                    window.setTimeout("CheckReadyState()", 1000, "javascript");
+                }
+            }
+            else {
+                TryToConfigure(true);
+            }
+        }
+
+        function WaitToInstallComponent() {
+            if (document.readyState == "complete") {
+                counter = -1;
+                document.onreadystatechange = null;
+                hemiObject = document.getElementById('hemiToolbarButton').object;
+                TryToConfigure(true);
+            }
+        }
+
+        function TryToConfigure(freshInstall) {
+            if (Configure(freshInstall) && !queryMode) {
+                window.ErrorResult = 0;
+                if (!installed)
+                    WriteStatusText(INSTALLSUCCESS1);
+                Success();
+            }
+        }
+
+        function Configure(freshInstall) {
+            if (hemiObject == null) {
+                ClearStatusText();
+                WriteStatusText(INSTALLFAILURE);
+                window.ErrorResult = 1500;
+                return false;
+            }
+            try {
+                if (freshInstall || !queryMode) {
+                    ClearStatusText();
+                    var baseUrl;
+                    if (standardContent) {
+                        baseUrl = standardContent + "?seturl";
+                    }
+                    else {
+                        baseUrl = document.URL;
+                    }
+
+                    var status = 0;
+                    try {
+                        hemiObject.InstallAsIEButton(baseUrl.replace("browser=ie", "") + (freshInstall ? '&freshinstall' : ''));
+                    }
+                    catch (e) {
+                        try {
+                            hemiObject.InstallAsIEButton(baseUrl.replace("browser=ie", "") + (freshInstall ? '&freshinstall' : ''), false);
+                        }
+                        catch (e) { }
+                    }
+                    if (status != 0) {
+                        //Error happened
+                        WriteStatus("CONFIGURATIONFAILURE");
+
+                        if (setupdiagMode || status == 1006 || status == 1007) {	//reg errors
+                            WriteStatusText('Error code: ');
+                            WriteStatusText(hemiObject.DetailedErrorMessage);
+                        }
+                        else {
+                            WriteErrorText(status);
+                        }
+                        window.ErrorResult = status;
+
+                        return false;
+                    }
+                }
+                HandleQuery();
+            }
+            catch (err) {
+                WriteStatusWithError("CONFIGURATIONFAILURE", err);
+                window.ErrorResult = 1500;
+                return false;
+            }
+            window.ErrorResult = 0;
+            return true;
+        }
+
+        function CompareAlpha(a, b) {
+            if (a[0] < b[0]) { return -1; }
+            if (a[0] > b[0]) { return 1; }
+            return 0;
+        }
+
+        function HandleQuery() {
+            //Query and QueryAll implementation
+            if (queryMode || detectMode) {
+                ClearStatusText();
+                var qall = queryAllMode || detectMode;
+                WriteStatusText("SmartHelp Data" + (qall ? " (All)" : ""));
+                var text1 = "N/A", text2 = "";
+                try {
+                    var arr = hemiObject.ReadTestData(qall);
+                    window.QueryResult = window._GkodODPVal_;
+
+                    //sort
+                    var a = [], i = 0;
+                    for (var key in arr) {
+                        if (key == 'LocationList') {
+                            continue;
+                        }
+                        a[i] = [];
+                        a[i][0] = key;
+                        a[i][1] = arr[key];
+                        i++;
+                    }
+                    a.sort(CompareAlpha);
+                    for (var i = 0; i < a.length; i++) {
+                        text2 += '<tr><td>' + a[i][0] + '</td><td>' + a[i][1] + '</td></tr>';
+                    }
+
+                    if (text2.length > 0)
+                        text1 = "<center><table>" + text2 + "</table></center>"
+                    window.ErrorResult = 0;
+                }
+                catch (err) {
+                    window.ErrorResult = 1500;
+                }
+                WriteStatusText(text1);
+                window.ErrorResult = 0;
+            }
+        }
+
+        function WriteText(id, text) {
+            document.getElementById(id).innerHTML = text;
+        }
+
+        function WriteStatusWithError(id, err) {
+            WriteStatusText(eval(id));
+
+            if (typeof (err) != 'undefined') {
+                WriteStatusText("[Code: " + err.number + " - " + err.message + "].");
+            }
+        }
+
+        function ClearStatusText() {
+            document.getElementById("installstatus").innerHTML = "";
+            var _diagnosticModeinRegistry = false;
+            if (hemiObject) {
+                try {
+                    var temp = hemiObject.ReadTestData(true);
+                    for (i in temp) {
+                        if (i == 'diagnosticmode' && temp[i] == '1') {
+                            if (!queryMode) {
+                                _diagnosticModeinRegistry = true;
+                            }
+                        }
+                    }
+                }
+                catch (e) {
+                }
+            }
+            if (setupdiagMode || _diagnosticModeinRegistry) {
+                WriteStatusText(DIAGNOSTICMODE);
+            }
+        }
+
+        function WriteStatusText(text) {
+            document.getElementById("installstatus").innerHTML += "<span>" + text + "</span><br /><br />";
+        }
+
+        function WriteErrorText(errorCode) {
+            WriteStatusText(res["ERROR_CODE"].replace("%d", errorCode));
+        }
+    </script>
+
+    <style type="text/css">
+        body
+        {
+            font-family: Tahoma;
+        }
+    </style>
+</head>
+<body onload="Load()">
+    <div style="width: 800px; text-align: center">
+        <div id="Content">
+            <div id="foreword" style="font-weight: bold; font-size: large">
+            </div>
+            <br />
+            <br />
+            <div id="installstatus" style="font-weight: bold">
+                <img src="animatedprogressbar.gif" style="padding-bottom: 20px" alt=".........." />
+                <div id="wait">
+                </div>
+            </div>
+            <div id="compDiv">
+            </div>
+            <div>
+                <object id="hemiToolbarButtonNoCodebase" height="0" width="0" classid="clsid:01111111-D318-45F9-A54A-DAE0FB0D16B8">
+                </object>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+//        function StoreBookmark() {
+//            if (hemiObject) {
+//                var url = window.location.href.substr(0, window.location.href.indexOf('/ietbutton')) + '/smarthelp/smarthelpsetup.html';
+//                hemiObject.CreateBookmark(document.getElementById('bookmark_title').value, url);
+//            }
+//        }
+    </script>
+<!--
+    <div id='bookmark_section' style='visibility: hidden'>
+        <span>Title of the Bookmark: </span>
+        <input id='bookmark_title' type='text' style='width: 200px' />
+        <br />
+        <br />
+        <span>Store this URL as Bookmark: </span>
+        <input type="button" value='Store' onclick='StoreBookmark()' />
+    </div>
+-->    
+</body>
+</html>

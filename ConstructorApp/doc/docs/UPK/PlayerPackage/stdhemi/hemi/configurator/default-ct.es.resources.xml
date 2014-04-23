@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright © 1998, 2010, Oracle and/or its affiliates.  All rights reserved.
+-->
+<!--Version 9.6.1.21-->
+<resources>
+  <resource xml:id="CT.Action.ShowTOC">Iniciar contenido</resource>
+  <resource xml:id="CT.Title.Language">Idioma</resource>
+  <resource xml:id="CT.Title.ContentUrl">URL de contenido</resource>
+
+  <resource xml:id="CT.Type.Number.DefaultOrZero100">Debe ser un número del rango entre 0-100. Se utiliza -1 como valor predeterminado.</resource>
+  <resource xml:id="CT.Type.Integer.DefaultOrZeroInf">Debe ser cero o un número entero positivo. Se utiliza -1 como valor predeterminado.</resource>
+  <resource xml:id="CT.Type.UseDefault">Utilizar predeterminado</resource>
+  <resource xml:id="CT.Type.Default">Predeterminado</resource>
+  <resource xml:id="CT.Type.Yes">Sí</resource>
+  <resource xml:id="CT.Type.No">No</resource>
+  <resource xml:id="CT.Type.Enable">Activar</resource>
+  <resource xml:id="CT.Type.Enabled">Activado</resource>
+  <resource xml:id="CT.Type.Disable">Desactivar</resource>
+  <resource xml:id="CT.Type.Disabled">Desactivado</resource>
+
+  <resource xml:id="CT.Type.Show">Mostrar</resource>
+  <resource xml:id="CT.Type.DontShow">No mostrar</resource>
+
+  <resource xml:id="CT.Type.All">Todos</resource>
+  <resource xml:id="CT.Type.Applicable">Aplicable</resource>
+
+  <resource xml:id="CT.Type.Use">Utilizar</resource>
+  <resource xml:id="CT.Type.DontUse">No utilizar</resource>
+
+  <resource xml:id="CT.Type.ApplicationName.InvalidCharacters">El nombre contiene caracteres no válidos. El identificador debe contener entre 1 y 8 caracteres, y sólo pueden ser letras, números y guiones bajos.</resource>
+  <resource xml:id="CT.Type.ApplicationName.InvalidLength">El nombre debe contener entre 1 y 8 caracteres, y sólo pueden ser letras, números y guiones bajos.</resource>
+  <resource xml:id="CT.Type.FrameLocation.Top">Superior</resource>
+  <resource xml:id="CT.Type.FrameLocation.Bottom">Inferior</resource>
+  <resource xml:id="CT.Type.HelpMode.TopEmbeddedFrame">Marco incrustado en la parte superior</resource>
+  <resource xml:id="CT.Type.HelpMode.BottomEmbeddedFrame">Marco incrustado en la parte inferior</resource>
+  <resource xml:id="CT.Type.HelpMode.LinkInGatewayPage">Vínculo en la página de puerta de enlace</resource>
+  <resource xml:id="CT.Type.LanguageMap.DuplicatedKey">{KEY} duplicada.</resource>
+  <resource xml:id="CT.Type.LanguageMap.MissingKey">Falta el ID de idioma.</resource>
+  <resource xml:id="CT.Type.LanguageMap.MissingValue">No se ha especificado el URL de contenido.</resource>
+
+  <resource xml:id="CT.Section.CONTENT">Configuración de contenido en varios idiomas</resource>
+  <resource xml:id="CT.Variable.OD_URL.Title">URL de contenido por idioma</resource>
+  <resource xml:id="CT.Variable.OD_URL.Explain">Esta opción tiene dos campos: Idioma y URL de contenido. Utilice la lista de idiomas para seleccionar un idioma y, a continuación, introduzca el URL del contenido desarrollado en dicho idioma, en el campo URL de contenido. Puede añadir nuevas filas, si es necesario, para permitir la asistencia en todos los idiomas disponibles.</resource>
+  <resource xml:id="CT.Variable.OD_DEFAULT_URL.Title.Lang">URL de contenido predeterminado</resource>
+  <resource xml:id="CT.Variable.OD_DEFAULT_URL.Explain.Lang">Esta es una URL para el inicio del contenido, si el idioma no está definido en la lista de URL de contenido por idioma. Por ejemplo, si ha definido inglés, español, francés y alemán y alguien inicia la sesión en italiano, puede indicar que se deberá iniciar el contenido en inglés.&lt;br/>&lt;br/>Nota: {rc:parent}</resource>
+
+  <resource xml:id="CT.Section.HELP">Configuración de ayuda de la aplicación</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATIONHELP_URL.Title">URL de ayuda</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATIONHELP_URL.Explain">Si introduce el URL de ayuda de la aplicación, se mostrará en la página de puerta de enlace. Si esta URL no está presente, el contenido de Player se iniciará sin mostrar la página de puerta de enlace.</resource>
+  <resource xml:id="CT.Variable.OD_SHOWHELPMODE.Title">Mostrar ayuda como</resource>
+  <resource xml:id="CT.Variable.OD_SHOWHELPMODE.Explain">El vínculo de ayuda de la aplicación puede aparecer como vínculo en la página de la puerta de enlace o como un marco incrustado en la parte superior o inferior de la página de la puerta de enlace. Si decide mostrar la ayuda como un vínculo, estará disponible el campo Texto de vínculo de la ayuda, para que introduzca el texto del vínculo.</resource>
+  <resource xml:id="CT.Variable.OD_SHOWHELPTEXT.Title">Texto de vínculo de la ayuda</resource>
+  <resource xml:id="CT.Variable.OD_SHOWHELPTEXT.Explain">Texto del vínculo.</resource>
+
+  <resource xml:id="CT.Section.ADVANCED">Configurar opciones avanzadas</resource>
+  <resource xml:id="CT.Variable.OD_TOCVIEW_ALL.Title">Presentación de esquema</resource>
+  <resource xml:id="CT.Variable.OD_TOCVIEW_ALL.Explain">Si ha configurado el contenido para que se inicie con sensibilidad de contexto, el esquema sólo incluirá los elementos que estén relacionados con la tarea que el usuario realiza en la aplicación de destino. Esto se denomina contenido aplicable y es la configuración predeterminada. Si desea mostrar el esquema de contenido completo, puede cambiar esta opción para mostrar todo el contenido.</resource>
+  <resource xml:id="CT.Variable.RECAPTUREECID.Title">Página Mostrar nueva captura de contexto</resource>
+  <resource xml:id="CT.Variable.RECAPTUREECID.Explain">Cambie esta opción sólo con la ayuda del servicio de asistencia al cliente.</resource>
+  <resource xml:id="CT.Variable.OD_DEFAULT_URL.Title">Ubicación de contenido especial</resource>
+  <resource xml:id="CT.Variable.OD_DEFAULT_URL.Explain">Si las carpetas de archivos de configuración [nombre de aplicación]/hemi y /stdhemi se copian de su ubicación predeterminada en el contenido publicado, debe introducir un URL en este campo, que haga referencia a la ubicación de contenido. Esta opción sólo deberá utilizarse con la ayuda del servicio de asistencia técnica.</resource>
+
+  <resource xml:id="CT.Variable.OD_APPLICATIONNAME.Title">Nombre de la aplicación</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATIONNAME.Explain">El nombre de la aplicación.</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATION_URL.Title">URL de la aplicación</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATION_URL.Explain">Descripción del URL de la aplicación</resource>
+  <resource xml:id="CT.Variable.OD_HEMIFRAMELOCATION.Title">Ubicación del marco</resource>
+  <resource xml:id="CT.Variable.OD_HEMIFRAMELOCATION.Explain">La posición del marco de la ayuda, si procede.</resource>
+  <resource xml:id="CT.Variable.OD_SHOWAPPLOGO.Title">Logotipo de la página de la puerta de enlace</resource>
+  <resource xml:id="CT.Variable.OD_SHOWAPPLOGO.Explain">El logotipo de la página de la puerta de enlace.</resource>
+
+  <resource xml:id="CT.Variable.OD_DIRECT.Title">Mostrar ayuda de Siebel</resource>
+  <resource xml:id="CT.Variable.OD_DIRECT.Explain">De modo predeterminado, UPK se iniciará directamente desde el menú Siebel > Ayuda > Contenidos. Si selecciona 'Sí' para esta opción, se iniciará la ayuda original de Siebel y se mostrará un vínculo de UPK en el área de cabecera de la ayuda de Siebel.</resource>
+
+  <resource xml:id="CT.Section.DEFAULTPLAYER">Configurar reproductor predeterminado</resource>
+
+  <resource xml:id="CT.Section.GATEWAY">Configurar puerta de enlace</resource>
+  <resource xml:id="CT.Section.GATEWAY_TABS">Configurar fichas</resource>
+  <resource xml:id="CT.Section.GATEWAY_LINKS">Configurar vínculos</resource>
+
+  <resource xml:id="CT.Variable.GATEWAY_EMBED.Title">Fichas</resource>
+  <resource xml:id="CT.Variable.GATEWAY_EMBED.Explain" />
+  <resource xml:id="CT.Variable.GATEWAY_LINK.Title">Vínculos</resource>
+  <resource xml:id="CT.Variable.GATEWAY_LINK.Explain" />
+  <resource xml:id="CT.Variable.GATEWAY_RESOURCES_TITLE.Title">Texto de menú de vínculo</resource>
+  <resource xml:id="CT.Variable.GATEWAY_RESOURCES_TITLE.Explain" />
+  <resource xml:id="CT.Variable.TABBED_GATEWAY_OPEN_LAST_ACTIVE_TAB.Title">Recordar ficha activa</resource>
+  <resource xml:id="CT.Variable.TABBED_GATEWAY_OPEN_LAST_ACTIVE_TAB.Explain" />
+
+  <resource xml:id="CT.Variable.GATEWAY_PLAYER_TITLE.Title">Default Player Tab Text</resource>
+  <resource xml:id="CT.Variable.GATEWAY_PLAYER_TITLE.Explain" />
+
+  <resource xml:id="CT.Title.GatewayTabText">Texto de ficha</resource>
+  <resource xml:id="CT.Title.GatewayLinkText">Texto de vínculo</resource>
+  <resource xml:id="CT.Title.GatewayUrl">URL</resource>
+  <resource xml:id="CT.Title.GatewayType">Tipo</resource>
+
+  <resource xml:id="CT.Type.GatewayType.MainPlayer">Reproductor predeterminado</resource>
+  <resource xml:id="CT.Type.GatewayType.PlayerWithContext">Reproductor con contexto</resource>
+  <resource xml:id="CT.Type.GatewayType.PlayerWithoutContext">Reproductor</resource>
+  <resource xml:id="CT.Type.GatewayType.Help">Ayuda de aplicaciones</resource>
+  <resource xml:id="CT.Type.GatewayType.URLWithoutContext">URL</resource>
+
+  <resource xml:id="CT.Title.GatewayMainPlayer">Reproductor principal</resource>
+  
+</resources>

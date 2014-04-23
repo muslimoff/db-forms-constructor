@@ -1,0 +1,216 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<!--Version 9.6.1.13-->
+<html>
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+    
+    <title></title>
+    <link href='styles/odtabbedgateway.css' type='text/css' rel='stylesheet' />
+    <script type='text/javascript' src='../../js/cookie.js'></script>
+    <script type='text/javascript' src='scripts/oddefs.js'></script>
+    <script type='text/javascript' src='scripts/odplaybackdefs.js'></script>
+    <script type='text/javascript' src='scripts/odgatewaydefs.js'></script>
+    <script type='text/javascript' src='scripts/escape.js'></script>
+    <script type='text/javascript' src='scripts/odgatewayscripts.js'></script>
+    <script type='text/javascript' src='scripts/odscripts.js'></script>
+    <script type='text/javascript' src='scripts/odtabbedgateway.js'></script>
+    <script type='text/javascript' src='scripts/odhelper.js'></script>
+    <script type='text/javascript' src='configurator/config.js'></script>
+    <script type='text/javascript' src='generic/generic.js'></script>    
+    <script type='text/javascript' src='../../js/query.js'></script>    
+    <script type='text/javascript' src='../../js/xmlloader.js'></script>    
+    <script type='text/javascript' src='../../js/tree.js'></script>        
+
+    <script type='text/javascript'>
+        //window.name = "_odstdiegateway_";
+        Gkod.Trace.ID.GATEWAY = ['GATEWAY'];
+        //Optional files
+        var root_url = window.location.href.substr(0, window.location.href.indexOf('/' + Gkod.Variables.OD_GATEWAY));
+        Gkod.Http.LoadFile(self, root_url + '/odbrand.js');
+        Gkod.Http.LoadFile(self, root_url + '/odstdcustomurl.js');
+        Gkod.Http.LoadFile(self, root_url + '/odstdtest.js');
+
+        document.title = Gkod.Variables.OD_BRAND;
+
+        Gkod.Cookie.Get('HemiCookie');
+        var tempcookie = Gkod.Cookie.Get('HemiCookie', 'hemiparamtest');
+        if (typeof (tempcookie) != 'undefined' && tempcookie != 'undefined') {
+            Gkod.Variables.OD_HEMIPARAMTEST = parseInt(tempcookie);
+        }
+
+        var tempcookie_lastactivetabindex = Gkod.Cookie.Get('HemiCookie', 'lastactivetabindex');
+        var lastactive_tabindex = 0;
+        if (typeof (tempcookie_lastactivetabindex) != 'undefined' && tempcookie_lastactivetabindex != 'undefined') {
+            lastactive_tabindex = parseInt(tempcookie_lastactivetabindex);
+        }
+
+        var tempcookie_lastactivetabtitle = Gkod.Cookie.Get('HemiCookie', 'lastactivetabtitle');
+        var lastactive_tabtitle = '';
+        if (typeof (tempcookie_lastactivetabtitle) != 'undefined' && tempcookie_lastactivetabtitle != 'undefined') {
+            lastactive_tabtitle = tempcookie_lastactivetabtitle;
+        }
+
+        var mode = (window.location.search.indexOf('genctx') > 0) ? 'smartmatch' : 'exactmatch';
+        if (mode == 'smartmatch' && window.location.search.indexOf('ctxex') > 0) {
+            mode = 'mixed';
+        }
+        Gkod.Trace.Write(Gkod.Trace.ID.GATEWAY, '[STDIE_GATEWAY] : gateway mode = ' + mode, 3);
+
+        Gkod.Variables.GATEWAY_EMBED.push(Gkod.Variables.GATEWAY_EMBED[0]);
+        Gkod.Variables.GATEWAY_EMBED.shift();
+        //Global resources
+        for (var i = 0, z = Gkod.Variables.GATEWAY_EMBED; i < z.length - 1; i++) {
+            Gkod.Variables.GATEWAY_EMBED[i].global = true;
+        }
+        for (var i = 0, z = Gkod.Variables.GATEWAY_LINK; i < z.length; i++) {
+            Gkod.Variables.GATEWAY_LINK[i].global = true;
+        }        
+    </script>
+
+</head>
+<body onload='Gkod.TabbedGateway.FixDiv()'>
+    <div id='tabEars' class='tabEars'>
+        <ul id='tabArea' class='tabArea'></ul>
+    </div>
+    <div id='tabPages' class='tabPages'>
+    </div>
+    <iframe id='eplayer' class='eframe' src='about:blank'></iframe>
+
+
+    <script type='text/javascript'>
+
+        if (mode == 'exactmatch') {
+            ParseGatewayURL();
+            if (Gkod.ctxinfo.appname != '') {
+                //Optional files
+                var ODSCRIPTS_SPEC = ['odbrand.js'];
+                if (Gkod.ctxinfo.custom == '') {
+                    ODSCRIPTS_SPEC.push('odcustomurl.js');
+                }
+                else {
+                    ODSCRIPTS_SPEC.push(Gkod.ctxinfo.custom);
+                }
+                GetFullPath(ODSCRIPTS_SPEC, Gkod.ctxinfo.appname.toLowerCase(), 3);
+                Gkod.Http.LoadFiles(self, ODSCRIPTS_SPEC);
+            }
+            //old style
+            if (!Gkod.TabbedGateway.IsEnabled()) {
+                document.getElementById('tabEars').style.display = 'none';
+                var z = document.getElementById('eplayer');
+                if (z) {
+                    z.src = '_stdie_gateway.html' + window.location.search;
+                    z.style.display = 'block';
+                    Gkod.TabbedGateway._SetContentSize(z);
+                    z.outerHTML = z.outerHTML;
+                }
+            }
+            else {
+
+                if (Gkod.Variables.TABBED_GATEWAY_OPEN_LAST_ACTIVE_TAB) {
+                    Gkod.TabbedGateway.Active = lastactive_tabindex;
+                }
+                else {
+                    Gkod.TabbedGateway.Active = 0;
+                }
+
+                CreateCTXEX();
+                CreateTOCURL();
+
+                Gkod.TabbedGateway.AddMoreTabs();
+                var index = Gkod.GatewayUtility.GetIndexOfMainPlayer();
+                Gkod.Trace.Write(Gkod.Trace.ID.GATEWAY, '[STDIE_GATEWAY] : index of main player = ' + index);
+                if (index >= 0) {
+                    Gkod.TabbedGateway.UpdateResource(Gkod.Variables.GATEWAY_EMBED[index], Gkod.Variables.GATEWAY_PLAYER_TITLE, Gkod.ctxinfo.tocurl);
+                }
+                Gkod.TabbedGateway.Show();
+            }
+        }
+        else {
+
+            var _window = null;
+            var _app = '';
+            var _list = [];
+            var _testparams = '';
+            var _tocloaded = false;
+            var counter = 0;
+
+            var _url = document.URL;
+            var j = _url.indexOf('/stdhemi/hemi/');
+            var _tocurl = _url.substr(0, j) + '/index.html' + window.location.search;
+
+            function TransferCtx(list, app, testparams) {
+                Gkod.Trace.Write(Gkod.Trace.ID.GATEWAY, '[STDIE_GATEWAY] : TransferCtx()');
+
+                _list = list;
+                _app = app;
+                _testparams = testparams;
+                Gkod.Trace.Write(Gkod.Trace.ID.GATEWAY, '[STDIE_GATEWAY] : TransferCtx() - length=' + _list.length + ' appname=' + _app + ' testparams=' + _testparams, 3);
+
+                if (Gkod.TabbedGateway.IsEnabled()) {
+                    Gkod.TabbedGateway.AddMoreTabs();
+                    var index = Gkod.GatewayUtility.GetIndexOfMainPlayer();
+                    if (index >= 0) {
+                        Gkod.TabbedGateway.UpdateResource(Gkod.Variables.GATEWAY_EMBED[index], Gkod.Variables.GATEWAY_EMBED[index].Title == '' ? Gkod.Variables.GATEWAY_PLAYER_TITLE : '', _tocurl);
+                    }
+                    Gkod.TabbedGateway.Show();
+                    if (index >= 0) {
+                        _window = document.getElementById('tab' + index).contentWindow;
+                    }
+                }
+                else { //old style
+                    document.getElementById('tabEars').style.display = 'block';
+                    var z = document.getElementById('eplayer');
+                    if (z) {
+                        z.src = _tocurl;
+                        z.style.display = 'block';
+                        Gkod.TabbedGateway._SetContentSize(z);
+                        z.outerHTML = z.outerHTML;
+                        _window = document.getElementById('eplayer').contentWindow;
+                    }
+                }
+
+                Script.AddScript("../../" + _app.toLowerCase() + "/hemi/context.js");
+                Script.AddScript("../../" + _app.toLowerCase() + "/hemi/config.js");
+                Script.AddScript("../../" + _app.toLowerCase() + "/hemi/methods.js");
+                Script.AddScript("../../" + _app.toLowerCase() + "/hemi/odcustomplayback.js");
+                Script.AddScript("../../" + _app.toLowerCase() + "/hemi/odcustomurl.js");
+                Script.WriteScripts(window);
+
+                setTimeout(onTocLoaded, 300);
+            }
+
+            function onTocLoaded() {
+                Gkod.Trace.Write(Gkod.Trace.ID.GATEWAY, '[STDIE_GATEWAY] : onTocLoaded() _window = ' + typeof (_window) + ' onTocLoaded = ' + _window.onTocLoaded, 3);
+                if (_window != null && typeof (_window) != 'undefined' &&
+                    typeof (_window.onTocLoaded) != 'undefined' && _window.onTocLoaded) {
+                    Gkod.Trace.Write(Gkod.Trace.ID.GATEWAY, '[STDIE_GATEWAY] : call to TransferCtx2 - length=' + _list.length + ' appname=' + _app + ' testparams=' + _testparams, 3);
+                    datasourceroot = "../../querydb/";
+                    TransferCtx2(_list, _app, _testparams);
+                    _tocloaded = true;
+                }
+                else {
+                    counter++;
+                    if (counter < 100) {
+                        setTimeout(onTocLoaded, 300);
+                    }
+                    else {
+                        CheckToc();
+                    }
+                }
+            }
+
+            function CheckToc() {
+                if (!_tocloaded) {
+                    Gkod.Trace.Write(Gkod.Trace.ID.GATEWAY, '[STDIE_GATEWAY] : TOC has not called back in 30 secs', 3);
+                }
+            }
+        }
+        window.onresize = Gkod.TabbedGateway.OnResize;
+    </script>
+</body>
+</html>

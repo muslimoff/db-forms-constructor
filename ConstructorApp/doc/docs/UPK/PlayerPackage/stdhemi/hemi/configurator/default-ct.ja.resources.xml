@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright © 1998, 2010, Oracle and/or its affiliates.  All rights reserved.
+-->
+<!--Version 9.6.1.21-->
+<resources>
+  <resource xml:id="CT.Action.ShowTOC">コンテンツの起動</resource>
+  <resource xml:id="CT.Title.Language">言語</resource>
+  <resource xml:id="CT.Title.ContentUrl">コンテンツURL</resource>
+
+  <resource xml:id="CT.Type.Number.DefaultOrZero100">0-100の範囲の数値である必要があります。デフォルト値に-1が使用されています。</resource>
+  <resource xml:id="CT.Type.Integer.DefaultOrZeroInf">ゼロか正の整数である必要があります。デフォルト値に-1が使用されています。</resource>
+  <resource xml:id="CT.Type.UseDefault">デフォルトを使用</resource>
+  <resource xml:id="CT.Type.Default">デフォルト</resource>
+  <resource xml:id="CT.Type.Yes">はい</resource>
+  <resource xml:id="CT.Type.No">いいえ</resource>
+  <resource xml:id="CT.Type.Enable">有効</resource>
+  <resource xml:id="CT.Type.Enabled">有効</resource>
+  <resource xml:id="CT.Type.Disable">無効</resource>
+  <resource xml:id="CT.Type.Disabled">無効</resource>
+
+  <resource xml:id="CT.Type.Show">表示</resource>
+  <resource xml:id="CT.Type.DontShow">表示しない</resource>
+
+  <resource xml:id="CT.Type.All">すべて</resource>
+  <resource xml:id="CT.Type.Applicable">適用可能</resource>
+
+  <resource xml:id="CT.Type.Use">使用</resource>
+  <resource xml:id="CT.Type.DontUse">使用しない</resource>
+
+  <resource xml:id="CT.Type.ApplicationName.InvalidCharacters">名前に無効な文字が含まれています。名前は1-8文字長の識別子であり、文字、数値およびアンダースコアのみで構成されている必要があります。</resource>
+  <resource xml:id="CT.Type.ApplicationName.InvalidLength">名前は1-8文字長の識別子であり、文字、数値およびアンダースコアのみで構成されている必要があります。</resource>
+  <resource xml:id="CT.Type.FrameLocation.Top">上部</resource>
+  <resource xml:id="CT.Type.FrameLocation.Bottom">下部</resource>
+  <resource xml:id="CT.Type.HelpMode.TopEmbeddedFrame">上部の埋込みフレーム</resource>
+  <resource xml:id="CT.Type.HelpMode.BottomEmbeddedFrame">下部の埋込みフレーム</resource>
+  <resource xml:id="CT.Type.HelpMode.LinkInGatewayPage">Gatewayページの中のリンク</resource>
+  <resource xml:id="CT.Type.LanguageMap.DuplicatedKey">{KEY}が重複しています。</resource>
+  <resource xml:id="CT.Type.LanguageMap.MissingKey">言語IDは見つかりません。</resource>
+  <resource xml:id="CT.Type.LanguageMap.MissingValue">コンテンツURLは指定されていません。</resource>
+
+  <resource xml:id="CT.Section.CONTENT">複数言語コンテンツの構成</resource>
+  <resource xml:id="CT.Variable.OD_URL.Title">言語別コンテンツURL</resource>
+  <resource xml:id="CT.Variable.OD_URL.Explain">このオプションには、「言語」と「コンテンツURL」の2つのフィールドがあります。「言語」リストを使用して言語を選択し、その言語で開発されたコンテンツへのURLを「コンテンツURL」フィールドに入力します。使用可能な言語をすべてサポートするように、新しい行を必要に応じて追加できます。</resource>
+  <resource xml:id="CT.Variable.OD_DEFAULT_URL.Title.Lang">デフォルト・コンテンツURL</resource>
+  <resource xml:id="CT.Variable.OD_DEFAULT_URL.Explain.Lang">これは、言語が「言語別コンテンツURL」リストで定義されていない場合に起動されるコンテンツへのURLです。たとえば英語、スペイン語、フランス語、ドイツ語が定義してあり、誰かがイタリア語でログオンした場合、英語のコンテンツが起動されるように指定できます。&lt;br/>&lt;br/>注: {rc:parent}</resource>
+
+  <resource xml:id="CT.Section.HELP">アプリケーション・ヘルプの構成</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATIONHELP_URL.Title">ヘルプURL</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATIONHELP_URL.Explain">アプリケーションのヘルプURLを入力するとGatewayページに表示されます。このURLが存在しない場合は、PlayerコンテンツがGatewayページを表示せずに起動します。</resource>
+  <resource xml:id="CT.Variable.OD_SHOWHELPMODE.Title">ヘルプの表示</resource>
+  <resource xml:id="CT.Variable.OD_SHOWHELPMODE.Explain">アプリケーションのヘルプ・リンクは、Gatewayページの中のリンクとして表示することも、Gatewayページの上部または下部に埋め込まれたフレームとして表示することもできます。ヘルプをリンクとして表示するように選択すると、「ヘルプ・リンク・テキスト」フィールドを使用してリンクのテキストを指定できます。</resource>
+  <resource xml:id="CT.Variable.OD_SHOWHELPTEXT.Title">ヘルプ・リンク・テキスト</resource>
+  <resource xml:id="CT.Variable.OD_SHOWHELPTEXT.Explain">リンクのテキスト。</resource>
+
+  <resource xml:id="CT.Section.ADVANCED">拡張オプションの構成</resource>
+  <resource xml:id="CT.Variable.OD_TOCVIEW_ALL.Title">アウトライン表示</resource>
+  <resource xml:id="CT.Variable.OD_TOCVIEW_ALL.Explain">コンテンツがコンテキストに依存して起動するように構成した場合、アウトラインにはユーザーがターゲット・アプリケーションで実行しているタスクに関連した項目のみが含まれるようになります。これは適切コンテンツと呼ばれ、デフォルト設定です。かわりにコンテンツ・アウトライン全体が表示されるようにする場合は、このオプションを変更してすべてのコンテンツを表示できます。</resource>
+  <resource xml:id="CT.Variable.RECAPTUREECID.Title">コンテキスト再取込みページの表示</resource>
+  <resource xml:id="CT.Variable.RECAPTUREECID.Explain">このオプションは、カスタマ・サポートに相談した上で変更してください。</resource>
+  <resource xml:id="CT.Variable.OD_DEFAULT_URL.Title">特別なコンテンツの場所</resource>
+  <resource xml:id="CT.Variable.OD_DEFAULT_URL.Explain">構成ファイル・フォルダ[アプリケーション名]/hemiおよび/stdhemiを発行コンテンツ内のデフォルトの場所からコピーする場合は、このフィールドにコンテンツの場所を指すURLを入力する必要があります。このオプションは、技術サポートに相談した上で使用してください。</resource>
+
+  <resource xml:id="CT.Variable.OD_APPLICATIONNAME.Title">アプリケーション名</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATIONNAME.Explain">アプリケーション名。</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATION_URL.Title">アプリケーションURL</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATION_URL.Explain">アプリケーションURLの説明</resource>
+  <resource xml:id="CT.Variable.OD_HEMIFRAMELOCATION.Title">フレームの場所</resource>
+  <resource xml:id="CT.Variable.OD_HEMIFRAMELOCATION.Explain">ヘルプ・フレーム位置(該当する場合)。</resource>
+  <resource xml:id="CT.Variable.OD_SHOWAPPLOGO.Title">Gatewayページ・ロゴ</resource>
+  <resource xml:id="CT.Variable.OD_SHOWAPPLOGO.Explain">Gatewayページ・ロゴです。</resource>
+
+  <resource xml:id="CT.Variable.OD_DIRECT.Title">Siebelヘルプの表示</resource>
+  <resource xml:id="CT.Variable.OD_DIRECT.Explain">デフォルトでは、UPKは「Siebel」 > 「ヘルプ」 > 「コンテンツ」メニューから直接起動します。このオプションで「はい」を選択すると、本来のSiebelヘルプが起動し、UPKリンクはSiebelヘルプのヘッダー領域に表示されます。</resource>
+
+  <resource xml:id="CT.Section.DEFAULTPLAYER">デフォルトPlayerの構成</resource>
+
+  <resource xml:id="CT.Section.GATEWAY">Gatewayの構成</resource>
+  <resource xml:id="CT.Section.GATEWAY_TABS">タブの構成</resource>
+  <resource xml:id="CT.Section.GATEWAY_LINKS">リンクの構成</resource>
+
+  <resource xml:id="CT.Variable.GATEWAY_EMBED.Title">タブ</resource>
+  <resource xml:id="CT.Variable.GATEWAY_EMBED.Explain" />
+  <resource xml:id="CT.Variable.GATEWAY_LINK.Title">リンク</resource>
+  <resource xml:id="CT.Variable.GATEWAY_LINK.Explain" />
+  <resource xml:id="CT.Variable.GATEWAY_RESOURCES_TITLE.Title">リンク・メニュー・テキスト</resource>
+  <resource xml:id="CT.Variable.GATEWAY_RESOURCES_TITLE.Explain" />
+  <resource xml:id="CT.Variable.TABBED_GATEWAY_OPEN_LAST_ACTIVE_TAB.Title">有効タブを記憶</resource>
+  <resource xml:id="CT.Variable.TABBED_GATEWAY_OPEN_LAST_ACTIVE_TAB.Explain" />
+
+  <resource xml:id="CT.Variable.GATEWAY_PLAYER_TITLE.Title">Default Player Tab Text</resource>
+  <resource xml:id="CT.Variable.GATEWAY_PLAYER_TITLE.Explain" />
+
+  <resource xml:id="CT.Title.GatewayTabText">タブ・テキスト</resource>
+  <resource xml:id="CT.Title.GatewayLinkText">リンク・テキスト</resource>
+  <resource xml:id="CT.Title.GatewayUrl">URL</resource>
+  <resource xml:id="CT.Title.GatewayType">タイプ</resource>
+
+  <resource xml:id="CT.Type.GatewayType.MainPlayer">デフォルトPlayer</resource>
+  <resource xml:id="CT.Type.GatewayType.PlayerWithContext">コンテキスト付きPlayer</resource>
+  <resource xml:id="CT.Type.GatewayType.PlayerWithoutContext">Player</resource>
+  <resource xml:id="CT.Type.GatewayType.Help">Appヘルプ</resource>
+  <resource xml:id="CT.Type.GatewayType.URLWithoutContext">URL</resource>
+
+  <resource xml:id="CT.Title.GatewayMainPlayer">メインPlayer</resource>
+  
+</resources>

@@ -1,0 +1,299 @@
+﻿<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<script language="javascript" src="js/resource.js"></script>
+
+	<script language="javascript"  src="js/cookie.js" language="Javascript"> </script>
+
+	<script language="javascript"  src="js/browser.js" language="Javascript"> </script>
+
+	<script language="javascript"  src="js/browser1.js" language="Javascript"> </script>
+
+	<script type="text/javascript" src="js/playerlaunch.js"></script>
+	<script>
+		var map_loaded = false;
+	</script>
+
+	<script language="javascript" src="topicmap.js"></script>
+
+	<script language="javascript" src="js/dual_support.js"></script>
+
+	<script>		var isIE7 = false;</script>
+
+	<!--[if IE 7]>
+<script>isIE7=true;</script>
+<![endif]-->
+	<!--[if IE 8]>
+<script>isIE7=true;</script>
+<![endif]-->
+
+	<script>
+		document.write("<title>" + R_KP_title + "</title>");
+	</script>
+
+	<script>
+
+		var nameMap = new Array();
+		var hashMap = new Array();
+		var prMap = new Array();
+
+		function NameObj(name, guid) {
+			this.name = name;
+			this.guid = guid;
+		}
+
+		function HashObj(hash, guid) {
+			this.hash = hash;
+			this.guid = guid;
+		}
+
+		function PrObj(guid, filename) {
+			this.guid = guid;
+			this.filename = filename;
+		}
+
+		function Name(name, guid) {
+			nameMap[nameMap.length] = new NameObj(name, guid);
+		}
+
+		function Hash(hash, guid) {
+			hashMap[hashMap.length] = new HashObj(hash, guid);
+		}
+
+		function PrintIt(guid, filename) {
+			prMap[prMap.length] = new PrObj(guid, encodeURIComponent(filename));
+		}
+
+		function GetGuidForName(name) {
+			for (var i = 0; i < nameMap.length; i++) {
+				if (nameMap[i].name == name)
+					return nameMap[i].guid;
+			}
+			return "";
+		}
+
+		function GetGuidForHash(hash) {
+			for (var i = 0; i < hashMap.length; i++) {
+				if (hashMap[i].hash == hash)
+					return hashMap[i].guid;
+			}
+			return "";
+		}
+
+		function GetFilenameForGuid(guid) {
+			for (var i = 0; i < prMap.length; i++) {
+				if (prMap[i].guid == guid)
+					return prMap[i].filename;
+			}
+			return "";
+		}
+
+	</script>
+
+</head>
+<body onload="LoadFirst()" onunload="LoadLast()">
+	<link rel="SHORTCUT ICON" href="ondemand.ico">
+	<table width='95%' height='90%'>
+		<tr>
+			<td valign='bottom' align='center'>
+				<img src='img/large_logo.gif' border="0">
+			</td>
+		</tr>
+		<tr>
+			<td valign='bottom' align='right'>
+				<img src='img/cb_logo.gif' border="0" alt="Oracle" title="Oracle">
+			</td>
+		</tr>
+		<tr>
+			<td align='center'>
+				<form>
+
+				<script>
+					document.write("<input type=button value='" + R_KP_replay + "' onClick='Load(); return false'>");
+				</script>
+
+				</form>
+			</td>
+		</tr>
+	</table>
+
+	<script>
+		var infoWindow = "none";
+		var kp_param_kpnextpage = "";
+		var kpfeedbk = "";
+		var kp_param_kpfeedbk = "";
+		var strAfter = "";
+		var playerwindow;
+		var IntervalID;
+		var guid = "";
+
+		//defines
+		var SM_CYCAPTION = 19;
+		var SM_CXFRAME = 4;
+		var SM_CYFRAME = 4;
+		var SM_CYHSCROLL = 16;
+		var SM_CXVSCROLL = 16;
+
+		function LoadFirst() {
+			setTimeout('Load()', 100);
+		}
+
+		function LoadLast() {
+
+		}
+
+		function Close() {
+			if (isIE7)
+				window.open("", "_self");
+			opener = null;
+			window.close();
+		}
+
+		function PlayerExit() {
+			if (playerwindow) {
+				if (playerwindow.closed) {
+					clearInterval(IntervalID);
+					setTimeout(strAfter, 1);
+				}
+			} else {
+				clearInterval(IntervalID);
+				setTimeout(strAfter, 1);
+			}
+		}
+
+		function Load() {
+			var strArgs;
+			var strArg;
+
+			var strMode = "";
+			var strListFile = "";
+			var strExtraOptions = "";
+			var strFrame = "";
+			var strWindowed = false;
+
+			LoadMap();
+
+			// Call parameters can be seperated from the URL by either a "?"
+			// or a "#" character...
+			strArgs = document.location.hash.substring(1).split("&");
+			if (strArgs.length == 0 || strArgs[0] == "")
+				strArgs = document.location.search.substring(1).split("&");
+
+			for (var i = 0; i < strArgs.length; i++) {
+				strArg = strArgs[i];
+				if (strArg.substr(0, 5) == "Mode=") {
+					strMode = strArg.substr(5, 1);
+				}
+				else if (strArg.substr(0, 5) == "Guid=") {
+					guid = strArg.substring(5);
+					strListFile = "./tpc/" + guid;
+				}
+				else if (strArg.substr(0, 5) == "Name=") {
+					name = decodeURI(strArg.substring(5));
+					guid = GetGuidForName(name);
+					strListFile = "./tpc/" + guid;
+				}
+				else if (strArg.substr(0, 5) == "Hash=") {
+					guid = GetGuidForHash(strArg.substring(5));
+					strListFile = "./tpc/" + guid;
+				}
+				else if (strArg.substr(0, 11) == "kpnextpage=") {
+					kp_param_kpnextpage = strArg.substr(11);
+				}
+				else if (strArg.substr(0, 9) == "kpfeedbk=") {
+					kp_param_kpfeedbk = strArg.substr(9);
+				}
+				else if (strArg.substr(0, 4) == "Back" && strArg.substr(0, 5) != "Back2") {
+					strAfter = "history.back()";
+				}
+				else if (strArg.substr(0, 5) == "Back2") {
+					strAfter = "history.go(-2)";
+				}
+				else if (strArg.substr(0, 5) == "Close") {
+					strAfter = "Close()";
+				}
+				else if (strArg.substr(0, 6) == "Frame=") {
+					strFrame = strArg.substr(6);
+					if (strFrame != "")
+						strFrame = "&Frame=F" + strFrame;
+				}
+				else if (strArg.substr(0, 8) == "Windowed") {
+					strWindowed = true;
+				}
+			}
+
+			strAfter = "LoadLast();" + strAfter
+
+			var playerwindow = null;
+
+			if (strMode == "" || strListFile == "") {
+				LoadLast();
+				alert(R_KP_invalid_arguments);
+			}
+			else {
+				_printitName = GetFilenameForGuid(guid);
+				if (strMode == "P") {
+					if (_printitName.length > 0)
+						playerwindow = window.open("./printit/" + _printitName);
+				}
+				else if (strMode == "D") {
+					var params = "?mode=D";
+					if (strFrame.length > 0)
+						params += strFrame;
+					if (_printitName.length > 0)
+						params += "&printitname=" + _printitName;
+					LaunchDoIt(strListFile + "/topicgc.html", params);
+				}
+				else if (strMode == "A") {
+					window.open(strListFile + "/topic.html");
+				}
+				else {
+					var params = "?mode=" + strMode;
+					if (strFrame.length > 0)
+						params += strFrame;
+					if (_printitName.length > 0)
+						params += "&printitname=" + _printitName;
+					if (kp_param_kpnextpage.length > 0)
+						params += "&kpnextpage=" + kp_param_kpnextpage;
+					if (kp_param_kpfeedbk.length > 0)
+						params += "&kpfeedbk=" + kp_param_kpfeedbk;
+
+					var features = "width=" + screen.width + ",height=" + screen.height + ",resizable=0,toolbar=0,scrollbars=1,location=0,statusbar=0,menubar=0,";
+					features += GetDualMonitor();
+					if (strMode == "S" && strWindowed == true) {
+						sw = (screen.width - 800) / 2;
+						sh = (screen.height - 600) / 2;
+						playerwindow = window.open("tpcwnd.html?mode=S&tpc=" + guid, "", "top=" + sh + ", left=" + sw + ", width=800, height=600, resizable=1,toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0");
+					}
+					else {
+						playerwindow = window.open(strListFile + "/topic.html" + params, "", features);
+					}
+					/*	
+					var path=document.location.pathname;
+					while (path.indexOf('\\')!=-1)
+					path=path.replace('\\','/');
+					path=path.substr(0,path.lastIndexOf('/'));
+					var path1=path.substr(0,path.lastIndexOf('/'));
+					var n=path1.lastIndexOf('/');
+					path="../../toc/noscroll.html#../"+path.substr(n+1)+"/";
+
+
+		var params="toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,";
+					params+="fullscreen=1";
+
+		playerwindow = window.open(path+strListFile + "#Mode=" + strMode + "&PP_LEADIN=all&kpnextpage=" + kp_param_kpnextpage + "&kp_param_kpfeedbk=" + kp_param_kpfeedbk + strFrame, "none",params)
+					*/
+				}
+
+				if (strAfter != "")
+					IntervalID = setInterval("PlayerExit()", 125);
+			}
+		}
+	</script>
+
+</body>
+</html>

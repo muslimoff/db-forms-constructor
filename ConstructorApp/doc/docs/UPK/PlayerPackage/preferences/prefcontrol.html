@@ -1,0 +1,122 @@
+﻿<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<title></title>
+<link rel="stylesheet" type="text/css" href="../css/player.css">
+<link rel="stylesheet" type="text/css" href="../css/skin.css">
+
+<script src="../js/help.js"></script>
+<script src="../js/resource.js"></script>
+
+<script>
+	var isIE7=false;
+</script>
+<!--[if IE 7]>
+<script>isIE7=true;</script>
+<![endif]-->
+	<!--[if IE 8]>
+<script>isIE7=true;</script>
+<![endif]-->
+
+<script ID="clientEventHandlersJS" LANGUAGE="javascript">
+<!--
+
+function Apply_onclick()
+{
+	parent.prefmain.DoApply();
+}
+
+function OK_onclick()
+{
+	Apply_onclick();
+	parent.parent.close();
+}
+
+function Cancel_onclick()
+{
+	parent.parent.close();
+}
+
+function Init()
+{
+	document.title=R_preferences_title;
+}
+
+//-->
+</script>
+</head>
+
+<body class="textWindows" leftmargin="0" topmargin="0" marginheight="0" marginwidth="0" bottommargin="0" rightmargin="0" onload="Init()">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" style="WIDTH: 100%">
+    <tr>
+		<td><IMG height=10 alt ="" src="../img/giftrk1.gif" width=10 border=0 ></td>
+		<td width="100%"><form name="controlform" action="">
+			
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td><IMG height=6 alt ="" src="../img/giftrk1.gif" width=10 border=0 ></td>
+				</tr>
+				<tr>
+					<td nowrap align="right"><IMG height=20 alt ="" src="../img/giftrk1.gif" width=1 border=0 >&nbsp; 
+					<script>
+						document.write('<input style="margin-left: 5px;"');
+						if (document.all)
+							if (isIE7==true)
+								document.write(' class="InstructTextButtonIE7"');
+							else
+								document.write(' class="InstructTextButtonIE"');
+						else
+							document.write(' class="InstructTextButtonFF"');
+						document.write(' type="button" name="OK" value="'+R_preferences_OK+'" language="javascript" onclick="return OK_onclick()">');
+						
+						document.write('<input style="margin-left: 5px;"');
+						if (document.all)
+							if (isIE7==true)
+								document.write(' class="InstructTextButtonIE7"');
+							else
+								document.write(' class="InstructTextButtonIE"');
+						else
+							document.write(' class="InstructTextButtonFF"');
+						document.write(' type="button" name="Cancel" value="'+R_preferences_cancel+'" language="javascript" onclick="return Cancel_onclick()">');
+
+						document.write('<input style="margin-left: 5px;"');
+						if (document.all)
+							if (isIE7==true)
+								document.write(' class="InstructTextButtonIE7"');
+							else
+								document.write(' class="InstructTextButtonIE"');
+						else
+							document.write(' class="InstructTextButtonFF"');
+						document.write(' disabled type="button" name="Apply" value="'+R_preferences_apply+'" language="javascript" onclick="return Apply_onclick()">');
+
+						document.write('<input style="margin-left: 5px;"');
+						if (document.all)
+							if (isIE7==true)
+								document.write(' class="InstructTextButtonIE7"');
+							else
+								document.write(' class="InstructTextButtonIE"');
+						else
+							document.write(' class="InstructTextButtonFF"');
+						document.write(' type="button" name="Help" value="'+R_preferences_help+'" language="javascript" onclick="return onHelp(\'../\');">');
+					</script>
+					<IMG height=4 alt ="" src="../img/giftrk1.gif" width=2 border=0 >
+					</td>
+				</tr>
+			</table>
+		</form></td>
+		<td><IMG height=10 alt ="" src="../img/giftrk1.gif" width=10 border=0 ></td>
+	</tr>
+	<tr>
+		<td><IMG height=10 alt ="" src="../img/giftrk1.gif" width=10 border=0 ></td>
+		<td><IMG height=10 alt ="" src="../img/giftrk1.gif" width=10 border=0 ></td>
+		<td><IMG height=10 alt ="" src="../img/giftrk1.gif" width=10 border=0 ></td>
+	</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<!--Version 9.6.0.7-->
+<resources>
+  <resource xml:id="CT.Section.CONTEXT">Configure Context-Sensitivity</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATIONSCRIPTS_URL.Title">ExactMatch Application Scripts</resource>
+  <resource xml:id="CT.Variable.OD_APPLICATIONSCRIPTS_URL.Explain">This is a list of URLs to the application script folders in the published content that enable ExactMatch context-sensitivity with SmartHelp. ExactMatch is available for the target applications listed below. The URL should end with the text shown in the Link column below for each application. Do not include /hemi in the URL. For example, http://server/contentfolder/oracle.</resource>
+  <resource xml:id="CT.Variable.OD_SMARTMATCH_URL.Title">SmartMatch URL</resource>
+  <resource xml:id="CT.Variable.OD_SMARTMATCH_URL.Explain">If SmartMatch content is deployed to a different location, this URL points to the /stdhtml folder within the content. For example, http://server/contentfolder/stdhtml.</resource>
+  <resource xml:id="CT.Variable.OD_STANDARD_URL.Title">Default Content URL</resource>
+  <resource xml:id="CT.Variable.OD_STANDARD_URL.Explain">If no matching content is found for the ExactMatch applications or SmartMatch is not available, this URL is used to launch content. For example, http://server/content/index.html</resource>
+
+
+  <resource xml:id="CT.Variable.OD_STRICTURLCHECK.Title">Check Application Scripts</resource>
+  <resource xml:id="CT.Variable.OD_STRICTURLCHECK.Explain">Set this variable, if you want immediate error message of inaccessible URLs in the OD_APPLICATIONSCRIPTS_URL list</resource>
+  <resource xml:id="CT.Variable.OD_ENABLESMARTMATCH.Title">SmartMatch</resource>
+  <resource xml:id="CT.Variable.OD_ENABLESMARTMATCH.Explain">Change this option only with the advice of Customer Support.</resource>
+  <resource xml:id="CT.Variable.OD_GENERICAPPLICATIONNAME.Title">SmartMatch Application</resource>
+  <resource xml:id="CT.Variable.OD_GENERICAPPLICATIONNAME.Explain">Change this option only with the advice of Customer Support.</resource>
+
+  
+  <resource xml:id="CT.Variable.OD_CUSTOMERRORHTML.Title">Custom Error Page</resource>
+  <resource xml:id="CT.Variable.OD_CUSTOMERRORHTML.Explain">Set to 1, if odcustomerror.html is used</resource>
+  <resource xml:id="CT.Variable.OD_ENABLESMARTHELP.Title">SmartHelp</resource>
+  <resource xml:id="CT.Variable.OD_ENABLESMARTHELP.Explain">Enable or disable SmartHelp test configuration.</resource>
+</resources>

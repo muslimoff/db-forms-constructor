@@ -1,0 +1,59 @@
+﻿<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+
+<!--Version 9.6.0.3-->
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Hemi Gateway</title>
+    <script type="text/javascript" src="scripts/oddefs.js"></script>
+    <script type="text/javascript" src="scripts/odplaybackdefs.js"></script>    
+    <script type="text/javascript" src="scripts/odgatewaydefs.js"></script>
+    <script type="text/javascript" src="scripts/odscripts.js"></script>
+    <script type="text/javascript" src="scripts/escape.js"></script>
+    <script type="text/javascript">
+    window.name = "_odhemigateway_";
+    
+    var appname = "";
+    if (location.search != "")
+    {
+        var _search = location.search.substr(1);
+        var _split = _search.split('&');
+        for (var k = 0; k < _split.length; k++)
+        {
+            if (_split[k].length > 0)
+            {
+                var _text = _split[k].split("=");
+                if (_text[0].toLowerCase() == "application" && _text[1].length > 1)
+                {
+                    appname = _text[1];    
+                }
+            }
+        }
+    }
+    if (appname != "")
+    {
+        var ODSCRIPTS_SPEC = ["stdhemiscripts.js"];
+        GetFullPath(ODSCRIPTS_SPEC, appname.toLowerCase(), 3); 
+        Gkod.Http.LoadFiles(self, ODSCRIPTS_SPEC);  
+    }
+    
+    if (document.location.search.length > 0)
+    {
+        //There are parameters to parse
+        if (typeof(Gkod.Application.ParseGatewayURL) == 'function')
+        {
+            Gkod.Application.ParseGatewayURL();
+        }
+    }
+    else
+    {
+        //No parameters, something is wrong
+    }
+    </script>
+</head>
+<body>
+</body>
+</html>

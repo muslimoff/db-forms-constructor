@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<!--Version 9.6.1.3-->
+<resources>
+  <resource xml:id="BROWSER_IE">Microsoft Internet Explorer</resource>
+  <resource xml:id="BROWSER_VER_IE">5.5</resource>
+  <resource xml:id="BROWSER_FF">Firefox</resource>
+  <resource xml:id="BROWSER_VER_FF">2.0</resource>
+  <resource xml:id="TITLE">Настройка {rc:PRODUCTNAME}</resource>
+  <resource xml:id="FOREWORD_INS">На этой странице выполняется установка {rc:PRODUCTNAME}</resource>
+  <resource xml:id="FOREWORD_CONF">На этой странице выполняется настройка конфигурации {rc:PRODUCTNAME}</resource>
+  
+  <resource xml:id="WAIT">Подождите, пока выполняется установка {rc:PRODUCTNAME} на ваш компьютер.</resource>
+  <resource xml:id="INSTALLFAILURE">Установка завершилась неудачно. Обратитесь за помощью к системному администратору.</resource>
+  <resource xml:id="NOTSUPPORTED_PROT">Установка завершилась неудачно. Используйте для установки протокол http(s).</resource>
+  <resource xml:id="BADFORMATTED_URL">Установка завершилась неудачно. Обнаружены параметры URL, недопустимые для установки {rc:PRODUCTNAME}.</resource>
+  <resource xml:id="INSTALLSUCCESS1">Установка завершена успешно.</resource>
+  <resource xml:id="INSTALLSUCCESS2">Перезапустите браузер, чтобы новые настройки вступили в силу.</resource>
+  <resource xml:id="BUTTONVISIBLITYWARNING">Если кнопка {rc:PRODUCTNAME} не появляется автоматически, возможно, потребуется настроить панель инструментов браузера.</resource>
+
+  <resource xml:id="CONFIGURATIONCOMPLETE">Настройка конфигурации {rc:PRODUCTNAME} завершена успешно.</resource>
+  <resource xml:id="CONFIGURATIONFAILURE">Настройка конфигурации {rc:PRODUCTNAME} завершилась неудачно. Обратитесь за помощью к системному администратору.</resource>
+  <resource xml:id="NOTSUPPORTED_BROWSER">Данный браузер не поддерживается для {rc:PRODUCTNAME}.</resource>
+  <resource xml:id="NOTSUPPORTED_IE">Для {rc:PRODUCTNAME} требуется {rc:BROWSER_IE} {rc:BROWSER_VER_IE} или более поздняя версия.</resource>
+  <resource xml:id="NOTSUPPORTED_FF">Для {rc:PRODUCTNAME} требуется {rc:BROWSER_FF} {rc:BROWSER_VER_FF} или более поздняя версия.</resource>
+  <resource xml:id="DIAGNOSTICMODE">Режим диагностики</resource>
+  <resource xml:id="POPUPBLOCKER">Средства блокировки всплывающих окон препятствуют нормальной работе {rc:PRODUCTNAME}. Измените параметры блокировки для веб-узлов, которые предполагается использовать для {rc:PRODUCTNAME}.</resource>
+  <resource xml:id="POPUPBLOCKER_MESSAGE">Всплывающие окна разрешены.</resource>
+  
+  <resource xml:id="SH_ERROR_CODE">Код ошибки: %d</resource>
+  <!--You can move the %d placeholder, if the given language requires it-->
+  <resource xml:id="SH_WARNING_TITLE">Предупреждение</resource>
+  <resource xml:id="SH_ERROR_TITLE">Ошибка</resource>
+  <resource xml:id="SH_NOTLOADED">Дождитесь завершения загрузки страницы и затем повторите попытку.</resource>
+  <resource xml:id="SH_CONTACT">Обратитесь к системному администратору.</resource>
+  <resource xml:id="SH_NOACCESS">Следующие данные недоступны:</resource>
+  <resource xml:id="SH_NEWVERSION">Обнаружена новая версия SmartHelp. Перед продолжением необходимо выполнить обновление.</resource>
+  <resource xml:id="SH_UPGRADE">Выполнить обновление сейчас?</resource>
+  <resource xml:id="SH_INCOMPATIBLE">Обнаружен несовместимый ресурс SmartHelp:</resource>
+  <resource xml:id="SH_ERROR">Неожиданная ошибка.</resource>
+  <resource xml:id="SH_NOCONTENT">Доступный контент отсутствует.</resource>
+</resources>

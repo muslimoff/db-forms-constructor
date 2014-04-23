@@ -1,0 +1,619 @@
+﻿<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Preferences</title>
+	<link rel="stylesheet" type="text/css" href="../css/player.css">
+	<link rel="stylesheet" type="text/css" href="../css/skin.css">
+
+	<script language="javascript" src="../js/resource.js"></script>
+
+	<script language="javascript" src="../js/browser1.js"></script>
+
+	<script language="javascript" src="../js/cookie.js"></script>
+
+	<script language="javascript" src="defaultprefs.js"></script>
+
+	<script language="javascript" src="../js/preferences.js"></script>
+
+	<script language="javascript" src="../js/resource.js"></script>
+
+	<script>
+		var isIE7 = false;
+	</script>
+
+	<style>
+		</style>
+	<!--[if IE 7]>
+<script>isIE7=true;</script>
+<![endif]-->
+	<!--[if IE 8]>
+<script>isIE7=true;</script>
+<![endif]-->
+
+	<script language="javascript">
+<!--
+
+		var Orig_UserPrefs = new UserPreferences();
+		Orig_UserPrefs.Copy(UserPrefs);
+
+		var bIsModified = false;
+
+		var _bSoundIsAvailable = true;
+		var _bSeeItOnly = false;
+
+		function GetOpener() {
+			var _opener;
+			if (parent.opener)
+				return parent.opener;
+			if (parent.parent) {
+				if (parent.parent.opener)
+					return parent.parent.opener;
+			}
+
+			return 0;
+		}
+
+		function SetModified(bModified) {
+			if (bModified != bIsModified) {
+				bIsModified = bModified;
+				parent.prefcontrol.document.controlform.Apply.disabled = !bModified;
+			}
+		}
+
+		function UpdateModified() {
+			if (!bIsModified)
+				SetModified(UserPrefs.Compare(Orig_UserPrefs));
+		}
+
+		function UpdateHotKey(ctrl, opt) {
+			for (var i = 0; i < ctrl.options.length; i++) {
+				if (ctrl.options[i].value == opt) {
+					ctrl.selectedIndex = i;
+					break;
+				}
+			}
+		}
+
+		function UpdateDefPlayMode(ctrl, opt) {
+			UpdateHotKey(ctrl, opt);
+		}
+
+		function UpdateForm() {
+			if (UserPrefs.PlayAudio == "none")
+				document.prefform.PlayAudio.selectedIndex = 0;
+			else if (UserPrefs.PlayAudio == "demo")
+				document.prefform.PlayAudio.selectedIndex = 1;
+			else
+				document.prefform.PlayAudio.selectedIndex = 2;
+			document.prefform.LeadInSelect.checked = (UserPrefs.ShowLeadIn != "toc");
+			document.prefform.TryItEnableSkipping.checked = UserPrefs.TryIt.EnableSkipping;
+
+			var marquee = Get_Element_Style("MarqueeColor");
+			if (marquee)
+				marquee.backgroundColor = UserPrefs.MarqueeColor;
+			if (!_bSoundIsAvailable)
+				document.getElementById("PlayAudio").disabled = true;
+
+			UpdateHotKey(document.prefform.HotKeyCtrl, UserPrefs.DoIt.HotKey.Ctrl);
+			UpdateHotKey(document.prefform.HotKeyShift, UserPrefs.DoIt.HotKey.Shift);
+			UpdateHotKey(document.prefform.HotKeyAlt, UserPrefs.DoIt.HotKey.Alt);
+
+			UpdateDefPlayMode(document.prefform.DefPlayMode, UserPrefs.DefaultPlayMode);
+		}
+
+//-->
+	</script>
+
+	<script id="clientEventHandlersJS" language="javascript">
+<!--
+
+		function DoApply() {
+			if (!bIsModified)
+				return;
+
+			SetModified(false);
+
+			var cookie = UserPrefs.GetCookie();
+			cookie.TimeStamp = UserPrefs.TimeStamp;
+			cookie.PlayAudio = UserPrefs.PlayAudio;
+			cookie.ShowLeadIn = UserPrefs.ShowLeadIn;
+			cookie.MarqueeColor = UserPrefs.MarqueeColor;
+			cookie.TryIt_EnableSkipping = UserPrefs.TryIt.EnableSkipping;
+			cookie.DoIt_HotKey_Ctrl = UserPrefs.DoIt.HotKey.Ctrl;
+			cookie.DoIt_HotKey_Shift = UserPrefs.DoIt.HotKey.Shift;
+			cookie.DoIt_HotKey_Alt = UserPrefs.DoIt.HotKey.Alt;
+			cookie.DefaultPlayMode = UserPrefs.DefaultPlayMode;
+			cookie.Tutorial_DontShow_TOC = UserPrefs.Tutorial_DontShow_TOC;
+			cookie.Tutorial_DontShow_SeeIt = UserPrefs.Tutorial_DontShow_SeeIt;
+			cookie.Tutorial_DontShow_TryIt = UserPrefs.Tutorial_DontShow_TryIt;
+			cookie.Tutorial_DontShow_KnowIt = UserPrefs.Tutorial_DontShow_KnowIt;
+			cookie.Tutorial_DontShow_DoIt = UserPrefs.Tutorial_DontShow_DoIt;
+			cookie.Store();
+
+			var _opener = GetOpener();
+			if (_opener) {
+				if (_opener.OnUpdatePreferences)
+					_opener.OnUpdatePreferences(UserPrefs);
+				else if (_opener.UserPrefs)
+					_opener.UserPrefs.Copy(UserPrefs);
+			}
+
+			Orig_UserPrefs.Copy(UserPrefs);
+		}
+
+		function refresh_main() {
+			main_style = Get_Element_Style("main");
+			main_style.visibility = "hidden";
+			main_style.visibility = "visible";
+		}
+
+		function ResetDefaults_onclick() {
+			if (confirm(R_default_prefs)) {
+				UserPrefs = new UserPreferences();
+				if (window.SetDefaultPreferences){
+					SetDefaultPreferences();
+					if (_bSoundIsAvailable == false) {
+						var cookie = UserPrefs.GetCookie();
+						UserPrefs.PlayAudio = "none";
+						cookie.PlayAudio = UserPrefs.PlayAudio;
+						cookie.Store();
+					}
+				}
+				UpdateForm();
+				UpdateModified();
+			}
+		}
+
+		function TryItEnableSkipping_onclick() {
+			UserPrefs.TryIt.EnableSkipping = document.prefform.TryItEnableSkipping.checked;
+			UpdateModified();
+		}
+
+		function LeadInSelect_onclick() {
+			UserPrefs.ShowLeadIn = (document.prefform.LeadInSelect.checked ? "all" : "toc");
+			UpdateModified();
+		}
+
+		function PlayAudio_onchange() {
+			UserPrefs.PlayAudio = document.prefform.PlayAudio.options[document.prefform.PlayAudio.selectedIndex].value;
+			UpdateModified();
+		}
+
+		function HotKey_Ctrl_onchange() {
+			UserPrefs.DoIt.HotKey.Ctrl = document.prefform.HotKeyCtrl.options[document.prefform.HotKeyCtrl.selectedIndex].value;
+			UpdateModified();
+		}
+
+		function HotKey_Shift_onchange() {
+			UserPrefs.DoIt.HotKey.Shift = document.prefform.HotKeyShift.options[document.prefform.HotKeyShift.selectedIndex].value;
+			UpdateModified();
+		}
+
+		function HotKey_Alt_onchange() {
+			UserPrefs.DoIt.HotKey.Alt = document.prefform.HotKeyAlt.options[document.prefform.HotKeyAlt.selectedIndex].value;
+			UpdateModified();
+		}
+
+		function DefPlayMode_onchange() {
+			UserPrefs.DefaultPlayMode = document.prefform.DefPlayMode.options[document.prefform.DefPlayMode.selectedIndex].value;
+			UpdateModified();
+		}
+
+		function OnColorSelection(color) {
+			UserPrefs.MarqueeColor = color;
+			Get_Element_Style("MarqueeColor").backgroundColor = UserPrefs.MarqueeColor;
+			UpdateModified();
+		}
+
+		function ChangeColor_onclick() {
+			parent.parent.ShowColorTable();
+		}
+
+		function init() {
+			window_onload();
+		}
+
+		function window_onload() {
+			//	if(!document.all){
+			//		document.styleSheets[0].insertRule(".ffdisable { display: none; }", 0);
+			//		parent.parent.resizeBy(0, -100);
+			//	}
+
+			try {
+				_bSoundIsAvailable = parent.parent.bSoundIsAvailable;
+			}
+			catch (e) { };
+			try {
+				_bSeeItOnly = parent.parent.bSeeItOnly;
+			}
+			catch (e) { };
+			if (_bSeeItOnly) {
+				if (document.styleSheets[0].insertRule) {
+					document.styleSheets[0].insertRule(".hidebyseeit { display: none; }", 0);
+				}
+				else {
+					document.styleSheets[0].addRule(".hidebyseeit", "display: none", 0);
+				} 
+			}
+
+			UpdateForm();
+			window.focus();
+
+			init_tooltip_object("skipping_tooltip");
+			init_tooltip_object("audio_tooltip");
+			init_tooltip_object("leadin_tooltip");
+			init_tooltip_object("ctrl_tooltip");
+			init_tooltip_object("shift_tooltip");
+			init_tooltip_object("alt_tooltip");
+		}
+
+		function init_tooltip_object(ttObjName) {
+			var ttObj = Get_Element(ttObjName);
+			ttObj.ttCount = 0;
+			ttObj.ttVisible = false;
+			while (ttObj.clientHeight > 20) {
+				ttObj.style.left = "" + (ttObj.offsetLeft - 30) + "px";
+				ttObj.style.width = "" + (ttObj.clientWidth + 30) + "px";
+			}
+		}
+
+		function show_tooltip(ttObjName, count) {
+			var ttObj = Get_Element(ttObjName);
+			if (ttObj.ttVisible) {
+				ttObj.style.visibility = "visible";
+				setTimeout("delay_tooltip_off('" + ttObjName + "'," + count + ")", 8000);
+			}
+		}
+
+		function tooltip_on(ttObjName) {
+			var ttObj = Get_Element(ttObjName);
+			ttObj.ttCount++;
+			ttObj.ttVisible = true;
+			setTimeout("show_tooltip('" + ttObjName + "'," + ttObj.ttCount + ")", 500);
+		}
+
+		function tooltip_off(ttObjName) {
+			var ttObj = Get_Element(ttObjName);
+			ttObj.ttVisible = false;
+			ttObj.style.visibility = "hidden";
+		}
+
+		function delay_tooltip_off(ttObjName, count) {
+			var ttObj = Get_Element(ttObjName);
+			if (ttObj.ttCount == count)
+				tooltip_off(ttObjName);
+		}
+
+		function all_tooltips_off() {
+			tooltip_off("skipping_tooltip");
+			tooltip_off("audio_tooltip");
+			tooltip_off("leadin_tooltip");
+			tooltip_off("ctrl_tooltip");
+			tooltip_off("shift_tooltip");
+			tooltip_off("alt_tooltip");
+		}
+
+		function DisableComboBoxes() {
+			if (IsSafari())
+				return;
+			document.getElementById("PlayAudio").disabled = "1";
+			document.getElementById("LeadInSelect").disabled = "1";
+			document.getElementById("HotKeyCtrl").disabled = "1";
+			document.getElementById("HotKeyShift").disabled = "1";
+			document.getElementById("HotKeyAlt").disabled = "1";
+			document.getElementById("TryItEnableSkipping").disabled = "1";
+		}
+
+		function EnableComboBoxes() {
+			if (IsSafari())
+				return;
+			document.getElementById("PlayAudio").disabled = (_bSoundIsAvailable ? "" : true);
+			document.getElementById("LeadInSelect").disabled = "";
+			document.getElementById("HotKeyCtrl").disabled = "";
+			document.getElementById("HotKeyShift").disabled = "";
+			document.getElementById("HotKeyAlt").disabled = "";
+			document.getElementById("TryItEnableSkipping").disabled = "";
+		}
+
+//-->
+	</script>
+
+</head>
+<body class="textWindows" leftmargin="0" topmargin="0" marginheight="0" marginwidth="0"
+	bottommargin="0" rightmargin="0" onlosad="window_onload();">
+	<div id="main">
+		<table width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td>
+					<img height="10px" alt="" src="../img/giftrk1.gif" width="10px" border="0"></td>
+				<td>
+					<img height="10px" alt="" src="../img/giftrk1.gif" width="10px" border="0"></td>
+				<td>
+					<img height="10px" alt="" src="../img/giftrk1.gif" width="10px" border="0"></td>
+			</tr>
+			<tr>
+				<td>
+					<img height="10px" alt="" src="../img/giftrk1.gif" width="10px" border="0"></td>
+				<td width="100%">
+					<form name="prefform" action="">
+					<table width="100%" border="0" cellspacing="0" cellpadding="0">
+						<tr>
+							<td width="16px">
+								<img height="16px" alt="" src="../img/pref_ul.gif" width="16px" border="0"></td>
+							<td nowrap valign="top">
+								<a class="PrefTextHead">&nbsp;&nbsp;<script>document.write(R_preferences_options);</script>&nbsp;&nbsp;</a></td>
+							<td background="../img/pref_top.gif" width="100%">
+								<img height="16px" alt="" src="../img/pref_top.gif" width="16px" border="0"></td>
+							<td width="16px">
+								<img height="16px" alt="" src="../img/pref_ur.gif" width="16px" border="0"></td>
+						</tr>
+					</table>
+					<table border="0" cellspacing="0" cellpadding="0">
+						<tr>
+							<td valign="top" background="../img/pref_left.gif">
+								<img height="16px" alt="" src="../img/pref_left.gif" width="16px" border="0"></td>
+							<td nowrap>
+								<a class="InstructText">&nbsp;<script>document.write(R_preferences_marquee);</script></a>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+							<td>
+								<div id="MarqueeColor">
+									<img height="19px" src="../img/giftrk1.gif" width="26px" border="0"></div></td>
+
+							<script>
+								document.write('<td width="100%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button"');
+								if (document.all)
+									if (isIE7 == true)
+									document.write(' class="InstructTextButtonIE7"');
+								else
+									document.write(' class="InstructTextButtonIE"');
+								else
+									document.write(' class="InstructTextButtonFF" ');
+								document.write('value="' + R_preferences_changecolor + '" name="ChangeColor" title="' + R_preferences_changecolor_title + '" language="javascript" onClick="return ChangeColor_onclick()"></td>');
+							</script>
+
+							<td valign="top" background="../img/pref_right.gif">
+								<img height="16px" alt="" src="../img/pref_right.gif" width="16px" border="0"></td>
+						</tr>
+					</table>
+					<table width="100%" border="0" cellspacing="0" cellpadding="0">
+						<tr>
+							<td valign="top" background="../img/pref_left.gif">
+								<img height="16px" alt="" src="../img/pref_left.gif" width="16px" border="0"></td>
+							<td width="100%">
+								<img height="6px" alt="" src="../img/giftrk1.gif" width="10px" border="0"><br>
+								<table width="100%" border="0" cellspacing="0" cellpadding="0">
+									<tr class="ffdisable">
+										<td nowrap>
+											<a class="InstructText">&nbsp;<script>document.write(R_preferences_playaudio);</script></a>&nbsp;<img
+												height="4px" alt="" src="../img/giftrk1.gif" width="10px" border="0">
+											<select id="PlayAudio" name="PlayAudio" class="InstructText" language="javascript"
+												onmouseover="tooltip_on('audio_tooltip')" onmouseout="tooltip_off('audio_tooltip')"
+												onmousedown="all_tooltips_off()" onchange="return PlayAudio_onchange()">
+												<option value="none" selected>
+													<script>document.write(R_preferences_nosound);</script>
+												</option>
+												<option value="demo">
+													<script>document.write(R_preferences_keyboardsound);</script>
+												</option>
+												<option value="all">
+													<script>document.write(R_preferences_allsound);</script>
+												</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<img height="6px" alt="" src="../img/giftrk1.gif" width="10px" border="0"><br></td>
+									</tr>
+									<tr>
+										<td colspan="2">
+											<script>
+												document.write('<input type="checkbox" ID="LeadInSelect" name="LeadInSelect" title="' + R_preferences_showintroduction2 + '" language ="javascript" onClick="return LeadInSelect_onclick()"><label for="LeadInSelect" class="InstructText" onMouseOver="tooltip_on(\'leadin_tooltip\')" onMouseOut="tooltip_off(\'leadin_tooltip\')" onMouseDown="all_tooltips_off()">' + R_preferences_showintroduction + '</label>&nbsp;&nbsp;&nbsp;&nbsp;');
+											</script>
+											<br>
+											<img height="6px" alt="" src="../img/giftrk1.gif" width="10px" border="0"><br>
+									</tr>
+									<tr class="hidebyseeit">
+										<td colspan="2">
+											<script>
+												document.write('<input type="checkbox" ID="TryItEnableSkipping" title="' + R_preferences_tryitenableskipping2 + '" language ="javascript" onClick="return TryItEnableSkipping_onclick()" NAME="TryItEnableSkipping"><label for="TryItEnableSkipping" class="InstructText" onMouseOver="tooltip_on(\'skipping_tooltip\')" onMouseOut="tooltip_off(\'skipping_tooltip\')" onMouseDown="all_tooltips_off()">' + R_preferences_tryitenableskipping + '</label>&nbsp;&nbsp;&nbsp;&nbsp;');
+											</script>
+											<br>
+											<img height="6px" alt="" src="../img/giftrk1.gif" width="10px" border="0"><br>
+									</tr>
+									<tr class="hidebyseeit">
+										<td>
+											<img height="6px" alt="" src="../img/giftrk1.gif" width="10px" border="0"></td>
+									</tr>
+									<tr class="ffdisable hidebyseeit">
+										<td colspan="2">
+											<a class="InstructText">&nbsp;<script>document.write(R_preferences_doitcombinations);</script></a></td>
+									</tr>
+									<tr class="ffdisable hidebyseeit">
+										<td>
+											<img height="6px" alt="" src="../img/giftrk1.gif" width="10px" border="0"></td>
+									</tr>
+									<tr class="ffdisable hidebyseeit">
+										<td colspan="2">
+											<a class="InstructText">&nbsp;</a>
+											<select id="HotKeyCtrl" name="HotKeyCtrl" class="InstructText" style="font-size: 8pt"
+												language="javascript" onmouseover="tooltip_on('ctrl_tooltip')" onmouseout="tooltip_off('ctrl_tooltip')"
+												onmousedown="all_tooltips_off()" onchange="return HotKey_Ctrl_onchange()">
+												<option value="L" selected>
+													<script>document.write(R_preferences_Lctrl);</script>
+												</option>
+												<option value="R">
+													<script>document.write(R_preferences_Rctrl);</script>
+												</option>
+												<option value="N">
+													<script>document.write(R_preferences_Nctrl);</script>
+												</option>
+											</select><a class="InstructText">&nbsp;&nbsp;+&nbsp;</a>
+											<select id="HotKeyShift" name="HotKeyShift" class="InstructText" style="font-size: 8pt"
+												language="javascript" onmouseover="tooltip_on('shift_tooltip')" onmouseout="tooltip_off('shift_tooltip')"
+												onmousedown="all_tooltips_off()" onchange="return HotKey_Shift_onchange()">
+												<option value="L">
+													<script>document.write(R_preferences_Lshift);</script>
+												</option>
+												<option value="R">
+													<script>document.write(R_preferences_Rshift);</script>
+												</option>
+												<option value="N" selected>
+													<script>document.write(R_preferences_Nshift);</script>
+												</option>
+											</select><a class="InstructText">&nbsp;&nbsp;+&nbsp;</a>
+											<select id="HotKeyAlt" name="HotKeyAlt" class="InstructText" style="font-size: 8pt"
+												language="javascript" onmouseover="tooltip_on('alt_tooltip')" onmouseout="tooltip_off('alt_tooltip')"
+												onmousedown="all_tooltips_off()" onchange="return HotKey_Alt_onchange()">
+												<option value="L" selected>
+													<script>document.write(R_preferences_Lalt);</script>
+												</option>
+												<option value="R">
+													<script>document.write(R_preferences_Ralt);</script>
+												</option>
+												<option value="N">
+													<script>document.write(R_preferences_Nalt);</script>
+												</option>
+											</select>
+										</td>
+									</tr>
+									<tr class="ffdisable hidebyseeit">
+										<td>
+											<img height="6px" alt="" src="../img/giftrk1.gif" width="10px" border="0"></td>									
+									</tr>
+									<tr class="ffdisable hidebyseeit">
+										<td>
+											<img height="6px" alt="" src="../img/giftrk1.gif" width="10px" border="0"></td>
+									</tr>
+									<tr class="ffdisable hidebyseeit">
+										<td colspan="2">
+											<a class="InstructText">&nbsp;<b><script>document.write(R_preferences_note);</script></b>&nbsp;</script></td>
+									</tr>
+									<tr class="hidebyseeit">
+										<td>
+											<img height="6px" alt="" src="../img/giftrk1.gif" width="10px" border="0"></td>
+									</tr>
+									<tr class="hidebyseeit">
+										<td colspan="2">
+											<a class="InstructText">
+												<script>document.write(R_preferences_defplaymode);</script>
+											</a>&nbsp;&nbsp;
+											<select name="DefPlayMode" class="InstructText" style="font-size: 8pt" onchange="return DefPlayMode_onchange();">
+												<option value="S" selected>
+													<script>document.write(R_mode_seeit);</script>
+												</option>
+												<option value="T">
+													<script>document.write(R_mode_tryit);</script>
+												</option>
+												<option value="K">
+													<script>document.write(R_mode_knowit);</script>
+												</option>
+												<option value="D" class="ffdisable">
+													<script>document.write(R_mode_doit);</script>
+												</option>
+											</select>
+											<br>
+											<img height="6px" alt="" src="../img/giftrk1.gif" width="10px" border="0"><br>
+									</tr>
+									<tr class="hidebyseeit">
+										<td colspan="2">
+											<a class="InstructText">
+												<script>document.write(R_preferences_defplaymodetext)</script>
+											</a>
+											<br>
+											<img height="6px" alt="" src="../img/giftrk1.gif" width="10px" border="0"><br>
+									</tr>
+									<tr>
+										<td colspan="2" align="right">
+
+											<script>
+												document.write('<input type="button"');
+												if (document.all)
+													if (isIE7 == true)
+													document.write(' class="InstructTextButtonIE7"');
+												else
+													document.write(' class="InstructTextButtonIE"');
+												else
+													document.write(' class="InstructTextButtonFF" ');
+												document.write('name="ResetDefaults" value="' + R_preferences_defaults + '" title="' + R_preferences_defaults_title + '" language="javascript" onClick="return ResetDefaults_onclick()">&nbsp;');
+											</script>
+
+										</td>
+									</tr>
+								</table>
+							</td>
+							<td valign="top" background="../img/pref_right.gif">
+								<img height="16px" alt="" src="../img/pref_right.gif" width="16px" border="0"></td>
+						</tr>
+					</table>
+					<table width="100%" border="0" cellspacing="0" cellpadding="0">
+						<tr>
+							<td valign="top">
+								<img height="16px" alt="" src="../img/pref_ll.gif" width="16px" border="0"></td>
+							<td width="100%" background="../img/pref_bot.gif">
+								<img height="16px" alt="" src="../img/pref_bot.gif" width="16px" border="0"></td>
+							<td valign="top">
+								<img height="16px" alt="" src="../img/pref_lr.gif" width="16px" border="0"></td>
+						</tr>
+					</table>
+					</form>
+				</td>
+				<td>
+					<img height="10px" alt="" src="../img/giftrk1.gif" width="10px" border="0"></td>
+			</tr>
+			<tr>
+				<td>
+					<img height="10px" alt="" src="../img/giftrk1.gif" width="10px" border="0"></td>
+				<td>
+					<img height="10px" alt="" src="../img/giftrk1.gif" width="10px" border="0"></td>
+				<td>
+					<img height="10px" alt="" src="../img/giftrk1.gif" width="10px" border="0"></td>
+			</tr>
+		</table>
+	</div>
+	<div id="audio_tooltip" class="InstructText" style="visibility: hidden; position: absolute;
+		top: 82px; left: 200px; padding: 1px; border-style: solid; border-width: 1px;
+		background-color: #ffffe0">
+
+		<script>			document.write(R_preferences_audiotooltip);</script>
+
+	</div>
+	<div id="leadin_tooltip" class="InstructText" style="visibility: hidden; position: absolute;
+		top: 105px; left: 40px; padding: 1px; border-style: solid; border-width: 1px;
+		background-color: #ffffe0">
+
+		<script>			document.write(R_preferences_leadintooltip);</script>
+
+	</div>
+	<div id="skipping_tooltip" class="InstructText" style="visibility: hidden; position: absolute;
+		top: 90px; left: 40px; padding: 1px; border-style: solid; border-width: 1px; background-color: #ffffe0">
+
+		<script>			document.write(R_preferences_skippingtooltip);</script>
+
+	</div>
+	<div id="ctrl_tooltip" class="InstructText" style="visibility: hidden; position: absolute;
+		top: 187px; left: 40px; padding: 1px; border-style: solid; border-width: 1px;
+		background-color: #ffffe0">
+
+		<script>			document.write(R_preferences_ctrltooltip);</script>
+
+	</div>
+	<div id="shift_tooltip" class="InstructText" style="visibility: hidden; position: absolute;
+		top: 187px; left: 150px; padding: 1px; border-style: solid; border-width: 1px;
+		background-color: #ffffe0">
+
+		<script>			document.write(R_preferences_shifttooltip);</script>
+
+	</div>
+	<div id="alt_tooltip" class="InstructText" style="visibility: hidden; position: absolute;
+		top: 187px; left: 220px; padding: 1px; border-style: solid; border-width: 1px;
+		background-color: #ffffe0">
+
+		<script>			document.write(R_preferences_alttooltip);</script>
+
+	</div>
+</body>
+</html>

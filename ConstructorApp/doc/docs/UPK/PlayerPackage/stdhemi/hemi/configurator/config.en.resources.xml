@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright © 1998, 2009, Oracle and/or its affiliates.  All rights reserved.
+-->
+<!--Version 9.6.0.14-->
+<resources>
+  <resource xml:id="Config.Title">Configuration Utility for In-Application Support</resource>
+  <resource xml:id="Config.Explain"></resource>
+  <resource xml:id="Config.Message.NothingToConfigure">Nothing to configure.</resource>
+  <resource xml:id="Config.Section.General">SmartHelp Options</resource>
+  <resource xml:id="Config.Section.Applications">Application Options</resource>
+  <resource xml:id="Config.Title.EditedBy">My name is</resource>
+  <resource xml:id="Config.Title.SelectLanguage">Choose your language</resource>
+  <resource xml:id="Config.Title.EmbeddedApp">{APP_TITLE} ({EMBEDDED_TITLE})</resource>
+  <resource xml:id="Config.Title.Description">Activity</resource>
+  <resource xml:id="Config.Message.Loading">Loading...</resource>
+  <resource xml:id="Config.Title.EditConfiguration">Edit Configuration</resource>
+  <resource xml:id="Config.Title.SaveConfiguration">Save Configuration</resource>
+  <resource xml:id="Config.Action.Ok">Ok</resource>
+  <resource xml:id="Config.Action.Cancel">Cancel</resource>
+  <resource xml:id="Config.Action.Change">Change</resource>
+  <resource xml:id="Config.Action.AddNote">Add Note</resource>
+  <resource xml:id="Config.Action.NewRow">New Row</resource>
+  <resource xml:id="Config.Action.Delete">Delete</resource>
+  <resource xml:id="Config.Action.Undo">Undo</resource>
+  <resource xml:id="Config.Action.Edit">Edit</resource>
+  <resource xml:id="Config.Action.Reset">Reset</resource>
+  <resource xml:id="Config.Action.Modify">Edit</resource>
+  <resource xml:id="Config.Action.Save">Save</resource>
+  <resource xml:id="Config.Action.Reload">Revert</resource>
+  <resource xml:id="Config.Action.RetrySave">Retry Save</resource>
+  <resource xml:id="Config.Action.SaveManually">Save Manually</resource>
+  <resource xml:id="Config.Action.CheckServer">Check</resource>
+  <resource xml:id="Config.Action.CheckAgain">Check</resource>
+  <resource xml:id="Config.Action.ShowDocumentation">Help</resource> 
+	<resource xml:id="Config.Action.Show">Show</resource>
+	<resource xml:id="Config.Action.Hide">Hide</resource>
+  <resource xml:id="Config.Action.SelectAll">Select All</resource>
+  <resource xml:id="Config.Action.Exit">Home</resource>
+  <resource xml:id="Config.Action.ShowAdvanced">Advanced Options</resource>
+  <resource xml:id="Config.Action.HideAdvanced">Hide Advanced Options</resource>
+	<resource xml:id="Config.Action.ResetToDefaults">Reset to Defaults</resource>
+	<resource xml:id="Config.Message.NotConfigured">Not Configured</resource>
+  <resource xml:id="Config.Message.NotEditable">Not Editable</resource>
+  <resource xml:id="Config.Title.Unknown">Unknown</resource>
+  <resource xml:id="Config.Message.Unknown">Unknown</resource>
+  <resource xml:id="Config.Message.YourNote">Type your note here...</resource>
+  <resource xml:id="Config.Message.ConfigError">Configuration loading exception: "{ERROR}"</resource>
+  <resource xml:id="Config.Message.CheckConfigFile">Please fix it before editing!</resource>
+	<resource xml:id="Config.Explain.HiddenSection">Show this section to configure.</resource>
+<!--
+	<resource xml:id="Config.Explain.Save">Save your configuration file and upload it to your server to the location below. The download should start automatically. If the download does not start then you must {SAVE_IT_MANUALLY}.</resource>
+  <resource xml:id="Config.Explain.Update">Your configuration file was saved to the location below. In case you have any problem with your configuration you can {SAVE_IT_MANUALLY}.</resource>
+  <resource xml:id="Config.Explain.CheckServerAfterSave">After placing your configuration file on the server {PLEASE_CHECK} to see if it works.</resource>
+  <resource xml:id="Config.Explain.CheckServerAfterUpdate">Your configuration was updated, but {PLEASE_CHECK} to see if it works.</resource>
+-->  
+	<resource xml:id="Config.Explain.Save">Save your configuration file and upload it to your server to the location below. The download should start automatically. If the download does not start then you must save it manually.</resource>
+  <resource xml:id="Config.Explain.Update">Your configuration file was saved to the location below. In case you have any problem with your configuration you can save it manually.</resource>
+  <resource xml:id="Config.Explain.CheckServerAfterSave">After placing your configuration file on the server, please check to see if it works.</resource>
+  <resource xml:id="Config.Explain.CheckServerAfterUpdate">Your configuration was updated, but please check to see if it works.</resource>
+  <resource xml:id="Config.Explain.SaveManually">Create a file with the following content. Save the file using UTF-8 encoding.</resource>
+  <resource xml:id="Config.Span.SaveItManually">Save It Manually</resource>
+  <resource xml:id="Config.Span.PleaseCheck">Please Check</resource>
+  <resource xml:id="Config.Title.Details">Details</resource>
+  <resource xml:id="Config.Title.SaveManually">Save Manually</resource>
+  <resource xml:id="Config.Title.CheckServerConfiguration">Check Configuration</resource>
+  <resource xml:id="Config.Title.Application">Application</resource>
+  <resource xml:id="Config.Title.Version">Version</resource>
+  <resource xml:id="Config.Title.ModifiedBy">Modified By</resource>
+  <resource xml:id="Config.Title.LastModified">Last Modified</resource>
+	<resource xml:id="Config.Message.Dictionary.DuplicatedKey">Duplicated key: {KEY}.</resource>
+	<resource xml:id="Config.Message.Checking">Checking...</resource>
+  <resource xml:id="Config.Explain.LocationChecked">The following location was checked:</resource>
+  <resource xml:id="Config.Title.ServerConfiguration">Server Configuration</resource>
+  <resource xml:id="Config.Title.CurrentConfiguration">Now Saving</resource>
+  <resource xml:id="Config.Message.VerifySuccess">The configuration was updated correctly.</resource>
+  <resource xml:id="Config.Message.VerifyConfigNotFound">The configuration file was not found.</resource>
+  <resource xml:id="Config.Message.VerifyConfigError">The configuration file contains a JavaScript error.</resource>
+  <resource xml:id="Config.Message.VerifyDifferent">The configuration file is different on the server.</resource>
+  <resource xml:id="Config.Message.VerifyDifferentVersion">The configuration is the same, but the version is different.</resource>
+  <resource xml:id="Config.Message.VerifyDifferentContent">The version is the same, but the content is different.</resource>
+  <resource xml:id="Config.Message.RequiredFields">* The marked fields must be configured.</resource>
+  <resource xml:id="Config.Message.ConfirmSaveInvalid">Your configuration is not valid. Click OK to save only the valid items from your configuration. Items with many values, language tables for example, will not be saved if any values are invalid.</resource>
+  <resource xml:id="Config.Message.ConfirmReload">This operation will undo all changes on this page. Click OK to reload configuration.</resource>
+  <resource xml:id="Config.Message.ConfirmExit">This operation will undo all changes on this page. Click OK to exit.</resource>
+  <resource xml:id="Config.Message.SmartHelpConfigTitle">SmartHelp</resource>
+  <resource xml:id="Config.Message.SmartHelpConfigHelp">Edit your SmartHelp configuration</resource>
+  <resource xml:id="Config.Message.ApplicationConfigError">There is no configurable application</resource>
+	<resource xml:id="Config.Message.UndefinedLanguage">Undefined language: {LANGUAGE}</resource>
+	<resource xml:id="Config.ApplicationSection">Application Options</resource>
+  <resource xml:id="Config.GeneralSection">SmartHelp Options</resource>
+  <resource xml:id="Config.Message.UnknownSays">Somebody says</resource>
+  <resource xml:id="Config.Message.SomebodySays">{PERSON} says</resource>
+  <resource xml:id="Config.Message.UnknownWroteOn">
+    Somebody wrote
+    on {DATE}
+  </resource>
+  <resource xml:id="Config.Message.SomebodyWroteOn">
+    {PERSON} wrote
+    on {DATE}
+  </resource>
+  <resource xml:id="Config.Message.LastModifiedOn">
+    Last modified on
+    {DATE} {TIME}
+  </resource>
+  <resource xml:id="Config.Message.LastModifiedByOn">
+    Last modified by {PERSON} on
+    {DATE} {TIME}
+  </resource>
+  <resource xml:id="Config.Message.VersionInfo">Version {VERSION}</resource>
+  <resource xml:id="Config.Message.JavaScriptErrorInfo">Contains an error: "{ERROR}".</resource>
+  <resource xml:id="Config.Message.ApplicationErrorInfo">
+    Wrong application for the configuration file.
+    "{NAME}" is needed.
+  </resource>
+	<resource xml:id="Lang.None"></resource>
+	<resource xml:id="Lang.Default">Default</resource>
+	<resource xml:id="Lang.Chinese-Simplified">Chinese (Simplified)</resource>
+	<resource xml:id="Lang.Danish">Danish</resource>
+	<resource xml:id="Lang.Dutch">Dutch</resource>
+	<resource xml:id="Lang.English">English</resource>
+	<resource xml:id="Lang.French">French</resource>
+	<resource xml:id="Lang.French-Canada">French (Canada)</resource>
+	<resource xml:id="Lang.German">German</resource>
+	<resource xml:id="Lang.Italian">Italian</resource>
+	<resource xml:id="Lang.Japanese">Japanese</resource>
+	<resource xml:id="Lang.Norwegian">Norwegian</resource>
+	<resource xml:id="Lang.Portuguese">Portuguese</resource>
+	<resource xml:id="Lang.Spanish">Spanish</resource>
+	<resource xml:id="Lang.Spanish-Mexico">Spanish (Mexico)</resource>
+	<resource xml:id="Lang.Swedish">Swedish</resource>
+</resources>
