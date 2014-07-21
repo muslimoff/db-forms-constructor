@@ -31,10 +31,11 @@ public class FormInstance implements Serializable {
 	private String currentSortBy;
 	private Map<?, ?> currentFilterValues;
 	private int currentEndRow = -1;
-	private RowsArr resultData = new RowsArr();
+	// private RowsArr resultData = new RowsArr();
 	private Map<Integer, CLOB> clobHM = new HashMap<Integer, CLOB>();
 	private Map<Integer, ExportData> exportDatHM = new HashMap<Integer, ExportData>();
 	private Session session;
+	private int totalRows;
 
 	public FormInstance(Form form) throws SQLException {
 		this.form = form;
@@ -60,7 +61,7 @@ public class FormInstance implements Serializable {
 			session.printErrorStackTrace(e);
 		}
 		session.debug("FormInstance. Statement closed.");
-		resultData.clear();
+		// resultData.clear();
 		// resultData = null;
 		session.debug("FormInstance. resultData (RowsArr) cleared.");
 		clobHM.clear();
@@ -95,6 +96,7 @@ public class FormInstance implements Serializable {
 		String sqlText = null;
 		boolean isStmntClosedErr = false;
 		try {
+			RowsArr resultData = new RowsArr();
 			// Первый вызов DataSource или изменение сортировки, фильтров, а
 			// также принудительно
 			if (forceFetch || -1 == currentEndRow || currentSortBy != sortBy
@@ -102,7 +104,7 @@ public class FormInstance implements Serializable {
 				Connection connection = form.getConnection();
 				session.debug("Erase ResultSetData....");
 				currentEndRow = -1;
-				resultData = new RowsArr();
+				// resultData = new RowsArr();
 				clobHM.clear();
 				sqlText = form.getFormSQLText()
 						+ ((sortBy != null) ? sortBy : "");
@@ -117,9 +119,8 @@ public class FormInstance implements Serializable {
 						session.debug("totalRowsSqlText:\n" + totalRowsSqlText);
 						ResultSet rowCntRS = rowCntStmnt.executeQuery();
 						rowCntRS.next();
-						int totalRows = rowCntRS.getInt("CNT");
+						totalRows = rowCntRS.getInt("CNT");
 						session.debug("totalRows:" + totalRows);
-						resultData.setTotalRows(totalRows);
 						rowCntRS.close();
 					} finally {
 						Utils.closeStatement(rowCntStmnt);
@@ -141,6 +142,7 @@ public class FormInstance implements Serializable {
 				currentFilterValues = filterValues;
 
 			}
+			resultData.setTotalRows(totalRows);
 			session.debug("currentEndRow before: " + currentEndRow
 					+ "; Cashe: " + resultData.size() + "; startRow: "
 					+ startRow + "; endRow: " + endRow + "; gridHashCode: "
