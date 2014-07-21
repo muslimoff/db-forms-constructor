@@ -681,9 +681,9 @@ public class Form implements Serializable {
 				+ ") executed...");
 		// TODO - 20130512 Сериализация для работ по переводу класса Form на
 		// сторону БД
-		if (!fi.getIsLookupForm() && null == fi.getParentFormCode()) {
-			AppLayerTestClass.Serialize(fi.getKey(), formMetaData);
-		}
+		// if (!fi.getIsLookupForm() && null == fi.getParentFormCode()) {
+		// AppLayerTestClass.Serialize(fi.getKey(), formMetaData);
+		// }
 
 		// AppLayerTestClass.SerializeJAXB(fi.getKey(), this);
 		return formMetaData;
