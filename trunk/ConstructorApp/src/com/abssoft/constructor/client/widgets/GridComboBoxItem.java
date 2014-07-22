@@ -460,6 +460,13 @@ public class GridComboBoxItem extends MyComboBoxItem {
 	@Override
 	public void onSelectValue(FormItem item, Record rec) {
 		// TODO Auto-generated method stub
+		Utils.createQueryService("GridComboBoxItem.closeForm")
+				.closeFormInstance(instanceIdentifier,
+						new DSAsyncCallback<Void>() {
+							@Override
+							public void onSuccess(Void result) {
+							}
+						});
 	}
 
 	@Override

@@ -627,4 +627,12 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 		}
 	}
 
+	@Override
+	public void closeFormInstance(FormInstanceIdentifier fi) {
+		Session session = getSessionData(fi);
+		session.debug("service " + fi.getInfo() + " before close...");
+		session.closeFormInstance(fi);
+		session.debug("service form " + fi.getInfo() + " closed...");
+	}
+
 }

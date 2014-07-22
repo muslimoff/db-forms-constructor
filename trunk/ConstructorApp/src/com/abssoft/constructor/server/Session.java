@@ -114,6 +114,18 @@ public class Session implements Serializable {
 		this.debug("session form " + fi.getInfo() + " closed...");
 	}
 
+	public void closeFormInstance(FormInstanceIdentifier fi) {
+		this.debug("session form " + fi.getInfo() + " before close...");
+		Map<Integer, FormInstance> formInstance = formDataMap.get(fi.getKey())
+				.getFormInstance();
+		if (formInstance.containsKey(fi.getGridHashCode())) {
+			formInstance.get(fi.getGridHashCode()).closeForm();
+			formInstance.remove(fi.getGridHashCode());
+
+		}
+		this.debug("session form " + fi.getInfo() + " closed...");
+	}
+
 	public Row executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow,
 			FormActionMD actMD) throws SQLException, Exception {
 		return formDataMap.get(fi.getKey()).executeDML(fi.getGridHashCode(),
