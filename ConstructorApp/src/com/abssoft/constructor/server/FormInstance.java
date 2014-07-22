@@ -46,8 +46,9 @@ public class FormInstance implements Serializable {
 	public void closeForm() {
 		session.debug("FormInstance. before close...");
 		try {
-			rs.close();
-		} catch (java.sql.SQLException e) {
+			if (rs != null)
+				rs.close();
+		} catch (SQLException e) {
 			session.printErrorStackTrace(e);
 		} catch (Exception e) {
 			session.printErrorStackTrace(e);
@@ -55,7 +56,7 @@ public class FormInstance implements Serializable {
 		session.debug("FormInstance. Resultset closed.");
 		try {
 			statement.close();
-		} catch (java.sql.SQLException e) {
+		} catch (SQLException e) {
 			session.printErrorStackTrace(e);
 		} catch (Exception e) {
 			session.printErrorStackTrace(e);

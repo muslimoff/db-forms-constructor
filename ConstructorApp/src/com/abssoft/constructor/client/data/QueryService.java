@@ -97,6 +97,8 @@ public interface QueryService extends RemoteService {
 	 */
 	public void closeForm(FormInstanceIdentifier fi, FormMD formState);
 
+	public void closeFormInstance(FormInstanceIdentifier fi);
+
 	public StaticLookupsArr getStaticLookupsArr(int sessionId)
 			throws TimeoutException;
 

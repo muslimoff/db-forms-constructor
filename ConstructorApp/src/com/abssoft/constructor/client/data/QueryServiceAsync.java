@@ -40,6 +40,9 @@ public interface QueryServiceAsync {
 	public void closeForm(FormInstanceIdentifier fi, FormMD formState,
 			AsyncCallback<Void> callback);
 
+	public void closeFormInstance(FormInstanceIdentifier fi,
+			AsyncCallback<Void> callback);
+
 	public void getStaticLookupsArr(int sessionId,
 			AsyncCallback<StaticLookupsArr> callback);
 

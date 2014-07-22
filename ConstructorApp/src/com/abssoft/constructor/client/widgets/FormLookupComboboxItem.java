@@ -243,6 +243,13 @@ public class FormLookupComboboxItem extends MyComboBoxItem {
 	public void onSelectValue(FormItem item, Record rec) {
 		try {
 			setEditValues(rec);
+			Utils.createQueryService("FormLookupComboboxItem.closeForm")
+					.closeFormInstance(instanceIdentifier,
+							new DSAsyncCallback<Void>() {
+								@Override
+								public void onSuccess(Void result) {
+								}
+							});
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
