@@ -55,6 +55,7 @@ public class Form implements Serializable {
 	private Connection connection;
 	private String fcSchemaOwner;
 	private String formSQLText;
+	private String formSQLCountText;
 	private FormColumnsArr metadata = new FormColumnsArr();
 	private String formCode;
 	private FormMD formMetaData = null;
@@ -792,6 +793,33 @@ public class Form implements Serializable {
 		} finally {
 			Utils.closeStatement(statement);
 		}
+		setFormSQLCountText();
+	}
+
+	private void setFormSQLCountText() {
+		OraclePreparedStatement statement = null;
+		try {
+			String extendedFormSQLCount = Utils.getSQLQueryFromXML(
+					"extendedFormSQLCount", session);
+			statement = (OraclePreparedStatement) getConnection()
+					.prepareStatement(extendedFormSQLCount);
+			setFormMDParams(statement);
+			ResultSet rs = statement.executeQuery();
+			rs.next();
+			String sqText = rs.getString(1);
+
+			// Принудительно приводим все bind variables к lowerCase
+			String lowVarsSQL = Utils.bindVarsToLowerCase(session, sqText,
+					"(?i):[\\w\\$]+");
+			session.debug("Form: lowVarsSQL:\n" + lowVarsSQL);
+			setFormSQLCountText(lowVarsSQL);
+			rs.close();
+
+		} catch (SQLException e) {
+			session.printErrorStackTrace(e);
+		} finally {
+			Utils.closeStatement(statement);
+		}
 	}
 
 	public void setConnection(Connection connection) {
@@ -813,5 +841,13 @@ public class Form implements Serializable {
 	public Integer setExportData(FormInstanceIdentifier fi,
 			ExportData exportData) {
 		return formInstance.get(fi.getGridHashCode()).setExportData(exportData);
+	}
+
+	public String getFormSQLCountText() {
+		return formSQLCountText;
+	}
+
+	public void setFormSQLCountText(String formSQLCountText) {
+		this.formSQLCountText = formSQLCountText;
 	}
 }
