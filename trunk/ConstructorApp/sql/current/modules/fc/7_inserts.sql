@@ -143,5 +143,12 @@ Values
   ('DATE_FORMAT'
   ,'Begin ? := Fnd_Profile.Value(''ICX_DATE_FORMAT_MASK''); End;');
 /
+Insert Into Fc22.Global_Params Gp
+  (Param_Name, Param_Value)
+Values
+  ('extendedFormSQLCount'
+  ,'Select &fc_schema_owner..form_utils.get_extended_sql_text (a.sql_count_text)
+  From Table (&fc_schema_owner..forms_pkg.get_form_md (:p_form_code, :p_master_form_code, :p_drilldown_flag)) a')
+/
 Grant Select On global_params To fc_admin
 

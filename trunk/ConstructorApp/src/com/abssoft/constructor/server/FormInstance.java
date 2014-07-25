@@ -110,8 +110,7 @@ public class FormInstance implements Serializable {
 				sqlText = form.getFormSQLText()
 						+ ((sortBy != null) ? sortBy : "");
 				{
-					String totalRowsSqlText = "select count(*) cnt from ("
-							+ sqlText + "\n)";
+					String totalRowsSqlText = form.getFormSQLCountText();
 					OraclePreparedStatement rowCntStmnt = null;
 					try {
 						rowCntStmnt = (OraclePreparedStatement) connection

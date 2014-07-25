@@ -1,0 +1,1 @@
+alter table FC22.FORMS add SQL_COUNT_TEXT CLOB;
