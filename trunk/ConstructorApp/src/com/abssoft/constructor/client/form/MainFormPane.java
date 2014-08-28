@@ -17,7 +17,6 @@ import com.abssoft.constructor.common.metadata.FormMD;
 import com.abssoft.constructor.common.metadata.MenuMD;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.Record;
-import com.smartgwt.client.types.ListGridFieldType;
 import com.smartgwt.client.types.Orientation;
 import com.smartgwt.client.types.SummaryFunctionType;
 import com.smartgwt.client.types.VisibilityMode;
@@ -248,17 +247,15 @@ public class MainFormPane extends Canvas {
 			for (FormTreeGridField gridField : gridFields) {
 				gridField.setShowGroupSummary(true);
 				gridField.setShowGridSummary(true);
-
-				switch (gridField.getColumnMD().getDataType()) {
-				case "N":
+				String dataType = gridField.getColumnMD().getDataType();
+				if ("N".equals(dataType))
 					gridField.setSummaryFunction(SummaryFunctionType.SUM);
-				case "D":
+				else if ("D".equals(dataType))
 					gridField.setSummaryFunction(SummaryFunctionType.MAX);
-				default:
+				else
 					gridField.setSummaryFunction(SummaryFunctionType.COUNT);
-				}
 			}
-			
+
 			grid.setFields(gridFields);
 
 			System.out.println(formCode + " 3isLookup:" + isLookup);
