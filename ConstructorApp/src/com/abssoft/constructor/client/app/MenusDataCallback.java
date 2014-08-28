@@ -20,6 +20,7 @@ import com.smartgwt.client.widgets.menu.MenuButton;
 import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.menu.events.ClickHandler;
 import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
+import com.smartgwt.client.widgets.tab.Tab;
 
 public class MenusDataCallback extends DSAsyncCallback<MenusArr> {
 
@@ -56,11 +57,24 @@ public class MenusDataCallback extends DSAsyncCallback<MenusArr> {
 				public void onClick(MenuItemClickEvent event) {
 					Utils.debug("FormMenus onClick: "
 							+ menuMetadata.getFormCode());
-					new MainFormContainer(new Criteria(), new FormTabMD(),
-							FormTab.TabType.MAIN, ConstructorApp.getTabSet(),
-							menuMetadata.getFormCode());
+					boolean alreadyHasTab = false;
+					for (Tab t : ConstructorApp.getTabSet().getTabs()) {
+						if (((FormTab) t).getFormCode().equals(
+								menuMetadata.getFormCode())) {
+							ConstructorApp.getTabSet().selectTab(t);
+							alreadyHasTab = true;
+							break;
+						}
+					}
+					if (!alreadyHasTab) {
+						new MainFormContainer(new Criteria(), new FormTabMD(),
+								FormTab.TabType.MAIN, ConstructorApp
+										.getTabSet(), menuMetadata
+										.getFormCode());					
+					}
 					Utils.debug("FormMenus onClick2: "
-							+ menuMetadata.getFormCode());
+							+ menuMetadata.getFormCode() + "; alreadyHasTab="
+							+ alreadyHasTab);
 				}
 			});
 

@@ -66,6 +66,7 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 				Utils.debug(status);
 
 			} else {
+				ConstructorApp.defaultTitle = result.getDefaultTitle();
 				Utils.debug("sessionId: " + ConstructorApp.sessionId);
 				Utils.createQueryService("ConnectWindow.getMenusArr")
 						.getMenusArr(ConstructorApp.sessionId,

@@ -381,4 +381,12 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 	private ToolStrip getToolStrip() {
 		return toolStrip;
 	}
+	
+	public void setPrevSizeAsString(String prevSizeAsString) {
+		this.prevSizeAsString = prevSizeAsString;
+	}
+
+	public String getPrevSizeAsString() {
+		return this.prevSizeAsString;
+	}
 }

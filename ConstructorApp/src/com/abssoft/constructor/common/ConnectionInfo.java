@@ -13,6 +13,7 @@ public class ConnectionInfo implements IsSerializable {
 	private String dbServerVersion;
 	private String dateFormat;
 	private int sessionId;
+	private String defaultTitle;
 
 	// так надо - конструктор без параметров, чтобы не было такого:
 	// [ERROR] Type XXXX was not serializable and has no concrete serializable
@@ -57,5 +58,13 @@ public class ConnectionInfo implements IsSerializable {
 
 	public void setDateFormat(String dateFormat) {
 		this.dateFormat = dateFormat;
+	}
+	
+	public void setDefaultTitle(String defaultTitle) {
+		this.defaultTitle = defaultTitle;
+	}
+
+	public String getDefaultTitle() {
+		return defaultTitle;
 	}
 }

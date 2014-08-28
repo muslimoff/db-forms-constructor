@@ -1,4 +1,4 @@
-﻿Create Or Replace Package Xxfnd_Apps_Utils_Pkg Is
+Create Or Replace Package Xxfnd_Apps_Utils_Pkg Is
   G_Responsibility_Id Number;
   G_Fc_Module_Name Constant Varchar2(64) := 'BAS Form Constructor';
 
@@ -70,7 +70,7 @@ Create Or Replace Package Body Xxfnd_Apps_Utils_Pkg Is
     L_Application_Short_Name Fnd_Application.Application_Short_Name%Type;
     L_Username               Fnd_User.User_Name%Type;
   Begin
-    --РІС‹С…РңРөРёРә РүСЂРё РүСѓСЃС‚РңРә Р·РҢР°С‡РµРҢРёРё p_transaction_id
+    --������� ��� ������ �������� p_transaction_id
     If P_Transaction_Id Is Null Then
       Return L_Success;
     End If;
@@ -124,7 +124,7 @@ Create Or Replace Package Body Xxfnd_Apps_Utils_Pkg Is
                                      ,Security_Group_Id => L_Security_Group_Id
                                      ,Server_Id         => L_Node_Id);
       Apps.Fnd_Global.Initialize(Fnd_Const.Login_Id, L_Login_Id);
-      /*РҰР±СЂР°СЃС‹РІР°РµРә СЃРµСЃСЃРёСҺ (disabled_flag = 'Y') РүРңСЃР»Рµ СѓСЃРүРµС€РҢРңРіРң Р»РңРіРёРҢР° РөР»СЏ РүСЂРµРөРңС‚РІСЂР°С‰РµРҢРёСЏ РүРңРІС‚РңСЂРҢРңРіРң РІС…РңРөР° Р±РµР· РүР°СЂРңР»СЏ
+      /*���������� ������ (disabled_flag = 'Y') ����� ��������� ������ ��� �������������� ���������� ����� ��� ������
        Update icx_sessions s
           Set s.disabled_flag = 'Y'
         Where s.session_id = l_session_id;

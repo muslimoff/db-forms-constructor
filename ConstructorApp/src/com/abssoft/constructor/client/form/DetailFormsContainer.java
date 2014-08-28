@@ -220,12 +220,13 @@ public class DetailFormsContainer extends TabSet {
 
 	@Override
 	protected void doUpAction() {
-		this.mainFormPane.getBottomDetailFormsContainer().setHeight100();
+		this.mainFormPane.getBottomDetailFormsContainer().setHeight(getPrevSizeAsString());
 		showOrCollapseReviewSuperclassPlease(true);
 	}
 
 	@Override
 	protected void doDownAction() {
+		setPrevSizeAsString(getHeightAsString());
 		this.mainFormPane.getBottomDetailFormsContainer().setHeight(24);
 		showOrCollapseReviewSuperclassPlease(false);
 

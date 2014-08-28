@@ -191,6 +191,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 		session.debug("QueryServiceImpl.connect. urlParams:" + urlParams);
 		String errMsg = "";
 		String dateFormat = null;
+		String defaultTitle = null;
 		int sessionId = -1;
 		try {
 			session.debug("QueryServiceImpl.connect. Before connect...");
@@ -231,6 +232,10 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 				e.printStackTrace();
 			}
 
+			defaultTitle = getDefaultTitleFromSQL(session);
+			if (defaultTitle != null && !defaultTitle.equals("")) {
+				serverInfoMD.setTitle(defaultTitle);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			errMsg = Messages.getMessage(e);
@@ -238,6 +243,11 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 		}
 		ConnectionInfo c = new ConnectionInfo(errMsg, sessionId, dateFormat);
 		c.setDbServerVersion("bla-bla-bla...");
+				
+		if (defaultTitle != null && !defaultTitle.equals("")) {
+			c.setDefaultTitle(defaultTitle);
+		}
+		
 		session.debug("sessionId: " + sessionId + "; " + errMsg);
 		return c;
 	}
@@ -626,7 +636,29 @@ public class QueryServiceImpl extends RemoteServiceServlet implements
 			session.setInUse(false);
 		}
 	}
-
+	
+	// Для получения title из sql
+	public static String getDefaultTitleFromSQL(Session session) {
+		Connection conn = session.getConnection();
+		String defaultTitle = "";
+		String defaultTitleSQL = Utils.getSQLQueryFromXML("defaultTitleSQL",
+				session);
+		if (defaultTitleSQL != null && !defaultTitleSQL.equals("")) {
+			PreparedStatement defaultTitleStmnt = null;
+			try {
+				defaultTitleStmnt = conn.prepareStatement(defaultTitleSQL);
+				ResultSet defaultTitleRs = defaultTitleStmnt.executeQuery();
+				while (defaultTitleRs.next()) {
+					defaultTitle = defaultTitleRs.getString("Resp_Name");
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				Utils.closeStatement(defaultTitleStmnt);
+			}
+		}
+		return defaultTitle;
+	}
 	@Override
 	public void closeFormInstance(FormInstanceIdentifier fi) {
 		Session session = getSessionData(fi);
