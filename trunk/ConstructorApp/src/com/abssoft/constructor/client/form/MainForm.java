@@ -334,6 +334,9 @@ class MainForm extends Canvas {
 		treeGrid.setShowFilterEditor(false);
 		treeGrid.setAlternateRecordStyles(true);
 		treeGrid.setCanMultiSort(true);
+		treeGrid.setCanMultiGroup(true);
+		treeGrid.setShowGroupSummary(true);		
+		treeGrid.setShowGridSummary(true);
 		treeGrid.addRecordClickHandler(new GridRecordClickHandler());
 		// Правая кнопка
 		treeGrid.addRowContextClickHandler(new GridRowContextClickHandler());

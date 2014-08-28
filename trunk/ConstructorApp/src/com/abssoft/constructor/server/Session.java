@@ -211,7 +211,7 @@ public class Session implements Serializable {
 			printErrorStackTrace(e);
 		} finally {
 			Utils.closeStatement(menusStmnt);
-			Utils.closeStatement(menusStmnt);
+			Utils.closeStatement(iconsStmnt);
 		}
 		this.debug("session - MenusArr.size=" + metadata.size());
 		return metadata;

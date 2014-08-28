@@ -17,7 +17,9 @@ import com.abssoft.constructor.common.metadata.FormMD;
 import com.abssoft.constructor.common.metadata.MenuMD;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.Record;
+import com.smartgwt.client.types.ListGridFieldType;
 import com.smartgwt.client.types.Orientation;
+import com.smartgwt.client.types.SummaryFunctionType;
 import com.smartgwt.client.types.VisibilityMode;
 import com.smartgwt.client.util.JSOHelper;
 import com.smartgwt.client.widgets.Canvas;
@@ -243,6 +245,20 @@ public class MainFormPane extends Canvas {
 			valuesManager.setDataSource(dataSource);
 			System.out.println(formCode + " 2isLookup:" + isLookup);
 
+			for (FormTreeGridField gridField : gridFields) {
+				gridField.setShowGroupSummary(true);
+				gridField.setShowGridSummary(true);
+
+				switch (gridField.getColumnMD().getDataType()) {
+				case "N":
+					gridField.setSummaryFunction(SummaryFunctionType.SUM);
+				case "D":
+					gridField.setSummaryFunction(SummaryFunctionType.MAX);
+				default:
+					gridField.setSummaryFunction(SummaryFunctionType.COUNT);
+				}
+			}
+			
 			grid.setFields(gridFields);
 
 			System.out.println(formCode + " 3isLookup:" + isLookup);
@@ -399,6 +415,11 @@ public class MainFormPane extends Canvas {
 				Utils.debug("MainFormPane.filterData. 8. isRefresh:"
 						+ isRefresh);
 				grid.filterData(parentFormCriteria);
+
+				if (getSelectedRow() > 0) {
+					Utils.debug("MainFormPane.filterData. 8.5");
+					grid.scrollToRow(getSelectedRow());
+				}
 
 				Utils.debug("MainFormPane.filterData. 9");
 				setParentFormCriteria(parentFormCriteria);
