@@ -286,6 +286,8 @@ public class Utils {
 			}
 		} catch (java.sql.SQLException e) {
 			session.debug("*****setParameterValue: " + e.getMessage());
+		} catch (java.lang.NullPointerException e) {
+			session.debug("*****setParameterValue: " + e.getMessage());
 		}
 	}
 
