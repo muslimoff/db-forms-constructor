@@ -379,7 +379,7 @@ public class GridComboBoxItem extends MyComboBoxItem {
 			//
 			// this.setFetchMissingValues(null == lookupDisplValFld);
 			this.setFetchMissingValues(true);
-			formTreeGridField.setEditorType(GridComboBoxItem.this);
+			formTreeGridField.setEditorProperties(GridComboBoxItem.this);
 			formTreeGridField.setGridComboBoxItem(this);
 			formTreeGridField.setAlign(Alignment.LEFT);
 			// http://forums.smartclient.com/showthread.php?t=6427&highlight=pickList

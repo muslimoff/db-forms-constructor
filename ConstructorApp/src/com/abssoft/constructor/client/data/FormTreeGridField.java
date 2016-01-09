@@ -155,13 +155,13 @@ public class FormTreeGridField extends TreeGridField {
 			this.setType(ListGridFieldType.IMAGE);
 		} else if ("4".equals(c.getFieldType())) {
 			this.setType(ListGridFieldType.TEXT);
-			this.setEditorType(new TextAreaItem());
+			this.setEditorProperties(new TextAreaItem());
 
 		} // CodeEditorItem
 		else if ("15".equals(c.getFieldType())) {
 			this.setType(ListGridFieldType.TEXT);
 			// this.setEditorType(new CodeEditorItem());
-			this.setEditorType(new TextAreaItem());
+			this.setEditorProperties(new TextAreaItem());
 
 		}
 
@@ -205,7 +205,7 @@ public class FormTreeGridField extends TreeGridField {
 			// TODO - вынести в свойство лукапа.
 			cmbxItem.setTextMatchStyle(TextMatchStyle.SUBSTRING);
 
-			this.setEditorType(cmbxItem);
+			this.setEditorProperties(cmbxItem);
 		}
 		// SQL Lookup
 		else if ("Y".equals(c.getShowOnGrid()) && null != lookupCode && ("9".equals(c.getFieldType()))) {
@@ -215,7 +215,7 @@ public class FormTreeGridField extends TreeGridField {
 
 		else if ("Y".equals(c.getShowOnGrid()) && "16".equals(c.getFieldType()) && null != lookupCode) {
 			cmbxItem = new FormLookupComboboxItem(c, mainFormPane);
-			this.setEditorType(cmbxItem);
+			this.setEditorProperties(cmbxItem);
 		}
 
 		// 20101005-Перенос из GridComboBoxItem CellFormatter для накрываемых полей. Пофиг, даже если не лукап

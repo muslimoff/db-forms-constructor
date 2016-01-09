@@ -8,7 +8,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ActionStatus implements IsSerializable {
 
-	public enum StatusType {
+	public enum StatusType implements IsSerializable {
 		ERROR("2"), SUCCESS("0"), WARNING("1"), CANCEL("3"), APPL_TIMEOUT("4");
 		private String value;
 

@@ -43,7 +43,7 @@ public class FormDataSourceField extends com.smartgwt.client.data.DataSourceFiel
 			// TODO - events... Грид/редактор косячит ... di.setUseMask(true);
 			// di.setUseMask(true);
 			di.setUseTextField(true);
-			this.setEditorType(di);
+			this.setEditorProperties(di);
 		} else {
 			type = FieldType.TEXT;
 			// Маска

@@ -3,8 +3,9 @@ package com.abssoft.constructor.common;
 import java.util.ArrayList;
 
 import com.abssoft.constructor.common.metadata.FormActionMD;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class FormActionsArr extends ArrayList<FormActionMD> {
+public class FormActionsArr extends ArrayList<FormActionMD> implements IsSerializable {
 
 	/**
 	 * 

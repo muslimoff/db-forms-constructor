@@ -235,6 +235,7 @@ public class FormLookupComboboxItem extends MyComboBoxItem {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	private void setEditValues(Record rec) {
 		parentFormPane.setEditValues(JSOHelper.convertToMap(rec.getJsObj()));
 	}

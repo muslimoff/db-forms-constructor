@@ -293,6 +293,7 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 			if (null != c.getContextMenu()) {
 				result = c.getContextMenu().getItems();
 			} else {
+				//Canvas parent = c.getParentElement();
 				Canvas parent = c.getParentElement();
 				if (null != parent) {
 					result = getContextMenuParent(parent);

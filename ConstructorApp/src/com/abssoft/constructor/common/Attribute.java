@@ -2,7 +2,6 @@ package com.abssoft.constructor.common;
 
 import java.util.Date;
 
-import com.abssoft.constructor.server.Utils;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class Attribute implements IsSerializable {

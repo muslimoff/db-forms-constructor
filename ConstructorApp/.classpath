@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/Oracle JDBC 10"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/GWT SDK [2.3.0]"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/ofcgwt.2.0.1.b"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/xmlp"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/SmartGWT 3.1p-20121210"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/SmartGWT5.1"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/SimpleXML.2.7"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jdbc11.2.xe"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ofcgwt.2.0.1.b"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/bipublisher11"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

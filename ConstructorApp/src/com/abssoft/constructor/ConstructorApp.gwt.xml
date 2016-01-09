@@ -48,6 +48,7 @@
                 path="/query" />
         <source path="common"/>
         <source path="client"/>
+        <collapse-all-properties />
         
         <script src="codemirror233/codemirror.js" />
         <script src="codemirror233/plsqlmm.js" />

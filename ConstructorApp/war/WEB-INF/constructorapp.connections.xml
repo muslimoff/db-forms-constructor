@@ -59,6 +59,10 @@
 			sessionTimeout="30" dbSessionTimeout="50">
 			(DESCRIPTION =(ADDRESS_LIST =(ADDRESS = (PROTOCOL = TCP)(HOST = kzala4033-vip.kz.kmz.local)(PORT = 1521)))(CONNECT_DATA =(SERVICE_NAME = HRPP)(INSTANCE_NAME=HRPP1)))
 		</server>
+		<server id="21" display="Localhost XE FC22" default="true"
+			fcSchemaOwner="FC22" dbusername="FC22">
+			localhost:1521:XE
+		</server>
 
 	</dbConnections>
 

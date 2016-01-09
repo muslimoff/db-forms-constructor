@@ -3,8 +3,9 @@ package com.abssoft.constructor.common;
 import java.util.ArrayList;
 
 import com.abssoft.constructor.common.metadata.FormTabMD;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class FormTabsArr extends ArrayList<FormTabMD> {
+public class FormTabsArr extends ArrayList<FormTabMD> implements IsSerializable{
 
 	/**
 	 * 

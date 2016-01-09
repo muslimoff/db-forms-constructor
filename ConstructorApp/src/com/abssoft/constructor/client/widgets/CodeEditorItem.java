@@ -30,7 +30,7 @@ public class CodeEditorItem extends CanvasItem {
 			isFiredFromSetValue = false;
 		}
 
-		@SuppressWarnings("unused")
+		//@SuppressWarnings("unused")
 		private void fireValueChangeEvent(String value) {
 			Utils.debug("0. CodeEditorTextArea.fireValueChangeEvent. isFiredFromSetValue:" + isFiredFromSetValue);
 			if (!isFiredFromSetValue) {

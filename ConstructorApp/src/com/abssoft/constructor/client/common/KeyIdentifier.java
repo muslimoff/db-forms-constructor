@@ -1,5 +1,7 @@
 package com.abssoft.constructor.client.common;
 
+import com.abssoft.constructor.client.data.Utils;
+
 public class KeyIdentifier extends com.smartgwt.client.core.KeyIdentifier {
 	private String title;
 
@@ -12,6 +14,8 @@ public class KeyIdentifier extends com.smartgwt.client.core.KeyIdentifier {
 	 */
 	public KeyIdentifier(String dbKey) {
 		dbKey = dbKey.toUpperCase();
+		//setCtrlKey(false); setAltKey(false); setShiftKey(false); //mm20160111 SGWT5.1.d - Добавлена инициализация по причине ошибки в getAltKey при неопределенном параметре
+		Utils.debug("KeyIdentifier(dbKey): " + dbKey);
 		if (dbKey.contains("CTRL+")) {
 			setCtrlKey(true);
 			dbKey = dbKey.replaceAll("CTRL\\+", "");
@@ -26,8 +30,10 @@ public class KeyIdentifier extends com.smartgwt.client.core.KeyIdentifier {
 		}
 		setKeyName(dbKey);
 
-		title = (getCtrlKey() ? "Ctrl+" : "") + (getAltKey() ? "Alt+" : "") + (getShiftKey() ? "Shift+" : "")
-				+ getKeyName();
+		// по причине ошибки в getAltKey при неопределенном параметре
+		// title = (getCtrlKey() ? "Ctrl+" : "") + (getAltKey() ? "Alt+" : "") + (getShiftKey() ? "Shift+" : "") + getKeyName();
+		title = (getAttributeAsBoolean("ctrlKey") ? "Ctrl+" : "") + (getAttributeAsBoolean("altKey") ? "Alt+" : "") + (getAttributeAsBoolean("shiftKey") ? "Shift+" : "") + getKeyName();
+		
 	}
 
 	/**
