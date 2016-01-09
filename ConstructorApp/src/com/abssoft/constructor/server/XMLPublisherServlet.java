@@ -28,8 +28,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import oracle.apps.xdo.template.FOProcessor;
-import oracle.apps.xdo.template.RTFProcessor;
+import oracle.xdo.template.FOProcessor;
+import oracle.xdo.template.RTFProcessor;
 import oracle.i18n.net.MimeUtility;
 import oracle.jdbc.OraclePreparedStatement;
 import oracle.sql.CLOB;
