@@ -49,20 +49,17 @@ public class FormDataSource extends GwtRpcDataSource {
 		this.mainFormPane = mainFormPane;
 		this.dsFields = mainFormPane.getFormColumns().createDSFields();
 		this.formCode = mainFormPane.getFormCode();
-		this.gridHashCode = mainFormPane.getInstanceIdentifier()
-				.getGridHashCode();
+		this.gridHashCode = mainFormPane.getInstanceIdentifier().getGridHashCode();
 
 		// try {
-		// this.formTabCode =
-		// mainFormPane.getMainFormContainer().getTabMetaData().getTabCode();
+		// this.formTabCode = mainFormPane.getMainFormContainer().getTabMetaData().getTabCode();
 		//
 		// } catch (Exception e) {
 		// this.formTabCode = e.getMessage();
 		//
 		// }
 
-		System.out.println("setMainFormPane:" + formCode + "; ID:"
-				+ this.getID());
+		System.out.println("setMainFormPane:" + formCode + "; ID:" + this.getID());
 		setFields(dsFields);
 	}
 
@@ -75,29 +72,22 @@ public class FormDataSource extends GwtRpcDataSource {
 
 	// TODO !!!!!! переделать executeFetch на DMLProcExecution
 	@Override
-	protected void executeFetch(final String requestId,
-			final DSRequest request, final DSResponse response)
-			throws TimeoutException {
+	protected void executeFetch(final String requestId, final DSRequest request, final DSResponse response) throws TimeoutException {
 		Utils.debug("........DS Fetch:" + formCode + "; ID: " + this.getID());
-		final Integer startRow = (null == request.getStartRow()) ? 0 : request
-				.getStartRow();
-		final Integer endRow = (null == request.getEndRow()) ? 1000 : request
-				.getEndRow();
+		final Integer startRow = (null == request.getStartRow()) ? 0 : request.getStartRow();
+		final Integer endRow = (null == request.getEndRow()) ? 1000 : request.getEndRow();
 		final ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		// Utils.debug("ListGrid: " + grid);
 		Criteria cr;
-		// TODO Фильтры - передача на сервер так же строк вида
-		// "&field_name"="and field_name like 'Val%'"
+		// TODO Фильтры - передача на сервер так же строк вида "&field_name"="and field_name like 'Val%'"
 		if (grid instanceof TreeGrid) {
 			Criteria treeCriteria = new Criteria();
 			if (!mainFormPane.isForceFetch()) {
-				int gridEventRow = (0 != grid.getTotalRows()) ? grid
-						.getEventRow() : -2;
+				int gridEventRow = (0 != grid.getTotalRows()) ? grid.getEventRow() : -2;
 				if (-2 != gridEventRow) {
-					treeCriteria = Utils.getCriteriaFromListGridRecord2(
-							mainFormPane, grid.getRecord(grid.getEventRow())
+					treeCriteria = Utils.getCriteriaFromListGridRecord2(mainFormPane, grid.getRecord(grid.getEventRow())
 					// , formCode,formTabCode
-							);
+					);
 				}
 			}
 			cr = request.getCriteria();
@@ -112,19 +102,15 @@ public class FormDataSource extends GwtRpcDataSource {
 			cr.addCriteria(ConstructorApp.urlParamsCriteria);
 		}
 		String sortBy = request.getAttribute("sortBy");
-		Utils.createQueryService("FormDataSource.fetch").fetch(
-				mainFormPane.getInstanceIdentifier(), sortBy, startRow,
-				endRow,
+		Utils.createQueryService("FormDataSource.fetch").fetch(mainFormPane.getInstanceIdentifier(), sortBy, startRow, endRow,
 				Utils.getHashMapFromCriteria(cr)//
-				, mainFormPane.isForceFetch(),
-				new DSAsyncCallback<RowsArr>(requestId, response, this) {
+				, mainFormPane.isForceFetch(), new DSAsyncCallback<RowsArr>(requestId, response, this) {
 					@Override
 					public void onSuccess(RowsArr result) {
 						super.onSuccess(result);
 						SC.clearPrompt();
-						Utils.debug(formCode + "...............DataSource: "
-								+ FormDataSource.this.getID()
-								+ " - before fetch...............");
+						Utils.debug(
+								formCode + "...............DataSource: " + FormDataSource.this.getID() + " - before fetch...............");
 						result.getStatus().showActionStatus();
 						int rowsCount = result.size();
 						ListGridRecord[] records = new ListGridRecord[rowsCount];
@@ -132,8 +118,7 @@ public class FormDataSource extends GwtRpcDataSource {
 						for (int r = 0; r < rowsCount; r++) {
 							try {
 								Row row = result.get(r);
-								records[r] = Utils.getTreeNodeFromRow(dsFields,
-										row);
+								records[r] = Utils.getTreeNodeFromRow(dsFields, row);
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -142,17 +127,13 @@ public class FormDataSource extends GwtRpcDataSource {
 						response.setTotalRows(totalRows);
 						response.setData(records);
 						processResponse(requestId, response);
-						Utils.debug("BBBBBBBBBBBBBBBBBBBB>>>>>>"
-								+ mainFormPane.getFormCode());
-						mainFormPane.getMainForm().getBottomToolBar()
-								.setRowsCount(totalRows + "");
+						Utils.debug("BBBBBBBBBBBBBBBBBBBB>>>>>>" + mainFormPane.getFormCode());
+						mainFormPane.getMainForm().getBottomToolBar().setRowsCount(totalRows + "");
 						ValuesManager vm = mainFormPane.getValuesManager();
 						int dynFormsCount = vm.getMembers().length;
 						if (0 != rowsCount) {
 							if (0 == startRow) {
-								// Criteria thisFormCriteria =
-								// Utils.getCriteriaFromListGridRecord(mainFormPane,
-								// records[0]);
+								// Criteria thisFormCriteria = Utils.getCriteriaFromListGridRecord(mainFormPane,  records[0]);
 								// mainFormPane.setThisFormCriteria(thisFormCriteria);
 
 								if ( // mainFormPane.isMasterForm()
@@ -162,20 +143,15 @@ public class FormDataSource extends GwtRpcDataSource {
 									mainFormPane.focus();
 								}
 
-								// 20130315 - Добавлена проверка выбранной ранее
-								// записи - для дерева актуально в случае
-								// развертывания узла.
+								// 20130315 - Добавлена проверка выбранной ранее записи - для дерева актуально в случае развертывания узла.
 								if (null == grid.getSelectedRecord()) {
 									grid.selectRecord(0);
 									mainFormPane.setSelectedRow(0);
-									Utils.debug("FormDatasource.fetch. before mainFormPane.filterDetailData.1:"
-											+ grid.getSelectedRecord());
+									Utils.debug("FormDatasource.fetch. before mainFormPane.filterDetailData.1:" + grid.getSelectedRecord());
 									// Refresh только для static detail
 									mainFormPane.filterDetailData(records[0]// grid.getSelectedRecord()
-											, grid, 0, false, true, true);
-									Utils.debug("vm.getMembers().length="
-											+ dynFormsCount + "; FormCode:"
-											+ mainFormPane.getFormCode());
+									, grid, 0, false, true, true);
+									Utils.debug("vm.getMembers().length=" + dynFormsCount + "; FormCode:" + mainFormPane.getFormCode());
 									if (0 != dynFormsCount) {
 										vm.editRecord(records[0]);
 									}
@@ -193,14 +169,10 @@ public class FormDataSource extends GwtRpcDataSource {
 							}
 						}
 
-						Utils.debug("...............DataSource: "
-								+ FormDataSource.this.getID()
-								+ " - after fetch...............");
+						Utils.debug("...............DataSource: " + FormDataSource.this.getID() + " - after fetch...............");
 						// В случае наличия ActionURL - открываем ее.
-						FormActionMD formActionMD = mainFormPane
-								.getCurrentAction();
-						Utils.openURL(formActionMD, grid.getSelectedRecord(),
-								mainFormPane);
+						FormActionMD formActionMD = mainFormPane.getCurrentAction();
+						Utils.openURL(formActionMD, grid.getSelectedRecord(), mainFormPane);
 
 					}
 				});
@@ -208,20 +180,16 @@ public class FormDataSource extends GwtRpcDataSource {
 
 	// TODO При добавлении с АУТ-параметрами - исчезает запись.
 	@Override
-	protected void executeAdd(final String requestId, final DSRequest request,
-			final DSResponse response) {
+	protected void executeAdd(final String requestId, final DSRequest request, final DSResponse response) {
 		Utils.debug("executeAdd1");
-		DMLProcExecution addProcExec = new DMLProcExecution(
-				DMLProcExecution.ExecutionType.ADD, this, mainFormPane,
-				request, response);
+		DMLProcExecution addProcExec = new DMLProcExecution(DMLProcExecution.ExecutionType.ADD, this, mainFormPane, request, response);
 		Utils.debug("executeAdd2");
 
 		// ////////////////////////
 		Record listGridRec = new TreeNode(request.getData());
 		// int recordIndex = addProcExec.grid.getRecordIndex(listGridRec);
 		// Utils.debug("executeAdd. recordIndex:" + recordIndex);
-		// if (-1 == recordIndex && listGridRec.toMap().containsKey("_recIdx"))
-		// {
+		// if (-1 == recordIndex && listGridRec.toMap().containsKey("_recIdx")) {
 		// recordIndex = listGridRec.getAttributeAsInt("_recIdx");
 		// }
 		// listGridRec = addProcExec.grid.getEditedRecord(recordIndex);
@@ -240,30 +208,24 @@ public class FormDataSource extends GwtRpcDataSource {
 	}
 
 	@Override
-	protected void executeRemove(final String requestId,
-			final DSRequest request, final DSResponse response) {
-		DMLProcExecution removeProcExec = new DMLProcExecution(
-				DMLProcExecution.ExecutionType.DELETE, this, mainFormPane,
-				request, response);
+	protected void executeRemove(final String requestId, final DSRequest request, final DSResponse response) {
+		DMLProcExecution removeProcExec = new DMLProcExecution(DMLProcExecution.ExecutionType.DELETE, this, mainFormPane, request,
+				response);
 		Row newRow = null;
-		Row oldRow = Utils.getRowFromRecord(dsFields,
-				new Record(request.getData()));
+		Row oldRow = Utils.getRowFromRecord(dsFields, new Record(request.getData()));
 		removeProcExec.executeGlobal(oldRow, newRow);
 	}
 
 	@Override
-	protected void executeUpdate(final String requestId,
-			final DSRequest request, final DSResponse response) {
+	protected void executeUpdate(final String requestId, final DSRequest request, final DSResponse response) {
 		Utils.debug("executeUpdate1");
 		// final ListGrid lGrid = mainFormPane.getMainForm().getTreeGrid();
-		DMLProcExecution updateProcExec = new DMLProcExecution(
-				DMLProcExecution.ExecutionType.UPDATE, this, mainFormPane,
-				request, response) {
+		DMLProcExecution updateProcExec = new DMLProcExecution(DMLProcExecution.ExecutionType.UPDATE, this, mainFormPane, request,
+				response) {
 			@Override
 			public void executeSuccessSubProc() {
 				super.executeSuccessSubProc();
-				// TODO Зачем делаем rs.setCriteria ?? Не помню. Может попытка
-				// побороть исчезновение записией?
+				// TODO Зачем делаем rs.setCriteria ?? Не помню. Может попытка побороть исчезновение записией?
 				// 20110730 - попробовал убрать на...
 				// try {
 				// ResultSet rs = lGrid.getResultSet();
@@ -271,22 +233,18 @@ public class FormDataSource extends GwtRpcDataSource {
 				// } catch (Exception e) {
 				// e.printStackTrace();
 				// }
-				// 20110808 - перенес в DMLProcExecution - после
-				// success/warning/error subproc
-				// ListGridRecord selectedRec =
-				// grid.getRecord(mainFormPane.getSelectedRow());
+				// 20110808 - перенес в DMLProcExecution - после success/warning/error subproc
+				// ListGridRecord selectedRec = grid.getRecord(mainFormPane.getSelectedRow());
 				// grid.selectRecord(selectedRec);
 				// int selectedRecIdx = grid.getRecordIndex(selectedRec);
-				// mainFormPane.filterDetailData(selectedRec, grid,
-				// selectedRecIdx);
+				// mainFormPane.filterDetailData(selectedRec, grid, selectedRecIdx);
 			}
 		};
 
 		Utils.debug("executeUpdate. oldRow");
 		Record oldRecord = request.getOldValues();
 		Utils.debugRecord(oldRecord, "oldRecord-1");
-		Row oldRow = (null != oldRecord) ? Utils.getRowFromRecord(dsFields,
-				oldRecord) : null;
+		Row oldRow = (null != oldRecord) ? Utils.getRowFromRecord(dsFields, oldRecord) : null;
 
 		Utils.debug("executeUpdate. newRow");
 		Record newRecord = new ListGridRecord(request.getData());

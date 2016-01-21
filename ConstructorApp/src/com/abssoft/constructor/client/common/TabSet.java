@@ -6,6 +6,7 @@ import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.form.DetailFormsContainer;
 import com.abssoft.constructor.client.form.MainFormContainer;
 import com.abssoft.constructor.client.form.MainFormPane;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.Side;
@@ -17,6 +18,7 @@ import com.smartgwt.client.widgets.events.DrawHandler;
 import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.tab.Tab;
+import com.smartgwt.client.widgets.tab.TabBar;
 import com.smartgwt.client.widgets.tab.events.CloseClickHandler;
 import com.smartgwt.client.widgets.tab.events.TabCloseClickEvent;
 import com.smartgwt.client.widgets.tab.events.TabContextMenuEvent;
@@ -27,6 +29,9 @@ import com.smartgwt.client.widgets.toolbar.ToolStrip;
 import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 
+/*
+ * http://forums.smartclient.com/forum/smart-gwt-technical-q-a/4668-tabbar-controls
+ * */
 public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 
 	protected Criteria parentFormCriteriaIntrn = new Criteria();
@@ -55,8 +60,8 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 			ts.setWidth(prevSizeAsString);
 			if (isCollapsed()) {
 			} else {
-				prevSizeAsString = null != prevSizeAsString ? prevSizeAsString : (null != ts.getWidthAsString() ? ts.getWidthAsString()
-						: "100%");
+				prevSizeAsString = null != prevSizeAsString ? prevSizeAsString
+						: (null != ts.getWidthAsString() ? ts.getWidthAsString() : "100%");
 				ts.setWidth(24);
 			}
 			break;
@@ -64,8 +69,8 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 			ts.setHeight(prevSizeAsString);
 			if (isCollapsed()) {
 			} else {
-				prevSizeAsString = null != prevSizeAsString ? prevSizeAsString : (null != ts.getHeightAsString() ? ts.getHeightAsString()
-						: "100%");
+				prevSizeAsString = null != prevSizeAsString ? prevSizeAsString
+						: (null != ts.getHeightAsString() ? ts.getHeightAsString() : "100%");
 				ts.setHeight(24);
 			}
 			break;
@@ -101,20 +106,22 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 	public void setTabBarPosition(Side tabBarPosition) throws IllegalStateException {
 		super.setTabBarPosition(tabBarPosition);
 		String menuTitle = "";
+		ToolStrip tstrip = getToolStrip();
 		switch (tabBarPosition) {
 		case LEFT:
+			break;
 		case RIGHT:
-			getToolStrip().setVertical(true);
-			getToolStrip().setHeight(toolstripSize);
-			getToolStrip().setWidth(24);
+			tstrip.setVertical(true);
+			tstrip.setHeight(toolstripSize);
+			tstrip.setWidth(24);
 			break;
 		default: // TOP or BOTTOM
-			getToolStrip().setHeight(24);
-			getToolStrip().setWidth(toolstripSize);
+			tstrip.setHeight(24);
+			tstrip.setWidth(toolstripSize);
 			menuTitle = "Действия";
 		}
-		getToolStrip().addMenuButton(menuButton);
-		getToolStrip().addSeparator();
+		tstrip.addMenuButton(menuButton);
+		tstrip.addSeparator();
 		setHideTabsetPanesButtonIcons(tabBarPosition);
 		hideTabsetPanesButton.setIcon(currentHideTabsetPanesButtonIcon);
 		hideTabsetPanesButton.setIconSize(15);
@@ -165,34 +172,17 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 
 	}
 
-	private boolean isDisplayed = false;
-
 	public TabSet() {
 		super();
-		// 20120812-b
-		this.setAttribute("paneMargin", 0, false);
-
-		{
-			// Offsets the TabBar start position to give room for a button
-			Record rec = new Record();
-			rec.setAttribute("layoutStartMargin", toolstripSize + 5);
-			this.setAttribute("tabBarProperties", rec.toMap(), false); // toMap нужно. При других способах - проблемы с cast to Canvas
-		}
 
 		// Показать тулстрип при первой отрисовке табсета.
 		this.addDrawHandler(new DrawHandler() {
+
 			@Override
 			public void onDraw(DrawEvent event) {
-				if (!isDisplayed) {
-					Canvas[] children = getChildren();
-					for (Canvas c : children) {
-						if (c.getID().contains("tabBar"))
-							c.addChild(toolStrip);
-					}
-					// toolStrip.bringToFront();
-					// toolStrip.sendToBack();
-					isDisplayed = true;
-				}
+				TabBar tbar = getTabBar();
+				tbar.addChild(toolStrip);
+				ConstructorApp.getActionsMenuBtn().setSubmenu(menu);
 			}
 		});
 
@@ -285,6 +275,16 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 		// this.setBackgroundImage("");
 		this.setBackgroundColor("#f0f0f0"); // Запарился - херь со стилями. Привинтил гвоздями серенький...
 
+		JavaScriptObject jso = setTabBarLayoutStartMargin(toolstripSize + 5);
+		this.setAttribute("tabBarProperties", jso, true);
+	}
+
+	//Offsets the TabBar start position to give room for a button 
+	private JavaScriptObject setTabBarLayoutStartMargin(int offset) {
+		Record rec = new Record();
+		rec.setAttribute("layoutStartMargin", offset);
+		JavaScriptObject jso = rec.getJsObj();
+		return jso;
 	}
 
 	public MenuItem[] getContextMenuParent(Canvas c) {
@@ -294,7 +294,7 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 				result = c.getContextMenu().getItems();
 			} else {
 				//Canvas parent = c.getParentElement();
-				Canvas parent = c.getParentElement();
+				Canvas parent = c.getParentCanvas();
 				if (null != parent) {
 					result = getContextMenuParent(parent);
 				}
@@ -313,8 +313,6 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 			}
 		}
 		menu.setItems(ctxMenuItems);
-		// menuButton.setTitle(title);
-		// menuButton.setTitle("Действия");
 		menuButton.setTooltip(title);
 	}
 
@@ -360,15 +358,9 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 	}
 
 	public void hideTabBar() {
-		System.out.println("@@############:" + this);
-		for (Canvas c : this.getChildren()) { // System.out.println("!1xxxxxxxx>>" + c);
-			if (c.toString().contains("tabBar")) {
-				System.out.println("!2yyyyy>>" + c);
-				c.setHeight(0);
-				c.hide();
-				// c.removeFromParent();
-			}
-		}
+		TabBar tbar = getTabBar();
+		tbar.setHeight(0);
+		tbar.hide();
 	}
 
 	public void setCollapsed(boolean isCollapsed) {
@@ -382,7 +374,7 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 	private ToolStrip getToolStrip() {
 		return toolStrip;
 	}
-	
+
 	public void setPrevSizeAsString(String prevSizeAsString) {
 		this.prevSizeAsString = prevSizeAsString;
 	}

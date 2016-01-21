@@ -81,9 +81,9 @@ public class CodeEditorItem extends CanvasItem {
 			isFiredFromSetValue = !fireEvents;
 			super.setValue(value, fireEvents);
 
-			Utils.debug("1. setValue. isFiredFromSetValue:" + isFiredFromSetValue + "\n" + this.getValue());
-			setValue(codeMirror, value);
-			isFiredFromSetValue = false;
+			//Utils.debug("1. setValue. isFiredFromSetValue:" + isFiredFromSetValue + "\n" + this.getValue());
+			//setValue(codeMirror, value);
+			//isFiredFromSetValue = false;
 		}
 	}
 

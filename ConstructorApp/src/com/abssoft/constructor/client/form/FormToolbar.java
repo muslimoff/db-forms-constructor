@@ -116,13 +116,13 @@ public class FormToolbar extends DynamicForm {
 			Boolean canEdit = grid.getCanEdit();
 			if (canEdit == null)
 				canEdit = false;
-			grid.setCanEdit(canEdit && hasEditAction);
+			//grid.setCanEdit(canEdit && hasEditAction);
 		}
 		for (FormDataSourceField f : fds.getFormDSFields()) {
 			Boolean canEdit = f.getCanEdit();
 			if (canEdit == null)
 				canEdit = false;
-			f.setCanEdit(canEdit && hasEditAction);
+			//f.setCanEdit(canEdit && hasEditAction);
 		}
 
 		/*****************/

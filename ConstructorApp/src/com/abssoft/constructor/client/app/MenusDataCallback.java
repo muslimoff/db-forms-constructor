@@ -49,7 +49,7 @@ public class MenusDataCallback extends DSAsyncCallback<MenusArr> {
 					menuMetadata.getIconId()));
 			String hotKey = menuMetadata.getHotKey();
 			if (hotKey != null) {
-				KeyIdentifier key = new KeyIdentifier(menuMetadata.getHotKey());
+				KeyIdentifier key = new KeyIdentifier(hotKey);
 				this.setKeys(key);
 				this.setKeyTitle(key.getTitle());
 			}

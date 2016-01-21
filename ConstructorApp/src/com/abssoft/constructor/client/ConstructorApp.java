@@ -73,6 +73,7 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 	public static ToolBar menuBar = new ToolBar(20);
 	private static MenuButton serviceMenuBtn = new MenuButton("Сервис");
 	private static MenuButton fileMenuBtn = new MenuButton("Файл");
+	private static MenuItem actionsMenuBtn = new MenuItem("Действия");
 	public static Map<String, List<String>> urlParams;
 	public static Criteria urlParamsCriteria = new Criteria();
 	public static String moduleBaseURL;
@@ -83,28 +84,24 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 	public static String clientVersion = Utils.getClientVersion();
 	public static String appServerVersion = "";
 	public static String dbServerVersion = "";
-	// public static QueryServiceAsync queryService; // = (QueryServiceAsync)
-	// GWT.create(QueryService.class);
-	// private static ServiceDefTarget queryServiceDefTarget =
-	// (ServiceDefTarget) queryService;
-	public static boolean showToolbar = true;
+	// public static QueryServiceAsync queryService; // = (QueryServiceAsync) GWT.create(QueryService.class);
+	// private static ServiceDefTarget queryServiceDefTarget = (ServiceDefTarget) queryService;
+	public static boolean showToolbar = false;
 	public static boolean showToolbarButtonNames = true;
 
 	ConnectWindow connectWindow;
 
 	private void doBeforeClose(final String msg) {
 		if (-1 != sessionId) {
-			Utils.createQueryService("ConstructorApp.sessionClose")
-					.sessionClose(sessionId, new DSAsyncCallback<Void>() {
-						@Override
-						public void onSuccess(Void result) {
-							String msg2 = msg + ": DB session " + sessionId
-									+ " closed...";
-							sessionId = -1;
-							// Utils.debug(msg2);
-							System.out.println(msg2);
-						}
-					});
+			Utils.createQueryService("ConstructorApp.sessionClose").sessionClose(sessionId, new DSAsyncCallback<Void>() {
+				@Override
+				public void onSuccess(Void result) {
+					String msg2 = msg + ": DB session " + sessionId + " closed...";
+					sessionId = -1;
+					// Utils.debug(msg2);
+					System.out.println(msg2);
+				}
+			});
 			for (Tab t : tabSet.getTabs()) {
 				tabSet.removeTab(t);
 			}
@@ -118,8 +115,7 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 			doBeforeClose("ConnectWindow:");
 
 			for (Canvas cc : menuBar.getMembers()) {
-				if (cc instanceof MenuButton && !cc.equals(serviceMenuBtn)
-						&& !cc.equals(fileMenuBtn)) {
+				if (cc instanceof MenuButton && !cc.equals(serviceMenuBtn) && !cc.equals(fileMenuBtn)) {
 					((MenuButton) cc).getMenu().destroy();
 					cc.destroy();
 				}
@@ -154,12 +150,10 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 		Window.addWindowClosingHandler(new Window.ClosingHandler() {
 			@Override
 			public void onWindowClosing(ClosingEvent event) {
-				// TODO Научиться не перечитывать, если приложение уже открыто и
-				// передается только идентификатор новой формы (OEBS URL
+				// TODO Научиться не перечитывать, если приложение уже открыто и передается только идентификатор новой формы (OEBS URL
 				// например)
 				if (debugEnabled)
-					event.setMessage(com.google.gwt.user.client.Window.Location
-							.getHref());
+					event.setMessage(com.google.gwt.user.client.Window.Location.getHref());
 			}
 		});
 
@@ -243,15 +237,12 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 		// ShowToolbarButtonNames
 		final MenuItem showToolbarButtonNamesMI = new MenuItem("Назв.кнопок");
 		{
-			showToolbarButtonNamesMI.setIcon("[ISOMORPHIC]/resources/icons/"
-					+ "bug.png");
-			showToolbarButtonNamesMI
-					.setCheckIfCondition(new MenuItemIfFunction() {
-						public boolean execute(Canvas target, Menu menu,
-								MenuItem item) {
-							return ConstructorApp.showToolbarButtonNames;
-						}
-					});
+			showToolbarButtonNamesMI.setIcon("[ISOMORPHIC]/resources/icons/" + "bug.png");
+			showToolbarButtonNamesMI.setCheckIfCondition(new MenuItemIfFunction() {
+				public boolean execute(Canvas target, Menu menu, MenuItem item) {
+					return ConstructorApp.showToolbarButtonNames;
+				}
+			});
 			showToolbarButtonNamesMI.addClickHandler(new ClickHandler() {
 				public void onClick(MenuItemClickEvent event) {
 					ConstructorApp.showToolbarButtonNames = !ConstructorApp.showToolbarButtonNames;
@@ -281,8 +272,7 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 
 				@Override
 				public void onClick(MenuItemClickEvent event) {
-					tabSet.removeMainFormContainerTab(tabSet.getSelectedTab(),
-							false);
+					tabSet.removeMainFormContainerTab(tabSet.getSelectedTab(), false);
 				}
 			});
 		}
@@ -292,8 +282,7 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 			downloadMI.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(MenuItemClickEvent event) {
-					ActionStatusWindow.createActionStatusWindow("wwwwwwww",
-							this.getClass().getName(), this.toString(),
+					ActionStatusWindow.createActionStatusWindow("wwwwwwww", this.getClass().getName(), this.toString(),
 							ActionStatus.StatusType.SUCCESS, null, "Ok");
 					// new RestfulDataSourceSample();
 				}
@@ -301,8 +290,7 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 		}
 		// /////////////
 		Menu smm = new Menu();
-		smm.setData(showToolbarMI, showToolbarButtonNamesMI, closeFormMI,
-				testMI, downloadMI);
+		smm.setData(getActionsMenuBtn(), showToolbarMI, showToolbarButtonNamesMI, closeFormMI, testMI, downloadMI);
 		serviceMenuBtn.setMenu(smm);
 		// -----connect();
 		menuBar.addMembers(fileMenuBtn, serviceMenuBtn);
@@ -313,11 +301,9 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 		vStack.setWidth100();
 		vStack.setHeight100();
 		canvas.addChild(vStack);
-		urlParams = com.google.gwt.user.client.Window.Location
-				.getParameterMap();
+		urlParams = com.google.gwt.user.client.Window.Location.getParameterMap();
 		{
-			Map<String, List<String>> urlParams = com.google.gwt.user.client.Window.Location
-					.getParameterMap();
+			Map<String, List<String>> urlParams = com.google.gwt.user.client.Window.Location.getParameterMap();
 			Iterator<String> i = urlParams.keySet().iterator();
 			Utils.debug("%%%%%%%%%%%%%%%%%%%PARAMETERS%%%%%%%%%%%%%%%%%");
 			while (i.hasNext()) {
@@ -333,9 +319,7 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 			}
 
 		}
-
-		Utils.debug("QueryString:"
-				+ com.google.gwt.user.client.Window.Location.getQueryString());
+		Utils.debug("QueryString:" + com.google.gwt.user.client.Window.Location.getQueryString());
 		canvas.draw();
 		mainToolBar.showOrHide(ConstructorApp.showToolbar);
 		eb.addHandler(TimeoutEvent.getType(), this);
@@ -344,12 +328,11 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 
 	public void add_debug_console() {
 		if (!GWT.isScript() || true) {
-			Page.registerKey(new KeyIdentifier("Ctrl+Alt+Shift+D"),
-					new KeyCallback() {
-						public void execute(String keyName) {
-							SC.showConsole();
-						}
-					});
+			Page.registerKey(new KeyIdentifier("Ctrl+Alt+Shift+D"), new KeyCallback() {
+				public void execute(String keyName) {
+					SC.showConsole();
+				}
+			});
 		}
 	}
 
@@ -379,5 +362,12 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 
 	public static TabSet getTabSet() {
 		return tabSet;
+	}
+
+	/**
+	 * @return the actionsMenuBtn
+	 */
+	public static MenuItem getActionsMenuBtn() {
+		return actionsMenuBtn;
 	}
 }

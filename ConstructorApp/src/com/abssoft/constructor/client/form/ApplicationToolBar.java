@@ -23,6 +23,7 @@ public class ApplicationToolBar extends ToolStrip {
 		this.form = form;
 		this.addMember(form);
 		mainFormPane.setFocus();
+		ConstructorApp.getActionsMenuBtn().setSubmenu(mainFormPane.getContextMenu());
 	}
 
 	/**

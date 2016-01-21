@@ -3,9 +3,13 @@ package com.abssoft.constructor.client;
 import com.abssoft.constructor.client.common.TabSet;
 import com.abssoft.constructor.client.widgets.ActionStatusWindow;
 import com.abssoft.constructor.client.widgets.CodeEditorItem;
+import com.abssoft.constructor.client.widgets.codemirror.CodeMirrorInitializer;
+import com.abssoft.constructor.client.widgets.codemirror.CodemirrorEditor;
+import com.abssoft.constructor.client.widgets.codemirror.Mode;
 import com.abssoft.constructor.common.ActionStatus.StatusType;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.TextArea;
 import com.rednels.ofcgwt.client.ChartWidget;
 import com.rednels.ofcgwt.client.model.ChartData;
 import com.rednels.ofcgwt.client.model.axis.RadarAxis;
@@ -45,7 +49,8 @@ public class TestWindow extends Window {
 	class ChartTab extends Tab {
 		public ChartTab() {
 			ChartWidget chart1 = new ChartWidget();
-			ChartData cd1 = new ChartData("Sales by Month 2006", "font-size: 14px; font-family: Verdana; text-align: center;");
+			ChartData cd1 = new ChartData("Sales by Month 2006",
+					"font-size: 14px; font-family: Verdana; text-align: center;");
 			cd1.setBackgroundColour("#ffffff");
 			XAxis xa = new XAxis();
 			xa.setLabels("J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D");
@@ -161,21 +166,22 @@ public class TestWindow extends Window {
 		// TODO Rotate text:
 		// 1. http://snook.ca/archives/html_and_css/css-text-rotation
 		// 2. http://css3please.com/
-		String formTitle = "<span align=\"left\" style=\"{-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg);}\">" + imgHTML
-				+ "&nbsp;" + "Static" + "</span>";
+		String formTitle = "<span align=\"left\" style=\"{-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg);}\">"
+				+ imgHTML + "&nbsp;" + "Static" + "</span>";
 		System.out.println("formTitle:" + formTitle);
 		rit.setTitle(formTitle);
 
-		SyntaxHighLightTab syntaxHighLightTab = new SyntaxHighLightTab();
+		// SyntaxHighLightTab syntaxHighLightTab = new SyntaxHighLightTab();
 		tabSet.addTab(rit);
-		tabSet.addTab(syntaxHighLightTab);
-		tabSet.addTab(new ChartTab());
-		tabSet.addTab(new RadarChartTab());
+		// tabSet.addTab(syntaxHighLightTab);
+		// tabSet.addTab(new ChartTab());
+		// tabSet.addTab(new RadarChartTab());
 
 		// TestCase1
 		Tab testCase1Tab = new Tab("TestCase1");
 		testCase1Tab.setPane(new TestCase1());
 		tabSet.addTab(testCase1Tab);
+		tabSet.addTab(new SyntaxHighLightTab_V2());
 
 		{ // 20120811 кнопки на табсете
 
@@ -185,16 +191,20 @@ public class TestWindow extends Window {
 			// form.setCellPadding(1);
 			// form.setNumCols(1);
 			// form.setFields(selectItem);
-			// tabSet.setTabBarControls(TabBarControls.TAB_SCROLLER, TabBarControls.TAB_PICKER, form);
+			// tabSet.setTabBarControls(TabBarControls.TAB_SCROLLER,
+			// TabBarControls.TAB_PICKER, form);
 
 			// final Menu menu = new Menu();
-			// MenuItem newItem = new MenuItem("New", "icons/16/document_plain_new.png", "Ctrl+N");
+			// MenuItem newItem = new MenuItem("New",
+			// "icons/16/document_plain_new.png", "Ctrl+N");
 			// menu.setItems(newItem);
-			// final ToolStripMenuButton menuButton = new ToolStripMenuButton("File", menu);
+			// final ToolStripMenuButton menuButton = new
+			// ToolStripMenuButton("File", menu);
 			// menuButton.setWidth(100);
 			// ToolStrip toolStrip = new ToolStrip();
 			//
-			// // Если сбоку... кстати, работает херотенька для боковых табиков в хроме и фаерфоксе. Только в TAB_PICKER теперь все боком
+			// // Если сбоку... кстати, работает херотенька для боковых табиков
+			// в хроме и фаерфоксе. Только в TAB_PICKER теперь все боком
 			// мля..
 			// // И с шириной все как-то не так..
 			// //
@@ -203,22 +213,28 @@ public class TestWindow extends Window {
 			//
 			// tabSet.setTabBarPosition(Side.TOP);
 			// toolStrip.setWidth(100);
-			// toolStrip.setHeight(null != tabSet.getHeight() ? tabSet.getHeight() : 24); // пофигу - дефолтной высоты tabSet не дает
+			// toolStrip.setHeight(null != tabSet.getHeight() ?
+			// tabSet.getHeight() : 24); // пофигу - дефолтной высоты tabSet не
+			// дает
 			// toolStrip.addMenuButton(menuButton);
 			// toolStrip.addSeparator();
 			// ToolStripButton hideTabsetPanesButton = new ToolStripButton();
-			// hideTabsetPanesButton.setIcon("[SKIN]/headerIcons/arrow_down_Over.png"); // arrow_left_Over/arrow_right_Over/arrow_up_Over
+			// hideTabsetPanesButton.setIcon("[SKIN]/headerIcons/arrow_down_Over.png");
+			// // arrow_left_Over/arrow_right_Over/arrow_up_Over
 			// toolStrip.addButton(hideTabsetPanesButton);
-			// tabSet.setTabBarControls(TabBarControls.TAB_SCROLLER, TabBarControls.TAB_PICKER, toolStrip);
+			// tabSet.setTabBarControls(TabBarControls.TAB_SCROLLER,
+			// TabBarControls.TAB_PICKER, toolStrip);
 			tabSet.setCanCloseTabs(true);
 			{
 				// tabSet.addTabContextMenuHandler(new TabContextMenuHandler() {
 				//
 				// @Override
 				// public void onTabContextMenu(TabContextMenuEvent event) {
-				// com.google.gwt.user.client.Window.alert("TabContextMenuEvent. TabTitle:" + event.getTab().getTitle());
+				// com.google.gwt.user.client.Window.alert("TabContextMenuEvent.
+				// TabTitle:" + event.getTab().getTitle());
 				// Menu ctxMenu = new Menu();
-				// MenuItem m1 = new MenuItem("sss-" + event.getTab().getTitle());
+				// MenuItem m1 = new MenuItem("sss-" +
+				// event.getTab().getTitle());
 				// MenuItem m2 = new MenuItemSeparator();
 				// ctxMenu.setData(m1, m2);
 				// tabSet.setContextMenu(ctxMenu);
@@ -229,9 +245,11 @@ public class TestWindow extends Window {
 				//
 				// @Override
 				// public void onTabSelected(TabSelectedEvent event) {
-				// // com.google.gwt.user.client.Window.alert("TabSelectedEvent. TabTitle:" + event.getTab().getTitle());
+				// // com.google.gwt.user.client.Window.alert("TabSelectedEvent.
+				// TabTitle:" + event.getTab().getTitle());
 				// String title = "New" + event.getTab().getTitle();
-				// MenuItem newItem = new MenuItem(title, "icons/16/document_plain_new.png", "Ctrl+N");
+				// MenuItem newItem = new MenuItem(title,
+				// "icons/16/document_plain_new.png", "Ctrl+N");
 				// menu.setItems(newItem);
 				// menuButton.setTitle(title);
 				// menuButton.setTooltip(title);
@@ -258,18 +276,22 @@ public class TestWindow extends Window {
 				// out.close();
 				// //if returning csv-data
 				// response.setContentType("text/csv");
-				// response.setHeader("Content-Disposition", "attachment; filename=\"example-data.csv\"");
+				// response.setHeader("Content-Disposition", "attachment;
+				// filename=\"example-data.csv\"");
 				// OutputStream out = response.getOutputStream();
 				// byte[] data = readCsvData(....);
 				// out.write(data);
 				// out.flush();
 				// out.close();
 
-				// com.google.gwt.user.client.Window.open(GWT.getModuleBaseURL() + "query/loading.gif", "loading.gif",
+				// com.google.gwt.user.client.Window.open(GWT.getModuleBaseURL()
+				// + "query/loading.gif", "loading.gif",
 				// "menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=250,height=150,navigation=no");
-				// com.google.gwt.user.client.Window.open(rit.richTextItem.getValue().toString(), "File",
+				// com.google.gwt.user.client.Window.open(rit.richTextItem.getValue().toString(),
+				// "File",
 				// "menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=250,height=150,navigation=no");
-				// com.google.gwt.user.client.Window.open("data:text/html;charset=utf-8, aaabbb", "_blank", "height=300,width=400");
+				// com.google.gwt.user.client.Window.open("data:text/html;charset=utf-8,
+				// aaabbb", "_blank", "height=300,width=400");
 				// tabSet.hideTabBar();
 
 				ActionStatusWindow.createActionStatusWindow("title", "short", "long", StatusType.WARNING, null, "Ok");
@@ -284,7 +306,8 @@ public class TestWindow extends Window {
 		this.addItem(vLayout);
 
 		// /////////////
-		// TestDownloadFileClickHandler ddd = new TestDownloadFileClickHandler();
+		// TestDownloadFileClickHandler ddd = new
+		// TestDownloadFileClickHandler();
 		// DynamicForm df = new DynamicForm();
 		// df.setDataSource(ddd.new FileDS());
 		// ViewFileItem vfi = new ViewFileItem("SKU", "Download");
@@ -308,23 +331,51 @@ public class TestWindow extends Window {
 		// http://forums.smartclient.com/showthread.php?t=4533&highlight=TabBar&page=2
 
 		this.show();
-		//tabSet.viewToolstripAfterDraw();
+		// tabSet.viewToolstripAfterDraw();
 		// for (Canvas cc : syntaxHighLightTab.getPane().getChildren()) {
-		// com.google.gwt.user.client.Window.alert("SS>" + cc.getDOM().getInnerHTML());
-		// com.google.gwt.user.client.Window.alert("SS2>" + cc.getDOM().getChild(0).getChild(0));
+		// com.google.gwt.user.client.Window.alert("SS>" +
+		// cc.getDOM().getInnerHTML());
+		// com.google.gwt.user.client.Window.alert("SS2>" +
+		// cc.getDOM().getChild(0).getChild(0));
 		// syntaxHighLightTab.initCodeMirror(cc.getDOM().getChild(0).getChild(0));
 
 		// com.google.gwt.user.client.Window.alert("SS2>"
-		// + cc.getDOM().getChild(0).getChild(0).getChild(2).getChild(1).getChild(1).getChild(0));
+		// +
+		// cc.getDOM().getChild(0).getChild(0).getChild(2).getChild(1).getChild(1).getChild(0));
 		// syntaxHighLightTab.initCodeMirror(cc.getDOM().getChild(0).getChild(0).getChild(2).getChild(1).getChild(1).getChild(0));
 
 		// }
 		// syntaxHighLightTab.initCodeMirror(syntaxHighLightTab.getPane().getDOM().getChild(0).getChild(0).getChild(2).getChild(1).getChild(1)
 		// .getChild(0));
 
-		// com.google.gwt.user.client.Window.alert("SS>" + Canvas.getById("z123456"));
+		// com.google.gwt.user.client.Window.alert("SS>" +
+		// Canvas.getById("z123456"));
 		// syntaxHighLightTab.initCodeMirror(Canvas.getById("z123456").getJsObj());
-		syntaxHighLightTab.init();
+		// syntaxHighLightTab.init();
+	}
+
+	class SyntaxHighLightTab_V2 extends Tab {
+
+		SyntaxHighLightTab_V2() {
+			super();
+			//
+			// TextAreaItem tai = new TextAreaItem("test");
+			DynamicForm f = new DynamicForm();
+			TextAreaItem ta = new TextAreaItem();			
+			//CodeMirror Initialization
+			Mode[] mode = {Mode.JAVASCRIPT};
+			CodeMirrorInitializer.addSupport(mode);
+			final CodemirrorEditor ed = new CodemirrorEditor();
+			// See at this enum the needed inherit for your *.gwt.xml
+			ed.setMode(Mode.JAVASCRIPT);
+			ed.setValue("  var keywords = function(){ function kw(type) {return {type: type, style: \"keyword\"};}");
+
+			Canvas c = new Canvas();
+			c.addChild(ed);
+			this.setTitle("CodemirrorEditor");
+			this.setPane(c);
+
+		}
 	}
 
 	class SyntaxHighLightTab extends Tab {
@@ -337,16 +388,23 @@ public class TestWindow extends Window {
 
 		public void init() {
 			tai.focusInItem();
-			// com.google.gwt.user.client.Window.alert("0>>>" + f.getInnerHTML());
-			// com.google.gwt.user.client.Window.alert("1>>>" + tai.getAttribute("ID"));
-			// String fID = tai.getAttribute("ID"); // Работает. Взял из f.getID();
+			// com.google.gwt.user.client.Window.alert("0>>>" +
+			// f.getInnerHTML());
+			// com.google.gwt.user.client.Window.alert("1>>>" +
+			// tai.getAttribute("ID"));
+			// String fID = tai.getAttribute("ID"); // Работает. Взял из
+			// f.getID();
 			// Element fEl = Document.get().getElementById(fID);
 			// com.google.gwt.user.client.Window.alert("2>>>" + fEl);
-			// com.google.gwt.user.client.Window.alert("3>>>" + fEl.getChildCount());
-			// com.google.gwt.user.client.Window.alert("4>>>" + tai.getJsObj().toString());
-			// com.google.gwt.user.client.Window.alert("5>>>" + Document.get().getElementById("isc_3P"));
+			// com.google.gwt.user.client.Window.alert("3>>>" +
+			// fEl.getChildCount());
+			// com.google.gwt.user.client.Window.alert("4>>>" +
+			// tai.getJsObj().toString());
+			// com.google.gwt.user.client.Window.alert("5>>>" +
+			// Document.get().getElementById("isc_3P"));
 			// String textAreaID = getTextAreaID(f);
-			// com.google.gwt.user.client.Window.alert("5>>>" + Document.get().getElementById(textAreaID));
+			// com.google.gwt.user.client.Window.alert("5>>>" +
+			// Document.get().getElementById(textAreaID));
 			// initCodeMirror(textAreaID);
 			// initCodeMirror(codeEditor.getId());
 			// codeEditor.initCodeMirror();

@@ -19,6 +19,7 @@ import com.smartgwt.client.types.Visibility;
 import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.JSOHelper;
 import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.CloseClickEvent;
 import com.smartgwt.client.widgets.events.CloseClickHandler;
@@ -238,8 +239,8 @@ public class FormAction {
 		title = mainFormPane.getFormMetadata().getFormName() + " - " + title;
 		TabSet t = mainFormPane.getMainFormContainer().getParentTabSet();
 		new MainFormContainer(mainFormPane.getThisFormCriteria(), new FormTabMD(), FormTab.TabType.MAIN, t, formActionMD.getChildFormCode() // ,
-				// false
-				, true, true, mainFormPane, title, mainFormPane.getFormMetadata().getIconId(), true);
+		// false
+		, true, true, mainFormPane, title, mainFormPane.getFormMetadata().getIconId(), true);
 	}
 
 	/********************************************************************/
@@ -256,8 +257,8 @@ public class FormAction {
 		final TabSet t = new TabSet();
 		t.setTabBarPosition(Side.BOTTOM);
 		new MainFormContainer(mainFormPane.getThisFormCriteria(), new FormTabMD(), FormTab.TabType.MAIN, t, formActionMD.getChildFormCode() // ,
-				// false
-				, false, true, mainFormPane, title, mainFormPane.getFormMetadata().getIconId(), true);
+		// false
+		, false, true, mainFormPane, title, mainFormPane.getFormMetadata().getIconId(), true);
 		final Window w = new Window();
 		w.setWidth("80%");
 		w.setHeight("80%");
@@ -293,8 +294,9 @@ public class FormAction {
 		// String actionUrl = formActionMD.getUrlText();
 		String actionUrl = null != formActionMD.getUrlText() ? formActionMD.getUrlText() : formActionMD.getSqlProcedureName();
 		actionUrl = Utils.replaceBindVariables(mainFormPane, actionUrl, ":");
-		actionUrl = null != actionUrl ? actionUrl : "xmlp?type=xslt" + "&ContentType=application/vnd.ms-excel"
-				+ "&contentDisposition=attachment" + "&filename=rep1.xls" + "&template=EXP";
+		actionUrl = null != actionUrl ? actionUrl
+				: "xmlp?type=xslt" + "&ContentType=application/vnd.ms-excel" + "&contentDisposition=attachment" + "&filename=rep1.xls"
+						+ "&template=EXP";
 		mainFormPane.getMainForm().exportGrid(GWT.getModuleBaseURL() + actionUrl);
 
 	}
@@ -307,6 +309,7 @@ public class FormAction {
 			for (ListGridRecord lr : treeGrid.getSelectedRecords()) {
 				TreeNode node = (TreeNode) lr;
 				// Boolean isOpen = treeGrid.getData().isOpen(node);
+				//treeGrid.getData().reloadChildren(node);
 				treeGrid.getData().unloadChildren(node);
 				treeGrid.getData().closeFolder(node);
 				// Нифига не заработало. Потом.
@@ -410,8 +413,11 @@ public class FormAction {
 			Utils.debug("Action 17.1");
 			TabSet tabSet = mainFormPane.getMainFormContainer().getParentTabSet();
 			Utils.debug("Action 17.2");
-			boolean isWindow = null != tabSet.getParentElement() && null != tabSet.getParentElement().getParentElement()
-					&& tabSet.getParentElement().getParentElement() instanceof Window;
+			Canvas tabSetPrnt1 = tabSet.getParentElement();
+			Canvas tabSetPrnt2 = null;
+			if (null != tabSetPrnt1)
+				tabSetPrnt2 = tabSet.getParentElement().getParentElement();
+			boolean isWindow = (null != tabSetPrnt1) && (null != tabSetPrnt2) && (tabSetPrnt2 instanceof Window);
 
 			// boolean isWindow = null != tabSet.getParentElement() && tabSet.getParentElement() instanceof Window;
 			Utils.debug("Action 17.3;" + isWindow);
@@ -421,9 +427,9 @@ public class FormAction {
 				Utils.debug("Action 17.5");
 				if (isWindow) {
 					Utils.debug("Action 17.6");
-					Utils.debug("Action 17.7" + tabSet.getParentElement());
-					Utils.debug("Action 17.8" + tabSet.getParentElement().getParentElement());
-					tabSet.getParentElement().getParentElement().destroy();
+					Utils.debug("Action 17.7" + tabSetPrnt1);
+					Utils.debug("Action 17.8" + tabSetPrnt2);
+					tabSetPrnt2.destroy();
 					Utils.debug("Action 17.9");
 				}
 			}
