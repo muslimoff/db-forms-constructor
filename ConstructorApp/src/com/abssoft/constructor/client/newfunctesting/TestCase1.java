@@ -1,4 +1,4 @@
-package com.abssoft.constructor.client;
+package com.abssoft.constructor.client.newfunctesting;
 
 import java.util.Date;
 

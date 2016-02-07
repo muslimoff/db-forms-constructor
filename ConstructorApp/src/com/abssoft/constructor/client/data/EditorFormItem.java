@@ -2,12 +2,12 @@ package com.abssoft.constructor.client.data;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.form.MainFormPane;
-import com.abssoft.constructor.client.widgets.CodeEditorItem;
 import com.abssoft.constructor.client.widgets.FormLookupComboboxItem;
 import com.abssoft.constructor.client.widgets.FormPickTreeItem;
 import com.abssoft.constructor.client.widgets.GridComboBoxItem;
 import com.abssoft.constructor.client.widgets.HTMLPaneItem;
 import com.abssoft.constructor.client.widgets.MyComboBoxItem;
+import com.abssoft.constructor.client.widgets.cmirrorwidget.CodeMirrorItem;
 import com.abssoft.constructor.common.metadata.ColumnAction;
 import com.abssoft.constructor.common.metadata.FormColumnMD;
 import com.abssoft.constructor.common.metadata.FormMD;
@@ -36,30 +36,23 @@ import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 
 public class EditorFormItem extends FormItem {
-	public static FormItem createItem(final FormColumnMD c,
-			final MainFormPane mainFormPane) {
+	public static FormItem createItem(final FormColumnMD c, final MainFormPane mainFormPane) {
 		FormMD fmd = mainFormPane.getFormMetadata();
 		final FormItem item;
 		// LinkedHashMap
 		// boolean showHint = true;
 		String lookupCode = c.getLookupCode();
-		boolean showHint = !(null == c.getHelpText() || "".equals(c
-				.getHelpText()));
+		boolean showHint = !(null == c.getHelpText() || "".equals(c.getHelpText()));
 		if ("3".equals(c.getTreeFieldType())) {
 			item = new BooleanItem();
 		} else if ("4".equals(c.getFieldType())) {
 			item = new TextAreaItem(); // new AutoFitTextAreaItem();
 		} else if ("5".equals(c.getFieldType())) {
 			showHint = false;
-			// TODO RichTextItem: Resize и все глюки.. Нужно свой класс
-			// MyRichTextItem
+			// TODO RichTextItem: Resize и все глюки.. Нужно свой класс MyRichTextItem
 			//
 			item = new RichTextItem();
-			// 20110913 - пофиксил косяк FormRowEditorTab.onItemChanged, снова
-			// появившийся в SGWT 2.5
-			// при проверке - раньше getAttribute("type") возвращало
-			// "RichTextItem". Теперь внутри делают setAttribute("editorType",
-			// "RichTextItem");
+			// 20110913 - пофиксил косяк FormRowEditorTab.onItemChanged, снова появившийся в SGWT 2.5 при проверке - раньше getAttribute("type") возвращало "RichTextItem". Теперь внутри делают setAttribute("editorType", "RichTextItem");
 			item.setType("RichTextItem");
 
 			// item = new MyRichTextItem();
@@ -70,9 +63,7 @@ public class EditorFormItem extends FormItem {
 		} else if ("7".equals(c.getFieldType())) {
 			showHint = false;
 			item = new HTMLPaneItem();
-		} else if (("8".equals(c.getFieldType()) || "10".equals(c
-				.getFieldType()))
-				&& null != lookupCode
+		} else if (("8".equals(c.getFieldType()) || "10".equals(c.getFieldType())) && null != lookupCode
 				&& ConstructorApp.staticLookupsArr.containsKey(lookupCode)) {
 			item = new MyComboBoxItem(c, mainFormPane) {
 
@@ -87,13 +78,8 @@ public class EditorFormItem extends FormItem {
 
 				}
 			};
-			((MyComboBoxItem) item).setLookupSize(c.getLookupWidth(),
-					c.getLookupHeight(), fmd.getLookupWidth(),
-					fmd.getLookupHeight());
-			// LinkedHashMap<String, String> lhm =
-			// Utils.createStrSortedLinkedHashMap(ConstructorApp.staticLookupsArr.get(lookupCode),
-			// !"8"
-			// .equals(c.getFieldType()));
+			((MyComboBoxItem) item).setLookupSize(c.getLookupWidth(), c.getLookupHeight(), fmd.getLookupWidth(), fmd.getLookupHeight());
+			// LinkedHashMap<String, String> lhm = Utils.createStrSortedLinkedHashMap(ConstructorApp.staticLookupsArr.get(lookupCode), !"8".equals(c.getFieldType()));
 			// ((MyComboBoxItem) item).setValueMap(lhm);
 			((MyComboBoxItem) item).setValueMap(lookupCode);
 		} else if ("9".equals(c.getFieldType()) && null != lookupCode) {
@@ -101,9 +87,15 @@ public class EditorFormItem extends FormItem {
 		} else if ("11".equals(c.getFieldType())) {
 			item = new LinkItem();
 		} else if ("15".equals(c.getFieldType())) {
-			item = new CodeEditorItem(); // c +
-											// mainFormPane.getJsObj().toString()
-											// // просто ID
+			item = new CodeMirrorItem(); //item = new com.abssoft.constructor.client.widgets.CodeEditorItem();
+//			item.addChangedHandler(new ChangedHandler() {
+//				
+//				@Override
+//				public void onChanged(ChangedEvent event) {
+//					// TODO Auto-generated method stub
+//					
+//				}
+//			});
 		} else if ("16".equals(c.getFieldType()) && null != lookupCode) {
 			item = new FormLookupComboboxItem(c, mainFormPane);
 		}
@@ -146,10 +138,8 @@ public class EditorFormItem extends FormItem {
 			item.setHeight(c.getEditorHeight());
 		}
 		item.setEndRow(c.isEditorEndRow());
-		TitleOrientation titleOrientation = "L".equals(c
-				.getEditorTitleOrientation()) ? TitleOrientation.LEFT : ("R"
-				.equals(c.getEditorTitleOrientation()) ? TitleOrientation.LEFT
-				: TitleOrientation.TOP);
+		TitleOrientation titleOrientation = "L".equals(c.getEditorTitleOrientation()) ? TitleOrientation.LEFT
+				: ("R".equals(c.getEditorTitleOrientation()) ? TitleOrientation.LEFT : TitleOrientation.TOP);
 		item.setTitleOrientation(titleOrientation);
 		// Hint
 		if (showHint) {
@@ -162,8 +152,7 @@ public class EditorFormItem extends FormItem {
 				public void onIconClick(IconClickEvent event) {
 					if (icon.getSrc().equals(event.getIcon().getSrc())) {
 						String helpText = c.getHelpText();
-						helpText = null != helpText ? helpText : c
-								.getDescription();
+						helpText = null != helpText ? helpText : c.getDescription();
 						helpText = null != helpText ? helpText : "???";
 						SC.say(helpText);
 					}
@@ -174,8 +163,7 @@ public class EditorFormItem extends FormItem {
 
 			@Override
 			public void onFocus(FocusEvent event) {
-				Utils.debug("Formcode: " + mainFormPane.getFormCode()
-						+ " Event: onFocus; FormRowEditorTab > Item:"
+				Utils.debug("Formcode: " + mainFormPane.getFormCode() + " Event: onFocus; FormRowEditorTab > Item:"
 						+ event.getItem().getFieldName());
 				ConstructorApp.mainToolBar.setForm(mainFormPane);
 			}
@@ -187,10 +175,8 @@ public class EditorFormItem extends FormItem {
 				@Override
 				public void onKeyPress(KeyPressEvent event) {
 					if ("Enter".equals(event.getKeyName())) {
-						mainFormPane.getButtonsToolBar().actionItemsMap.get(
-								c.getEditorOnEnterKeyAction())
-								.doActionWithConfirm(
-										mainFormPane.getSelectedRow());
+						mainFormPane.getButtonsToolBar().actionItemsMap.get(c.getEditorOnEnterKeyAction())
+								.doActionWithConfirm(mainFormPane.getSelectedRow());
 					}
 				}
 			});
@@ -207,9 +193,8 @@ public class EditorFormItem extends FormItem {
 					item.addFocusHandler(new FocusHandler() {
 						@Override
 						public void onFocus(FocusEvent event) {
-							mainFormPane.getButtonsToolBar().actionItemsMap
-									.get(actionCode).doActionWithConfirm(
-											mainFormPane.getSelectedRow());
+							mainFormPane.getButtonsToolBar().actionItemsMap.get(actionCode)
+									.doActionWithConfirm(mainFormPane.getSelectedRow());
 						}
 					});
 				} else if ("3".equals(actionType)) {
@@ -217,18 +202,16 @@ public class EditorFormItem extends FormItem {
 
 						@Override
 						public void onBlur(BlurEvent event) {
-							mainFormPane.getButtonsToolBar().actionItemsMap
-									.get(actionCode).doActionWithConfirm(
-											mainFormPane.getSelectedRow());
+							mainFormPane.getButtonsToolBar().actionItemsMap.get(actionCode)
+									.doActionWithConfirm(mainFormPane.getSelectedRow());
 						}
 					});
 				} else if ("4".equals(actionType)) {
 					item.addChangedHandler(new ChangedHandler() {
 						@Override
 						public void onChanged(ChangedEvent event) {
-							mainFormPane.getButtonsToolBar().actionItemsMap
-									.get(actionCode).doActionWithConfirm(
-											mainFormPane.getSelectedRow());
+							mainFormPane.getButtonsToolBar().actionItemsMap.get(actionCode)
+									.doActionWithConfirm(mainFormPane.getSelectedRow());
 						}
 					});
 				}

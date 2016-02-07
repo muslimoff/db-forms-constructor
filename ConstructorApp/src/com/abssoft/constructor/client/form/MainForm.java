@@ -45,6 +45,8 @@ import com.smartgwt.client.widgets.grid.events.RowContextClickEvent;
 import com.smartgwt.client.widgets.grid.events.RowContextClickHandler;
 import com.smartgwt.client.widgets.grid.events.RowEditorEnterEvent;
 import com.smartgwt.client.widgets.grid.events.RowEditorEnterHandler;
+import com.smartgwt.client.widgets.grid.events.RowEditorExitEvent;
+import com.smartgwt.client.widgets.grid.events.RowEditorExitHandler;
 import com.smartgwt.client.widgets.tree.Tree;
 import com.smartgwt.client.widgets.tree.TreeGrid;
 import com.smartgwt.client.widgets.tree.TreeNode;
@@ -388,26 +390,35 @@ class MainForm extends Canvas {
 			}
 		});
 
-		// treeGrid.addRowEditorExitHandler(new RowEditorExitHandler() {
-		// 		@Override
-		// 		public void onRowEditorExit(RowEditorExitEvent event) {
-		// 			Utils.debug("treeGrid.onRowEditorExit started...");
-		// 			ListGrid grid = ((ListGrid) event.getSource());
-		// 			int rowNum = event.getRowNum();
-		// 			System.out.println("treeGrid.onRowEditorExit getEditCompletionEvent:" + event.getEditCompletionEvent());
-		// 			// Обработка выхода по клавише ESCAPE при отказе от ввода новой записи
-		// 			if (null == event.getRecord() && EditCompletionEvent.ESCAPE.equals(event.getEditCompletionEvent())) {
-		// 				int nextRecord = (0 == rowNum && null != grid.getRecord(rowNum + 1)) ? rowNum + 1 : rowNum - 1;
-		// 				System.out.println("rowNum:" + rowNum + "; nextRecord:" + nextRecord);
-		// 				// mainFormPane.getValuesManager().clearValues();
-		// 				grid.deselectAllRecords();
-		// 				grid.selectRecord(nextRecord);
-		// 				mainFormPane.setSelectedRow(nextRecord);
-		// 				mainFormPane.filterDetailData(grid.getRecord(nextRecord), treeGrid, nextRecord);
-		// 			}
-		// 			Utils.debug("treeGrid.onRowEditorExit ended...");
-		// 		}
-		// });
+		treeGrid.addRowEditorExitHandler(new RowEditorExitHandler() {
+			@Override
+			public void onRowEditorExit(RowEditorExitEvent event) {
+				Utils.debug("treeGrid.onRowEditorExit started...");
+				ListGrid grid = ((ListGrid) event.getSource());
+				int rowNum = event.getRowNum();
+				Utils.debug("treeGrid.onRowEditorExit getEditCompletionEvent:" + event.getEditCompletionEvent());
+				//см также: event.isCancelled()
+				// Обработка выхода по клавише ESCAPE
+				if (EditCompletionEvent.ESCAPE_KEYPRESS.equals(event.getEditCompletionEvent())) {
+					if (null == event.getRecord()) {
+						//при отказе от ввода новой записи
+						rowNum = (0 == rowNum && null != grid.getRecord(rowNum + 1)) ? rowNum + 1 : rowNum - 1;
+						Utils.debug("rowNum:" + rowNum);
+						grid.deselectAllRecords();
+						grid.selectRecord(rowNum);
+						mainFormPane.setSelectedRow(rowNum);
+						mainFormPane.filterDetailData(grid.getRecord(rowNum), treeGrid, rowNum);
+						if (rowNum >= 0) {
+							mainFormPane.getValuesManager().editRecord3(grid.getRecord(rowNum));
+						}
+					} else {
+						//При отмене редактирования
+						mainFormPane.getValuesManager().editRecord3(grid.getRecord(rowNum));
+					}
+				}
+				Utils.debug("treeGrid.onRowEditorExit ended...");
+			}
+		});
 		treeGrid.addRowEditorEnterHandler(new RowEditorEnterHandler() {
 			// @Override
 			// public void onRowEditorEnter2(RowEditorEnterEvent event) {

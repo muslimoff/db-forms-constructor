@@ -144,9 +144,14 @@ public class FormLookupComboboxItem extends MyComboBoxItem {
 		lookupDataSource = new ComboBoxDataSource();
 		lookupCode = parentColumnMD.getLookupCode(); // + "_" +
 														// columnMD.getName();
-		int gridHashCode = 10000 + FormLookupComboboxItem.this.parentColumnMD.getDisplayNum();
+
+		//int gridHashCode = 10000 + FormLookupComboboxItem.this.parentColumnMD.getDisplayNum();
+		int gridHashCode = this.getJsObj().hashCode();
+		String parentFormCode = this.parentFormPane.getFormCode();
+		Utils.debug("FormLookupComboboxItem. gridHashCode: " + gridHashCode + "; lookupCode: " + lookupCode + "; parentFormCode:"
+				+ parentFormCode);
 		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, lookupCode, ConstructorApp.debugEnabled, true, false,
-				this.parentFormPane.getFormCode(), null);
+				parentFormCode, null);
 		instanceIdentifier.setGridHashCode(gridHashCode);
 		lookupFormMD = parentFormPane.getFormMetadata().getLookupsArr().get(instanceIdentifier.getKey());
 
@@ -157,8 +162,7 @@ public class FormLookupComboboxItem extends MyComboBoxItem {
 				FormColumnsArr x = lookupFormMD.getColumns();
 				for (int i = 0; i < mappingArr.size(); i++) {
 					FormColumnLookupMappingMD mmd = mappingArr.get(i);
-					String oldName = mmd.getLookupFormColumnCode(); // это
-																	// откуда
+					String oldName = mmd.getLookupFormColumnCode(); // это откуда
 					int idx = x.getColIndex(oldName);
 					FormColumnMD cmd = x.get(idx);
 
@@ -205,7 +209,6 @@ public class FormLookupComboboxItem extends MyComboBoxItem {
 				return getPickListFilterCriteria(itemContext);
 			}
 		});
-
 	}
 
 	@SuppressWarnings("unchecked")

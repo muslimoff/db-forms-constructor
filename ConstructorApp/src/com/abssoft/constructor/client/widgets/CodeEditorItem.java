@@ -8,6 +8,8 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.smartgwt.client.types.TitleOrientation;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.form.fields.CanvasItem;
+import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
+import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.form.fields.events.ShowValueEvent;
 import com.smartgwt.client.widgets.form.fields.events.ShowValueHandler;
 
@@ -45,19 +47,19 @@ public class CodeEditorItem extends CanvasItem {
 		 * @return
 		 */
 		private native JavaScriptObject initCodeMirror(CodeEditorTextArea ceta, String id) /*-{
-			var editor = $wnd.CodeMirror.fromTextArea($doc.getElementById(id), {
-			lineNumbers: true,
-			matchBrackets: true,
-			indentUnit: 4,
-			mode: "text/x-plsql",
-			onChange:
-			function xx(){
-			//editor.save(); //editor.toTextArea(); $wnd.alert(editor.getValue());
-			ceta.@com.abssoft.constructor.client.widgets.CodeEditorItem.CodeEditorTextArea::fireValueChangeEvent(Ljava/lang/String;)(editor.getValue());
-			}
-			});
-			return editor;
-		}-*/;
+																							var editor = $wnd.CodeMirror.fromTextArea($doc.getElementById(id), {
+																							lineNumbers: true,
+																							matchBrackets: true,
+																							indentUnit: 4,
+																							mode: "text/x-plsql",
+																							onChange:
+																							function xx(){
+																							//editor.save(); //editor.toTextArea(); $wnd.alert(editor.getValue());
+																							ceta.@com.abssoft.constructor.client.widgets.CodeEditorItem.CodeEditorTextArea::fireValueChangeEvent(Ljava/lang/String;)(editor.getValue());
+																							}
+																							});
+																							return editor;
+																							}-*/;
 
 		@Override
 		protected void onLoad() {
@@ -117,6 +119,9 @@ public class CodeEditorItem extends CanvasItem {
 				value = event.getValue();
 				Utils.debug("2. ValueChangeHandler.onValueChange. FieldName:" + getFieldName() + "\n" + value);
 				CodeEditorItem.this.storeValue(value);
+				Utils.debug("2.1. ValueChangeHandler.onValueChange. CodeEditorItem.this.getValue:" + CodeEditorItem.this.getValue() + "\n"
+						+ value);
+
 			}
 		});
 
@@ -130,16 +135,28 @@ public class CodeEditorItem extends CanvasItem {
 				Utils.debug("4. CodeEditorItem.onShowValue.\n" + value);
 				if (null == codeEditorTextArea.getCodeMirror())
 					return;
-				codeEditorTextArea.setValue(value, false);
+				///!! codeEditorTextArea.setValue(value, false);
+				codeEditorTextArea.setValue(value, true);
+			}
+		});
+		this.addChangedHandler(new ChangedHandler() {
+
+			@Override
+			public void onChanged(ChangedEvent event) {
+				// TODO Auto-generated method stub
+				String value = (null == event.getValue()) ? null : (String) event.getValue();
+				Utils.debug("5. CodeEditorItem.onChanged.\n" + value);
+
 			}
 		});
 
 	}
 
-//	@Override
-//	public void setValue(String value) {
-//		this.value = value;
-//		codeEditorTextArea.setValue(value, false);
-//		Utils.debugAltert("3. CodeEditorItem.setValue.\n" + value);
-//	}
+	@Override
+	public void setValue(String value) {
+		this.value = value;
+		codeEditorTextArea.setValue(value, false);
+		Utils.debug("3. CodeEditorItem.setValue.\n" + value);
+		super.setValue(value);
+	}
 }

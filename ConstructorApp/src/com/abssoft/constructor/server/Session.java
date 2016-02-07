@@ -66,8 +66,7 @@ public class Session implements Serializable {
 		this.isScript = isScript;
 	}
 
-	public Session(Connection conn, ServerInfoMD serverInfoMD,
-			Boolean isDebugEnabled, Boolean isScript, String urlParams) {
+	public Session(Connection conn, ServerInfoMD serverInfoMD, Boolean isDebugEnabled, Boolean isScript, String urlParams) {
 		this(isDebugEnabled, isScript);
 		this.urlParams = urlParams;
 		this.conn = conn;
@@ -99,25 +98,28 @@ public class Session implements Serializable {
 
 	public void closeForm(FormInstanceIdentifier fi, FormMD formState) {
 		this.debug("session form " + fi.getInfo() + " before close...");
-		formDataMap.get(fi.getKey()).closeForm(fi.getGridHashCode(), formState);
-		// TODO Было закомментировано: Во избежание повторной вычитки настроек
-		// формы. Но тогда возникают проблемы при изменении формы на
-		// лету. Приходится делать реконнект. Раскомментировал. Предусмотреть
-		// режимы работы debug и рабочий. Или забить - пусть так будет.
-		// А еще лучше - при старте сессии вычитывать настройки всех форм, а
-		// потом только перечитывать при изменении OVN.
-		int instCount = formDataMap.get(fi.getKey()).getInstancesCount();
-		this.debug("Form " + fi.getFormCode() + " instances: " + instCount);
-		if (0 == instCount) {
-			formDataMap.remove(fi.getKey());
+		//FIXME При закрытии формы, у которой две одинаковые дочки - ошибка в CloseForm (для FormLookupComboboxItem, у которых неуникальный gridHashCode)
+		String formKey = fi.getKey();
+		if (formDataMap.containsKey(formKey)) {
+			formDataMap.get(formKey).closeForm(fi.getGridHashCode(), formState);
+			// TODO Было закомментировано: Во избежание повторной вычитки настроек формы. Но тогда возникают проблемы при изменении формы на лету.
+			// Приходится делать реконнект. Раскомментировал. Предусмотреть режимы работы debug и рабочий. Или забить - пусть так будет.
+			// А еще лучше - при старте сессии вычитывать настройки всех форм, а потом только перечитывать при изменении OVN.
+			int instCount = formDataMap.get(formKey).getInstancesCount();
+			this.debug("Form " + fi.getFormCode() + " instances: " + instCount);
+
+			if (0 == instCount) {
+				formDataMap.remove(formKey);
+			} else {
+				this.debug("! session.formDataMap not contains key:" + formKey);
+			}
 		}
 		this.debug("session form " + fi.getInfo() + " closed...");
 	}
 
 	public void closeFormInstance(FormInstanceIdentifier fi) {
 		this.debug("session form " + fi.getInfo() + " before close...");
-		Map<Integer, FormInstance> formInstance = formDataMap.get(fi.getKey())
-				.getFormInstance();
+		Map<Integer, FormInstance> formInstance = formDataMap.get(fi.getKey()).getFormInstance();
 		if (formInstance.containsKey(fi.getGridHashCode())) {
 			formInstance.get(fi.getGridHashCode()).closeForm();
 			formInstance.remove(fi.getGridHashCode());
@@ -126,17 +128,13 @@ public class Session implements Serializable {
 		this.debug("session form " + fi.getInfo() + " closed...");
 	}
 
-	public Row executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow,
-			FormActionMD actMD) throws SQLException, Exception {
-		return formDataMap.get(fi.getKey()).executeDML(fi.getGridHashCode(),
-				oldRow, newRow, actMD);
+	public Row executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow, FormActionMD actMD) throws SQLException, Exception {
+		return formDataMap.get(fi.getKey()).executeDML(fi.getGridHashCode(), oldRow, newRow, actMD);
 	}
 
-	public RowsArr fetch(FormInstanceIdentifier fi, String sortBy,
-			int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch)
+	public RowsArr fetch(FormInstanceIdentifier fi, String sortBy, int startRow, int endRow, Map<?, ?> criteria, boolean forceFetch)
 			throws SQLException {
-		return formDataMap.get(fi.getKey()).fetch(fi.getGridHashCode(), sortBy,
-				startRow, endRow, criteria, forceFetch);
+		return formDataMap.get(fi.getKey()).fetch(fi.getGridHashCode(), sortBy, startRow, endRow, criteria, forceFetch);
 	}
 
 	public Connection getConnection() {
@@ -151,8 +149,7 @@ public class Session implements Serializable {
 		return formDataMap;
 	}
 
-	public FormMD getFormMetaData(FormInstanceIdentifier fi)
-			throws SQLException {
+	public FormMD getFormMetaData(FormInstanceIdentifier fi) throws SQLException {
 		if (!formDataMap.containsKey(fi.getKey())) {
 			// 20130516 - Вставка пустой записи для предотвращения рекурсии в
 			// случае, если родительская форма равна текущей
@@ -169,8 +166,7 @@ public class Session implements Serializable {
 		PreparedStatement menusStmnt = null;
 		PreparedStatement iconsStmnt = null;
 		try {
-			menusStmnt = conn.prepareStatement(Utils.getSQLQueryFromXML(
-					"menusSQL", this));
+			menusStmnt = conn.prepareStatement(Utils.getSQLQueryFromXML("menusSQL", this));
 			ResultSet menusRs = menusStmnt.executeQuery();
 			while (menusRs.next()) {
 				String formCode = menusRs.getString("form_code");
@@ -195,14 +191,11 @@ public class Session implements Serializable {
 			}
 			menusRs.close();
 			// icons
-			iconsStmnt = conn.prepareStatement(Utils.getSQLQueryFromXML(
-					"iconsSQL", this));
+			iconsStmnt = conn.prepareStatement(Utils.getSQLQueryFromXML("iconsSQL", this));
 			ResultSet iconsRs = iconsStmnt.executeQuery();
 			IconsArr icons = new IconsArr();
 			while (iconsRs.next()) {
-				icons.put(iconsRs.getInt("icon_id"),
-						iconsRs.getString("icon_file_name"),
-						iconsRs.getString("icon_path"), isScript);
+				icons.put(iconsRs.getInt("icon_id"), iconsRs.getString("icon_file_name"), iconsRs.getString("icon_path"), isScript);
 			}
 			metadata.setIcons(icons);
 			iconsRs.close();
@@ -230,16 +223,13 @@ public class Session implements Serializable {
 		String currentLookupCode = "-9999";
 		PreparedStatement lookupsStmnt = null;
 		try {
-			lookupsStmnt = conn.prepareStatement(Utils.getSQLQueryFromXML(
-					"statLookupsSQL", this));
+			lookupsStmnt = conn.prepareStatement(Utils.getSQLQueryFromXML("statLookupsSQL", this));
 			ResultSet lookupsRs = lookupsStmnt.executeQuery();
 			StaticLookup l = new StaticLookup();
 			while (lookupsRs.next()) {
 				String lookupCode = lookupsRs.getString("lookup_code");
-				String lookupValueCode = lookupsRs
-						.getString("lookup_value_code");
-				String lookupDisplayValue = lookupsRs
-						.getString("lookup_display_value");
+				String lookupValueCode = lookupsRs.getString("lookup_value_code");
+				String lookupDisplayValue = lookupsRs.getString("lookup_display_value");
 				if ("-9999".equals(currentLookupCode)) {
 					currentLookupCode = lookupCode;
 				}
@@ -265,8 +255,7 @@ public class Session implements Serializable {
 		return isScript;
 	}
 
-	public Integer setExportData(FormInstanceIdentifier fi,
-			ExportData exportData) {
+	public Integer setExportData(FormInstanceIdentifier fi, ExportData exportData) {
 		return formDataMap.get(fi.getKey()).setExportData(fi, exportData);
 	}
 

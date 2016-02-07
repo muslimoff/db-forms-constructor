@@ -11,6 +11,7 @@ import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.widgets.CodeEditorItem;
 import com.abssoft.constructor.client.widgets.HTMLPaneItem;
 import com.abssoft.constructor.client.widgets.MyRichTextItem;
+import com.abssoft.constructor.client.widgets.cmirrorwidget.CodeMirrorItem;
 import com.abssoft.constructor.common.FormInstanceIdentifier;
 import com.abssoft.constructor.common.metadata.FormActionMD;
 import com.abssoft.constructor.common.metadata.FormMD;
@@ -27,6 +28,8 @@ import com.smartgwt.client.widgets.form.ValuesManager;
 import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.HeaderItem;
 import com.smartgwt.client.widgets.grid.ListGrid;
+import com.smartgwt.client.widgets.grid.ListGridField;
+import com.smartgwt.client.widgets.grid.SummaryFunction;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
@@ -47,6 +50,9 @@ public class MainFormPane extends Canvas {
 					FormItem field = form.getField(fieldName);
 					if (field instanceof CodeEditorItem) {
 						((CodeEditorItem) field).setValue(value);
+					}
+					if (field instanceof CodeMirrorItem) {
+						((CodeMirrorItem) field).setValue(value);
 					}
 				}
 			} catch (Exception e) {
@@ -98,6 +104,10 @@ public class MainFormPane extends Canvas {
 						// if (ff instanceof CodeEditorItem) {
 						// 		((CodeEditorItem) ff).setValue(fieldValue);
 						// }
+						if (ff instanceof CodeMirrorItem) {
+							((CodeMirrorItem) ff).setValue(fieldValue);
+						}
+
 					}
 				}
 			} catch (Exception e) {
@@ -223,13 +233,27 @@ public class MainFormPane extends Canvas {
 			for (FormTreeGridField gridField : gridFields) {
 				gridField.setShowGroupSummary(true);
 				gridField.setShowGridSummary(true);
-				String dataType = gridField.getColumnMD().getDataType();
-				if ("N".equals(dataType))
-					gridField.setSummaryFunction(SummaryFunctionType.SUM);
-				else if ("D".equals(dataType))
-					gridField.setSummaryFunction(SummaryFunctionType.MAX);
-				else
-					gridField.setSummaryFunction(SummaryFunctionType.COUNT);
+
+				//FIXME 1. SummaryFunction. Вынести в метаданные колонки (скрытый столбец-источник с суммарным значением (аналитические ф-ции) как свойство колонки)
+				boolean showSummary = false;
+				if (showSummary) {
+					String dataType = gridField.getColumnMD().getDataType();
+					if ("N".equals(dataType)) {
+						//gridField.setSummaryFunction(SummaryFunctionType.SUM);
+						gridField.setSummaryFunction(new SummaryFunction() {
+
+							@Override
+							public Object getSummaryValue(Record[] records, ListGridField field) {
+								// TODO Auto-generated method stub
+								return null;
+							}
+						});
+					} else if ("D".equals(dataType)) {
+						gridField.setSummaryFunction(SummaryFunctionType.MAX);
+					} else {
+						gridField.setSummaryFunction(SummaryFunctionType.COUNT);
+					}
+				}
 			}
 
 			grid.setFields(gridFields);

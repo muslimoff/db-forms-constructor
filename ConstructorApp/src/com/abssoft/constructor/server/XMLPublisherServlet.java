@@ -42,8 +42,7 @@ public class XMLPublisherServlet extends HttpServlet // implements
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public static void clobToOutputSteam(CLOB clob, PrintWriter out)
-			throws SQLException, IOException {
+	public static void clobToOutputSteam(CLOB clob, PrintWriter out) throws SQLException, IOException {
 		Reader clobInputStream = clob.getCharacterStream();
 		int bytesRead = 0;
 		int chunkSize = clob.getChunkSize();
@@ -70,8 +69,7 @@ public class XMLPublisherServlet extends HttpServlet // implements
 				Integer instIdx = formsInstIt.next();
 				FormInstance frmInst = formInsts.get(instIdx);
 				if (frmInst.getExportDatHM().containsKey(exportDataID)) {
-					result = frmInst.getExportDatHM().get(exportDataID)
-							.getXML();
+					result = frmInst.getExportDatHM().get(exportDataID).getXML();
 					frmInst.getExportDatHM().remove(exportDataID);
 					return result;
 				}
@@ -102,13 +100,10 @@ public class XMLPublisherServlet extends HttpServlet // implements
 		return null;
 	}
 
-	public static CLOB findCLOB(Session session, String reportCode)
-			throws SQLException {
+	public static CLOB findCLOB(Session session, String reportCode) throws SQLException {
 		Connection connection = session.getConnection();
-		String sqlText = Utils
-				.getSQLQueryFromXML("reportTemplatesSQL", session);
-		OraclePreparedStatement statement = (OraclePreparedStatement) connection
-				.prepareStatement(sqlText);
+		String sqlText = Utils.getSQLQueryFromXML("reportTemplatesSQL", session);
+		OraclePreparedStatement statement = (OraclePreparedStatement) connection.prepareStatement(sqlText);
 		Utils.setParameterValue(session, statement, "p_report_code", reportCode);
 		ResultSet rs = statement.executeQuery();
 		rs.next();
@@ -118,8 +113,7 @@ public class XMLPublisherServlet extends HttpServlet // implements
 		return result;
 	}
 
-	private static String getEncodedFileName(HttpServletRequest req,
-			String reportName) throws UnsupportedEncodingException {
+	private static String getEncodedFileName(HttpServletRequest req, String reportName) throws UnsupportedEncodingException {
 		// http://www.rsdn.ru/forum/java/2890460.flat.aspx
 		String agent = req.getHeader("USER-AGENT").toLowerCase();
 		String fileName = reportName;
@@ -128,8 +122,7 @@ public class XMLPublisherServlet extends HttpServlet // implements
 		} else if (agent.indexOf("chrome") > -1) {
 			fileName = URLDecoder.decode(reportName, "windows-1251");
 		}
-		String contentDisposition = "filename=\""
-				+ MimeUtility.encodeText(fileName, "UTF8", "B") + "\"";
+		String contentDisposition = "filename=\"" + MimeUtility.encodeText(fileName, "UTF8", "B") + "\"";
 		return contentDisposition;
 	}
 
@@ -141,19 +134,16 @@ public class XMLPublisherServlet extends HttpServlet // implements
 	}
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		doMethod(req, resp);
 	}
 
 	@Override
-	public void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		doMethod(req, resp);
 	}
 
-	private void doMethod(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	private void doMethod(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		req.setCharacterEncoding("utf-8");
 		resp.setCharacterEncoding("utf-8");
 		cntr++;
@@ -165,17 +155,13 @@ public class XMLPublisherServlet extends HttpServlet // implements
 												// time indicates the session
 												// should never timeout.
 		Utils.spoolOut("httpSession:" + httpSession);
-		Utils.spoolOut("httpSession.getCreationTime:"
-				+ httpSession.getCreationTime());
+		Utils.spoolOut("httpSession.getCreationTime:" + httpSession.getCreationTime());
 		Utils.spoolOut("httpSession.getId:" + httpSession.getId());
-		Utils.spoolOut("httpSession.getLastAccessedTime:"
-				+ httpSession.getLastAccessedTime());
-		Utils.spoolOut("httpSession.getMaxInactiveInterval:"
-				+ httpSession.getMaxInactiveInterval());
+		Utils.spoolOut("httpSession.getLastAccessedTime:" + httpSession.getLastAccessedTime());
+		Utils.spoolOut("httpSession.getMaxInactiveInterval:" + httpSession.getMaxInactiveInterval());
 
 		/******************* RequestData *******************/
-		Integer sessionID = (Integer) httpSession
-				.getAttribute(Utils.sessionIdentifier);
+		Integer sessionID = (Integer) httpSession.getAttribute(Utils.sessionIdentifier);
 		Session session = QueryServiceImpl.getSessionData(sessionID);
 		Utils.spoolOut("SessionID:" + sessionID + "; session:" + session);
 		Utils.spoolOut("req.getQueryString():" + req.getQueryString());
@@ -194,16 +180,14 @@ public class XMLPublisherServlet extends HttpServlet // implements
 			String filename = "файл";
 			// String exportData = null;
 
-			System.out.println("getParameterMap>> " + req.getParameterMap()
-					+ "; filename:"
-					+ ((String[]) req.getParameterMap().get("filename"))[0]);
+			System.out.println(
+					"getParameterMap>> " + req.getParameterMap() + "; filename:" + ((String[]) req.getParameterMap().get("filename"))[0]);
 			//
 
 			String[] pvs = req.getParameterValues("filename");
 			System.out.println("aaa: " + pvs);
 			for (int i = 0; i < pvs.length; i++) {
-				System.out.println("x:" + i + ": " + pvs[i] + "; "
-						+ new String(pvs[i].getBytes()));
+				System.out.println("x:" + i + ": " + pvs[i] + "; " + new String(pvs[i].getBytes()));
 
 				System.out.println();
 			}
@@ -231,8 +215,7 @@ public class XMLPublisherServlet extends HttpServlet // implements
 				// System.out.println("param_decode: " + new
 				// String(paramValue.getBytes("utf-8"), "utf-16"));
 				// System.out.println("xxa:" + paramValue.getBytes("utf-8"));
-				if ("contentDisposition".equals(paramName)
-						&& !"".equals(paramValue)) {
+				if ("contentDisposition".equals(paramName) && !"".equals(paramValue)) {
 					contentDisposition = paramValue;
 				}
 				if ("type".equals(paramName) && !"".equals(paramValue)) {
@@ -261,16 +244,13 @@ public class XMLPublisherServlet extends HttpServlet // implements
 				getFile(req, resp, session, contentDisposition, ContentType);
 				return;
 			} else if ("xmlp".equals(type)) {
-				processXMLP(req, resp, session, contentDisposition,
-						ContentType, template, docId, filename);
+				processXMLP(req, resp, session, contentDisposition, ContentType, template, docId, filename);
 				// return;
 			} else if ("clob".equals(type)) {
-				getCLOB(req, resp, session, contentDisposition, ContentType,
-						docId);
+				getCLOB(req, resp, session, contentDisposition, ContentType, docId);
 				// return;
 			} else if ("xslt".equals(type)) {
-				processXSLT(req, resp, session, contentDisposition,
-						ContentType, template, docId, filename);
+				processXSLT(req, resp, session, contentDisposition, ContentType, template, docId, filename);
 				// return;
 			}
 			session.debug("Exiting... " + cntr + "; " + this);
@@ -278,15 +258,13 @@ public class XMLPublisherServlet extends HttpServlet // implements
 		}
 	}
 
-	public void processXSLT(HttpServletRequest req, HttpServletResponse resp,
-			Session session, String contentDisposition, String ContentType,
-			String template, Integer docId, String filename) throws IOException {
+	public void processXSLT(HttpServletRequest req, HttpServletResponse resp, Session session, String contentDisposition,
+			String ContentType, String template, Integer docId, String filename) throws IOException {
 		resp.setCharacterEncoding("utf-8");
 		String outFilename = (null != filename) ? filename : "noname.xml";
 		String ct = (null != ContentType) ? ContentType : "text/plain";
 		resp.setContentType(ct);
-		resp.setHeader("Content-Disposition", contentDisposition
-				+ "; filename=\"" + outFilename + "\"");
+		resp.setHeader("Content-Disposition", contentDisposition + "; filename=\"" + outFilename + "\"");
 		PrintWriter out = resp.getWriter();
 		String exportData = "";
 		try {
@@ -296,14 +274,11 @@ public class XMLPublisherServlet extends HttpServlet // implements
 
 			CLOB rtfTemplClob = findCLOB(session, template);
 			// clobToOutputSteam(rtfTemplClob, out);
-			ByteArrayInputStream xmlDataIS = new ByteArrayInputStream(
-					exportData.getBytes("UTF-8"));
+			ByteArrayInputStream xmlDataIS = new ByteArrayInputStream(exportData.getBytes("UTF-8"));
 
 			TransformerFactory tFactory = TransformerFactory.newInstance();
-			Transformer transformer = tFactory.newTransformer(new StreamSource(
-					rtfTemplClob.getCharacterStream()));
-			transformer.transform(new StreamSource(xmlDataIS),
-					new StreamResult(out));
+			Transformer transformer = tFactory.newTransformer(new StreamSource(rtfTemplClob.getCharacterStream()));
+			transformer.transform(new StreamSource(xmlDataIS), new StreamResult(out));
 		} catch (Exception e) {
 
 			resp.setContentType("text/plain");
@@ -318,15 +293,13 @@ public class XMLPublisherServlet extends HttpServlet // implements
 	}
 
 	// http://127.0.0.1:8888/constructorapp/xmlp?contentDisposition=inline&type=clob&ContentType=application/msword
-	public void getCLOB(HttpServletRequest req, HttpServletResponse resp,
-			Session session, String contentDisposition, String ContentType,
+	public void getCLOB(HttpServletRequest req, HttpServletResponse resp, Session session, String contentDisposition, String ContentType,
 			Integer docId) throws IOException {
 		resp.setCharacterEncoding("utf-8");
 		String outFilename = "example-data.xml";
 		String ct = (null != ContentType) ? ContentType : "text/plain";
 		resp.setContentType(ct);
-		resp.setHeader("Content-Disposition", contentDisposition
-				+ "; filename=\"" + outFilename + "\"");
+		resp.setHeader("Content-Disposition", contentDisposition + "; filename=\"" + outFilename + "\"");
 		PrintWriter out = resp.getWriter();
 		String exportData = findExportData(session, docId);
 		if (null != exportData) {
@@ -348,27 +321,24 @@ public class XMLPublisherServlet extends HttpServlet // implements
 		out.close();
 	}
 
-	public void getFile(HttpServletRequest req, HttpServletResponse resp,
-			Session session, String contentDisposition, String ContentType)
+	public void getFile(HttpServletRequest req, HttpServletResponse resp, Session session, String contentDisposition, String ContentType)
 			throws IOException {
 		String outFilename = "example-data.xml";
 		// TODO Get real File Content Type
 		String ct = (null != ContentType) ? ContentType : "text/plain";
 		resp.setContentType(ct);
-		resp.setHeader("Content-Disposition", contentDisposition
-				+ "; filename=\"" + outFilename + "\"");
+		resp.setHeader("Content-Disposition", contentDisposition + "; filename=\"" + outFilename + "\"");
 
 		OutputStream out = resp.getOutputStream();
-		String filename = getServletContext().getRealPath("/WEB-INF") + "/"
-				+ "constructorapp.xml";
-		BufferedInputStream is = new BufferedInputStream(new FileInputStream(
-				filename));
+		String filename = getServletContext().getRealPath("/WEB-INF") + "/" + "constructorapp.xml";
+		BufferedInputStream is = new BufferedInputStream(new FileInputStream(filename));
 
 		byte[] buffer = new byte[8192];
 		int count = 0;
 		while ((count = is.read(buffer)) > 0) {
 			out.write(buffer, 0, count);
 		}
+		is.close();
 		out.flush();
 		out.close();
 	}
@@ -378,12 +348,10 @@ public class XMLPublisherServlet extends HttpServlet // implements
 	@Override
 	public void init() throws ServletException {
 		super.init();
-		Utils.spoolOut("Middle tier service '" + this.getClass()
-				+ "' started...");
+		Utils.spoolOut("Middle tier service '" + this.getClass() + "' started...");
 	}
 
-	public void processEmptySessionResponse(HttpServletRequest req,
-			HttpServletResponse resp) throws IOException {
+	public void processEmptySessionResponse(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		resp.setContentType("text/plain");
 		PrintWriter out = resp.getWriter();
 		out.println("Not connected! Connect to Application first...");
@@ -399,9 +367,8 @@ public class XMLPublisherServlet extends HttpServlet // implements
 
 	// http://ostermiller.org/convert_java_outputstream_inputstream.html
 	// http://www.jdom.org/docs/faq.html
-	public void processXMLP(HttpServletRequest req, HttpServletResponse resp,
-			Session session, String contentDisposition, String ContentType,
-			String template, Integer docId, String filename) throws IOException {
+	public void processXMLP(HttpServletRequest req, HttpServletResponse resp, Session session, String contentDisposition,
+			String ContentType, String template, Integer docId, String filename) throws IOException {
 		Utils.spoolOut("XMLPublisherServlet.processXMLP");
 		resp.setCharacterEncoding("UTF-8"); // mm20131028
 		ServletOutputStream respOS = resp.getOutputStream();
@@ -422,26 +389,22 @@ public class XMLPublisherServlet extends HttpServlet // implements
 			CLOB rtfTemplClob = findCLOB(session, template);
 			CLOB xmlDataClob = findCLOB(session, docId);
 			/** RTF to XSL FO **/
-			RTFProcessor rtfProcessor = new RTFProcessor(
-					rtfTemplClob.binaryStreamValue());
+			RTFProcessor rtfProcessor = new RTFProcessor(rtfTemplClob.binaryStreamValue());
 			rtfProcessor.setOutput(rtfOS);
 			rtfProcessor.process();
 			FOProcessor processor = new FOProcessor();
 			/** RTF OutputStream to FO inputStream **/
-			ByteArrayInputStream foIS = new ByteArrayInputStream(
-					rtfOS.toByteArray());
+			ByteArrayInputStream foIS = new ByteArrayInputStream(rtfOS.toByteArray());
 			/** XFL FO and data XML to output **/
 			processor.setTemplate(foIS);
 			processor.setData(xmlDataClob.characterStreamValue());
 
 			resp.setContentType(ContentType);
-			resp.addHeader("Content-Disposition", contentDisposition + "; "
-					+ getEncodedFileName(req, filename + "." + extention));
+			resp.addHeader("Content-Disposition", contentDisposition + "; " + getEncodedFileName(req, filename + "." + extention));
 
 			processor.setOutputFormat(format);
 			processor.setOutput(respOS);
-			processor.setConfig(getServletContext().getRealPath("/WEB-INF")
-					+ "/xdo.cfg");
+			processor.setConfig(getServletContext().getRealPath("/WEB-INF") + "/xdo.cfg");
 			processor.generate();
 			// oracle.apps.xdo.common.font.Font
 			// if (0 != processor.getRunException().getStackTrace().length) {
@@ -452,9 +415,8 @@ public class XMLPublisherServlet extends HttpServlet // implements
 			// }
 			// }
 			foIS.close();
-			Utils.spoolOut("xx" + resp.getLocale() + "; zz:"
-					+ resp.getContentType() + "; "
-					+ resp.getCharacterEncoding() + resp.toString());
+			Utils.spoolOut(
+					"xx" + resp.getLocale() + "; zz:" + resp.getContentType() + "; " + resp.getCharacterEncoding() + resp.toString());
 
 		} catch (Exception e) {
 			// resp.setContentType("text/plain");

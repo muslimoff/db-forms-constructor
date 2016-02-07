@@ -1,4 +1,4 @@
-package com.abssoft.constructor.client;
+package com.abssoft.constructor.client.newfunctesting;
 
 /* 
  * Smart GWT (GWT for SmartClient) 

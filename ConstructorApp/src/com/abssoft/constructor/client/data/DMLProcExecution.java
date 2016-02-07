@@ -53,8 +53,8 @@ public class DMLProcExecution {
 		return mainFormPane;
 	}
 
-	public DMLProcExecution(ExecutionType executionType, FormDataSource formDataSource, MainFormPane mainFormPane,
-			DSRequest request, DSResponse response) {
+	public DMLProcExecution(ExecutionType executionType, FormDataSource formDataSource, MainFormPane mainFormPane, DSRequest request,
+			DSResponse response) {
 		this.mainFormPane = mainFormPane;
 		this.request = request;
 		this.response = response;
@@ -66,10 +66,7 @@ public class DMLProcExecution {
 		Utils.debug("DMLProcExecution.this. recordIndex:" + recordIndex);
 	}
 
-	// Для вызова вне DataSource.
-	// См.:
-	// com.abssoft.constructor.client.form.MainForm.setNewRecDefaultValues(final
-	// int rowNum, boolean isFromDefaultVals)
+	// Для вызова вне DataSource. См.: com.abssoft.constructor.client.form.MainForm.setNewRecDefaultValues(final int rowNum, boolean isFromDefaultVals)
 	public DMLProcExecution(MainFormPane mainFormPane) {
 		this(ExecutionType.UPDATE, mainFormPane.getDataSource(), mainFormPane, new DSRequest(), new DSResponse());
 	}
@@ -86,80 +83,73 @@ public class DMLProcExecution {
 			SC.showPrompt("Server Connecting");
 		FormInstanceIdentifier fi = mainFormPane.getInstanceIdentifier();
 
-		Utils.createQueryService("DMLProcExecution.executeDML").executeDML(fi, oldRow, newRow, actMD,
-				new DSAsyncCallback<Row>() {
-					@Override
-					public void onSuccess(Row result) {
-						super.onSuccess(result);
-						DMLProcExecution.this.setResultRow(result);
-						// 20110729b - добавлена типизация и вынесен глобально
-						// код для response.setData
-						TreeNode resRec = Utils.getTreeNodeFromRow(formDataSource.getFormDSFields(), result);
-						// We do not receive removed record from server. Return
-						// record from request.
-						resRec = ExecutionType.DELETE.equals(executionType) ? new TreeNode(request.getData()) : resRec;
-						// Очищаем код нажатой кнопки для повторного выполнения
-						resRec.setAttribute(mainFormPane.getCurrentAction().getStatusButtonParam(), (String) null);
+		Utils.createQueryService("DMLProcExecution.executeDML").executeDML(fi, oldRow, newRow, actMD, new DSAsyncCallback<Row>() {
+			@Override
+			public void onSuccess(Row result) {
+				super.onSuccess(result);
+				DMLProcExecution.this.setResultRow(result);
+				// 20110729b - добавлена типизация и вынесен глобально код для response.setData
+				TreeNode resRec = Utils.getTreeNodeFromRow(formDataSource.getFormDSFields(), result);
+				// We do not receive removed record from server. Return record from request.
+				resRec = ExecutionType.DELETE.equals(executionType) ? new TreeNode(request.getData()) : resRec;
+				// Очищаем код нажатой кнопки для повторного выполнения
+				resRec.setAttribute(mainFormPane.getCurrentAction().getStatusButtonParam(), (String) null);
 
-						// 20120317
-						// if (!resRec.toMap().containsKey("_recIdx")) {
-						// resRec.setAttribute("_recIdx", recordIndex);
-						// }
-						Utils.debugRecord(resRec, "DmlProcExecution.SUCCESS1");
-						setResultRecord(resRec);
-						response.setData(new TreeNode[] { resRec });
-						Utils.debug("DmlProcExecution.SUCCESS2A" + grid.getRecordIndex(resRec));
-						Utils.debugRecord(resRec, "DmlProcExecution.SUCCESS2B");
-						// 20110729e
-						if (showPrompt) {
-							SC.clearPrompt();
+				// 20120317
+				// if (!resRec.toMap().containsKey("_recIdx")) {
+				// resRec.setAttribute("_recIdx", recordIndex);
+				// }
+				Utils.debugRecord(resRec, "DmlProcExecution.SUCCESS1");
+				setResultRecord(resRec);
+				response.setData(new TreeNode[] { resRec });
+				Utils.debug("DmlProcExecution.SUCCESS2A" + grid.getRecordIndex(resRec));
+				Utils.debugRecord(resRec, "DmlProcExecution.SUCCESS2B");
+				// 20110729e
+				if (showPrompt) {
+					SC.clearPrompt();
+				}
+				result.getStatus().showActionStatus(DMLProcExecution.this);
+				// DMLProcExecution.this.showActionStatus(result.getStatus());
+				StatusType resStatus = result.getStatus().getStatusType();
+				Utils.debug("DMLProcExecution.executeDML. StatusType:" + resStatus);
+				if (ActionStatus.StatusType.SUCCESS.equals(resStatus) // Успешно
+				) {
+					Utils.debug("DMLProcExecution.executeDML. Before executeSuccessSubProc.");
+					executeSuccessSubProc();
+					Utils.debug("DMLProcExecution.executeDML. After executeSuccessSubProc.");
+				} else if (ActionStatus.StatusType.WARNING.equals(resStatus)) {
+					executeWarningSubProc();
+				} else if (ActionStatus.StatusType.CANCEL.equals(resStatus)) {
+					executeErrorSubProc(); // Окошко не показываем, однако не сохраняем изменения. См ActionStatus.showActionStatus
+				} else if (ActionStatus.StatusType.ERROR.equals(resStatus)) {
+					executeErrorSubProc();
+				} else {
+					Utils.debugAlert("Unknown Action status!!! DMLProcExecution.executeDML");
+				}
+				// Пока только для апдейта - фильтрация дочерних форм.
+				if (ExecutionType.UPDATE.equals(executionType)) {
+					// grid.selectRecord(recordIndex);
+					// mainFormPane.filterDetailData(grid.getRecord(recordIndex),
+					// grid, recordIndex);
+					int mfpSelectedRec = mainFormPane.getSelectedRow();
+					ListGridRecord selectedRec = grid.getRecord(mfpSelectedRec);
+					Utils.debug("DMLProcExecution.executeDML.onSuccess.UPDATE. mfpSelectedRec:" + mfpSelectedRec + "; selectedRec:"
+							+ selectedRec);
+					try {
+						if (null != selectedRec) {
+							grid.selectRecord(selectedRec);
+							int selectedRecIdx = grid.getRecordIndex(selectedRec);
+							Utils.debug("DMLProcExecution.executeDML.onSuccess.UPDATE. Before mainFormPane.filterDetailData");
+							mainFormPane.filterDetailData(selectedRec, grid, selectedRecIdx);
 						}
-						result.getStatus().showActionStatus(DMLProcExecution.this);
-						// DMLProcExecution.this.showActionStatus(result.getStatus());
-						StatusType resStatus = result.getStatus().getStatusType();
-						Utils.debug("DMLProcExecution.executeDML. StatusType:" + resStatus);
-						if (ActionStatus.StatusType.SUCCESS.equals(resStatus) // Успешно
-						) {
-							Utils.debug("DMLProcExecution.executeDML. Before executeSuccessSubProc.");
-							executeSuccessSubProc();
-							Utils.debug("DMLProcExecution.executeDML. After executeSuccessSubProc.");
-						} else if (ActionStatus.StatusType.WARNING.equals(resStatus)) {
-							executeWarningSubProc();
-						} else if (ActionStatus.StatusType.CANCEL.equals(resStatus)) {
-							executeErrorSubProc(); // Окошко не показываем,
-													// однако не сохраняем
-													// изменения. См
-													// ActionStatus.showActionStatus
-						} else if (ActionStatus.StatusType.ERROR.equals(resStatus)) {
-							executeErrorSubProc();
-						} else {
-							Utils.debugAlert("Unknown Action status!!! DMLProcExecution.executeDML");
-						}
-						// Пока только для апдейта - фильтрация дочерних форм.
-						if (ExecutionType.UPDATE.equals(executionType)) {
-							// grid.selectRecord(recordIndex);
-							// mainFormPane.filterDetailData(grid.getRecord(recordIndex),
-							// grid, recordIndex);
-							int mfpSelectedRec = mainFormPane.getSelectedRow();
-							ListGridRecord selectedRec = grid.getRecord(mfpSelectedRec);
-							Utils.debug("DMLProcExecution.executeDML.onSuccess.UPDATE. mfpSelectedRec:" + mfpSelectedRec
-									+ "; selectedRec:" + selectedRec);
-							try {
-								if (null != selectedRec) {
-									grid.selectRecord(selectedRec);
-									int selectedRecIdx = grid.getRecordIndex(selectedRec);
-									Utils.debug(
-											"DMLProcExecution.executeDML.onSuccess.UPDATE. Before mainFormPane.filterDetailData");
-									mainFormPane.filterDetailData(selectedRec, grid, selectedRecIdx);
-								}
-							} catch (Exception e) {
-								e.printStackTrace();
-								Utils.logException(e, "DMLProcExecution.executeDML.onSuccess. grid.selectRecord...");
-							}
-						}
-
+					} catch (Exception e) {
+						e.printStackTrace();
+						Utils.logException(e, "DMLProcExecution.executeDML.onSuccess. grid.selectRecord...");
 					}
-				});
+				}
+
+			}
+		});
 	}
 
 	public void executeSuccessSubProc() {
@@ -177,7 +167,7 @@ public class DMLProcExecution {
 
 		// 20160119 - убрал текст ниже - решил проблему правильно. См
 		// .http://forums.smartclient.com/forum/smart-gwt-technical-q-a/22607-help-in-listgrid-client-sort
-		
+
 		response.setStatus(RPCResponse.STATUS_SUCCESS);
 
 		// 20130514 - обнаружнен косяк - при создании новой записи - сброс
@@ -196,13 +186,10 @@ public class DMLProcExecution {
 
 		}
 
-		// Почему-то после предупреждения остается состояние редактирования.
-		// Приходится делать так для корректной работы
+		// Почему-то после предупреждения остается состояние редактирования. Приходится делать так для корректной работы
 		grid.discardAllEdits(new int[] { recordIndex }, false);
-		// 20130727 Для дерева - выделяется следующая запись после перенесенной
-		// (есть подозрение, что из-за строки выше.
-		// Поэтому - очищаем все выделенные строки во избежание ошибочных
-		// перетаскиваний
+		// 20130727 Для дерева - выделяется следующая запись после перенесенной (есть подозрение, что из-за строки выше.
+		// Поэтому - очищаем все выделенные строки во избежание ошибочных перетаскиваний
 		if (ExecutionType.UPDATE.equals(executionType) && grid instanceof FormTreeGrid) {
 			grid.deselectAllRecords();
 		}
@@ -265,9 +252,8 @@ public class DMLProcExecution {
 	public void executeErrorSubProc() {
 		Utils.debug("DMLProcExecution.executeErrorSubProc:\n" + result.getStatus().getLongMessageText());
 		request.setWillHandleError(true);
-		if ( // 20130520 - RaiseApplicationError - сброс состояния как будто не
-				// удаляли
-		ExecutionType.DELETE.equals(executionType)) {
+		if ( // 20130520 - RaiseApplicationError - сброс состояния как будто не удаляли //20160203 - Добавил для действия PL/SQL на неизмененных (7)
+		ExecutionType.DELETE.equals(executionType) || "7".equals(mainFormPane.getCurrentAction().getType())) {
 			Record r = new Record();
 			JSOHelper.apply(request.getData(), r.getJsObj());
 			// response.setStatus(RPCResponse.STATUS_SUCCESS);
@@ -331,8 +317,8 @@ public class DMLProcExecution {
 		FormActionMD fAct = mainFormPane.getCurrentAction();
 		if (StatusType.WARNING.equals(statusType)) {
 			// Устанвливаем код нажатой кнопки
-			Utils.debug("recordIndex:" + recordIndex + "; fAct.getStatusButtonParam():" + fAct.getStatusButtonParam()
-					+ ";btnIdx:" + btnIdx);
+			Utils.debug(
+					"recordIndex:" + recordIndex + "; fAct.getStatusButtonParam():" + fAct.getStatusButtonParam() + ";btnIdx:" + btnIdx);
 			grid.setEditValue(recordIndex, fAct.getStatusButtonParam(), btnIdx);
 			mainFormPane.getButtonsToolBar().actionItemsMap.get(fAct.getCode()).doActionWithConfirm(recordIndex);
 		} else if (StatusType.SUCCESS.equals(statusType)) {

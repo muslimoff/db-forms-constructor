@@ -18,6 +18,7 @@ import com.abssoft.constructor.client.data.TimeoutEventHandler;
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.form.ApplicationToolBar;
+import com.abssoft.constructor.client.newfunctesting.TestWindow;
 import com.abssoft.constructor.client.widgets.ActionStatusWindow;
 import com.abssoft.constructor.common.ActionStatus;
 import com.abssoft.constructor.common.MenusArr;

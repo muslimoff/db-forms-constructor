@@ -56,12 +56,9 @@ public class GridComboBoxItem extends MyComboBoxItem {
 		TreeNode[] records;
 		private int valueFieldNum = 0;
 
-		protected void executeFetch(final String requestId, DSRequest request,
-				final DSResponse response) throws TimeoutException {
-			Utils.debug("ComboBoxDataSource.executeFetch 0. Lookup:"
-					+ lookupCode + "; " + request);
-			Criteria cr = (null != request && null != request.getCriteria()) ? request
-					.getCriteria() : new Criteria();
+		protected void executeFetch(final String requestId, DSRequest request, final DSResponse response) throws TimeoutException {
+			Utils.debug("ComboBoxDataSource.executeFetch 0. Lookup:" + lookupCode + "; " + request);
+			Criteria cr = (null != request && null != request.getCriteria()) ? request.getCriteria() : new Criteria();
 			Utils.debug("ComboBoxDataSource.executeFetch 1");
 			try {
 				Utils.debug("ComboBoxDataSource.executeFetch 2");
@@ -69,8 +66,7 @@ public class GridComboBoxItem extends MyComboBoxItem {
 				cr.addCriteria(getMainFormCriteria());
 			} catch (Exception e) {
 				Utils.debug("ComboBoxDataSource.executeFetch 3");
-				Utils.debug("Exception on request.getCriteria().getValues():"
-						+ e.getMessage());
+				Utils.debug("Exception on request.getCriteria().getValues():" + e.getMessage());
 			}
 
 			int startRow = 0;
@@ -85,41 +81,33 @@ public class GridComboBoxItem extends MyComboBoxItem {
 					endRow = request.getEndRow();
 					Utils.debug("ComboBoxDataSource.executeFetch 7");
 				} catch (Exception e) {
-					Utils.debug("ComboBoxDataSource.executeFetch 8. request.getStartRow/getEndRow error: "
-							+ e.getMessage());
+					Utils.debug("ComboBoxDataSource.executeFetch 8. request.getStartRow/getEndRow error: " + e.getMessage());
 				}
 			}
-			Utils.debug("ComboBoxDataSource.executeFetch 9; "
-					+ getFilterWithValue());
+			Utils.debug("ComboBoxDataSource.executeFetch 9; " + getFilterWithValue());
 			sortBy = request.getAttribute("sortBy");
 			Utils.debug("ComboBoxDataSource.executeFetch 10:" + userTypedValue);
-			LinkedHashMap<String, Object> crMap = Utils
-					.getHashMapFromCriteria(cr);
+			LinkedHashMap<String, Object> crMap = Utils.getHashMapFromCriteria(cr);
 			Utils.debug("ComboBoxDataSource.executeFetch 11");
 			crMap.put(lookupUserTypedVarName, userTypedValue);
 			Utils.debug("ComboBoxDataSource.executeFetch 12");
 			crMap.put(lookupSelectedValueVarName, userSelectedValue);
 			Utils.debug("ComboBoxDataSource.executeFetch 13");
 			// TODO вынести в XML параметров endRow - фактически размер лова.
-			Utils.createQueryService("GridComboBoxItem.fetch").fetch(
-					instanceIdentifier, sortBy, startRow, endRow, crMap, false,
+			Utils.createQueryService("GridComboBoxItem.fetch").fetch(instanceIdentifier, sortBy, startRow, endRow, crMap, false,
 					new DSAsyncCallback<RowsArr>(requestId, response, this) {
 						public void onSuccess(RowsArr result) {
 							super.onSuccess(result);
 							Utils.debug("ComboBoxDataSource.executeFetch 14");
 							records = new TreeNode[result.size()];
 							values.clear();
-							Utils.debug("ComboBoxDataSource.executeFetch 15. valueFieldNum:"
-									+ valueFieldNum
-									+ "; result.size:"
+							Utils.debug("ComboBoxDataSource.executeFetch 15. valueFieldNum:" + valueFieldNum + "; result.size:"
 									+ result.size());
 							for (int r = 0; r < result.size(); r++) {
 								try {
 									Row row = result.get(r);
-									records[r] = Utils.getTreeNodeFromRow(
-											dsFields, row);
-									Object key = row.get(valueFieldNum)
-											.getAttributeAsObject();
+									records[r] = Utils.getTreeNodeFromRow(dsFields, row);
+									Object key = row.get(valueFieldNum).getAttributeAsObject();
 									values.put(key, records[r]);
 								} catch (Exception e) {
 									Utils.debug("ComboBoxDataSource.executeFetch 16");
@@ -170,39 +158,32 @@ public class GridComboBoxItem extends MyComboBoxItem {
 		this(columnMD, mainFormPane, null);
 	}
 
-	public GridComboBoxItem(final FormColumnMD parentColumnMD,
-			final MainFormPane parentFormPane,
-			FormTreeGridField formTreeGridField) {
+	public GridComboBoxItem(final FormColumnMD parentColumnMD, final MainFormPane parentFormPane, FormTreeGridField formTreeGridField) {
 		super(parentColumnMD, parentFormPane);
 		this.parentColumnMD = parentColumnMD;
 		this.parentFormPane = parentFormPane;
 		lookupCode = parentColumnMD.getLookupCode();
-		int gridHashCode = 10000 + GridComboBoxItem.this.parentColumnMD
-				.getDisplayNum();
-		instanceIdentifier = new FormInstanceIdentifier(
-				ConstructorApp.sessionId, lookupCode,
-				ConstructorApp.debugEnabled, true, false,
+		//int gridHashCode = 10000 + GridComboBoxItem.this.parentColumnMD.getDisplayNum();
+		int gridHashCode = this.getJsObj().hashCode();
+		instanceIdentifier = new FormInstanceIdentifier(ConstructorApp.sessionId, lookupCode, ConstructorApp.debugEnabled, true, false,
 				this.parentFormPane.getFormCode(), null);
 		instanceIdentifier.setGridHashCode(gridHashCode);
 		lookupDisplValFld = parentColumnMD.getLookupDisplayValue();
 		GridComboBoxItem.this.setShowOptionsFromDataSource(true);
 		this.setFetchDelay(1000);
 		this.setValidateOnChange(true);
-		// TODO mm20120807 Посмотреть! - возможно пригодиццо при переделке
-		// лукапов: this.setChangeOnKeypress(false);
+		// TODO mm20120807 Посмотреть! - возможно пригодиццо при переделке лукапов: this.setChangeOnKeypress(false);
 		this.setRejectInvalidValueOnChange(true);
 		this.setCompleteOnTab(true);
 		// this.setHideEmptyPickList(true);
-		FormMD fmd = parentFormPane.getFormMetadata().getLookupsArr()
-				.get(instanceIdentifier.getKey());
+		FormMD fmd = parentFormPane.getFormMetadata().getLookupsArr().get(instanceIdentifier.getKey());
 		// Utils.debugAlert("GridComboBoxItem: "+fmd);
 		final ComboBoxDataSource lookupDataSource = new ComboBoxDataSource();
 		MainFormPane mfp = new MainFormPane();
 		mfp.setFormCode(lookupCode);
 		mfp.setFormMetadata(fmd);
 		mfp.setFormColumns(new FormColumns(mfp));
-		FormTreeGridField[] gridFields = mfp.getFormColumns()
-				.createGridFields();
+		FormTreeGridField[] gridFields = mfp.getFormColumns().createGridFields();
 		valueFieldName = gridFields[0].getName();
 		int valueFieldNum = 0;
 		for (FormTreeGridField f : gridFields) {
@@ -240,8 +221,7 @@ public class GridComboBoxItem extends MyComboBoxItem {
 		// } catch (Exception e) {
 		// }
 
-		GridComboBoxItem.this.setLookupSize(parentColumnMD.getLookupWidth(),
-				parentColumnMD.getLookupHeight(), fmd.getLookupWidth(),
+		GridComboBoxItem.this.setLookupSize(parentColumnMD.getLookupWidth(), parentColumnMD.getLookupHeight(), fmd.getLookupWidth(),
 				fmd.getLookupHeight());
 
 		GridComboBoxItem.this.setPickListFields(gridFields);
@@ -278,41 +258,30 @@ public class GridComboBoxItem extends MyComboBoxItem {
 					internalEnteredValue = itemContext.getFormItem().getValue();
 					// value = GridComboBoxItem.this.getValue();
 					Utils.debug("setPickListFilterCriteriaFunction 3");
-					ListGridRecord rec = new ComboBoxItem(itemContext
-							.getFormItem().getJsObj()).getSelectedRecord();
-					Utils.debug("setPickListFilterCriteriaFunction 4:" + rec
-							+ "; displayedValue:" + internalEnteredValue);
+					ListGridRecord rec = new ComboBoxItem(itemContext.getFormItem().getJsObj()).getSelectedRecord();
+					Utils.debug("setPickListFilterCriteriaFunction 4:" + rec + "; displayedValue:" + internalEnteredValue);
 					// 20120807 - Забанить фильтрацию по идентификатору. Или
 					// наоборот добавить новую фильтрацию только по ID
 
 					if (null != rec) {
-						Utils.debug("setPickListFilterCriteriaFunction 5. rec:"
-								+ rec.getAttribute(displayFieldName));
-						internalEnteredValue = rec
-								.getAttribute(displayFieldName);
+						Utils.debug("setPickListFilterCriteriaFunction 5. rec:" + rec.getAttribute(displayFieldName));
+						internalEnteredValue = rec.getAttribute(displayFieldName);
 						Utils.debug("setPickListFilterCriteriaFunction 6");
-						internalSelectedValue = rec
-								.getAttribute(valueFieldName);
+						internalSelectedValue = rec.getAttribute(valueFieldName);
 						Utils.debug("setPickListFilterCriteriaFunction 7");
 					}
 				} catch (Exception e) {
-					Utils.debug("setPickListFilterCriteriaFunction 8:"
-							+ e.getMessage());
+					Utils.debug("setPickListFilterCriteriaFunction 8:" + e.getMessage());
 					// e.printStackTrace();
 					ListGrid grid = parentFormPane.getMainForm().getTreeGrid();
-					internalEnteredValue = grid.getEditedCell(
-							grid.getEditRow(), parentColumnMD.getName());
+					internalEnteredValue = grid.getEditedCell(grid.getEditRow(), parentColumnMD.getName());
 					Utils.debug("setPickListFilterCriteriaFunction 9");
 				}
 				Utils.debug("setPickListFilterCriteriaFunction 10");
-				userTypedValue = (null != internalEnteredValue) ? internalEnteredValue
-						.toString() : null;
+				userTypedValue = (null != internalEnteredValue) ? internalEnteredValue.toString() : null;
 				Utils.debug("setPickListFilterCriteriaFunction 11");
-				userSelectedValue = (null != internalSelectedValue) ? internalSelectedValue
-						.toString() : null;
-				Utils.debug("setPickListFilterCriteriaFunction 12. userTypedValue:"
-						+ userTypedValue
-						+ "; userSelectedValue:"
+				userSelectedValue = (null != internalSelectedValue) ? internalSelectedValue.toString() : null;
+				Utils.debug("setPickListFilterCriteriaFunction 12. userTypedValue:" + userTypedValue + "; userSelectedValue:"
 						+ userSelectedValue);
 				return cr;
 			}
@@ -326,24 +295,18 @@ public class GridComboBoxItem extends MyComboBoxItem {
 				this.setValueFormatter(new FormItemValueFormatter() {
 
 					@Override
-					public String formatValue(Object value, Record record,
-							DynamicForm form, FormItem i) {
+					public String formatValue(Object value, Record record, DynamicForm form, FormItem i) {
 						// 20121107 String result = (String) value;
 						String result = null == value ? null : ((String) value); // ""
 																					// +
 																					// value;
 						try {
-							int currRow = GridComboBoxItem.this.parentFormPane
-									.getSelectedRow();
-							ListGrid grig = GridComboBoxItem.this.parentFormPane
-									.getMainForm().getTreeGrid();
+							int currRow = GridComboBoxItem.this.parentFormPane.getSelectedRow();
+							ListGrid grig = GridComboBoxItem.this.parentFormPane.getMainForm().getTreeGrid();
 							ListGridRecord rec = grig.getRecord(currRow);
-							String colName = GridComboBoxItem.this.parentColumnMD
-									.getName();
+							String colName = GridComboBoxItem.this.parentColumnMD.getName();
 							if (null != value) {
-								result = value.equals(rec.getAttribute(colName)) ? rec
-										.getAttribute(lookupDisplValFld)
-										: result;
+								result = value.equals(rec.getAttribute(colName)) ? rec.getAttribute(lookupDisplValFld) : result;
 							} else {
 								result = null;
 							}
@@ -399,15 +362,11 @@ public class GridComboBoxItem extends MyComboBoxItem {
 				lookupDataSource.fetchData(null, null);
 				formTreeGridField.setCellFormatter(new CellFormatter() {
 					@Override
-					public String format(Object value, ListGridRecord record,
-							int rowNum, int colNum) {
+					public String format(Object value, ListGridRecord record, int rowNum, int colNum) {
 						String result = null;
 						if (null != value) {
-							value = (value instanceof Integer) ? ((Integer) value)
-									.doubleValue() : value;
-							result = values.containsKey(value) ? values.get(
-									value).getAttribute(displayFieldName)
-									: value + "$";
+							value = (value instanceof Integer) ? ((Integer) value).doubleValue() : value;
+							result = values.containsKey(value) ? values.get(value).getAttribute(displayFieldName) : value + "$";
 						}
 						return result;
 					}
@@ -440,14 +399,11 @@ public class GridComboBoxItem extends MyComboBoxItem {
 
 	public Criteria getMainFormCriteria() {
 		Utils.debug("getMainFormCriteria start");
-		Record record = Utils
-				.getEditedRecord(GridComboBoxItem.this.parentFormPane);
-		Criteria criteria = Utils.getCriteriaFromListGridRecord2(
-				GridComboBoxItem.this.parentFormPane, record
+		Record record = Utils.getEditedRecord(GridComboBoxItem.this.parentFormPane);
+		Criteria criteria = Utils.getCriteriaFromListGridRecord2(GridComboBoxItem.this.parentFormPane, record
 		// , "GridComboBoxItem:" + GridComboBoxItem.this.getName(), null
-				);
-		Map<String, String> lookupAttributes = parentColumnMD
-				.getLookupAttributes();
+		);
+		Map<String, String> lookupAttributes = parentColumnMD.getLookupAttributes();
 		Iterator<String> attrs = lookupAttributes.keySet().iterator();
 		while (attrs.hasNext()) {
 			String attrName = attrs.next();
@@ -460,13 +416,11 @@ public class GridComboBoxItem extends MyComboBoxItem {
 	@Override
 	public void onSelectValue(FormItem item, Record rec) {
 		// TODO Auto-generated method stub
-		Utils.createQueryService("GridComboBoxItem.closeForm")
-				.closeFormInstance(instanceIdentifier,
-						new DSAsyncCallback<Void>() {
-							@Override
-							public void onSuccess(Void result) {
-							}
-						});
+		Utils.createQueryService("GridComboBoxItem.closeForm").closeFormInstance(instanceIdentifier, new DSAsyncCallback<Void>() {
+			@Override
+			public void onSuccess(Void result) {
+			}
+		});
 	}
 
 	@Override

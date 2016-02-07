@@ -40,7 +40,7 @@ public class FormTreeGridField extends TreeGridField {
 		// TODO Необоснованно вызывается для дат???
 		@Override
 		public void onChanged(ChangedEvent event) {
-			System.out.println("GridFieldChangedHandler.onChanged..." + event.getItem().getType());
+			Utils.debug("GridFieldChangedHandler.onChanged..." + event.getItem().getType());
 			if ("boolean".equals(event.getItem().getType())) {
 				getMainFormPane().getValuesManager().setValue(colName, "true".equals(event.getValue() + ""));
 			} else if ("date".equals(event.getItem().getType())) {
@@ -225,8 +225,8 @@ public class FormTreeGridField extends TreeGridField {
 				@Override
 				public String format(Object value, ListGridRecord record, int rowNum, int colNum) {
 					// 20110625 - косяк с обновлением записи. Проверено, работает нормально
-					String result = (null != value) ? mainFormPane.getMainForm().getTreeGrid().getEditedRecord(rowNum).getAttribute(
-							lookupDisplValFld) : null;
+					String result = (null != value)
+							? mainFormPane.getMainForm().getTreeGrid().getEditedRecord(rowNum).getAttribute(lookupDisplValFld) : null;
 					// String result = (null != value) ? record.getAttribute(lookupDisplValFld) : null;
 					return result;
 				}
@@ -277,8 +277,8 @@ public class FormTreeGridField extends TreeGridField {
 							String keyVal = event.getValue() + "";
 							String dispVal = event.getItem().getDisplayValue();
 							if (!keyVal.equals(dispVal))
-								mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm(
-										event.getRowNum());
+								mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode())
+										.doActionWithConfirm(event.getRowNum());
 						} catch (Exception e) {
 							e.printStackTrace();
 							Utils.debug(e.getMessage());
