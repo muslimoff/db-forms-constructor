@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE module SYSTEM "http://google-web-toolkit.googlecode.com/svn/releases/2.1/distro-source/core/src/gwt-module.dtd">
+<!DOCTYPE module SYSTEM "http://google-web-toolkit.googlecode.com/svn/releases/2.5/distro-source/core/src/gwt-module.dtd">
 <module rename-to="constructorapp">
         <inherits name='com.google.gwt.user.User' />
         <inherits name="com.google.gwt.i18n.I18N" />
@@ -11,47 +11,29 @@
         <inherits name="com.google.gwt.core.Core" />
         <inherits name="com.google.gwt.user.History" />
         <inherits name="com.rednels.ofcgwt.OFCGWT" />
-
-        <!--
-                <inherits name="com.smartgwt.SmartGwtNoScript"/> <inherits
-                name="com.smartgwt.tools.SmartGwtTools"/> <inherits
-                name="com.smartclient.theme.enterprise.EnterpriseResources"/>
-                <inherits
-                name="com.smartclient.theme.enterpriseblue.EnterpriseBlueResources"/>
-                <inherits name="com.smartclient.theme.graphite.GraphiteResources"/>
-                <inherits
-                name="com.smartclient.theme.simplicity.SimplicityResources"/>
-        -->
-
         <inherits name="com.smartgwt.SmartGwtNoScript" />
         <inherits name="com.smartclient.theme.enterprise.EnterpriseResources" />
-        <inherits name="com.smartclient.theme.enterpriseblue.EnterpriseBlueResources" />
         <inherits name="com.smartclient.theme.graphite.GraphiteResources" />
+<!--
+        
+        <inherits name="com.smartclient.theme.enterpriseblue.EnterpriseBlueResources" />
         <inherits name="com.smartclient.theme.mobile.MobileResources" />
         <inherits name="com.smartclient.theme.simplicity.SimplicityResources" />
         <inherits name="com.smartclient.theme.blackops.BlackOpsResources" />
         <inherits name="com.smartclient.theme.silverwave.SilverWaveResources" />
         <inherits name="com.smartclient.theme.treefrog.TreeFrogResources" />
         <inherits name="com.smartclient.theme.fleet.FleetResources" />
-
-        <!-- inherits name="com.smartclient.theme.cupertino.CupertinoResources" />
-        <inherits name="com.smartclient.theme.standart.standartResources" /-->
-
+        <inherits name="com.smartclient.theme.cupertino.CupertinoResources" />
+        <inherits name="com.smartclient.theme.standart.standartResources" />
+-->
         <inherits name="com.smartgwt.tools.SmartGwtTools" />
-        <inherits name="com.googlecode.gwtcodemirror.GwtCodeMirror" />
-        
-
         <entry-point class="com.abssoft.constructor.client.ConstructorApp" />
         <servlet class="com.abssoft.constructor.server.QueryServiceImpl"
                 path="/query" />
         <source path="common"/>
         <source path="client"/>
+        
         <collapse-all-properties />
-          
         <!-- allow Super Dev Mode -->
   		<add-linker name="xsiframe"/>
-        
-<!--         <script src="codemirror233/codemirror.js" /> -->
-<!--         <script src="codemirror233/plsqlmm.js" /> -->
-<!--         <stylesheet src="codemirror233/codemirror.css" /> -->
 </module>

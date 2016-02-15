@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project name="ConstructorApp_V2" default="build" basedir=".">
+<project name="ConstructorApp" default="build" basedir=".">
 	<property file="war/WEB-INF/application.properties" />
 	<!-- Configure path to GWT SDK -->
-	<property name="gwt.sdk" location="C:/GWT/lib/gwt-2.3.0" />
+	<property name="gwt.sdk" location="C:/gwt-git/lib/gwt-2.7.0" />
 	<!-- <property name="smartgwt" location="C:/GWT/lib/smartgwt-3.1p-20121210" /> -->
-	<property name="smartgwt" location="C:/GWT/lib/smartgwt-4.0p-20130725" />
-	<property name="simplexml" location="C:/GWT/lib/simple-xml-2.7" />
-	<property name="ofcgwt" location="C:/GWT/lib/ofcgwt.2.0.1.b" />
-	<property name="xmlp" location="C:/GWT/lib/xmlp" />
-	<property name="catalina.home" location="C:/Tomcat60/Tomcat 6.0" />
-	<property name="catalina.servicename" value="Tomcat6" />
+	<property name="smartgwt" location="C:/gwt-git/lib/smartgwt-5.1p_20160108" />
+	<property name="simplexml" location="C:/gwt-git/lib/simple-xml-2.7" />
+	<property name="ofcgwt" location="C:/gwt-git/lib/ofcgwt.2.0.1.b" />
+	<property name="xmlp" location="C:/gwt-git/lib/bipublisher11" />
+	<property name="catalina.home" location="C:/Tomcat/Tomcat 8.0" />
+	<property name="catalina.servicename" value="Tomcat8" />
 
 	<path id="project.class.path">
 		<pathelement location="war/WEB-INF/classes" />
-		<pathelement location="${smartgwt}/smartgwt.jar" />
-		<pathelement location="${smartgwt}/smartgwt-skins-add.jar" />
-		<pathelement location="${smartgwt}/smartgwt-skins.jar" />
+		<pathelement location="${smartgwt}/smartgwt_mod.jar" />
+		<!--		<pathelement location="${smartgwt}/smartgwt-skins-add.jar" />
+		<pathelement location="${smartgwt}/smartgwt-skins.jar" /> -->
 		<pathelement location="${simplexml}/jar/simple-xml-2.7.jar" />
 		<pathelement location="${ofcgwt}/ofcgwt.jar" />
 		<pathelement location="${gwt.sdk}/gwt-user.jar" />
@@ -40,12 +40,15 @@
 		<mkdir dir="war/WEB-INF/lib" />
 		<copy todir="war/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet.jar" />
 		<copy todir="war/WEB-INF/lib" file="${simplexml}/jar/simple-xml-2.7.jar" />
+		<copy todir="war/WEB-INF/lib">
+			<fileset dir="${xmlp}" includes="**/*.jar" />
+		</copy>
 		<!-- Add any additional server libs that need to be copied -->
 	</target>
 
 	<target name="javac" depends="libs" description="Compile java source">
 		<mkdir dir="war/WEB-INF/classes" />
-		<javac srcdir="src" includes="**" encoding="utf-8" destdir="war/WEB-INF/classes" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source">
+		<javac srcdir="src" includes="**" encoding="utf-8" destdir="war/WEB-INF/classes" source="1.7" target="1.7" nowarn="true" debug="true" debuglevel="lines,vars,source" includeantruntime="false">
 			<classpath refid="project.class.path" />
 		</javac>
 		<copy todir="war/WEB-INF/classes">
@@ -56,7 +59,7 @@
 			<patternset>
 				<include name="/com/smartgwt/client/util/LogicalDate*.class" />
 			</patternset>
-			<fileset file="${smartgwt}/smartgwt.jar" />
+			<fileset file="${smartgwt}/smartgwt_mod.jar" />
 		</unzip>
 	</target>
 
@@ -87,8 +90,8 @@
 			<fileset dir="resources" excludes="**/.svn" />
 		</copy>
 
-		<copy todir="war/constructorapp">
-			<fileset dir="externalJS/" excludes="**/.svn" />
+		<copy todir="war/constructorapp/codemirror-5.11">
+			<fileset dir="../../lib/codemirror-5.11/" excludes="**/.svn" />
 		</copy>
 
 		<copy file="war/ConstructorApp.html" tofile="war/ConstructorApp_war.html" overwrite="true">

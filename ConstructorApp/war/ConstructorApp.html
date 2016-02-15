@@ -40,7 +40,7 @@
 			}
 			function docWrite(scriptName, msgText){
 				var start_ 				= "<" + "script type=\"text/javascript\" language=\"javascript\" src=" + isomorphicDir;
-				var end_				= "?isc_version=8.2.js><" + "/script>";		
+				var end_				= "?isc_version=10.1p_2016-01-08-LGPL.js><" + "/script>";		
 				
 				setIndicatiorMsg(null==msgText?'Loading script: <br><b>'+scriptName+'</b>':msgText);
 				document.write(start_ + scriptName + end_);
@@ -70,6 +70,26 @@
 			//include the application JS
 			setIndicatiorMsg('Loading Application scripts...');
 		</script>
+
+<!--
+		<link rel="stylesheet" href="constructorapp/codemirror233/codemirror.css">
+		<script type="text/javascript" language="javascript" src="constructorapp/codemirror233/codemirror.js"></script>
+		<script type="text/javascript" language="javascript" src="constructorapp/codemirror233/plsqlmm.js"></script>
+
+		<script type="text/javascript" language="javascript" src="constructorapp/cmirror/js/codemirror.js"></script>
+		<script type="text/javascript" language="javascript" src="constructorapp/cmirror/js/parsers-min.js"></script>
+		<link rel="stylesheet" href="constructorapp/cmirror/css/all-min.css">
+-->
+		<link rel="stylesheet" href="constructorapp/codemirror-5.11/lib/codemirror.css">
+		<script type="text/javascript" language="javascript" src="constructorapp/codemirror-5.11/lib/codemirror.js"></script>
+		<script type="text/javascript" language="javascript" src="constructorapp/codemirror-5.11/mode/sql/sql.js"></script>
+		<style type="text/css">
+      			.CodeMirror 	{
+        					border: 1px solid #eee;
+        					height: auto;
+      					}
+    		</style>
+
 		<!-- <script type="text/javascript" language="javascript" src="constructorapp/constructorapp.nocache.js?@version@"></script> -->
 		<script type="text/javascript" language="javascript" src="constructorapp/constructorapp.nocache.js"></script>
 

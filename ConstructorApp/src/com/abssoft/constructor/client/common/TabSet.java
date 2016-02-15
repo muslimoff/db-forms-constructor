@@ -277,6 +277,10 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 
 		JavaScriptObject jso = setTabBarLayoutStartMargin(toolstripSize + 5);
 		this.setAttribute("tabBarProperties", jso, true);
+
+		//
+		//this.getPaneContainer().setMargin(50);
+		this.setPaneMargin(1);
 	}
 
 	//Offsets the TabBar start position to give room for a button 

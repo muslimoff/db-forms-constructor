@@ -8,5 +8,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jdbc11.2.xe"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ofcgwt.2.0.1.b"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/bipublisher11"/>
+	<classpathentry kind="lib" path="C:/gwt-git/lib/gwtcodemirror/gwtcodemirror3.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
