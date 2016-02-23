@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -48,7 +49,7 @@ public class XMLPublisherServlet extends HttpServlet // implements
 		int chunkSize = clob.getChunkSize();
 		char[] binaryBuffer = new char[chunkSize];
 		while ((bytesRead = clobInputStream.read(binaryBuffer)) != -1) {
-			Utils.spoolOut("clobToOutputSteam: " + new String(binaryBuffer));
+			//Utils.spoolOut("clobToOutputSteam: " + new String(binaryBuffer));
 			out.write(binaryBuffer, 0, bytesRead);
 		}
 		clobInputStream.close();
@@ -141,6 +142,18 @@ public class XMLPublisherServlet extends HttpServlet // implements
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		doMethod(req, resp);
+	}
+
+	public void setResponseHeader(HttpServletResponse resp, String contentDisposition, String ContentType, String filename)
+			throws IOException {
+		resp.setCharacterEncoding("utf-8");
+		String outFilename = (null != filename) ? filename : "noname.xml";
+		//http://stackoverflow.com/questions/18050718/utf-8-encoding-name-in-downloaded-file
+		outFilename = URLEncoder.encode(outFilename, "UTF-8");
+		String ct = (null != ContentType) ? ContentType : "text/plain";
+		resp.setContentType(ct);
+		//String 
+		resp.setHeader("Content-Disposition", contentDisposition + "; filename*=UTF-8''" + outFilename + "");
 	}
 
 	private void doMethod(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -241,16 +254,33 @@ public class XMLPublisherServlet extends HttpServlet // implements
 
 			}
 			if ("file".equals(type)) {
-				getFile(req, resp, session, contentDisposition, ContentType);
+				filename = getServletContext().getRealPath("/WEB-INF") + "/" + "constructorapp.xml";
+				setResponseHeader(resp, contentDisposition, ContentType, filename);
+				getFile(req, resp, session, contentDisposition, ContentType, filename);
 				return;
 			} else if ("xmlp".equals(type)) {
-				processXMLP(req, resp, session, contentDisposition, ContentType, template, docId, filename);
+				String extention = "rtf";
+				if ("application/vnd.ms-excel".equals(ContentType)) {
+					extention = "xls";
+				} else if ("application/pdf".equals(ContentType)) {
+					extention = "pdf";
+				} else if ("text/html".equals(ContentType)) {
+					extention = "html";
+				}
+
+				setResponseHeader(resp, contentDisposition, ContentType, filename + "." + extention);
+				processXMLP(req, resp, session, contentDisposition, ContentType, template, docId //, filename
+				);
 				// return;
 			} else if ("clob".equals(type)) {
-				getCLOB(req, resp, session, contentDisposition, ContentType, docId);
+				setResponseHeader(resp, contentDisposition, ContentType, filename);
+				getCLOB(req, resp, session, contentDisposition, ContentType, docId //, filename
+				);
 				// return;
 			} else if ("xslt".equals(type)) {
-				processXSLT(req, resp, session, contentDisposition, ContentType, template, docId, filename);
+				setResponseHeader(resp, contentDisposition, ContentType, filename);
+				processXSLT(req, resp, session, contentDisposition, ContentType, template, docId //, filename
+				);
 				// return;
 			}
 			session.debug("Exiting... " + cntr + "; " + this);
@@ -259,12 +289,13 @@ public class XMLPublisherServlet extends HttpServlet // implements
 	}
 
 	public void processXSLT(HttpServletRequest req, HttpServletResponse resp, Session session, String contentDisposition,
-			String ContentType, String template, Integer docId, String filename) throws IOException {
-		resp.setCharacterEncoding("utf-8");
-		String outFilename = (null != filename) ? filename : "noname.xml";
-		String ct = (null != ContentType) ? ContentType : "text/plain";
-		resp.setContentType(ct);
-		resp.setHeader("Content-Disposition", contentDisposition + "; filename=\"" + outFilename + "\"");
+			String ContentType, String template, Integer docId //, String filename
+	) throws IOException {
+		//		resp.setCharacterEncoding("utf-8");
+		//		String outFilename = (null != filename) ? filename : "noname.xml";
+		//		String ct = (null != ContentType) ? ContentType : "text/plain";
+		//		resp.setContentType(ct);
+		//		resp.setHeader("Content-Disposition", contentDisposition + "; filename=\"" + outFilename + "\"");
 		PrintWriter out = resp.getWriter();
 		String exportData = "";
 		try {
@@ -294,12 +325,16 @@ public class XMLPublisherServlet extends HttpServlet // implements
 
 	// http://127.0.0.1:8888/constructorapp/xmlp?contentDisposition=inline&type=clob&ContentType=application/msword
 	public void getCLOB(HttpServletRequest req, HttpServletResponse resp, Session session, String contentDisposition, String ContentType,
-			Integer docId) throws IOException {
-		resp.setCharacterEncoding("utf-8");
-		String outFilename = "example-data.xml";
-		String ct = (null != ContentType) ? ContentType : "text/plain";
-		resp.setContentType(ct);
-		resp.setHeader("Content-Disposition", contentDisposition + "; filename=\"" + outFilename + "\"");
+			Integer docId //, String filename
+	) throws IOException {
+		//resp.setCharacterEncoding("utf-8");
+		//String outFilename = (null != filename) ? filename : "noname.xml";
+		//http://stackoverflow.com/questions/18050718/utf-8-encoding-name-in-downloaded-file
+		//outFilename = URLEncoder.encode(outFilename, "UTF-8");
+		//String ct = (null != ContentType) ? ContentType : "text/plain";
+		//resp.setContentType(ct);
+		//String 
+		//resp.setHeader("Content-Disposition", contentDisposition + "; filename*=UTF-8''" + outFilename + "");
 		PrintWriter out = resp.getWriter();
 		String exportData = findExportData(session, docId);
 		if (null != exportData) {
@@ -321,16 +356,17 @@ public class XMLPublisherServlet extends HttpServlet // implements
 		out.close();
 	}
 
-	public void getFile(HttpServletRequest req, HttpServletResponse resp, Session session, String contentDisposition, String ContentType)
-			throws IOException {
-		String outFilename = "example-data.xml";
-		// TODO Get real File Content Type
-		String ct = (null != ContentType) ? ContentType : "text/plain";
-		resp.setContentType(ct);
-		resp.setHeader("Content-Disposition", contentDisposition + "; filename=\"" + outFilename + "\"");
+	//Заготовка для выгрузки файлов с сервера приложений
+	public void getFile(HttpServletRequest req, HttpServletResponse resp, Session session, String contentDisposition, String ContentType,
+			String filename) throws IOException {
+		//String filename = getServletContext().getRealPath("/WEB-INF") + "/" + "constructorapp.xml";
+		//		String outFilename = "example-data.xml";
+		//		// TODO Get real File Content Type
+		//		String ct = (null != ContentType) ? ContentType : "text/plain";
+		//		resp.setContentType(ct);
+		//		resp.setHeader("Content-Disposition", contentDisposition + "; filename=\"" + outFilename + "\"");
 
 		OutputStream out = resp.getOutputStream();
-		String filename = getServletContext().getRealPath("/WEB-INF") + "/" + "constructorapp.xml";
 		BufferedInputStream is = new BufferedInputStream(new FileInputStream(filename));
 
 		byte[] buffer = new byte[8192];
@@ -368,22 +404,21 @@ public class XMLPublisherServlet extends HttpServlet // implements
 	// http://ostermiller.org/convert_java_outputstream_inputstream.html
 	// http://www.jdom.org/docs/faq.html
 	public void processXMLP(HttpServletRequest req, HttpServletResponse resp, Session session, String contentDisposition,
-			String ContentType, String template, Integer docId, String filename) throws IOException {
+			String ContentType, String template, Integer docId //, String filename
+	) throws IOException {
 		Utils.spoolOut("XMLPublisherServlet.processXMLP");
-		resp.setCharacterEncoding("UTF-8"); // mm20131028
-		ServletOutputStream respOS = resp.getOutputStream();
+		//resp.setCharacterEncoding("UTF-8"); // mm20131028
+		//resp.setContentType(ContentType);
+		//resp.addHeader("Content-Disposition", contentDisposition + "; " + getEncodedFileName(req, filename + "." + extention));
 		byte format = FOProcessor.FORMAT_RTF;
-		String extention = "rtf";
 		if ("application/vnd.ms-excel".equals(ContentType)) {
 			format = FOProcessor.FORMAT_EXCEL;
-			extention = "xls";
 		} else if ("application/pdf".equals(ContentType)) {
 			format = FOProcessor.FORMAT_PDF;
-			extention = "pdf";
 		} else if ("text/html".equals(ContentType)) {
 			format = FOProcessor.FORMAT_HTML;
-			extention = "html";
 		}
+		ServletOutputStream respOS = resp.getOutputStream();
 		try {
 			ByteArrayOutputStream rtfOS = new ByteArrayOutputStream();
 			CLOB rtfTemplClob = findCLOB(session, template);
@@ -398,10 +433,6 @@ public class XMLPublisherServlet extends HttpServlet // implements
 			/** XFL FO and data XML to output **/
 			processor.setTemplate(foIS);
 			processor.setData(xmlDataClob.characterStreamValue());
-
-			resp.setContentType(ContentType);
-			resp.addHeader("Content-Disposition", contentDisposition + "; " + getEncodedFileName(req, filename + "." + extention));
-
 			processor.setOutputFormat(format);
 			processor.setOutput(respOS);
 			processor.setConfig(getServletContext().getRealPath("/WEB-INF") + "/xdo.cfg");

@@ -74,6 +74,11 @@
 			92.46.38.246:1521:XE
 		</server>
 
+		<server id="24" display="HG XE Localhost" dbusername="TEST"
+			dbpassword="test123" allowuserchange="false" debug="false" default="false"
+			fcSchemaOwner="TEST" validationFN="&amp;fc_schema_owner..users_pkg.validate_login" sessionTimeout="10" dbSessionTimeout="20">
+			localhost:1521:XE
+		</server>
 
 
 	</dbConnections>
