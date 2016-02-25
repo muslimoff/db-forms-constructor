@@ -26,7 +26,6 @@ import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.Record;
-import com.smartgwt.client.util.JSOHelper;
 import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.FormItemCriteriaFunction;
 import com.smartgwt.client.widgets.form.fields.FormItemFunctionContext;
@@ -46,7 +45,6 @@ public class FormLookupComboboxItem extends MyComboBoxItem {
 	public static final String lookupUserTypedVarName = "p$lookup_entered_value"; // То, что вводит пользователь с клавиатуры
 	// public static final String lookupSelectedValueVarName = "p$lookup_selected_value"; // идентификатор того, что пользователь ввел/выбрал
 
-	private FormInstanceIdentifier instanceIdentifier;
 	private String lookupCode;
 	private ComboBoxDataSource lookupDataSource = new ComboBoxDataSource();
 	// private DataSource lookupDataSource;
@@ -211,29 +209,14 @@ public class FormLookupComboboxItem extends MyComboBoxItem {
 		});
 	}
 
-	@SuppressWarnings("unchecked")
-	private void setEditValues(Record rec) {
-		parentFormPane.setEditValues(JSOHelper.convertToMap(rec.getJsObj()));
-	}
-
 	@Override
-	public void onSelectValue(FormItem item, Record rec) {
-		try {
-			setEditValues(rec);
-			Utils.createQueryService("FormLookupComboboxItem.closeForm").closeFormInstance(instanceIdentifier, new DSAsyncCallback<Void>() {
-				@Override
-				public void onSuccess(Void result) {
-				}
-			});
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		// TODO - 6. освободить на сервере память (кеш), т.е. для лукапа
-	}
-
-	@Override
-	public void onClearValue(FormItem item) {
+	protected void onClearValue(FormItem item) {
 		setEditValues(lookupDataSource.copyRecord(new Record()));
 	}
 
+	@Override
+	protected void onSelectValue(FormItem item, Record rec) {
+		setEditValues(rec);
+		super.onSelectValue(item, rec);
+	}
 }

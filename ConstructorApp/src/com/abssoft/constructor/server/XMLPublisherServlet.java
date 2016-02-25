@@ -34,6 +34,7 @@ import oracle.xdo.template.RTFProcessor;
 import oracle.i18n.net.MimeUtility;
 import oracle.jdbc.OraclePreparedStatement;
 import oracle.sql.CLOB;
+import oracle.xdo.common.log.Logger;
 
 public class XMLPublisherServlet extends HttpServlet // implements
 // javax.servlet.SingleThreadModel
@@ -146,6 +147,7 @@ public class XMLPublisherServlet extends HttpServlet // implements
 
 	public void setResponseHeader(HttpServletResponse resp, String contentDisposition, String ContentType, String filename)
 			throws IOException {
+		//http://blogs.msdn.com/b/ieinternals/archive/2010/06/07/content-disposition-attachment-and-international-unicode-characters.aspx
 		resp.setCharacterEncoding("utf-8");
 		String outFilename = (null != filename) ? filename : "noname.xml";
 		//http://stackoverflow.com/questions/18050718/utf-8-encoding-name-in-downloaded-file
@@ -407,6 +409,7 @@ public class XMLPublisherServlet extends HttpServlet // implements
 			String ContentType, String template, Integer docId //, String filename
 	) throws IOException {
 		Utils.spoolOut("XMLPublisherServlet.processXMLP");
+		Logger.setLevel(Logger.OFF);
 		//resp.setCharacterEncoding("UTF-8"); // mm20131028
 		//resp.setContentType(ContentType);
 		//resp.addHeader("Content-Disposition", contentDisposition + "; " + getEncodedFileName(req, filename + "." + extention));

@@ -808,6 +808,7 @@ public class MainFormPane extends Canvas {
 		ListGrid g = getMainForm().getTreeGrid();
 		// Получаем значения записи с учетом несохраненных изменений
 		Map<String, Object> map = JSOHelper.convertToMap(g.getEditedRecord(rowNum).getJsObj());
+		Utils.debugRecord(g.getEditedRecord(rowNum), this.getClassName() + ".setEditValues. map");
 		map.putAll(valuesMap);
 		g.setEditValues(rowNum, map);
 		getValuesManager().setValues(map);

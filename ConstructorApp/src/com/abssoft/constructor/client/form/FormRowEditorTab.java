@@ -93,8 +93,9 @@ public class FormRowEditorTab extends FormTab {
 					// // item.setType(type);
 					// String itemName = item.getName();
 					// String itemType = item.getType();
-					Object itemValue = event.getItem().getValue();
-					Utils.debug("FormRowEditorTab.onItemChanged... " + itemName + "; " + itemType);
+					Object itemValue = item.getValue();
+					Utils.debug("FormRowEditorTab.onItemChanged... itemName: " + itemName + "; itemType: " + itemType + "; itemValue:"
+							+ (null == itemValue ? null : itemValue.toString()));
 					ListGrid g = getMainFormPane().getMainForm().getTreeGrid();
 					int rn = getMainFormPane().getSelectedRow();
 					if ("boolean".equals(itemType)) {
@@ -113,17 +114,18 @@ public class FormRowEditorTab extends FormTab {
 							g.setEditValue(rn, itemName, item.getAttribute("value"));
 						}
 					} else {
-						Utils.debug("FormRowEditorTab.onItemChanged... ???. Value:  " + item.getAttribute("value"));
-						Utils.debug("FormRowEditorTab.onItemChanged... ???. LGRecord:" + g.getRecord(rn));
 						// System.out.println(">>" + item.getValue() + "; " + item.getValue().getClass());
 						String val = null;
 						try {
 							val = item.getAttribute("value");
 						} catch (java.lang.IllegalArgumentException e) {
-							Object objVal = item.getValue();
-							val = null == objVal ? null : objVal + "";
+							val = null == itemValue ? null : itemValue + "";
+						} catch (java.lang.ClassCastException e) {
+							val = null == itemValue ? null : itemValue + "";
 						}
 						g.setEditValue(rn, itemName, val);
+						Utils.debug("FormRowEditorTab.onItemChanged... ???. Value:  " + val);
+						//Utils.debug("FormRowEditorTab.onItemChanged... ???. LGRecord:" + g.getRecord(rn));
 					}
 
 				} catch (Exception e) {
@@ -133,10 +135,12 @@ public class FormRowEditorTab extends FormTab {
 			}
 		});
 		/*
-		 * Read Only - reject changes form.addItemChangeHandler(new ItemChangeHandler() {
+		 * Read Only - reject changes form.addItemChangeHandler(new
+		 * ItemChangeHandler() {
 		 * 
-		 * @Override public void onItemChange(ItemChangeEvent event) {event.getItem().setAttribute("value", event.getItem().getValue() +"");
-		 * } });
+		 * @Override public void onItemChange(ItemChangeEvent event)
+		 * {event.getItem().setAttribute("value", event.getItem().getValue()
+		 * +""); } });
 		 */
 		this.setPane(form);
 		// }

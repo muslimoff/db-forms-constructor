@@ -148,7 +148,6 @@ public class GridComboBoxItem extends MyComboBoxItem {
 	}
 
 	private String displayFieldName = null;
-	private FormInstanceIdentifier instanceIdentifier;
 	private String lookupCode;
 	private String lookupDisplValFld;
 	private String valueFieldName = null;
@@ -414,17 +413,7 @@ public class GridComboBoxItem extends MyComboBoxItem {
 	}
 
 	@Override
-	public void onSelectValue(FormItem item, Record rec) {
-		// TODO Auto-generated method stub
-		Utils.createQueryService("GridComboBoxItem.closeForm").closeFormInstance(instanceIdentifier, new DSAsyncCallback<Void>() {
-			@Override
-			public void onSuccess(Void result) {
-			}
-		});
-	}
-
-	@Override
-	public void onClearValue(FormItem item) {
+	protected void onClearValue(FormItem item) {
 		// TODO Auto-generated method stub
 
 	}

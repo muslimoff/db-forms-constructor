@@ -4,7 +4,9 @@ import java.util.Iterator;
 
 import com.abssoft.constructor.client.ConstructorApp;
 import com.abssoft.constructor.client.data.Utils;
+import com.abssoft.constructor.client.data.common.DSAsyncCallback;
 import com.abssoft.constructor.client.form.MainFormPane;
+import com.abssoft.constructor.common.FormInstanceIdentifier;
 import com.abssoft.constructor.common.metadata.ColumnAction;
 import com.abssoft.constructor.common.metadata.FormColumnMD;
 import com.abssoft.constructor.common.metadata.StaticLookup;
@@ -12,12 +14,12 @@ import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.types.TextMatchStyle;
+import com.smartgwt.client.util.JSOHelper;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.grid.ListGridField;
-import com.smartgwt.client.widgets.grid.ListGridRecord;
 
 public abstract class MyComboBoxItem extends ComboBoxItem {
 	private Integer lookupWidth;
@@ -26,6 +28,7 @@ public abstract class MyComboBoxItem extends ComboBoxItem {
 	protected FormColumnMD parentColumnMD;
 	protected MainFormPane parentFormPane;
 	private DataSource lookupDataSource;
+	protected FormInstanceIdentifier instanceIdentifier;
 
 	public MyComboBoxItem(FormColumnMD parentColumnMD, MainFormPane parentFormPane) {
 		super();
@@ -41,6 +44,7 @@ public abstract class MyComboBoxItem extends ComboBoxItem {
 				// Определяем, введена ли пользователем часть значения для поиска (null=rec) или пользователь выбрал запись (null!=rec)
 				// Такой способ нашел где-то на форуме
 				Record rec = new ComboBoxItem(item.getJsObj()).getSelectedRecord();
+				Utils.debugRecord(rec, "MyComboBoxItem.onChanged." + item.getName());
 				if (null != rec) {
 					onSelectValue(item, rec);
 					doOnRecordSelectedAction();
@@ -52,9 +56,10 @@ public abstract class MyComboBoxItem extends ComboBoxItem {
 		});
 	}
 
-	public abstract void onSelectValue(FormItem item, Record rec);
-
-	public abstract void onClearValue(FormItem item);
+	@SuppressWarnings("unchecked")
+	protected void setEditValues(Record rec) {
+		parentFormPane.setEditValues(JSOHelper.convertToMap(rec.getJsObj()));
+	}
 
 	public void doOnRecordSelectedAction() {
 		//
@@ -65,8 +70,8 @@ public abstract class MyComboBoxItem extends ComboBoxItem {
 			String actionType = ca.getColActionTypeCode();
 			if ("4".equals(actionType)) {
 				try {
-					parentFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm(
-							parentFormPane.getSelectedRow());
+					parentFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode())
+							.doActionWithConfirm(parentFormPane.getSelectedRow());
 				} catch (Exception e) {
 					e.printStackTrace();
 					Utils.debug(e.getMessage());
@@ -153,4 +158,25 @@ public abstract class MyComboBoxItem extends ComboBoxItem {
 	public StaticLookup getValueMap() {
 		return valueMap;
 	}
+
+	//public abstract void onSelectValue(FormItem item, Record rec);
+
+	protected void closeFormInstance() {
+		try {
+			Utils.createQueryService(this.getClassName() + ".closeForm").closeFormInstance(instanceIdentifier, new DSAsyncCallback<Void>() {
+				@Override
+				public void onSuccess(Void result) {
+				}
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	protected void onSelectValue(FormItem item, Record rec) {
+		//setEditValues(rec);
+		closeFormInstance();
+	}
+
+	protected abstract void onClearValue(FormItem item);
 }
