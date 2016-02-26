@@ -3,13 +3,12 @@ package com.abssoft.constructor.server;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -29,20 +28,22 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import oracle.xdo.template.FOProcessor;
-import oracle.xdo.template.RTFProcessor;
-import oracle.i18n.net.MimeUtility;
+import org.apache.commons.io.input.ReaderInputStream;
+
 import oracle.jdbc.OraclePreparedStatement;
 import oracle.sql.CLOB;
 import oracle.xdo.common.log.Logger;
+import oracle.xdo.template.ExcelProcessor;
+import oracle.xdo.template.FOProcessor;
+import oracle.xdo.template.RTFProcessor;
 
-public class XMLPublisherServlet extends HttpServlet // implements
-// javax.servlet.SingleThreadModel
+public class XMLPublisherServlet extends HttpServlet // implements javax.servlet.SingleThreadModel
 {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private String webInfRoot;
 
 	public static void clobToOutputSteam(CLOB clob, PrintWriter out) throws SQLException, IOException {
 		Reader clobInputStream = clob.getCharacterStream();
@@ -115,26 +116,6 @@ public class XMLPublisherServlet extends HttpServlet // implements
 		return result;
 	}
 
-	private static String getEncodedFileName(HttpServletRequest req, String reportName) throws UnsupportedEncodingException {
-		// http://www.rsdn.ru/forum/java/2890460.flat.aspx
-		String agent = req.getHeader("USER-AGENT").toLowerCase();
-		String fileName = reportName;
-		if (agent.indexOf("firefox") > -1) {
-			fileName = URLDecoder.decode(reportName, "utf-8");
-		} else if (agent.indexOf("chrome") > -1) {
-			fileName = URLDecoder.decode(reportName, "windows-1251");
-		}
-		String contentDisposition = "filename=\"" + MimeUtility.encodeText(fileName, "UTF8", "B") + "\"";
-		return contentDisposition;
-	}
-
-	public static void main(String[] args) throws UnsupportedEncodingException {
-		String ffStr = "%D1%84%D1%8B%D0%B2%D0%B0%D0%BF%D1%80%D0%BE%D0%BB%D0%B4%D0%B6";
-		String chromeStr = "%F4%FB%E2%E0%EF%F0%EE%EB%E4%E6";
-		System.out.println(URLDecoder.decode(ffStr, "utf-8"));
-		System.out.println(URLDecoder.decode(chromeStr, "windows-1251"));
-	}
-
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		doMethod(req, resp);
@@ -154,7 +135,6 @@ public class XMLPublisherServlet extends HttpServlet // implements
 		outFilename = URLEncoder.encode(outFilename, "UTF-8");
 		String ct = (null != ContentType) ? ContentType : "text/plain";
 		resp.setContentType(ct);
-		//String 
 		resp.setHeader("Content-Disposition", contentDisposition + "; filename*=UTF-8''" + outFilename + "");
 	}
 
@@ -162,13 +142,10 @@ public class XMLPublisherServlet extends HttpServlet // implements
 		req.setCharacterEncoding("utf-8");
 		resp.setCharacterEncoding("utf-8");
 		cntr++;
-		// TODO вылетает сессия XMLPublisherServlet при долгом таймауте
-		// session.setMaxInactiveInterval(interval);
+		// TODO вылетает сессия XMLPublisherServlet при долгом таймауте session.setMaxInactiveInterval(interval);
 		HttpSession httpSession = req.getSession(true);
 
-		httpSession.setMaxInactiveInterval(-1); // (2 * 60 * 60); // A negative
-												// time indicates the session
-												// should never timeout.
+		httpSession.setMaxInactiveInterval(-1); // (2 * 60 * 60); // A negative time indicates the session should never timeout.
 		Utils.spoolOut("httpSession:" + httpSession);
 		Utils.spoolOut("httpSession.getCreationTime:" + httpSession.getCreationTime());
 		Utils.spoolOut("httpSession.getId:" + httpSession.getId());
@@ -193,11 +170,9 @@ public class XMLPublisherServlet extends HttpServlet // implements
 			Integer docId = -1;
 			String template = null;
 			String filename = "файл";
-			// String exportData = null;
 
 			System.out.println(
 					"getParameterMap>> " + req.getParameterMap() + "; filename:" + ((String[]) req.getParameterMap().get("filename"))[0]);
-			//
 
 			String[] pvs = req.getParameterValues("filename");
 			System.out.println("aaa: " + pvs);
@@ -212,24 +187,13 @@ public class XMLPublisherServlet extends HttpServlet // implements
 				System.out.println("y:" + i + ": " + xx[i]);
 			}
 
-			// byte[] yy = (byte[]) req.getParameterMap().get("filename");
-			// for (int i = 0; i < yy.length; i++) {
-			// System.out.println("z:" + i + ": " + yy[i]);
-			// }
 			System.out.println();
-			//
 
 			Enumeration<?> e = req.getParameterNames();
 
 			while (e.hasMoreElements()) {
 				String paramName = (String) e.nextElement();
 				String paramValue = req.getParameter(paramName);
-				// System.out.println("XMLPublisherServlet.doGet. ParameterNames: "
-				// + paramName + "=" + paramValue + "; "
-				// + URLDecoder.decode(paramValue, "UTF8"));
-				// System.out.println("param_decode: " + new
-				// String(paramValue.getBytes("utf-8"), "utf-16"));
-				// System.out.println("xxa:" + paramValue.getBytes("utf-8"));
 				if ("contentDisposition".equals(paramName) && !"".equals(paramValue)) {
 					contentDisposition = paramValue;
 				}
@@ -249,17 +213,24 @@ public class XMLPublisherServlet extends HttpServlet // implements
 				if ("template".equals(paramName) && !"".equals(paramValue)) {
 					template = paramValue;
 				}
-				// filename
 				if ("filename".equals(paramName) && !"".equals(paramValue)) {
 					filename = paramValue;
 				}
 
 			}
 			if ("file".equals(type)) {
-				filename = getServletContext().getRealPath("/WEB-INF") + "/" + "constructorapp.xml";
+				filename = webInfRoot + "/" + "constructorapp.xml";
 				setResponseHeader(resp, contentDisposition, ContentType, filename);
 				getFile(req, resp, session, contentDisposition, ContentType, filename);
 				return;
+			} else if ("clob".equals(type)) {
+				setResponseHeader(resp, contentDisposition, ContentType, filename);
+				getCLOB(req, resp, session, contentDisposition, ContentType, docId //, filename
+				);
+			} else if ("xslt".equals(type)) {
+				setResponseHeader(resp, contentDisposition, ContentType, filename);
+				processXSLT(req, resp, session, contentDisposition, ContentType, template, docId //, filename
+				);
 			} else if ("xmlp".equals(type)) {
 				String extention = "rtf";
 				if ("application/vnd.ms-excel".equals(ContentType)) {
@@ -273,17 +244,9 @@ public class XMLPublisherServlet extends HttpServlet // implements
 				setResponseHeader(resp, contentDisposition, ContentType, filename + "." + extention);
 				processXMLP(req, resp, session, contentDisposition, ContentType, template, docId //, filename
 				);
-				// return;
-			} else if ("clob".equals(type)) {
-				setResponseHeader(resp, contentDisposition, ContentType, filename);
-				getCLOB(req, resp, session, contentDisposition, ContentType, docId //, filename
-				);
-				// return;
-			} else if ("xslt".equals(type)) {
-				setResponseHeader(resp, contentDisposition, ContentType, filename);
-				processXSLT(req, resp, session, contentDisposition, ContentType, template, docId //, filename
-				);
-				// return;
+			} else if ("xlsxmlp".equals(type)) {
+				setResponseHeader(resp, "attachment", "application/vnd.ms-excel", filename);
+				processXlsXMLP(req, resp, session, template, docId);
 			}
 			session.debug("Exiting... " + cntr + "; " + this);
 			// httpSession.invalidate();
@@ -293,20 +256,12 @@ public class XMLPublisherServlet extends HttpServlet // implements
 	public void processXSLT(HttpServletRequest req, HttpServletResponse resp, Session session, String contentDisposition,
 			String ContentType, String template, Integer docId //, String filename
 	) throws IOException {
-		//		resp.setCharacterEncoding("utf-8");
-		//		String outFilename = (null != filename) ? filename : "noname.xml";
-		//		String ct = (null != ContentType) ? ContentType : "text/plain";
-		//		resp.setContentType(ct);
-		//		resp.setHeader("Content-Disposition", contentDisposition + "; filename=\"" + outFilename + "\"");
 		PrintWriter out = resp.getWriter();
 		String exportData = "";
 		try {
 
 			exportData = findExportData(session, docId);
-			// out.print(exportData);
-
 			CLOB rtfTemplClob = findCLOB(session, template);
-			// clobToOutputSteam(rtfTemplClob, out);
 			ByteArrayInputStream xmlDataIS = new ByteArrayInputStream(exportData.getBytes("UTF-8"));
 
 			TransformerFactory tFactory = TransformerFactory.newInstance();
@@ -329,14 +284,6 @@ public class XMLPublisherServlet extends HttpServlet // implements
 	public void getCLOB(HttpServletRequest req, HttpServletResponse resp, Session session, String contentDisposition, String ContentType,
 			Integer docId //, String filename
 	) throws IOException {
-		//resp.setCharacterEncoding("utf-8");
-		//String outFilename = (null != filename) ? filename : "noname.xml";
-		//http://stackoverflow.com/questions/18050718/utf-8-encoding-name-in-downloaded-file
-		//outFilename = URLEncoder.encode(outFilename, "UTF-8");
-		//String ct = (null != ContentType) ? ContentType : "text/plain";
-		//resp.setContentType(ct);
-		//String 
-		//resp.setHeader("Content-Disposition", contentDisposition + "; filename*=UTF-8''" + outFilename + "");
 		PrintWriter out = resp.getWriter();
 		String exportData = findExportData(session, docId);
 		if (null != exportData) {
@@ -361,13 +308,6 @@ public class XMLPublisherServlet extends HttpServlet // implements
 	//Заготовка для выгрузки файлов с сервера приложений
 	public void getFile(HttpServletRequest req, HttpServletResponse resp, Session session, String contentDisposition, String ContentType,
 			String filename) throws IOException {
-		//String filename = getServletContext().getRealPath("/WEB-INF") + "/" + "constructorapp.xml";
-		//		String outFilename = "example-data.xml";
-		//		// TODO Get real File Content Type
-		//		String ct = (null != ContentType) ? ContentType : "text/plain";
-		//		resp.setContentType(ct);
-		//		resp.setHeader("Content-Disposition", contentDisposition + "; filename=\"" + outFilename + "\"");
-
 		OutputStream out = resp.getOutputStream();
 		BufferedInputStream is = new BufferedInputStream(new FileInputStream(filename));
 
@@ -386,6 +326,7 @@ public class XMLPublisherServlet extends HttpServlet // implements
 	@Override
 	public void init() throws ServletException {
 		super.init();
+		webInfRoot = getServletContext().getRealPath("/WEB-INF");
 		Utils.spoolOut("Middle tier service '" + this.getClass() + "' started...");
 	}
 
@@ -410,9 +351,6 @@ public class XMLPublisherServlet extends HttpServlet // implements
 	) throws IOException {
 		Utils.spoolOut("XMLPublisherServlet.processXMLP");
 		Logger.setLevel(Logger.OFF);
-		//resp.setCharacterEncoding("UTF-8"); // mm20131028
-		//resp.setContentType(ContentType);
-		//resp.addHeader("Content-Disposition", contentDisposition + "; " + getEncodedFileName(req, filename + "." + extention));
 		byte format = FOProcessor.FORMAT_RTF;
 		if ("application/vnd.ms-excel".equals(ContentType)) {
 			format = FOProcessor.FORMAT_EXCEL;
@@ -438,26 +376,42 @@ public class XMLPublisherServlet extends HttpServlet // implements
 			processor.setData(xmlDataClob.characterStreamValue());
 			processor.setOutputFormat(format);
 			processor.setOutput(respOS);
-			processor.setConfig(getServletContext().getRealPath("/WEB-INF") + "/xdo.cfg");
+			processor.setConfig(webInfRoot + "/xdo.cfg");
 			processor.generate();
-			// oracle.apps.xdo.common.font.Font
-			// if (0 != processor.getRunException().getStackTrace().length) {
-			// Utils.spoolOut("XMLPublisherServlet.processXMLP. RunException: ");
-			// for (StackTraceElement e :
-			// processor.getRunException().getStackTrace()) {
-			// Utils.spoolOut("" + e);
-			// }
-			// }
 			foIS.close();
 			Utils.spoolOut(
 					"xx" + resp.getLocale() + "; zz:" + resp.getContentType() + "; " + resp.getCharacterEncoding() + resp.toString());
 
 		} catch (Exception e) {
-			// resp.setContentType("text/plain");
-			// Writer writer = new StringWriter();
-			// PrintWriter printWriter = new PrintWriter(writer);
-			// e.printStackTrace(printWriter);
-			// respOS.println(writer.toString());
+			respOS.println(Utils.getExceptionStackIntoString(e));
+		}
+		respOS.flush();
+		respOS.close();
+	}
+
+	public void processXlsXMLP(HttpServletRequest req, HttpServletResponse resp, Session session, String template, Integer docId)
+			throws IOException {
+		Utils.spoolOut("XMLPublisherServlet.processXlsXMLP");
+		Logger.setLevel(Logger.STATEMENT);
+		ServletOutputStream respOS = resp.getOutputStream();
+		try {
+			CLOB xmlDataClob = findCLOB(session, docId);
+			String templatePath = webInfRoot + "/tempxmpldata/mosology_template.xls";
+			File tmpDir = null;
+			File xsl = File.createTempFile("xdo", ".xsl", tmpDir);
+			xsl.deleteOnExit();
+			FileInputStream fi = new FileInputStream(templatePath);
+			ExcelProcessor excelProc = new ExcelProcessor();
+			excelProc.setConfig(webInfRoot + "/xdo.cfg");
+			excelProc.setTemplate(fi);
+			//excelProc.setData(IOUtils.toInputStream(IOUtils.toString(xmlDataClob.getCharacterStream())));
+			excelProc.setData(new ReaderInputStream(xmlDataClob.getCharacterStream()));
+			excelProc.setOutput(respOS);
+			excelProc.process();
+			Utils.spoolOut(
+					"xx" + resp.getLocale() + "; zz:" + resp.getContentType() + "; " + resp.getCharacterEncoding() + resp.toString());
+
+		} catch (Exception e) {
 			respOS.println(Utils.getExceptionStackIntoString(e));
 		}
 		respOS.flush();
