@@ -44,6 +44,7 @@ public class XMLPublisherServlet extends HttpServlet // implements javax.servlet
 	 */
 	private static final long serialVersionUID = 1L;
 	private String webInfRoot;
+	private String defaultCharsetForXML = "UTF-8";
 
 	public static void clobToOutputSteam(CLOB clob, PrintWriter out) throws SQLException, IOException {
 		Reader clobInputStream = clob.getCharacterStream();
@@ -262,7 +263,7 @@ public class XMLPublisherServlet extends HttpServlet // implements javax.servlet
 
 			exportData = findExportData(session, docId);
 			CLOB rtfTemplClob = findCLOB(session, template);
-			ByteArrayInputStream xmlDataIS = new ByteArrayInputStream(exportData.getBytes("UTF-8"));
+			ByteArrayInputStream xmlDataIS = new ByteArrayInputStream(exportData.getBytes(defaultCharsetForXML));
 
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 			Transformer transformer = tFactory.newTransformer(new StreamSource(rtfTemplClob.getCharacterStream()));
@@ -396,7 +397,7 @@ public class XMLPublisherServlet extends HttpServlet // implements javax.servlet
 		ServletOutputStream respOS = resp.getOutputStream();
 		try {
 			CLOB xmlDataClob = findCLOB(session, docId);
-			String templatePath = webInfRoot + "/tempxmpldata/mosology_template.xls";
+			String templatePath = webInfRoot + "/xdobinarytemplates/" + template; //mosology_template.xls";
 			File tmpDir = null;
 			File xsl = File.createTempFile("xdo", ".xsl", tmpDir);
 			xsl.deleteOnExit();
@@ -405,7 +406,7 @@ public class XMLPublisherServlet extends HttpServlet // implements javax.servlet
 			excelProc.setConfig(webInfRoot + "/xdo.cfg");
 			excelProc.setTemplate(fi);
 			//excelProc.setData(IOUtils.toInputStream(IOUtils.toString(xmlDataClob.getCharacterStream())));
-			excelProc.setData(new ReaderInputStream(xmlDataClob.getCharacterStream()));
+			excelProc.setData(new ReaderInputStream(xmlDataClob.getCharacterStream(), defaultCharsetForXML));
 			excelProc.setOutput(respOS);
 			excelProc.process();
 			Utils.spoolOut(
