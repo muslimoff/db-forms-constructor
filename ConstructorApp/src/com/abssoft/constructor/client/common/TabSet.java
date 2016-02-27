@@ -163,13 +163,9 @@ public class TabSet extends com.smartgwt.client.widgets.tab.TabSet {
 	}
 
 	protected void doUpAction() {
-		// TODO Auto-generated method stub
-
 	}
 
 	protected void doDownAction() {
-		// TODO Auto-generated method stub
-
 	}
 
 	public TabSet() {

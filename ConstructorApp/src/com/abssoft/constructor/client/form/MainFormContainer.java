@@ -27,7 +27,6 @@ public class MainFormContainer extends FormTab {
 
 	public void updateTab(Criteria parentFormCriteria, String formCode,
 			MainFormPane parentFormPane) {
-		// TODO Иконка и заголовок табика. не помню, в чем проблема.
 		MainFormPane mfp;
 		Utils.debug("MainFormContainer.updateTab.1:formCode:" + formCode);
 		Utils.debug("MainFormContainer.updateTab.2:parentFormCriteria:"

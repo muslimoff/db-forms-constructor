@@ -25,7 +25,6 @@ public class AppLayerTestClass {
 		try {
 			serializer.write(o, result);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -41,7 +40,6 @@ public class AppLayerTestClass {
 			marshaller.marshal(f.getClass(), result);
 			// marshaller.marshal(f.getClass(), System.out);
 		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

@@ -178,7 +178,6 @@ public class FormDataSource extends GwtRpcDataSource {
 				});
 	}
 
-	// TODO При добавлении с АУТ-параметрами - исчезает запись.
 	@Override
 	protected void executeAdd(final String requestId, final DSRequest request, final DSResponse response) {
 		Utils.debug("executeAdd1");
@@ -225,19 +224,6 @@ public class FormDataSource extends GwtRpcDataSource {
 			@Override
 			public void executeSuccessSubProc() {
 				super.executeSuccessSubProc();
-				// TODO Зачем делаем rs.setCriteria ?? Не помню. Может попытка побороть исчезновение записией?
-				// 20110730 - попробовал убрать на...
-				// try {
-				// ResultSet rs = lGrid.getResultSet();
-				// rs.setCriteria(new Criteria());
-				// } catch (Exception e) {
-				// e.printStackTrace();
-				// }
-				// 20110808 - перенес в DMLProcExecution - после success/warning/error subproc
-				// ListGridRecord selectedRec = grid.getRecord(mainFormPane.getSelectedRow());
-				// grid.selectRecord(selectedRec);
-				// int selectedRecIdx = grid.getRecordIndex(selectedRec);
-				// mainFormPane.filterDetailData(selectedRec, grid, selectedRecIdx);
 			}
 		};
 

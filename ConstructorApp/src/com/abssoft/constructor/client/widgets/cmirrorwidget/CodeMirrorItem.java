@@ -34,7 +34,6 @@ public class CodeMirrorItem extends CanvasItem {
 
 			@Override
 			public void onInit(FormItem item) {
-				// TODO Auto-generated method stub
 				config.setLineNumbers(true);
 				//				config.setContinuousScanning(0);
 				//				config.setTextWrapping(false);

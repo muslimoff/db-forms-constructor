@@ -104,9 +104,7 @@ public class MenusDataCallback extends DSAsyncCallback<MenusArr> {
 			ConstructorApp.formIconArr.put(formCode, menuMD.getIconId());
 			ConstructorApp.formNameArr.put(formCode, menuMD.getFormName());
 			// ////////////////////////////////////////////
-			// TODO - если в корневой менюшке висит форма - проблема - нужно так
-			// же проверять на кол-во дочерних, и если 0, то цеплять
-			// действие на кнопку.
+			// TODO - если в корневой менюшке висит форма - проблема - нужно так же проверять на кол-во дочерних, и если 0, то цеплять действие на кнопку.
 			// TODO - не работает HotKey для вложенных субменюшек.
 			// TODO - переделать вместо null == parentMenuCode на lvl==1
 			if (null == parentMenuCode) {

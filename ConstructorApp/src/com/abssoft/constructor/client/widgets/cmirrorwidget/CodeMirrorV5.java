@@ -88,32 +88,4 @@ public class CodeMirrorV5 extends CanvasItem //implements HasInitializeHandlers 
 	return editor;
 	}-*/;
 
-	//	@Override
-	//	public HandlerRegistration addInitializeHandler(InitializeHandler handler) {
-	//		// TODO Auto-generated method stub
-	//		return null;
-	//	}
-	//
-	//	@Override
-	//	public String getValue() {
-	//		// TODO Auto-generated method stub
-	//		return null;
-	//	}
-	//
-	//	@Override
-	//	public HandlerRegistration addChangeHandler(ChangeHandler handler) {
-	//		// TODO Auto-generated method stub
-	//		return null;
-	//	}
-	//	@Override
-	//	public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
-	//		// TODO Auto-generated method stub
-	//		return null;
-	//	}
-	//
-	//	@Override
-	//	public void setValue(String value, boolean fireEvents) {
-	//		// TODO Auto-generated method stub
-	//
-	//	}
 }

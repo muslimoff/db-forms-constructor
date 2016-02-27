@@ -37,7 +37,6 @@ public class FormMD implements IsSerializable, Cloneable, HasActionStatus {
 	private Integer lookupHeight;
 	private Integer dataPageSize;
 
-	// TODO вынести в интерфейс
 	private ActionStatus status = new ActionStatus();
 	private String dragAndDropActionCode;
 	private FormInstanceIdentifier formInstanceIdentifier;

@@ -58,17 +58,13 @@ class SyntaxHighLightTab extends Tab {
 		public void onChanged(ChangedEvent event) {
 			String value = (null != event.getValue()) ? event.getValue().toString() : null;
 			Utils.debug("SyntaxHighLightTab.tai.onChanged.event.getValue:" + value);
-			//codeEditor2.setValue(value);
-
 			codeEditor.setValue(value);
-			//codeEditor.getCodeEditorTextArea().setValue(value, true);
 		}
 	}
 
 	private final class SHTabSelectedHandler implements TabSelectedHandler {
 		@Override
 		public void onTabSelected(TabSelectedEvent event) {
-			// TODO Auto-generated method stub
 			Utils.debug("SyntaxHighLightTab.onTabSelected...");
 			codeEditor.setValue("declare\n  x dual%rowtype;\nbegin\n select * into x from dual;\nend;");
 			codeEditor2.setValue("declare\n  xz dual%rowtype;\nbegin\n select * into x from dual;\nend;");
@@ -79,7 +75,6 @@ class SyntaxHighLightTab extends Tab {
 	private final class SHChangedHandler implements ChangedHandler {
 		@Override
 		public void onChanged(ChangedEvent event) {
-			// TODO Auto-generated method stub
 			Utils.debug("SyntaxHighLightTab.codeEditor.onChanged.event.getValue:" + event.getValue());
 			Utils.debug("SyntaxHighLightTab.codeEditor.onChanged.codeEditor2.getValue:" + codeEditor2.getValue());
 			codeEditor.setValue(codeEditor2.getValue());

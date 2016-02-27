@@ -132,7 +132,6 @@ public class TestCase1 extends Canvas {
 
 			@Override
 			public void onRightMouseDown(RightMouseDownEvent event) {
-				// TODO Auto-generated method stub
 				ListGridRecord selRec = countryGrid.getSelectedRecord();
 				ListGridRecord newRec = new ListGridRecord();
 				JSOHelper.apply(selRec.getJsObj(), newRec.getJsObj());

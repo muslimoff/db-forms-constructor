@@ -420,12 +420,6 @@ class MainForm extends Canvas {
 			}
 		});
 		treeGrid.addRowEditorEnterHandler(new RowEditorEnterHandler() {
-			// @Override
-			// public void onRowEditorEnter2(RowEditorEnterEvent event) {
-			// // TODO Auto-generated method stub
-			//
-			// }
-
 			@Override
 			public void onRowEditorEnter(RowEditorEnterEvent event) {
 				Utils.debug("treeGrid.onRowEditorEnter started... event:" + event);
@@ -449,7 +443,6 @@ class MainForm extends Canvas {
 				if (null == record && 0 == newRec.getAttributes().length) {
 					setNewRecDefaultValues(rowNum, true);
 				} else {
-					// TODO Простановка DisplayValue для лукап-форм с DisplayFileds
 					FormDataSourceField[] dsf = mainFormPane.getFormColumns().getDataSourceFields();
 					for (FormDataSourceField f : dsf) {
 						Utils.debug(

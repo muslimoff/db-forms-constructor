@@ -38,7 +38,7 @@ import com.smartgwt.client.widgets.tree.TreeNode;
 //4+. После выбора значения лукапа - вызывать действие по событию "после выхода из списка". Возможно перенести в MyComboboxItem
 //		см. onRecordSelected
 //5+. не работает invalidateCashe. при первом наборе строки поиска фильтруется нормально
-//6-. Освободить на сервере память (кеш) после выбора из списка
+//6+. Освободить на сервере память (кеш) после выбора из списка
 //7+. Для новых записей не работает. См. MainFormPane.setEditValues (putAll)
 //8-. Не работает переопределение порядка столбцов
 public class FormLookupComboboxItem extends MyComboBoxItem {
@@ -173,7 +173,7 @@ public class FormLookupComboboxItem extends MyComboBoxItem {
 					cmd.setDisplaySize(mmd.getColumnDisplaySize());
 					cmd.setShowOnGrid(mmd.getShowOnGrid());
 
-					// TODO - 8. не работает переопределение порядка столбцов
+					// FIXME - 8. не работает переопределение порядка столбцов
 					cmd.setDisplayNum(mmd.getColumnDisplayNumber());
 
 					x.put(idx, cmd);

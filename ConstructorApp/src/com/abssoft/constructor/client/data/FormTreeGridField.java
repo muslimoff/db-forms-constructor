@@ -165,21 +165,12 @@ public class FormTreeGridField extends TreeGridField {
 
 		}
 
-		// StaticLookup
-		// TODO вывести одинаковый код
 		else if (("8".equals(c.getFieldType()) || "10".equals(c.getFieldType())) && null != lookupCode
 				&& ConstructorApp.staticLookupsArr.containsKey(lookupCode)) {
 			cmbxItem = new MyComboBoxItem(c, mainFormPane) {
 
 				@Override
-				public void onSelectValue(FormItem item, Record rec) {
-					// TODO Auto-generated method stub
-				}
-
-				@Override
 				public void onClearValue(FormItem item) {
-					// TODO Auto-generated method stub
-
 				}
 			};
 			FormMD fmd = mainFormPane.getFormMetadata();

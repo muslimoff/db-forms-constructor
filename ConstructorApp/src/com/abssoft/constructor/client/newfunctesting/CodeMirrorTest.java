@@ -51,7 +51,6 @@ class CodeMirrorTest extends Tab {
 	private final class FormItemChangedHandler implements ItemChangedHandler {
 		@Override
 		public void onItemChanged(ItemChangedEvent event) {
-			// TODO Auto-generated method stub
 			String value = event.getItem().getValue() + "";
 			String itemName = event.getItem().getName();
 			Utils.debug(">" + getClass() + "; itemName: " + itemName + "; value: " + value);
@@ -61,7 +60,6 @@ class CodeMirrorTest extends Tab {
 	private final class FResizedHandler implements ResizedHandler {
 		@Override
 		public void onResized(ResizedEvent event) {
-			// TODO Auto-generated method stub
 			Utils.debug(">>>" + this.getClass() + "...");
 			cmi.editorResize();
 		}

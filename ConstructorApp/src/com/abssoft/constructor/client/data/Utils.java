@@ -653,7 +653,6 @@ public class Utils {
 					// TODO Сделать лукап true/false -> Да/Нет
 					value = r.getAttributeAsBoolean(attrName) ? "Y" : "N";
 				} else
-				// TODO для табличных лукапов без LookupDisplayValue
 				if ("9".equals(cmd.getFieldType()) && null == cmd.getLookupDisplayValue()) {
 					value = r.getAttribute(attrName);
 					Integer colIdx = mainFormPane.getFormMetadata().getColumns().getColIndex(attrName);

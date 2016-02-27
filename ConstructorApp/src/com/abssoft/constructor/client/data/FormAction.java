@@ -172,7 +172,6 @@ public class FormAction {
 
 	/********************************************************************/
 	private void doRemoveRecords(Integer recordIndex) {
-		// ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		try {
 			if (null != recordIndex) {
 				grid.removeData(grid.getRecord(recordIndex));
@@ -194,9 +193,7 @@ public class FormAction {
 
 	/********************************************************************/
 	private void doGoToPrevRow() {
-		// ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		int currRecSelected = mainFormPane.getMainForm().getSelectedRecord();
-		// int currRecSelected = grid.getRecordIndex(grid.getSelectedRecord());
 		if (currRecSelected > 0) {
 			grid.selectSingleRecord(--currRecSelected);
 			Utils.debug("FormAction.doGoToPrevRow. Before mainFormPane.filterDetailData");
@@ -206,9 +203,7 @@ public class FormAction {
 
 	/********************************************************************/
 	private void doGoToNextRow() {
-		// ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
 		int currRecSelected = mainFormPane.getMainForm().getSelectedRecord();
-		// int currRecSelected = grid.getRecordIndex(grid.getSelectedRecord());
 		if (currRecSelected + 1 < grid.getTotalRows()) {
 			grid.selectSingleRecord(++currRecSelected);
 			Utils.debug("FormAction.doGoToNextRow. Before mainFormPane.filterDetailData");
@@ -291,7 +286,6 @@ public class FormAction {
 	private void doGridExport() {
 		Utils.debug("doGridExport........");
 		FormActionMD formActionMD = mainFormPane.getCurrentAction();
-		// String actionUrl = formActionMD.getUrlText();
 		String actionUrl = null != formActionMD.getUrlText() ? formActionMD.getUrlText() : formActionMD.getSqlProcedureName();
 		actionUrl = Utils.replaceBindVariables(mainFormPane, actionUrl, ":");
 		actionUrl = null != actionUrl ? actionUrl
@@ -309,7 +303,7 @@ public class FormAction {
 			for (ListGridRecord lr : treeGrid.getSelectedRecords()) {
 				TreeNode node = (TreeNode) lr;
 				// Boolean isOpen = treeGrid.getData().isOpen(node);
-				//treeGrid.getData().reloadChildren(node);
+				//TODO. treeGrid.getData().reloadChildren(node);
 				treeGrid.getData().unloadChildren(node);
 				treeGrid.getData().closeFolder(node);
 				// Нифига не заработало. Потом.

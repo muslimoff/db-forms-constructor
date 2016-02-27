@@ -34,22 +34,12 @@ import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.tree.TreeNode;
 
-//TODO - Отображать при выборке записи до текущей... остальные фетчить по требованию
-//TODO - Завязать на Debug показку "Прочие" меню
+//@Deprecated
 public class GridComboBoxItem extends MyComboBoxItem {
 	private String userTypedValue = null;
 	private String userSelectedValue = null;
-	public static final String lookupUserTypedVarName = "p$lookup_entered_value"; // То,
-																					// что
-																					// вводит
-																					// пользователь
-																					// с
-																					// клавиатуры
-	public static final String lookupSelectedValueVarName = "p$lookup_selected_value"; // идентификатор
-																						// того,
-																						// что
-																						// пользователь
-																						// ввел/выбрал
+	public static final String lookupUserTypedVarName = "p$lookup_entered_value"; // То, что вводит пользователь с клавиатуры
+	public static final String lookupSelectedValueVarName = "p$lookup_selected_value"; // идентификатор того, что пользователь ввел/выбрал
 
 	public class ComboBoxDataSource extends GwtRpcDataSource {
 		private FormDataSourceField[] dsFields;
@@ -207,19 +197,6 @@ public class GridComboBoxItem extends MyComboBoxItem {
 		}
 		GridComboBoxItem.this.setValueField(valueFieldName);
 		GridComboBoxItem.this.setDisplayField(displayFieldName);
-		// try {
-		// String lookupWidth = fmd.getLookupWidth();
-		// lookupWidth = (null == lookupWidth || "".equals(lookupWidth)) ?
-		// fmd.getWidth() : lookupWidth;
-		// GridComboBoxItem.this.setPickListWidth(Integer.decode(lookupWidth));
-		// String lookupHeight = fmd.getLookupHeight();
-		// if (null != lookupHeight && !"".equals(lookupHeight)) {
-		// GridComboBoxItem.this.setPickListHeight(Integer.decode(lookupHeight));
-		// }
-
-		// } catch (Exception e) {
-		// }
-
 		GridComboBoxItem.this.setLookupSize(parentColumnMD.getLookupWidth(), parentColumnMD.getLookupHeight(), fmd.getLookupWidth(),
 				fmd.getLookupHeight());
 
@@ -227,15 +204,6 @@ public class GridComboBoxItem extends MyComboBoxItem {
 		lookupDataSource.setValueFieldNum(valueFieldNum);
 		lookupDataSource.setFields(mfp.getFormColumns().createDSFields());
 		setOptionDataSource(lookupDataSource);
-
-		// this.addDataArrivedHandler(new DataArrivedHandler() {
-		//
-		// @Override
-		// public void onDataArrived(DataArrivedEvent event) {
-		// // TODO Auto-generated method stub
-		// Window.alert("onDataArrived(DataArrivedEvent:" + event);
-		// }
-		// });
 		this.setPickListFilterCriteriaFunction(new FormItemCriteriaFunction() {
 
 			@Override
@@ -414,8 +382,6 @@ public class GridComboBoxItem extends MyComboBoxItem {
 
 	@Override
 	protected void onClearValue(FormItem item) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

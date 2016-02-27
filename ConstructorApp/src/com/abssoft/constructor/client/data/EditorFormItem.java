@@ -66,16 +66,12 @@ public class EditorFormItem extends FormItem {
 		} else if (("8".equals(c.getFieldType()) || "10".equals(c.getFieldType())) && null != lookupCode
 				&& ConstructorApp.staticLookupsArr.containsKey(lookupCode)) {
 			item = new MyComboBoxItem(c, mainFormPane) {
-
 				@Override
 				public void onSelectValue(FormItem item, Record rec) {
-					// TODO Auto-generated method stub
 				}
 
 				@Override
 				public void onClearValue(FormItem item) {
-					// TODO Auto-generated method stub
-
 				}
 			};
 			((MyComboBoxItem) item).setLookupSize(c.getLookupWidth(), c.getLookupHeight(), fmd.getLookupWidth(), fmd.getLookupHeight());
@@ -87,15 +83,7 @@ public class EditorFormItem extends FormItem {
 		} else if ("11".equals(c.getFieldType())) {
 			item = new LinkItem();
 		} else if ("15".equals(c.getFieldType())) {
-			item = new CodeMirrorItem(); //item = new com.abssoft.constructor.client.widgets.CodeEditorItem();
-//			item.addChangedHandler(new ChangedHandler() {
-//				
-//				@Override
-//				public void onChanged(ChangedEvent event) {
-//					// TODO Auto-generated method stub
-//					
-//				}
-//			});
+			item = new CodeMirrorItem();
 		} else if ("16".equals(c.getFieldType()) && null != lookupCode) {
 			item = new FormLookupComboboxItem(c, mainFormPane);
 		}

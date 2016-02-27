@@ -46,17 +46,13 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 		public void onSuccess(ConnectionInfo result) {
 
 			ConstructorApp.sessionId = result.getSessionId();
-			Cookies.setCookie("FCSessionId", (String) ""
-					+ ConstructorApp.sessionId);
+			Cookies.setCookie("FCSessionId", (String) "" + ConstructorApp.sessionId);
 			// String currentSkin = Cookies.getCookie("FCSessionId");
 			String status = result.getStatus();
 			ConstructorApp.dbServerVersion = result.getDbServerVersion();
-			if (result.getDateFormat() != null
-					&& !result.getDateFormat().isEmpty())
+			if (result.getDateFormat() != null && !result.getDateFormat().isEmpty())
 				Utils.setDateFormat(result.getDateFormat());
-			detailTextItem.setVersions(ConstructorApp.clientVersion,
-					ConstructorApp.appServerVersion,
-					ConstructorApp.dbServerVersion);
+			detailTextItem.setVersions(ConstructorApp.clientVersion, ConstructorApp.appServerVersion, ConstructorApp.dbServerVersion);
 			if (!"".equals(status) || -1 == ConstructorApp.sessionId) {
 				if (!ConnectWindow.this.isDrawn())
 					ConnectWindow.this.show();
@@ -68,19 +64,15 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 			} else {
 				ConstructorApp.defaultTitle = result.getDefaultTitle();
 				Utils.debug("sessionId: " + ConstructorApp.sessionId);
-				Utils.createQueryService("ConnectWindow.getMenusArr")
-						.getMenusArr(ConstructorApp.sessionId,
-								new MenusDataCallback());
-				Utils.createQueryService("ConnectWindow.StaticLookups")
-						.getStaticLookupsArr(ConstructorApp.sessionId,
-								new DSAsyncCallback<StaticLookupsArr>() {
-									@Override
-									public void onSuccess(
-											StaticLookupsArr result) {
-										super.onSuccess(result);
-										ConstructorApp.staticLookupsArr = result;
-									}
-								});
+				Utils.createQueryService("ConnectWindow.getMenusArr").getMenusArr(ConstructorApp.sessionId, new MenusDataCallback());
+				Utils.createQueryService("ConnectWindow.StaticLookups").getStaticLookupsArr(ConstructorApp.sessionId,
+						new DSAsyncCallback<StaticLookupsArr>() {
+							@Override
+							public void onSuccess(StaticLookupsArr result) {
+								super.onSuccess(result);
+								ConstructorApp.staticLookupsArr = result;
+							}
+						});
 				ConnectWindow.this.hide();
 			}
 		}
@@ -89,11 +81,9 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 	private IButton connectBtn;
 
 	private class VersionsTextAreaItem extends TextAreaItem {
-		public void setVersions(String clientVersion, String appServerVersion,
-				String dbServerVersion) {
-			this.setValue("clientVersion:" + clientVersion
-					+ ";\nappServerVersion:" + appServerVersion
-					+ ";\ndbServerVersion:" + dbServerVersion);
+		public void setVersions(String clientVersion, String appServerVersion, String dbServerVersion) {
+			this.setValue(
+					"clientVersion:" + clientVersion + ";\nappServerVersion:" + appServerVersion + ";\ndbServerVersion:" + dbServerVersion);
 		}
 	};
 
@@ -127,16 +117,14 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 	public ConnectWindow(final ConstructorApp сonstructorApp) {
 		final DynamicForm form = new DynamicForm();
 		this.сonstructorApp = сonstructorApp;
-		HeaderControl comment = new HeaderControl(HeaderControl.COMMENT,
-				new ClickHandler() {
-					@Override
-					public void onClick(ClickEvent event) {
-						detailsDisplayed = !detailsDisplayed;
-						form.markForRedraw();
-					}
-				});
-		this.setHeaderControls(HeaderControls.HEADER_LABEL, comment,
-				HeaderControls.CLOSE_BUTTON);
+		HeaderControl comment = new HeaderControl(HeaderControl.COMMENT, new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				detailsDisplayed = !detailsDisplayed;
+				form.markForRedraw();
+			}
+		});
+		this.setHeaderControls(HeaderControls.HEADER_LABEL, comment, HeaderControls.CLOSE_BUTTON);
 		this.setWidth(360);
 		// this.setHeight(150);
 		// this.setHeight(170);
@@ -160,12 +148,9 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 
 		this.setAutoSize(true);
 
-		Utils.debug("ConnectWindow.ModuleBaseURL:"
-				+ com.google.gwt.core.client.GWT.getModuleBaseURL());
-		Utils.debug("ConnectWindow.QueryString:"
-				+ com.google.gwt.user.client.Window.Location.getQueryString());
-		Utils.debug("ConnectWindow.ParameterMap:"
-				+ com.google.gwt.user.client.Window.Location.getParameterMap());
+		Utils.debug("ConnectWindow.ModuleBaseURL:" + com.google.gwt.core.client.GWT.getModuleBaseURL());
+		Utils.debug("ConnectWindow.QueryString:" + com.google.gwt.user.client.Window.Location.getQueryString());
+		Utils.debug("ConnectWindow.ParameterMap:" + com.google.gwt.user.client.Window.Location.getParameterMap());
 		form.setHeight100();
 		form.setWidth100();
 		form.setPadding(5);
@@ -212,8 +197,7 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 
 		if (!Utils.isAIR()) {
 			Utils.createQueryService("ConnectWindow.getServerInfoArr")
-					.getServerInfoArrWithoutPassword(
-							new ServerInfoArrDSAsyncCallback(valueMap));
+					.getServerInfoArrWithoutPassword(new ServerInfoArrDSAsyncCallback(valueMap));
 		}
 
 		connectBtn = new IButton("Connect");
@@ -232,13 +216,9 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 
 			@Override
 			public void onBlur(BlurEvent event) {
-				// TODO Auto-generated method stub
-
-				ConstructorApp.AIRmoduleBaseURL = appServerTextItem
-						.getValueAsString();
+				ConstructorApp.AIRmoduleBaseURL = appServerTextItem.getValueAsString();
 				Utils.createQueryService("ConnectWindow.getServerInfoArr2")
-						.getServerInfoArrWithoutPassword(
-								new ServerInfoArrDSAsyncCallback(valueMap));
+						.getServerInfoArrWithoutPassword(new ServerInfoArrDSAsyncCallback(valueMap));
 			}
 		});
 		ToolbarItem toolbar = new ToolbarItem();
@@ -258,19 +238,16 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 		});
 
 		if (Utils.isAIR()) {
-			form.setFields(new FormItem[] { dbServerSelectItem, userNameItem,
-					passItem, appServerTextItem, toolbar, detailTextItem });
+			form.setFields(new FormItem[] { dbServerSelectItem, userNameItem, passItem, appServerTextItem, toolbar, detailTextItem });
 		} else {
-			form.setFields(new FormItem[] { dbServerSelectItem, userNameItem,
-					passItem, toolbar, detailTextItem });
+			form.setFields(new FormItem[] { dbServerSelectItem, userNameItem, passItem, toolbar, detailTextItem });
 		}
 
 		this.addItem(form);
 		// this.show();
 	}
 
-	private class ServerInfoArrDSAsyncCallback extends
-			DSAsyncCallback<ServerInfoArr> {
+	private class ServerInfoArrDSAsyncCallback extends DSAsyncCallback<ServerInfoArr> {
 		private LinkedHashMap<String, String> valueMap;
 
 		ServerInfoArrDSAsyncCallback(LinkedHashMap<String, String> valueMap) {
@@ -284,20 +261,15 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 			// constructorapp.xml
 			ConstructorApp.serverInfoArr = result;
 			ConstructorApp.appServerVersion = result.getAppServerVersion();
-			detailTextItem.setVersions(ConstructorApp.clientVersion,
-					ConstructorApp.appServerVersion, null);
-			String defaultServerID = com.google.gwt.user.client.Window.Location
-					.getParameter("app.serverID");
-			Boolean defaultServerIsSet = null != defaultServerID
-					&& !"".equals(defaultServerID);
+			detailTextItem.setVersions(ConstructorApp.clientVersion, ConstructorApp.appServerVersion, null);
+			String defaultServerID = com.google.gwt.user.client.Window.Location.getParameter("app.serverID");
+			Boolean defaultServerIsSet = null != defaultServerID && !"".equals(defaultServerID);
 
 			for (int i = 0; i < result.size(); i++) {
 				ServerInfoMD si = result.get(i);
 				String displayName = si.getDisplayName();
 				valueMap.put(i + "", displayName);
-				if ((defaultServerIsSet && defaultServerID.equals(si
-						.getServerID()))
-						|| (!defaultServerIsSet && si.isDefault())) {
+				if ((defaultServerIsSet && defaultServerID.equals(si.getServerID())) || (!defaultServerIsSet && si.isDefault())) {
 					defaultServerInfoArrIdx = i;
 				}
 			}
@@ -307,10 +279,8 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 			ConstructorApp.skinSelectorMenu.setItems(result.getSkinsList());
 
 			// UserName & Password from URL Parameters
-			String userName = com.google.gwt.user.client.Window.Location
-					.getParameter("app.userName");
-			String pwd = com.google.gwt.user.client.Window.Location
-					.getParameter("app.pwd");
+			String userName = com.google.gwt.user.client.Window.Location.getParameter("app.userName");
+			String pwd = com.google.gwt.user.client.Window.Location.getParameter("app.pwd");
 			if (defaultServerIsSet && null != userName && !userName.isEmpty()) {
 				userNameItem.setValue(userName);
 				passItem.setValue(pwd);
@@ -322,8 +292,7 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 	}
 
 	public void connect() {
-		int serverIdx = Integer
-				.decode(dbServerSelectItem.getValue().toString());
+		int serverIdx = Integer.decode(dbServerSelectItem.getValue().toString());
 		String user = null;
 		String password = null;
 		// if
@@ -332,30 +301,24 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 		user = (String) userNameItem.getValue();
 		password = (String) passItem.getValue();
 		// }
-		Utils.debug("ConnId:" + dbServerSelectItem.getValue() + "; user:"
-				+ user + "; password:" + password);
+		Utils.debug("ConnId:" + dbServerSelectItem.getValue() + "; user:" + user + "; password:" + password);
 		сonstructorApp.clearMenus();
 		Utils.debug("Create new session...");
 		ConnectWindow.this.setOpacity(50);
-		String urlParams = com.google.gwt.user.client.Window.Location
-				.getQueryString();
-		Utils.createQueryService("ConnectWindow.connect").connect(serverIdx,
-				user, password, GWT.isScript(), urlParams,
+		String urlParams = com.google.gwt.user.client.Window.Location.getQueryString();
+		Utils.createQueryService("ConnectWindow.connect").connect(serverIdx, user, password, GWT.isScript(), urlParams,
 				ConstructorApp.debugEnabled, new ConnectDataCallback());
 	}
 
 	void setValues(Integer idx) {
 		if (-1 != idx) {
 			String pass = ConstructorApp.serverInfoArr.get(idx).getDbPassword();
-			boolean isDisabled = !ConstructorApp.serverInfoArr.get(idx)
-					.isAllowUserChange();
-			boolean isCustomAuth = !ConstructorApp.serverInfoArr.get(idx)
-					.isTransferPassToClient();
+			boolean isDisabled = !ConstructorApp.serverInfoArr.get(idx).isAllowUserChange();
+			boolean isCustomAuth = !ConstructorApp.serverInfoArr.get(idx).isTransferPassToClient();
 			// isDisabled = isDisabled && isPassDisabled;
 			dbServerSelectItem.setValue(idx + "");
 			ConstructorApp.serverInfoArr.get(idx).isTransferPassToClient();
-			userNameItem.setValue(ConstructorApp.serverInfoArr.get(idx)
-					.getDbUsername());
+			userNameItem.setValue(ConstructorApp.serverInfoArr.get(idx).getDbUsername());
 			passItem.setValue(pass);
 			// userNameItem.setDisabled(isDisabled);
 			if (isCustomAuth) {
@@ -370,11 +333,9 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 
 			ConnectWindow.this.markForRedraw();
 			// passItem.setDisabled(isDisabled && isPassDisabled);
-			ConstructorApp.defaultTitle = ConstructorApp.serverInfoArr.get(idx)
-					.getTitle();
+			ConstructorApp.defaultTitle = ConstructorApp.serverInfoArr.get(idx).getTitle();
 			ConstructorApp.setPageTitle("");
-			ConstructorApp.debugEnabled = ConstructorApp.serverInfoArr.get(idx)
-					.isDebug();
+			ConstructorApp.debugEnabled = ConstructorApp.serverInfoArr.get(idx).isDebug();
 		}
 	}
 

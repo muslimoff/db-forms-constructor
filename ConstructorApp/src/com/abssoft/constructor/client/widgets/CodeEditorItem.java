@@ -129,7 +129,6 @@ public class CodeEditorItem extends CanvasItem {
 
 			@Override
 			public void onShowValue(ShowValueEvent event) {
-				// TODO Auto-generated method stub
 				String value = (null == event.getDataValue()) ? null : (String) event.getDataValue();
 				CodeEditorItem.this.value = value;
 				Utils.debug("4. CodeEditorItem.onShowValue.\n" + value);
@@ -143,7 +142,6 @@ public class CodeEditorItem extends CanvasItem {
 
 			@Override
 			public void onChanged(ChangedEvent event) {
-				// TODO Auto-generated method stub
 				String value = (null == event.getValue()) ? null : (String) event.getValue();
 				Utils.debug("5. CodeEditorItem.onChanged.\n" + value);
 
