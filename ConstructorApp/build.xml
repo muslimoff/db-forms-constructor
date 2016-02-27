@@ -54,6 +54,10 @@
 			<fileset dir="${simplexml}/jar" includes="simple-xml-2.7.jar" />
 		</copy>
 		-->
+
+		<copy todir="war/WEB-INF/lib">
+			<fileset dir="${gwt.sdk}" includes="gwt-servlet.jar" />
+		</copy>
 		<!-- Add any additional server libs that need to be copied -->
 	</target>
 
