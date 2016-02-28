@@ -1,0 +1,39 @@
+Исправил
+	01. Невозможно редактировать в гриде
+	02. При Update дочерней формы - исчезает запись, повторно отображается только при обновлении. Обновлено: только для дочерних форм. Т.е. проблема в ParenFormCriteria. Пока закоментил строку с 200-й в /ConstructorApp/src/com/abssoft/constructor/client/data/DMLProcExecution.java
+	03. Пропала кнопка "Действия"
+	05. CodeMirror - не открывается редактор кода
+	06. При отмене редактирования - остаются значения в TaEditor
+	07. Алерты - при возникновении RaiseApplicationError - запись становится как редактированная, но несохраненная. Мешает жить - необходимо проверять - если запись не изменялась - сбрасывать флаг "Редактирования"
+	08. Зависимые старые лукапы - проблема. Не выставляется значение в основном гриде при редактировании в дочке-редакторе
+	09. Старые лукапы - остаются FormInstance после закрытия формы
+	10. Почти - при выборе нового лукапа - происходила фильтрация дочерних форм.
+	11. XMLP11. Работа с нативными шаблонами Excel
+Не работает:
+	01. При закрытии формы, у которой две одинаковые дочки - ошибка в CloseForm (для FormLookupComboboxItem, у которых неуникальный gridHashCode)
+	02. Косяк Рустика с Fetch
+	
+Желательно
+	01. XMLP11. Работа с нативными шаблонами Excel - сделать из таблицы REPORT_TEMPLATES
+	02. Форма Иконки открывается через раз (валится в районе 129-й строки FormDataSource)
+	03. Группировки - сделать настройку
+			TODO - /ConstructorApp/src/com/abssoft/constructor/client/form/MainFormPane.java  См  if ("N".equals(dataType)) gridField.setSummaryFunction(SummaryFunctionType.SUM);
+	04. Странный симптом - при открытии формы REPORTS - табиков левых туча!
+	05. SplitPane + RibbonBar Хачу
+	06. Debug сервера - вывод на клиента
+	07. Наверное уже не нужен SC-Console. Уменьшить размер дистрибутива
+
+http://127.0.0.1:8888/ConstructorApp.html?&transactionid=2101749105&language_code=RU&&OAFMID=67860&OAPB=_OAFMID&app.serverID=21&app.userName=x&app.pwd=x&locale=ru_RU
+
+
+ getSnapResizeToAlign()  
+ 
+codemirror-5.11/lib
+
+
+
+ cd $ADMIN_SCRIPTS_HOME
+ . adstrtal.sh  apps/Gst54gbs
+ 
+ cd /srv/oracle/tomcat
+ ./tomcat_startup.sh

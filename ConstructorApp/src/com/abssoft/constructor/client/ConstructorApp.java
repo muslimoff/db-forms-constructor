@@ -37,8 +37,8 @@ import com.smartgwt.client.types.Side;
 import com.smartgwt.client.util.DateDisplayFormatter;
 import com.smartgwt.client.util.DateParser;
 import com.smartgwt.client.util.DateUtil;
-import com.smartgwt.client.util.KeyCallback;
 import com.smartgwt.client.util.Page;
+import com.smartgwt.client.util.PageKeyHandler;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.layout.VStack;
@@ -329,7 +329,8 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 
 	public void add_debug_console() {
 		if (!GWT.isScript() || true) {
-			Page.registerKey(new KeyIdentifier("Ctrl+Alt+Shift+D"), new KeyCallback() {
+			Page.registerKey(new KeyIdentifier("Ctrl+Alt+Shift+D"), new PageKeyHandler() {
+				@Override
 				public void execute(String keyName) {
 					SC.showConsole();
 				}

@@ -1,0 +1,6 @@
+/bin/
+/gwt-unitCache/
+/war/constructorapp/
+/war/WEB-INF/classes/
+/war/WEB-INF/lib
+/war/WEB-INF/deploy/

@@ -8,7 +8,6 @@ import com.abssoft.constructor.client.widgets.MyComboBoxItem;
 import com.abssoft.constructor.common.metadata.ColumnAction;
 import com.abssoft.constructor.common.metadata.FormColumnMD;
 import com.abssoft.constructor.common.metadata.FormMD;
-import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.ListGridFieldType;
 import com.smartgwt.client.types.TextMatchStyle;
 import com.smartgwt.client.widgets.form.fields.FormItem;
@@ -253,29 +252,10 @@ public class FormTreeGridField extends TreeGridField {
 						mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode()).doActionWithConfirm(event.getRowNum());
 					}
 				});
-			}
-			// TODO Убрать - см. MyComboBoxItem.doOnRecordSelectedAction
-			if (1 == 2 && "4".equals(actionType) && null != cmbxItem && "9".equals(c.getFieldType())
 
-			// ("8".equals(c.getFieldType()) || "9".equals(c.getFieldType()) || "10".equals(c.getFieldType()))
-			) {
-				this.addChangedHandler(new ChangedHandler() {
-					@Override
-					public void onChanged(ChangedEvent event) {
-						try {
-							// TODO пока не разрулилось различие между выбором из лукапа и
-							// см. http://forums.smartclient.com/showthread.php?t=16067&highlight=ComboBoxItem+onChanged
-							String keyVal = event.getValue() + "";
-							String dispVal = event.getItem().getDisplayValue();
-							if (!keyVal.equals(dispVal))
-								mainFormPane.getButtonsToolBar().actionItemsMap.get(ca.getActionCode())
-										.doActionWithConfirm(event.getRowNum());
-						} catch (Exception e) {
-							e.printStackTrace();
-							Utils.debug(e.getMessage());
-						}
-					}
-				});
+				if ("4".equals(actionType)) {
+					//См. MyComboboxItem
+				}
 			}
 		}
 	}

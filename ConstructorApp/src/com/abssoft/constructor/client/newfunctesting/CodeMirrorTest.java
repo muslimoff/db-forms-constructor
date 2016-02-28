@@ -2,7 +2,6 @@ package com.abssoft.constructor.client.newfunctesting;
 
 import com.abssoft.constructor.client.data.Utils;
 import com.abssoft.constructor.client.widgets.cmirrorwidget.CodeMirrorItem;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.smartgwt.client.types.TitleOrientation;
 import com.smartgwt.client.widgets.events.ResizedEvent;
 import com.smartgwt.client.widgets.events.ResizedHandler;

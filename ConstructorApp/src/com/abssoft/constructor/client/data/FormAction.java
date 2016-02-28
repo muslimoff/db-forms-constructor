@@ -8,16 +8,9 @@ import com.abssoft.constructor.client.form.MainFormPane;
 import com.abssoft.constructor.common.metadata.FormActionMD;
 import com.abssoft.constructor.common.metadata.FormTabMD;
 import com.google.gwt.core.client.GWT;
-import com.smartgwt.client.data.DSCallback;
-import com.smartgwt.client.data.DSRequest;
-import com.smartgwt.client.data.DSResponse;
-import com.smartgwt.client.data.DataSource;
-import com.smartgwt.client.data.Record;
-import com.smartgwt.client.rpc.RPCResponse;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.types.Visibility;
 import com.smartgwt.client.util.BooleanCallback;
-import com.smartgwt.client.util.JSOHelper;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.Window;
@@ -115,60 +108,68 @@ public class FormAction {
 		// TODO grid.getRecordList().addAt(record, pos);
 	}
 
-	private void doAddNewRecordInPos(int currRecSelected) {
-		Utils.debugAlert("zz1: " + grid.getResultSet().getLength());
-		final DataSource ds = grid.getDataSource(); // = mainFormPane.getDataSource();
-		final Record prototypeRec = ds.copyRecord(grid.getRecord(currRecSelected));
-		final Record r = new Record();
-		JSOHelper.apply(prototypeRec.getJsObj(), r.getJsObj());
-		r.setAttribute("NM", r.getAttribute("NM") + "#");
-		Utils.debugRecord(prototypeRec, "XXXXXXXXXXXXXX");
-		Utils.debugRecord(r, "XXXXXXXXXXXXXX");
-		grid.addData(r, new DSCallback() {
+	//	import com.smartgwt.client.data.DSCallback;
+	//	import com.smartgwt.client.data.DSRequest;
+	//	import com.smartgwt.client.data.DSResponse;
+	//	import com.smartgwt.client.data.DataSource;
+	//	import com.smartgwt.client.data.Record;
+	//	import com.smartgwt.client.rpc.RPCResponse;
+	//	import com.smartgwt.client.util.JSOHelper;
 
-			@Override
-			public void execute(DSResponse response, Object rawData, DSRequest request) {
-				response.setData(new Record[] { r });
-				response.setStatus(RPCResponse.STATUS_VALIDATION_ERROR);
-				// ds.processResponse(request.getRequestId(), response);
-				doExistingRecordStartEditing(grid.getRecordIndex(r));
-			}
-		});
-		Utils.debugAlert("zz2: " + grid.getResultSet().getLength() + "; r:" + r);
-	}
+	//	private void doAddNewRecordInPos(int currRecSelected) {
+	//		Utils.debugAlert("zz1: " + grid.getResultSet().getLength());
+	//		final DataSource ds = grid.getDataSource(); // = mainFormPane.getDataSource();
+	//		final Record prototypeRec = ds.copyRecord(grid.getRecord(currRecSelected));
+	//		final Record r = new Record();
+	//		JSOHelper.apply(prototypeRec.getJsObj(), r.getJsObj());
+	//		r.setAttribute("NM", r.getAttribute("NM") + "#");
+	//		Utils.debugRecord(prototypeRec, "XXXXXXXXXXXXXX");
+	//		Utils.debugRecord(r, "XXXXXXXXXXXXXX");
+	//		grid.addData(r, new DSCallback() {
+	//
+	//			@Override
+	//			public void execute(DSResponse response, Object rawData, DSRequest request) {
+	//				response.setData(new Record[] { r });
+	//				response.setStatus(RPCResponse.STATUS_VALIDATION_ERROR);
+	//				// ds.processResponse(request.getRequestId(), response);
+	//				doExistingRecordStartEditing(grid.getRecordIndex(r));
+	//			}
+	//		});
+	//		Utils.debugAlert("zz2: " + grid.getResultSet().getLength() + "; r:" + r);
+	//	}
 
-	private void doAddNewRecordInPosLocalOld() {
-		// ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
-		// grid.deselectAllRecords();
-		int currRecSelected = mainFormPane.getMainForm().getSelectedRecord();
-		// Если нет записей - создаем по старому, как раньше.
-		if (-1 == currRecSelected) {
-			doAddNewRecord();
-		} else {
-			Utils.debugAlert("AAA1:" + currRecSelected);
-			// 2012 12 09 - нифига не раобтает...
-			// com.google.gwt.core.client.JavaScriptException: (TypeError): this.addAt is not a function
-			// козлы - только для локальных (не результсетных операций.
-			// Единственный пока вариант
-			// а) PL/SQL для создания заготовки на сервере,
-			// б) потом рефреш
-			// в) потом - позиционирование на первую запись и редачиться.
-			Record r = grid.getResultSet().addAt(grid.getRecord(currRecSelected), currRecSelected);
-			grid.getRecordList().add(grid.getRecord(currRecSelected));
-			Utils.debugAlert("AAA2:" + currRecSelected);
-			// grid.getRecordList().addAt(((Record) grid.getRecord(currRecSelected)), currRecSelected);
-		}
-		Utils.debugAlert("AAA3:" + currRecSelected);
-
-		// Создание новой записи (Record) для дальнейшего автозаполнения
-		// TreeNode result = new TreeNode();
-		//		
-		// for (int c = 0; null != row && c < row.size(); c++) {
-		//			
-		// }
-		// grid.startEditingNew();
-		// TODO grid.getRecordList().addAt(record, pos);
-	}
+	//	private void doAddNewRecordInPosLocalOld() {
+	//		// ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
+	//		// grid.deselectAllRecords();
+	//		int currRecSelected = mainFormPane.getMainForm().getSelectedRecord();
+	//		// Если нет записей - создаем по старому, как раньше.
+	//		if (-1 == currRecSelected) {
+	//			doAddNewRecord();
+	//		} else {
+	//			Utils.debugAlert("AAA1:" + currRecSelected);
+	//			//TODO 2012 12 09 - нифига не раобтает...
+	//			// com.google.gwt.core.client.JavaScriptException: (TypeError): this.addAt is not a function
+	//			// козлы - только для локальных (не результсетных операций.
+	//			// Единственный пока вариант
+	//			// 	а) PL/SQL для создания заготовки на сервере,
+	//			// 	б) потом рефреш
+	//			// 	в) потом - позиционирование на первую запись и редачиться.
+	//			//Record r = grid.getResultSet().addAt(grid.getRecord(currRecSelected), currRecSelected);
+	//			grid.getRecordList().add(grid.getRecord(currRecSelected));
+	//			Utils.debugAlert("AAA2:" + currRecSelected);
+	//			// grid.getRecordList().addAt(((Record) grid.getRecord(currRecSelected)), currRecSelected);
+	//		}
+	//		Utils.debugAlert("AAA3:" + currRecSelected);
+	//
+	//		// Создание новой записи (Record) для дальнейшего автозаполнения
+	//		// TreeNode result = new TreeNode();
+	//		//		
+	//		// for (int c = 0; null != row && c < row.size(); c++) {
+	//		//			
+	//		// }
+	//		// grid.startEditingNew();
+	//		// TODO grid.getRecordList().addAt(record, pos);
+	//	}
 
 	/********************************************************************/
 	private void doRemoveRecords(Integer recordIndex) {
@@ -407,10 +408,10 @@ public class FormAction {
 			Utils.debug("Action 17.1");
 			TabSet tabSet = mainFormPane.getMainFormContainer().getParentTabSet();
 			Utils.debug("Action 17.2");
-			Canvas tabSetPrnt1 = tabSet.getParentElement();
+			Canvas tabSetPrnt1 = tabSet.getParentCanvas();
 			Canvas tabSetPrnt2 = null;
 			if (null != tabSetPrnt1)
-				tabSetPrnt2 = tabSet.getParentElement().getParentElement();
+				tabSetPrnt2 = tabSetPrnt1.getParentCanvas();
 			boolean isWindow = (null != tabSetPrnt1) && (null != tabSetPrnt2) && (tabSetPrnt2 instanceof Window);
 
 			// boolean isWindow = null != tabSet.getParentElement() && tabSet.getParentElement() instanceof Window;
