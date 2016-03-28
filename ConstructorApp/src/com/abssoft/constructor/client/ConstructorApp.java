@@ -85,10 +85,6 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 	public static String clientVersion = Utils.getClientVersion();
 	public static String appServerVersion = "";
 	public static String dbServerVersion = "";
-	// public static QueryServiceAsync queryService; // = (QueryServiceAsync) GWT.create(QueryService.class);
-	// private static ServiceDefTarget queryServiceDefTarget = (ServiceDefTarget) queryService;
-	public static boolean showToolbar = false;
-	public static boolean showToolbarButtonNames = true;
 
 	ConnectWindow connectWindow;
 
@@ -223,13 +219,12 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 			showToolbarMI.setIcon("[ISOMORPHIC]/resources/icons/" + "bug.png");
 			showToolbarMI.setCheckIfCondition(new MenuItemIfFunction() {
 				public boolean execute(Canvas target, Menu menu, MenuItem item) {
-					return ConstructorApp.showToolbar;
+					return mainToolBar.isShowToolbar();
 				}
 			});
 			showToolbarMI.addClickHandler(new ClickHandler() {
 				public void onClick(MenuItemClickEvent event) {
-					ConstructorApp.showToolbar = !ConstructorApp.showToolbar;
-					mainToolBar.showOrHide(ConstructorApp.showToolbar);
+					mainToolBar.showOrHide(!mainToolBar.isShowToolbar());
 					// vStack.setHeight100();
 				}
 			});
@@ -241,12 +236,12 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 			showToolbarButtonNamesMI.setIcon("[ISOMORPHIC]/resources/icons/" + "bug.png");
 			showToolbarButtonNamesMI.setCheckIfCondition(new MenuItemIfFunction() {
 				public boolean execute(Canvas target, Menu menu, MenuItem item) {
-					return ConstructorApp.showToolbarButtonNames;
+					return mainToolBar.showToolbarButtonNames;
 				}
 			});
 			showToolbarButtonNamesMI.addClickHandler(new ClickHandler() {
 				public void onClick(MenuItemClickEvent event) {
-					ConstructorApp.showToolbarButtonNames = !ConstructorApp.showToolbarButtonNames;
+					mainToolBar.showToolbarButtonNames = !mainToolBar.showToolbarButtonNames;
 					// mainToolBar
 				}
 			});
@@ -291,7 +286,9 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 		}
 		// /////////////
 		Menu smm = new Menu();
-		smm.setData(getActionsMenuBtn(), showToolbarMI, showToolbarButtonNamesMI, closeFormMI, testMI, downloadMI);
+		smm.setData(getActionsMenuBtn(), showToolbarMI, showToolbarButtonNamesMI, closeFormMI
+		//, testMI, downloadMI
+		);
 		serviceMenuBtn.setMenu(smm);
 		// -----connect();
 		menuBar.addMembers(fileMenuBtn, serviceMenuBtn);
@@ -322,7 +319,7 @@ public class ConstructorApp implements EntryPoint, TimeoutEventHandler {
 		}
 		Utils.debug("QueryString:" + com.google.gwt.user.client.Window.Location.getQueryString());
 		canvas.draw();
-		mainToolBar.showOrHide(ConstructorApp.showToolbar);
+		mainToolBar.showOrHide();
 		eb.addHandler(TimeoutEvent.getType(), this);
 		connectWindow = new ConnectWindow(ConstructorApp.this);
 	}

@@ -433,6 +433,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 		String defaultDebugValue = "";
 		String defaultfcSchemaOwner = "";
 		String defaultValidationFN = "";
+		String defaultShowToolbar = "";
 
 		try {
 			XPathExpression findDefalutServerSettings = xPath.compile("//dbConnections/defaultValues");
@@ -451,6 +452,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 				defaultDebugValue = Utils.getTextFromAttr(attributes, "debug");
 				defaultfcSchemaOwner = Utils.getTextFromAttr(attributes, "fcSchemaOwner");
 				defaultValidationFN = Utils.getTextFromAttr(attributes, "validationFN");
+				defaultShowToolbar = Utils.getTextFromAttr(attributes, "showToolbar");
 			}
 
 			InputSource serversIS = new InputSource(new FileInputStream(xmlDocument));
@@ -461,6 +463,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 
 				ServerInfoMD si = new ServerInfoMD();
 				// si.setDbUrl(node.getTextContent());
+
 				si.setDbUrl(Utils.getCharacterDataFromElement(node));
 				si.setDefault("true".equals(Utils.getTextFromAttr(attributes, "default")));
 				si.setDisplayName(Utils.getTextFromAttr(attributes, "display"));
@@ -502,6 +505,9 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 				if (null == si.getValidationFN()) {
 					si.setValidationFN(defaultValidationFN);
 				}
+
+				String x = Utils.getTextFromAttr(attributes, "showToolbar");
+				si.setShowToolbar((null == x) ? "true".equals(defaultShowToolbar) : "true".equals(x));
 
 				result.add(si);
 			}

@@ -19,6 +19,9 @@ public class ServerInfoMD implements IsSerializable, Cloneable {
 	private String serverID;
 	private String validationFN;
 
+	private boolean showToolbar;
+	private boolean showServiceMenu;
+
 	public ServerInfoMD() {
 	}
 
@@ -36,11 +39,17 @@ public class ServerInfoMD implements IsSerializable, Cloneable {
 		result.setFcSchemaOwner(this.getFcSchemaOwner());
 		result.setServerID(this.getServerID());
 		result.setSessionTimeout(this.getSessionTimeout());
+		result.setShowToolbar(this.isShowToolbar());
+		result.setShowServiceMenu(this.isShowServiceMenu());
 		return result;
 	}
 
 	public String getDbPassword() {
 		return dbPassword;
+	}
+
+	public int getDbSessionTimeout() {
+		return dbSessionTimeout;
 	}
 
 	public String getDbUrl() {
@@ -63,6 +72,10 @@ public class ServerInfoMD implements IsSerializable, Cloneable {
 		return serverID;
 	}
 
+	public int getSessionTimeout() {
+		return sessionTimeout;
+	}
+
 	public String getTitle() {
 		return title;
 	}
@@ -83,6 +96,14 @@ public class ServerInfoMD implements IsSerializable, Cloneable {
 		return isDefault;
 	}
 
+	public boolean isShowServiceMenu() {
+		return showServiceMenu;
+	}
+
+	public boolean isShowToolbar() {
+		return showToolbar;
+	}
+
 	public boolean isTransferPassToClient() {
 		return transferPassToClient;
 	}
@@ -93,6 +114,10 @@ public class ServerInfoMD implements IsSerializable, Cloneable {
 
 	public void setDbPassword(String dbPassword) {
 		this.dbPassword = dbPassword;
+	}
+
+	public void setDbSessionTimeout(int dbSessionTimeout) {
+		this.dbSessionTimeout = dbSessionTimeout;
 	}
 
 	public void setDbUrl(String dbUrl) {
@@ -123,6 +148,18 @@ public class ServerInfoMD implements IsSerializable, Cloneable {
 		this.serverID = serverID;
 	}
 
+	public void setSessionTimeout(int sessionTimeout) {
+		this.sessionTimeout = sessionTimeout;
+	}
+
+	public void setShowServiceMenu(boolean showServiceMenu) {
+		this.showServiceMenu = showServiceMenu;
+	}
+
+	public void setShowToolbar(boolean showToolbar) {
+		this.showToolbar = showToolbar;
+	}
+
 	public void setTitle(String title) {
 		this.title = title;
 	}
@@ -133,21 +170,5 @@ public class ServerInfoMD implements IsSerializable, Cloneable {
 
 	public void setValidationFN(String validationFN) {
 		this.validationFN = validationFN;
-	}
-
-	public int getSessionTimeout() {
-		return sessionTimeout;
-	}
-
-	public void setSessionTimeout(int sessionTimeout) {
-		this.sessionTimeout = sessionTimeout;
-	}
-
-	public int getDbSessionTimeout() {
-		return dbSessionTimeout;
-	}
-
-	public void setDbSessionTimeout(int dbSessionTimeout) {
-		this.dbSessionTimeout = dbSessionTimeout;
 	}
 }

@@ -37,8 +37,7 @@ public class ActionItem extends MenuItem {
 	public ActionItem(final MainFormPane mainFormPane, FormActionMD formActionMD) {
 		this.setFormActionMD(formActionMD);
 		this.mainFormPane = mainFormPane;
-		String iconPath = ConstructorApp.menus.getIcons().get(
-				formActionMD.getIconId());
+		String iconPath = ConstructorApp.menus.getIcons().get(formActionMD.getIconId());
 		this.setIcon(iconPath);
 		String displayName = formActionMD.getDisplayName();
 		this.setTitle(displayName);
@@ -55,8 +54,7 @@ public class ActionItem extends MenuItem {
 		this.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(MenuItemClickEvent event) {
-				Canvas pane = ConstructorApp.getTabSet().getSelectedTab()
-						.getPane();
+				Canvas pane = ConstructorApp.getTabSet().getSelectedTab().getPane();
 				MainFormPane cp = mainFormPane;
 				while (cp != null && cp != pane)
 					cp = cp.getParentFormPane();
@@ -69,9 +67,7 @@ public class ActionItem extends MenuItem {
 		});
 		if (formActionMD.getDisplayOnToolbar()) {
 			// button = new IButton(formActionMD.getDisplayName());
-			button = new IButton(
-					ConstructorApp.showToolbarButtonNames ? formActionMD
-							.getDisplayName() : "");
+			button = new IButton(ConstructorApp.mainToolBar.showToolbarButtonNames ? formActionMD.getDisplayName() : "");
 			button.setAutoFit(true); // button.setWidth(24);
 			button.setShowDisabledIcon(false);
 			button.setPrompt(displayName);
@@ -88,8 +84,7 @@ public class ActionItem extends MenuItem {
 		this.setDynamicTitleFunction(new MenuItemStringFunction() {
 			@Override
 			public String execute(Canvas target, Menu menu, MenuItem item) {
-				String title = ActionItem.this.getFormActionMD()
-						.getDisplayName();
+				String title = ActionItem.this.getFormActionMD().getDisplayName();
 				try {
 					title = Utils.replaceBindVariables(mainFormPane, title);
 				} catch (Exception e) {
@@ -107,15 +102,13 @@ public class ActionItem extends MenuItem {
 				try {
 					String actionType = ActionItem.this.formActionMD.getType();
 					ListGrid grid = mainFormPane.getMainForm().getTreeGrid();
-					int currRow = mainFormPane.getMainForm()
-							.getSelectedRecord();
+					int currRow = mainFormPane.getMainForm().getSelectedRecord();
 					// Убрал пока для дерева дизейбл потому, что drag&drop чудно
 					// работает.
 					// См. описание
 					// com.smartgwt.client.widgets.tree.TreeGrid.startEditingNew
 					if ("2".equals(actionType) && !(grid instanceof TreeGrid)) {
-						result = currRow == grid.getEditRow()
-								|| 0 != grid.getAllEditRows().length;
+						result = currRow == grid.getEditRow() || 0 != grid.getAllEditRows().length;
 					}
 					if ("5".equals(actionType)) {
 						result = 0 != currRow;

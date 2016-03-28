@@ -17,10 +17,10 @@
 	<dbConnections>
 		<defaultValues dbusername="FC22" fcSchemaOwner="FC22"
 			debug="true" validationFN="&amp;fc_schema_owner..users_pkg.validate_login"
-			title="Forms Constructor" />
+			title="Forms Constructor" showToolbar = "true"/>
 
 		<server id="13" display="OLD DEV Kazakhmys FC22" default="true"
-			fcSchemaOwner="FC22" dbusername="FC22">
+			fcSchemaOwner="FC22" dbusername="FC22" showToolbar = "false">
 			localhost:1521:DEV
 		</server>
 
@@ -65,7 +65,7 @@
 			dbpassword="Gst54gbs" allowuserchange="false" debug="false" default="false"
 			validationFN="xxfnd_apps_utils_pkg.validate_ebs_login"
 			sessionTimeout="10" dbSessionTimeout="20">
-			192.168.110.193:1521:HRZTEST
+			exadbadm01.bas.kz:1521/HRZTEST
 		</server>
 
 		<server id="23" display="HG XE" dbusername="TEST"

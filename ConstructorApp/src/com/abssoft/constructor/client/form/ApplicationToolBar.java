@@ -6,6 +6,10 @@ import com.smartgwt.client.widgets.toolbar.ToolStrip;
 
 public class ApplicationToolBar extends ToolStrip {
 	private DynamicForm form;
+	// public static QueryServiceAsync queryService; // = (QueryServiceAsync) GWT.create(QueryService.class);
+	// private static ServiceDefTarget queryServiceDefTarget = (ServiceDefTarget) queryService;
+	private boolean showToolbar = false;
+	public boolean showToolbarButtonNames = true;
 
 	public ApplicationToolBar() {
 		// TODO - Что-то вдруг тулбар стал вылазить за пределы окна при 100% размере
@@ -43,12 +47,24 @@ public class ApplicationToolBar extends ToolStrip {
 
 	}
 
-	public void showOrHide(boolean show) {
-		if (show) {
+	public void showOrHide(boolean showToolbar) {
+		this.showToolbar = showToolbar;
+		if (showToolbar) {
 			this.show();
 		} else {
 			this.hide();
 		}
+		//ConstructorApp.showToolbar = !ConstructorApp.showToolbar;
 		//this.getParentElement().redraw();
 	}
+
+	public void showOrHide() {
+		showOrHide(showToolbar);
+
+	}
+
+	public boolean isShowToolbar() {
+		return showToolbar;
+	}
+
 }

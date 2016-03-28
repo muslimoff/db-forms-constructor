@@ -312,13 +312,15 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 
 	void setValues(Integer idx) {
 		if (-1 != idx) {
-			String pass = ConstructorApp.serverInfoArr.get(idx).getDbPassword();
-			boolean isDisabled = !ConstructorApp.serverInfoArr.get(idx).isAllowUserChange();
-			boolean isCustomAuth = !ConstructorApp.serverInfoArr.get(idx).isTransferPassToClient();
+
+			ServerInfoMD serverInfoMD = ConstructorApp.serverInfoArr.get(idx);
+			String pass = serverInfoMD.getDbPassword();
+			boolean isDisabled = !serverInfoMD.isAllowUserChange();
+			boolean isCustomAuth = !serverInfoMD.isTransferPassToClient();
 			// isDisabled = isDisabled && isPassDisabled;
 			dbServerSelectItem.setValue(idx + "");
-			ConstructorApp.serverInfoArr.get(idx).isTransferPassToClient();
-			userNameItem.setValue(ConstructorApp.serverInfoArr.get(idx).getDbUsername());
+			serverInfoMD.isTransferPassToClient();
+			userNameItem.setValue(serverInfoMD.getDbUsername());
 			passItem.setValue(pass);
 			// userNameItem.setDisabled(isDisabled);
 			if (isCustomAuth) {
@@ -333,9 +335,11 @@ public class ConnectWindow extends com.smartgwt.client.widgets.Window {
 
 			ConnectWindow.this.markForRedraw();
 			// passItem.setDisabled(isDisabled && isPassDisabled);
-			ConstructorApp.defaultTitle = ConstructorApp.serverInfoArr.get(idx).getTitle();
+			ConstructorApp.defaultTitle = serverInfoMD.getTitle();
 			ConstructorApp.setPageTitle("");
-			ConstructorApp.debugEnabled = ConstructorApp.serverInfoArr.get(idx).isDebug();
+			ConstructorApp.debugEnabled = serverInfoMD.isDebug();
+
+			ConstructorApp.mainToolBar.showOrHide(serverInfoMD.isShowToolbar());
 		}
 	}
 
