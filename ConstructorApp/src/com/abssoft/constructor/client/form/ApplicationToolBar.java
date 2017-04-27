@@ -8,7 +8,7 @@ public class ApplicationToolBar extends ToolStrip {
 	private DynamicForm form;
 	// public static QueryServiceAsync queryService; // = (QueryServiceAsync) GWT.create(QueryService.class);
 	// private static ServiceDefTarget queryServiceDefTarget = (ServiceDefTarget) queryService;
-	private boolean showToolbar = false;
+	private boolean showToolbar = true;
 	public boolean showToolbarButtonNames = true;
 
 	public ApplicationToolBar() {
