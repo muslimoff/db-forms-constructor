@@ -210,8 +210,15 @@ public class FormDataSource extends GwtRpcDataSource {
 	protected void executeRemove(final String requestId, final DSRequest request, final DSResponse response) {
 		DMLProcExecution removeProcExec = new DMLProcExecution(DMLProcExecution.ExecutionType.DELETE, this, mainFormPane, request,
 				response);
+		
+		///30.10.2017 Не работало Удаление
+		/// record = request.getData() возвращал неправильные значения
+		/// Был заменен на request.getOldValues();
+		/// Author : Ersultanbek
+		
+		Record record = request.getOldValues();
 		Row newRow = null;
-		Row oldRow = Utils.getRowFromRecord(dsFields, new Record(request.getData()));
+		Row oldRow = Utils.getRowFromRecord(dsFields, record);
 		removeProcExec.executeGlobal(oldRow, newRow);
 	}
 

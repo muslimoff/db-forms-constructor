@@ -25,6 +25,8 @@ public class FormColumnsArr extends HashMap<Integer, FormColumnMD> implements
 		columnsByName.put(value.getName(), key);
 		return value;
 	}
+	
+
 
 	public Integer getColIndex(String colName) {
 		return columnsByName.get(colName);

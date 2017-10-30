@@ -119,26 +119,31 @@ public class Form implements Serializable {
 				+ gridHashCode + " closed...");
 	}
 
+	
 	public Row executeDML(int gridHashCode, Row oldRow, Row newRow,
 			FormActionMD actMD) throws SQLException, Exception {
 		Row resultRow = null != newRow ? newRow : oldRow;
 		// String statusMsgLevelParamName = null;
 		// String statusMsgTxtParamName = null;
+	
 		session.debug(
 				"actionCode:" + actMD.getCode() + "; Type:" + actMD.getType(),
 				resultRow);
 		{
+
 			String dmlProcText = actMD.getDmlProcText();
+								
 			if (null != dmlProcText) {
 				OracleCallableStatement stmnt = null;
 				try {
-					stmnt = (OracleCallableStatement) getConnection()
-							.prepareCall(dmlProcText);
+					stmnt = (OracleCallableStatement) getConnection().prepareCall(dmlProcText);
+					
 					session.debug(dmlProcText, resultRow);
 					// ----------------------------------
 					Map<String, Attribute> rowValues = new HashMap<String, Attribute>();
 					Map<String, Boolean> isClobHM = new HashMap<String, Boolean>();
 					for (int j = 0; j < resultRow.size(); j++) {
+	
 						String newParamName = "P_"
 								+ formMetaData.getColumns().get(j).getName();
 						String oldParamName = "P_OLD_"
@@ -148,6 +153,7 @@ public class Form implements Serializable {
 							isClobHM.put(newParamName, true);
 							isClobHM.put(oldParamName, true);
 						}
+											
 						if (null != newRow && null != oldRow) {
 							rowValues.put(newParamName, newRow.get(j));
 							rowValues.put(oldParamName, oldRow.get(j));
@@ -156,9 +162,12 @@ public class Form implements Serializable {
 							rowValues.put(oldParamName, new Attribute());
 						} else if (null != oldRow) {
 							rowValues.put(newParamName, oldRow.get(j));
-							rowValues.put(oldParamName, oldRow.get(j));
+							rowValues.put(oldParamName, oldRow.get(j));													
 						}
+															
 					}
+					
+					
 					// Цикл по IN-параметрам перед выполнением процедуры
 					Iterator<Integer> allParamsIterator = actMD.getAllArgs()
 							.keySet().iterator();
@@ -166,15 +175,19 @@ public class Form implements Serializable {
 						int paramNum = allParamsIterator.next();
 						int outParamType = Types.VARCHAR;
 						String paramName = actMD.getAllArgs().get(paramNum);
-
+																										
+						
 						if (isClobHM.containsKey(paramName)) {
 							outParamType = Types.CLOB;
 						}
 						if (actMD.getInputs().containsKey(paramNum)) {
 							Attribute attr = rowValues.get(paramName);
 							attr = (null == attr) ? new Attribute() : attr;
+						
 							Object val = (null != attr) ? attr
 									.getAttributeAsObject() : null;
+									
+														
 							String dType = attr.getDataType();
 							if ("D".equals(dType)) {
 								outParamType = Types.DATE;
@@ -238,7 +251,7 @@ public class Form implements Serializable {
 					// Обработка сообщения
 					ActionStatus.StatusType msgLvl = ActionStatus.StatusType.SUCCESS;
 					String msgText = null;
-					stmnt.execute();
+				    stmnt.execute();
 					// Цикл по OUT-параметрам. P_OLD_ параметры не
 					// обрабатываются -
 					// предполагается, что они только IN

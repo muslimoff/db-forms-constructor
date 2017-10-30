@@ -32,7 +32,7 @@ public class Attribute implements IsSerializable {
 			this.booleanVal = null != doubleVal && 1.0 == doubleVal;
 			dataType = "N";
 		} else {
-			String stringVal = (String) val;
+			String stringVal = (String) val;			
 			this.stringVal = stringVal;
 			this.booleanVal = "1".equals(stringVal) || "Y".equals(stringVal);
 			dataType = "S";
@@ -51,6 +51,9 @@ public class Attribute implements IsSerializable {
 			val = null == doubleVal ? null : (doubleVal + "");
 		} else if ("D".equals(dataType)) {
 			val = null == dateVal ? null : (dateVal + "");
+		} else if ("S".equals(dataType))
+		{
+			val = null == stringVal ? null : (stringVal);
 		}
 		return val;
 	}

@@ -8,8 +8,8 @@ public class ApplicationToolBar extends ToolStrip {
 	private DynamicForm form;
 	// public static QueryServiceAsync queryService; // = (QueryServiceAsync) GWT.create(QueryService.class);
 	// private static ServiceDefTarget queryServiceDefTarget = (ServiceDefTarget) queryService;
-	private boolean showToolbar = true;
-	public boolean showToolbarButtonNames = true;
+	private boolean showToolbar = false;
+	public boolean showToolbarButtonNames = false;
 
 	public ApplicationToolBar() {
 		// TODO - Что-то вдруг тулбар стал вылазить за пределы окна при 100% размере

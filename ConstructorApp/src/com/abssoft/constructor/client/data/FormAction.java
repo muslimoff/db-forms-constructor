@@ -297,6 +297,7 @@ public class FormAction {
 	}
 
 	/********************************************************************/
+	@SuppressWarnings("deprecation")
 	private void doRefreshTreeNode( // Integer recordIndex
 	) {
 		if (grid instanceof TreeGrid) {

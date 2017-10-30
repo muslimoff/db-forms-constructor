@@ -221,10 +221,13 @@ public class Utils {
 	}
 
 	public static Row getRowFromRecord(FormDataSourceField[] dsFields, Record record) {
+		
+		
+		
 		Row row = new Row();
 		for (int c = 0; c < dsFields.length; c++) {
 			String colName = dsFields[c].getName();
-
+			
 			Attribute attr = new Attribute();
 			try {
 				if (FieldType.BOOLEAN.equals(dsFields[c].getType())) {
@@ -241,7 +244,7 @@ public class Utils {
 						} catch (Exception e) {
 							// TODO Ошипка при редактировании новой записи сразу
 							// после сохранения.
-							// e.printStackTrace();
+							e.printStackTrace();
 						}
 					} else {
 						try {

@@ -1,0 +1,64 @@
+
+build_number:
+[propertyfile] Updating property file: C:\gwt-git\db-forms-constructor\ConstructorApp\war\WEB-INF\application.properties
+     [echo] Generated version: 1.2.236
+
+libs:
+
+BUILD FAILED
+
+C:\gwt-git\db-forms-constructor\ConstructorApp\build.xml:76: Unable to delete file C:\gwt-git\db-forms-constructor\ConstructorApp\war
+javac:
+    [javac] Compiling 89 source files to C:\gwt-git\db-forms-constructor\ConstructorApp\war\WEB-INF\classes
+    [javac] C:\gwt-git\db-forms-constructor\ConstructorApp\src\com\abssoft\constructor\client\widgets\cmirrorwidget\CodeMirrorV511.java:23: warning: [deprecation] Element in com.google.gwt.user.client has been deprecated
+    [javac] import com.google.gwt.user.client.Element;
+    [javac]                                  ^
+    [javac] C:\gwt-git\db-forms-constructor\ConstructorApp\src\com\abssoft\constructor\client\widgets\cmirrorwidget\CodeMirrorV511.java:50: warning: [deprecation] Element in com.google.gwt.user.client has been deprecated
+    [javac] 	private Element hostElement; // the host element that holds our editor instance
+    [javac] 	        ^
+    [javac] C:\gwt-git\db-forms-constructor\ConstructorApp\src\com\abssoft\constructor\client\widgets\cmirrorwidget\CodeMirrorV511.java:81: warning: [deprecation] setElementProperty(Element,String,String) in DOM has been deprecated
+    [javac] 		DOM.setElementProperty(hostElement, "id", id);
+    [javac] 		   ^
+    [javac] C:\gwt-git\db-forms-constructor\ConstructorApp\src\com\abssoft\constructor\client\widgets\cmirrorwidget\CodeMirrorV511.java:82: warning: [deprecation] setElement(Element) in UIObject has been deprecated
+    [javac] 		setElement(hostElement);
+    [javac] 		^
+    [javac] C:\gwt-git\db-forms-constructor\ConstructorApp\src\com\abssoft\constructor\server\QueryServiceImpl.java:49: error: QueryServiceImpl is not abstract and does not override abstract method closeFormInstance(FormInstanceIdentifier) in QueryService
+    [javac] public class QueryServiceImpl extends RemoteServiceServlet implements QueryService {
+    [javac]        ^
+    [javac] C:\gwt-git\db-forms-constructor\ConstructorApp\src\com\abssoft\constructor\server\QueryServiceImpl.java:133: error: no suitable constructor found for Session(Connection,ServerInfoMD,Boolean,boolean)
+    [javac] 			session = new Session(connection, serverInfoMD, isDebugEnabled, isScript);
+    [javac] 			          ^
+    [javac]     constructor Session.Session(Boolean,Boolean) is not applicable
+    [javac]       (actual and formal argument lists differ in length)
+    [javac]     constructor Session.Session(Connection,ServerInfoMD,Boolean,Boolean,String) is not applicable
+    [javac]       (actual and formal argument lists differ in length)
+    [javac] C:\gwt-git\db-forms-constructor\ConstructorApp\src\com\abssoft\constructor\server\QueryServiceImpl.java:170: error: no suitable constructor found for ConnectionInfo(String,int)
+    [javac] 		ConnectionInfo c = new ConnectionInfo(errMsg, sessionId);
+    [javac] 		                   ^
+    [javac]     constructor ConnectionInfo.ConnectionInfo() is not applicable
+    [javac]       (actual and formal argument lists differ in length)
+    [javac]     constructor ConnectionInfo.ConnectionInfo(String,int,String) is not applicable
+    [javac]       (actual and formal argument lists differ in length)
+    [javac] 3 errors
+    [javac] 4 warnings
+
+BUILD FAILED
+
+C:\gwt-git\db-forms-constructor\ConstructorApp\build.xml:102: Compile failed; see the compiler error output for details.
+	at org.apache.tools.ant.taskdefs.Javac.compile(Javac.java:1180)
+	at org.apache.tools.ant.taskdefs.Javac.execute(Javac.java:935)
+	at org.apache.tools.ant.UnknownElement.execute(UnknownElement.java:292)
+	at sun.reflect.GeneratedMethodAccessor4.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.tools.ant.dispatch.DispatchUtils.execute(DispatchUtils.java:106)
+	at org.apache.tools.ant.Task.perform(Task.java:348)
+	at org.apache.tools.ant.Target.execute(Target.java:435)
+	at org.apache.tools.ant.Target.performTasks(Target.java:456)
+	at org.apache.tools.ant.Project.executeSortedTargets(Project.java:1393)
+	at org.apache.tools.ant.Project.executeTarget(Project.java:1364)
+	at org.apache.tools.ant.helper.DefaultExecutor.executeTargets(DefaultExecutor.java:41)
+	at org.eclipse.ant.internal.launching.remote.EclipseDefaultExecutor.executeTargets(EclipseDefaultExecutor.java:36)
+	at org.apache.tools.ant.Project.executeTargets(Project.java:1248)
+	at org.eclipse.ant.internal.launching.remote.InternalAntRunner.run(InternalAntRunner.java:453)
+	at org.eclipse.ant.internal.launching.remote.InternalAntRunner.main(InternalAntRunner.java:140)

@@ -76,6 +76,22 @@ public class DMLProcExecution {
 	}
 
 	public void executeGlobal(Row oldRow, Row newRow, final Boolean showPrompt) {
+		
+		if(request.getDataAsString() != null)
+		{ System.out.println("GLOBAL REQ: "  + request.getDataAsString());}
+		
+		
+		if(oldRow != null){
+			for(Integer in : oldRow.keySet())
+			   System.out.println("EXE GLOBAL : "  + oldRow.get(in).getAttribute());
+		}
+		
+		if(newRow != null){
+			for(Integer in : newRow.keySet())
+			   System.out.println("EXE GLOBAL : " + newRow.get(in));
+		}
+		
+		
 		formDataSource.setEditedRecordIndex(-1); // 20120319 сброс редактируемой
 													// записи
 		FormActionMD actMD = mainFormPane.getCurrentAction();
@@ -88,6 +104,12 @@ public class DMLProcExecution {
 			public void onSuccess(Row result) {
 				super.onSuccess(result);
 				DMLProcExecution.this.setResultRow(result);
+				
+				if(result != null){
+					for(Integer in : result.keySet())
+					   System.out.println("DML PROC : " + result.get(in));
+				}
+				
 				// 20110729b - добавлена типизация и вынесен глобально код для response.setData
 				TreeNode resRec = Utils.getTreeNodeFromRow(formDataSource.getFormDSFields(), result);
 				// We do not receive removed record from server. Return record from request.

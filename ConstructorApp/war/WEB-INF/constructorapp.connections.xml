@@ -61,6 +61,7 @@
 		</server>
 		<server id="21" display="Localhost XE FC22" default="true"
 			fcSchemaOwner="FC22" dbusername="FC22">localhost:1521:XE</server>
+			
 		<server id="22" display="BAS OEBS TEST FC22" dbusername="APPS"
 			dbpassword="Gst54gbs" allowuserchange="false" debug="false" default="false"
 			validationFN="xxfnd_apps_utils_pkg.validate_ebs_login"
@@ -71,15 +72,23 @@
 		<server id="23" display="HG XE" dbusername="TEST"
 			dbpassword="test123" allowuserchange="false" debug="false" default="false"
 			fcSchemaOwner="TEST" validationFN="&amp;fc_schema_owner..users_pkg.validate_login" sessionTimeout="10" dbSessionTimeout="20">
-			92.46.38.246:1521:XE
+			92.46.38.246:1521:XE		
 		</server>
 
-		<server id="24" display="HG XE Localhost" dbusername="TEST"
-			dbpassword="test123" allowuserchange="false" debug="false" default="false"
-			fcSchemaOwner="TEST" validationFN="&amp;fc_schema_owner..users_pkg.validate_login" sessionTimeout="10" dbSessionTimeout="20">
-			localhost:1521:XE
+		<server id="24" display="TEST APPS User" dbusername="apps"
+			dbpassword="MKePR7rh" allowuserchange="false" debug="false" default="true"
+			validationFN="xxfnd_apps_utils_pkg.validate_ebs_login">
+			kzdzn3153.kz.kmz.local:1521/HRZDEV
 		</server>
-
+		
+		<server id="25" display="TEST" dbusername="Apps"
+			dbpassword="NDrvg56" allowuserchange="false" debug="false" default="true"
+			validationFN="xxfnd_apps_utils_pkg.validate_ebs_login">
+			kzdzn3154.kz.kmz.local:1521/HRZTEST
+		</server>
+		
+		
+		
 
 	</dbConnections>
 

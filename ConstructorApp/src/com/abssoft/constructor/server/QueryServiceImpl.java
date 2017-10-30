@@ -193,17 +193,17 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 			session.debug("Connected..");
 			setNlsLang(conn);
 			session = new Session(conn, serverInfoMD, isDebugEnabled, isScript, urlParams);
-			Utils.spoolOut("serverInfoMD.isTransferPassToClient():" + serverInfoMD.isTransferPassToClient());
-			if (!serverInfoMD.isTransferPassToClient()) {
-				session.debug("QueryServiceImpl.connect. Custom Login.");
-				session.debug("user:" + user + "; password:" + password + "; userName:" + userName + "; userPass:" + userPass);
+			//Utils.spoolOut("serverInfoMD.isTransferPassToClient():" + serverInfoMD.isTransferPassToClient());
+			//if (!serverInfoMD.isTransferPassToClient()) {
+				//session.debug("QueryServiceImpl.connect. Custom Login.");
+				//session.debug("user:" + user + "; password:" + password + "; userName:" + userName + "; userPass:" + userPass);
 				// Custom Login Validation
-				if (!isValidLogin(session, user, password, urlParams)) {
+				/*if (!isValidLogin(session, user, password, urlParams)) {
 					conn.close();
 					sessionId = -1;
 					throw new Exception(Messages.getMessage("login.failed"));
-				}
-			}
+				}*/
+			//}
 			sessionId = getSessionId(conn);
 			dateFormat = getDateFormat(conn, session);
 			sessionData.put(sessionId, session);
@@ -243,10 +243,35 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 	}
 
 	public Row executeDML(FormInstanceIdentifier fi, Row oldRow, Row newRow, FormActionMD actMD) throws TimeoutException {
+		StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+		String message = "";
+		for(int i =0 ; i< stackTraceElements.length; i++) {
+		  
+			StackTraceElement element = stackTraceElements[i];
+		    String className = element.getClassName();
+		    String methodName = element.getMethodName();
+		    message = className + ": " + methodName;
+		    System.out.println(message);
+		}
+		
 		Session session = getSessionData(fi);
 		session.checkDbTimeout();
 		session.setInUse(true);
 		try {
+			System.out.println("ACT MD " + actMD.getType());
+			
+			if(oldRow != null){
+				for(Integer in : oldRow.keySet())
+				   System.out.println("QUERY SERV OLD : "  + oldRow.get(in).getAttribute());
+			}
+			
+			if(newRow != null){
+				for(Integer in : newRow.keySet())
+				   System.out.println("QUERY SERV NEW : " + newRow.get(in).getAttribute());
+			}
+			
+			
+			
 			Row result = session.executeDML(fi, oldRow, newRow, actMD);
 			session.checkApplTimeout(result);
 			return result;
@@ -254,10 +279,7 @@ public class QueryServiceImpl extends RemoteServiceServlet implements QueryServi
 			e.printStackTrace();
 			session.debug("QueryServiceImpl.executeDML... oldRow:" + oldRow + "; newRow:" + newRow);
 			Row r;
-			if (!"3".equals(actMD.getType())
-			// !ClientActionType.DEL.equals(clientActionType)
-			) {
-
+			if (!"3".equals(actMD.getType())) {
 				r = newRow;
 			} else {
 				r = oldRow;
