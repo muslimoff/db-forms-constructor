@@ -111,13 +111,17 @@ public class ExportData implements IsSerializable {
 		String hdrsTxt = "";
 		// String dtypesTxt = "";
 		for (int i = 0; i < headerNames.size(); i++) {
-			// //
-			// String dtype = "String"; if (i == 5) dtype = "Number";
-			// YYYY-MM-DDTHH24:MI:SS.000 if (i == 1) dtype = "DateTime";
-			// //
-			hdrsTxt = hdrsTxt
-					+ hdrTmpl.replaceAll("&cellNum&", i + "").replaceAll("&hdrData&", headerTitles.get(i)).replaceAll("&dtype&",
-							headerTypes.get(i)) + cr;
+			String val2 = headerTitles.get(i);
+			val2=val2.replaceAll("<b>","");
+			if (i == 0) {
+				hdrsTxt = hdrsTxt
+						+ hdrTmpl.replaceAll("&cellNum&", i + "").replaceAll("&hdrData&", val2).replaceAll("&dtype&",
+						"String") + cr;
+			}
+			else {
+				hdrsTxt = hdrsTxt
+						+ hdrTmpl.replaceAll("&cellNum&", i + "").replaceAll("&hdrData&", val2).replaceAll("&dtype&",
+						headerTypes.get(i)) + cr;
 		}
 		// Формирование параметров
 		String paramsTxt = "";
