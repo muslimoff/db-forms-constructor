@@ -30,7 +30,8 @@ http://127.0.0.1:8888/ConstructorApp.html?&transactionid=2101749105&language_cod
  
 codemirror-5.11/lib
 
-
+2023-08-04 testing github-pages
+	test1
 
  cd $ADMIN_SCRIPTS_HOME
  . adstrtal.sh  apps/Gst54gbs
